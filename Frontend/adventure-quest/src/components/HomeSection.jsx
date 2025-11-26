@@ -14,6 +14,10 @@ const HeroSection = () => {
   const AboutUs = () => {
     navigate('/about');
   };
+   const goToLogin = () => {
+    navigate("/login"); 
+  };
+  
 
   return (
     <section
@@ -62,7 +66,7 @@ const HeroSection = () => {
         </div>
 
         <div className="game-buttons">
-          <button className="game-btn primary-game-btn">
+          <button className="game-btn primary-game-btn" onClick={goToLogin}>
             <span className="btn-decoration left"></span>
             <span className="btn-text">START YOUR QUEST</span>
             <span className="btn-decoration right"></span>
