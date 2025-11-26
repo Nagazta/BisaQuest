@@ -1,13 +1,23 @@
-/* About Section */
+/* About Section - Game Environment Style */
 .about-section {
-  background: linear-gradient(180deg, #FFFEF2 0%, #EAD5A8 100%);
-  padding: 5rem 1rem;
   position: relative;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(255, 220, 117, 0.2) 0%, transparent 100%),
+    radial-gradient(circle at 80% 70%, rgba(251, 189, 132, 0.2) 0%, transparent 100%),
+    url('../../assets/images/bg-dashboard.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 5rem 1rem;
+  overflow: hidden;
 }
 
 .about-container {
   max-width: 1280px;
   margin: 0 auto;
+  position: relative;
+  z-index: 2;
+  margin-top: -80px;
 }
 
 /* Section Header */
@@ -18,31 +28,58 @@
 
 .section-badge {
   display: inline-block;
-  background-color: #FCD765;
-  color: #6B3E1D;
+  background: linear-gradient(135deg, #B96C25 0%, #6B3E1D 100%);
+  color: #FCD765;
   padding: 0.5rem 1.5rem;
   border-radius: 2rem;
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
   margin-bottom: 1rem;
+  border: 2px solid #FCD765;
+  box-shadow: 0 5px 15px rgba(185, 108, 37, 0.5);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 5px 15px rgba(185, 108, 37, 0.5);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(252, 215, 101, 0.6);
+  }
 }
 
 .section-title {
+  font-family: 'Cinzel', 'Georgia', serif;
   font-size: 3rem;
-  font-weight: 800;
-  color: #6B3E1D;
+  font-weight: 900;
+  color: #FFFFFF;
+  text-shadow: 
+    2px 2px 0 #6B3E1D,
+   -2px 2px 0 #6B3E1D,
+    2px -2px 0 #6B3E1D,
+   -2px -2px 0 #6B3E1D,
+    0 2px 0 #6B3E1D,
+    2px 0 0 #6B3E1D,
+    0 -2px 0 #6B3E1D,
+   -2px 0 0 #6B3E1D,
+    0 0 20px rgba(252, 215, 101, 0.3);
   margin-bottom: 1rem;
   line-height: 1.2;
+  letter-spacing: 0.05em;
 }
 
 .section-subtitle {
   font-size: 1.25rem;
-  color: #6B3E1D;
-  opacity: 0.8;
+  color: #FFFEF2;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
   max-width: 600px;
   margin: 0 auto;
+  letter-spacing: 0.05em;
 }
 
 /* Project Info */
@@ -52,10 +89,14 @@
   gap: 3rem;
   align-items: center;
   margin-bottom: 5rem;
-  background-color: rgba(255, 254, 242, 0.7);
+  background: rgba(107, 62, 29, 0.3);
   padding: 3rem;
   border-radius: 1.5rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(252, 215, 101, 0.3);
+  backdrop-filter: blur(10px);
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(252, 215, 101, 0.2);
 }
 
 .project-description {
@@ -74,18 +115,20 @@
 }
 
 .project-title {
+  font-family: 'Cinzel', 'Georgia', serif;
   font-size: 2rem;
   font-weight: 700;
-  color: #B96C25;
+  color: #FCD765;
   margin-bottom: 1.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 .project-text {
   font-size: 1.125rem;
-  color: #6B3E1D;
+  color: #FFFEF2;
   line-height: 1.8;
   margin-bottom: 1.5rem;
-  opacity: 0.9;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .project-features {
@@ -96,8 +139,8 @@
 }
 
 .feature-tag {
-  background-color: #6B3E1D;
-  color: #FFFEF2;
+  background: linear-gradient(135deg, #B96C25 0%, #6B3E1D 100%);
+  color: #FCD765;
   padding: 0.5rem 1rem;
   border-radius: 2rem;
   font-size: 0.875rem;
@@ -106,12 +149,15 @@
   align-items: center;
   gap: 0.5rem;
   transition: all 0.3s ease;
+  border: 2px solid #FCD765;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
 }
 
 .feature-tag:hover {
-  background-color: #B96C25;
+  background: linear-gradient(135deg, #FCD765 0%, #B96C25 100%);
+  color: #6B3E1D;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 5px 15px rgba(252, 215, 101, 0.5);
 }
 
 /* Project Illustration */
@@ -137,7 +183,7 @@
   height: auto;
   margin: 0 auto;
   display: block;
-  filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 10px 30px rgba(252, 215, 101, 0.3));
 }
 
 /* Goals Container */
@@ -146,11 +192,19 @@
 }
 
 .goals-title {
+  font-family: 'Cinzel', 'Georgia', serif;
   font-size: 2.5rem;
   font-weight: 700;
-  color: #6B3E1D;
+  color: #FFFFFF;
+  text-shadow: 
+    2px 2px 0 #6B3E1D,
+   -2px 2px 0 #6B3E1D,
+    2px -2px 0 #6B3E1D,
+   -2px -2px 0 #6B3E1D,
+    0 0 20px rgba(252, 215, 101, 0.3);
   text-align: center;
   margin-bottom: 3rem;
+  letter-spacing: 0.05em;
 }
 
 .goals-grid {
@@ -160,57 +214,66 @@
 }
 
 .goal-card {
-  background-color: #FFFEF2;
-  padding: 2rem;
+  background-image: url('../../assets/images/cards.png');
+  background-size: 200% 170%;
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 3rem 2.5rem;
   border-radius: 1rem;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  border: 2px solid transparent;
+  position: relative;
 }
 
-.goal-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  border-color: #FCD765;
-}
+
 
 .goal-icon {
   font-size: 3rem;
   margin-bottom: 1rem;
   display: block;
+  filter: drop-shadow(0 0 10px rgba(252, 215, 101, 0.5));
 }
 
 .goal-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #B96C25;
+  color: #6B3E1D;
   margin-bottom: 1rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .goal-description {
   font-size: 1rem;
   color: #6B3E1D;
   line-height: 1.6;
-  opacity: 0.9;
+  text-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.2);
 }
 
 /* Team Container */
 .team-container {
-  margin-top: 5rem;
+  margin-top: -2rem;
+  margin-bottom: 5rem;
 }
 
 .team-title {
+  font-family: 'Cinzel', 'Georgia', serif;
   font-size: 2.5rem;
   font-weight: 700;
-  color: #6B3E1D;
+  color: #FFFFFF;
+  text-shadow: 
+    2px 2px 0 #6B3E1D,
+   -2px 2px 0 #6B3E1D,
+    2px -2px 0 #6B3E1D,
+   -2px -2px 0 #6B3E1D,
+    0 0 20px rgba(252, 215, 101, 0.3);
   text-align: center;
   margin-bottom: 1rem;
+  letter-spacing: 0.05em;
 }
 
 .team-subtitle {
   font-size: 1.125rem;
-  color: #6B3E1D;
-  opacity: 0.8;
+  color: #FFFEF2;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
   text-align: center;
   margin-bottom: 3rem;
 }
@@ -251,31 +314,38 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 .team-card-front {
-  background: linear-gradient(135deg, #FFFEF2 0%, #EAD5A8 100%);
-  border: 3px solid #FCD765;
+  background-image: url('../../assets/images/cards.png');
+  background-size: 200% 210%;
+  background-repeat: no-repeat;
+  background-position: center;
+  backdrop-filter: none;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 .team-card-back {
   background: linear-gradient(135deg, #B96C25 0%, #6B3E1D 100%);
-  color: #FFFEF2;
   transform: rotateY(180deg);
 }
 
 .member-image {
   font-size: 5rem;
   margin-bottom: 1.5rem;
-  background-color: #FCD765;
+  background: linear-gradient(135deg, #FCD765 0%, #B96C25 100%);
   width: 120px;
   height: 120px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 
+    0 5px 15px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(252, 215, 101, 0.3);
+  border: 3px solid #FCD765;
 }
 
 .member-name {
@@ -284,6 +354,7 @@
   color: #6B3E1D;
   margin-bottom: 0.5rem;
   text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .member-role {
@@ -292,15 +363,10 @@
   font-weight: 600;
   margin-bottom: 1rem;
   text-align: center;
+  text-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.2);
 }
 
-.card-hover-hint {
-  font-size: 0.875rem;
-  color: #94785C;
-  font-style: italic;
-  margin-top: 1rem;
-  opacity: 0.7;
-}
+
 
 .member-bio {
   font-size: 1rem;
@@ -308,6 +374,7 @@
   text-align: center;
   margin-bottom: 1.5rem;
   color: #FFFEF2;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .member-skills {
@@ -324,6 +391,7 @@
   border-radius: 1.5rem;
   font-size: 0.875rem;
   font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Responsive Design */

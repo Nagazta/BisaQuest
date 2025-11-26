@@ -1,69 +1,53 @@
 import { useState } from 'react';
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
+
 import '../components/styles/Header.css';
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const navigate = useNavigate();
 
-  const navItems = [
-    { name: 'Home', href: '#home' },
-    { name: 'About Us', href: '#about' },
-    { name: 'Features', href: '#features' },
-    { name: 'Contact', href: '#contact' },
-  ];
+  const goHome = () => {
+    navigate("/"); // Navigate to HomePage
+  };
+
+const navItems = [
+  { name: 'Home', href: '/' },
+  { name: 'About Us', href: '/about' },
+  { name: 'Features', href: '/features' },
+  { name: 'Contact', href: '/contact' },
+];
+
 
   return (
     <header className="header-container">
       <div className="content-wrapper">
         {/* Logo Section */}
-        <div className="logo-section">
-          <svg className="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+        <div className="logo-section" onClick={goHome} style={{ cursor: "pointer" }}>
+          <svg
+            className="logo-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 64 64"
+            fill="none"
+          >
             <circle cx="32" cy="32" r="30" stroke="#FCD765" strokeWidth="4" />
             <path d="M32 10L24 30H40L32 10Z" fill="#FCD765" />
             <path d="M32 54L24 34H40L32 54Z" fill="#FCD765" />
             <circle cx="32" cy="32" r="6" fill="#FCD765" />
           </svg>
-          <label className="brand-name">Adventure Quest</label>
+          <label className="brand-name" onClick={goHome} style={{ cursor: "pointer" }}>Adventure Quest</label>
         </div>
 
         {/* Desktop Navigation */}
         <nav className="nav-desktop">
           {navItems.map((item) => (
-            <a key={item.name} href={item.href} className="nav-link">
+            <Link key={item.name} to={item.href} className="nav-link">
               <span>{item.name}</span>
-            </a>
+            </Link>
           ))}
         </nav>
-
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="mobile-menu-btn"
-          aria-label="Toggle menu"
-        >
-          {isMenuOpen ? (
-            <svg className="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          ) : (
-            <svg className="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          )}
-        </button>
       </div>
-
-      {/* Mobile Navigation */}
-      <nav className={isMenuOpen ? 'nav-mobile' : 'nav-mobile-hidden'}>
-        {navItems.map((item) => (
-          <a
-            key={item.name}
-            href={item.href}
-            onClick={() => setIsMenuOpen(false)}
-            className="nav-link"
-          >
-            <span>{item.name}</span>
-          </a>
-        ))}
-      </nav>
     </header>
   );
 };

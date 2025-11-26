@@ -49,22 +49,18 @@ const AboutSection = () => {
 
   const goals = [
     {
-      icon: "🎯",
       title: "Enhance Reading Skills",
       description: "Improve comprehension, vocabulary, and critical thinking through interactive stories and exercises."
     },
     {
-      icon: "🌟",
       title: "Build Confidence",
       description: "Create a supportive environment where every student feels encouraged to read and learn at their own pace."
     },
     {
-      icon: "🎮",
       title: "Make Learning Fun",
       description: "Transform reading practice into an exciting adventure with gamification and engaging narratives."
     },
     {
-      icon: "📊",
       title: "Track Progress",
       description: "Provide detailed insights and achievements to help students and teachers monitor improvement."
     }
@@ -76,7 +72,6 @@ const AboutSection = () => {
       <div className="about-container">
         {/* Section Header */}
         <div className="about-header">
-          <span className="section-badge">About Us</span>
           <h2 className="section-title">Our Mission & Vision</h2>
           <p className="section-subtitle">
             Empowering Grade 3 learners through innovative reading adventures

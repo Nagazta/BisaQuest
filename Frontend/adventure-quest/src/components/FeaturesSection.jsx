@@ -1,67 +1,166 @@
+import { useState } from 'react';
+import '../components/styles/FeaturesSection.css';
+
 const FeaturesSection = () => {
+  const [activeQuest, setActiveQuest] = useState(0);
+
   const quests = [
     {
       title: 'Village Quest - Vocabulary',
-      icon: '🏘️',
       desc: 'Master 50+ new words through fun matching and association games. Build your word power!',
-      badge: 'Word Explorer'
+      badge: 'Word Explorer',
+      color: '#FCD765',
+      features: ['50+ Vocabulary Words', 'Matching Games', 'Word Association', 'Visual Learning']
     },
     {
       title: 'Forest Quest - Synonyms & Antonyms',
-      icon: '🌲',
       desc: 'Discover word relationships in the enchanted forest. Learn synonym and antonym pairs!',
-      badge: 'Synonym Sleuth'
+      badge: 'Synonym Sleuth',
+      color: '#94785C',
+      features: ['Synonym Pairs', 'Antonym Matching', 'Word Relationships', 'Interactive Puzzles']
     },
     {
       title: 'Castle Quest - Compound Words',
-      icon: '🏰',
       desc: 'Learn to build and understand 30+ compound words through drag-and-drop challenges!',
-      badge: 'Word Builder'
+      badge: 'Word Builder',
+      color: '#B96C25',
+      features: ['30+ Compound Words', 'Drag & Drop', 'Word Construction', 'Building Games']
     },
     {
       title: 'Kingdom Quest - Final Challenge',
-      icon: '👑',
       desc: 'Apply all your skills to solve the kingdom crisis! Integrate everything you\'ve learned!',
-      badge: 'Master Reader'
+      badge: 'Master Reader',
+      color: '#6B3E1D',
+      features: ['Comprehensive Test', 'All Skills Combined', 'Story Integration', 'Final Achievement']
+    }
+  ];
+
+  const mainFeatures = [
+    {
+      title: 'Gamified Learning',
+      description: 'Turn reading practice into an exciting adventure with points, badges, and rewards.'
+    },
+    {
+      title: 'Interactive Stories',
+      description: 'Engage with captivating narratives designed specifically for Grade 3 comprehension levels.'
+    },
+    {
+      title: 'Achievement System',
+      description: 'Earn badges and unlock new quests as you progress through your reading journey.'
+    },
+    {
+      title: 'Progress Tracking',
+      description: 'Monitor improvement with detailed analytics and personalized learning insights.'
+    },
+    {
+      title: 'Adaptive Learning',
+      description: 'Content adjusts to each student\'s skill level for optimal learning experience.'
+    },
+    {
+      title: 'Collaborative Mode',
+      description: 'Work together with classmates on special group quests and challenges.'
     }
   ];
 
   return (
-    <section id="features" className="py-20 bg-gradient-to-b from-white to-amber-50">
-      <div className="max-w-7xl mx-auto px-6">
-        <h2 className="text-5xl font-bold text-amber-900 text-center mb-6">
-          Quest Features
-        </h2>
-        <p className="text-2xl text-amber-800 text-center mb-16">
-          Four exciting quests to master reading comprehension!
-        </p>
+    <section id="features" className="features-section">
+      <div className="features-container">
+        {/* Section Header */}
+        <div className="features-header">
+          <h2 className="section-title">Explore Our Learning Adventures</h2>
+          <p className="section-subtitle">
+            Discover the exciting features that make Adventure Quest the perfect reading companion
+          </p>
+        </div>
 
-        <div className="grid grid-cols-2 gap-8 mb-16">
-          {quests.map((quest, index) => (
-            <div key={index} className="bg-gradient-to-br from-yellow-50 to-amber-100 rounded-3xl p-8 shadow-lg hover:shadow-xl transition border-4 border-amber-200">
-              <div className="text-7xl mb-4">{quest.icon}</div>
-              <h3 className="text-2xl font-bold text-amber-900 mb-3">{quest.title}</h3>
-              <p className="text-amber-800 mb-4">{quest.desc}</p>
-              <div className="inline-block bg-yellow-500 text-white px-4 py-2 rounded-full font-bold">
-                🏆 {quest.badge}
-              </div>
+        {/* Main Features Grid */}
+        <div className="main-features-grid">
+          {mainFeatures.map((feature, index) => (
+            <div key={index} className="feature-card">
+              <h3 className="feature-title">{feature.title}</h3>
+              <p className="feature-description">{feature.description}</p>
             </div>
           ))}
         </div>
 
-        <div className="bg-gradient-to-r from-purple-400 to-blue-400 rounded-3xl p-12 text-center shadow-xl">
-          <h3 className="text-4xl font-bold text-white mb-4">
-            Ready to Start Your Adventure?
-          </h3>
-          <p className="text-xl text-white mb-6">
-            Join thousands of happy learners today!
+        {/* Quest Showcase Section */}
+        <div className="quest-showcase">
+          <h3 className="quest-showcase-title">Your Reading Quest Journey</h3>
+          <p className="quest-showcase-subtitle">
+            Progress through four exciting quests, each designed to build specific reading skills
           </p>
-          <button className="bg-white text-purple-600 text-xl font-bold py-4 px-8 rounded-full shadow-lg hover:scale-105 transition">
-            Begin Your Quest Now! ✨
-          </button>
+
+          {/* Quest Navigation */}
+          <div className="quest-navigation">
+            {quests.map((quest, index) => (
+              <button
+                key={index}
+                className={`quest-nav-button ${activeQuest === index ? 'active' : ''}`}
+                onClick={() => setActiveQuest(index)}
+              >
+                <span className="quest-nav-text">Quest {index + 1}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Active Quest Display */}
+          <div className="quest-display">
+            <div className="quest-content">
+              <div className="quest-info">
+                <div className="quest-badge-display">{quests[activeQuest].badge}</div>
+                <h4 className="quest-title">{quests[activeQuest].title}</h4>
+                <p className="quest-description">{quests[activeQuest].desc}</p>
+                
+                <div className="quest-features-list">
+                  <h5 className="quest-features-title">What You'll Learn:</h5>
+                  <div className="quest-features-grid">
+                    {quests[activeQuest].features.map((feature, index) => (
+                      <div key={index} className="quest-feature-item">
+           
+                        <span>{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <button className="start-quest-button">
+                  <span>Start This Quest</span>
+                  <svg className="button-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Quest Progress Path */}
+            <div className="quest-path">
+              {quests.map((quest, index) => (
+                <div
+                  key={index}
+                  className={`quest-path-node ${index <= activeQuest ? 'completed' : ''} ${index === activeQuest ? 'current' : ''}`}
+                >
+                  <div className="path-node-icon">{quest.icon}</div>
+                  <div className="path-node-label">Quest {index + 1}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Call to Action */}
+        <div className="features-cta">
+          <h3 className="cta-title">Ready to Start Your Adventure?</h3>
+          <p className="cta-text">
+            Join thousands of Grade 3 students who are already improving their reading skills!
+          </p>
+          <div className="cta-buttons">
+            <a href="#contact" className="cta-button primary">Get Started Now</a>
+            <a href="#about" className="cta-button secondary">Learn More</a>
+          </div>
         </div>
       </div>
     </section>
   );
 };
+
 export default FeaturesSection;
