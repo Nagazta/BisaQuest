@@ -1,63 +1,146 @@
-import { useState } from 'react';
-import '../pages/styles/Login.css';
-import boy from '../assets/images/characters/Boy.png';
-import girl from '../assets/images/characters/Girl.png';
-import Header from '../components/Header';
+import { useState, useEffect } from "react";
+import "../pages/styles/Login.css";
+import boy from "../assets/images/characters/Boy.png";
+import girl from "../assets/images/characters/Girl.png";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
+
+  const [particles] = useState(() => {
+    return [...Array(30)].map((_, i) => ({
+      id: i,
+      type: i % 3 === 0 ? "sparkle" : i % 3 === 1 ? "firefly" : "dust",
+      left: Math.random() * 100,
+      delay: Math.random() * 5,
+      duration: 3 + Math.random() * 4,
+      top: Math.random() * 100,
+    }));
+  });
+
+  const [mouseTrail, setMouseTrail] = useState([]);
+
+  useEffect(() => {
+    let trailId = 0;
+    let mouseX = 0;
+    let mouseY = 0;
+
+    const handleMouseMove = (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    };
+
+    const emitInterval = setInterval(() => {
+      const particleCount = Math.floor(Math.random() * 3) + 3;
+
+      for (let i = 0; i < particleCount; i++) {
+        const newParticle = {
+          id: trailId++,
+          x: mouseX + (Math.random() - 0.5) * 10,
+          y: mouseY + (Math.random() - 0.5) * 10,
+          size: Math.random() * 12 + 12,
+          duration: Math.random() * 1 + 1.5,
+        };
+
+        setMouseTrail((prev) => [...prev, newParticle]);
+
+        setTimeout(() => {
+          setMouseTrail((prev) => prev.filter((p) => p.id !== newParticle.id));
+        }, newParticle.duration * 1000);
+      }
+    }, 50);
+
+    window.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      clearInterval(emitInterval);
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
+
   const [formData, setFormData] = useState({
-    username: '',
-    password: ''
+    username: "",
+    password: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Login submitted:', formData);
-    // Add your login logic here
+    console.log("Login submitted:", formData);
   };
+
   const goToRegister = () => {
-     navigate('/register'); 
-  }
+    navigate("/register");
+  };
 
   return (
-    <>
-    <Header/>
     <div className="login-page">
-      {/* Background Image */}
+      {/* Background Image - MUST BE FIRST */}
       <div className="login-background"></div>
 
-      {/* Characters */}
+      {/* Animated particles/sparkles - MUST BE SECOND */}
+      <div className="particle-container">
+        {particles.map((particle) => (
+          <div
+            key={particle.id}
+            className={`particle ${particle.type}`}
+            style={{
+              left: `${particle.left}%`,
+              animationDelay: `${particle.delay}s`,
+              animationDuration: `${particle.duration}s`,
+              top: `${particle.top}%`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Mouse Trail - THIRD */}
+      <div className="mouse-trail-container">
+        {mouseTrail.map((particle) => (
+          <div
+            key={particle.id}
+            className="mouse-circle"
+            style={{
+              left: `${particle.x}px`,
+              top: `${particle.y}px`,
+              width: `${particle.size}px`,
+              height: `${particle.size}px`,
+              animationDuration: `${particle.duration}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Characters - FOURTH */}
       <div className="character-container">
-        <img 
-          src={boy} 
-          alt="Boy Character" 
+        <img
+          src={boy}
+          alt="Boy Character"
           className="character boy-character"
         />
-        <img 
-          src={girl} 
-          alt="Girl Character" 
+        <img
+          src={girl}
+          alt="Girl Character"
           className="character girl-character"
         />
       </div>
 
-      {/* Login Card */}
       <div className="login-card-wrapper">
         <div className="login-card">
           <h1 className="login-title">Login</h1>
-          
+
           <div className="login-form-container">
             <div className="form-group">
-              <label htmlFor="username" className="form-label">Username</label>
+              <label htmlFor="username" className="form-label">
+                Username
+              </label>
               <input
                 type="text"
                 id="username"
@@ -71,7 +154,9 @@ const Login = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="password" className="form-label">Password</label>
+              <label htmlFor="password" className="form-label">
+                Password
+              </label>
               <input
                 type="password"
                 id="password"
@@ -82,7 +167,9 @@ const Login = () => {
                 placeholder="Enter your password"
                 required
               />
-              <a href="#forgot" className="forgot-password">Forgot password</a>
+              <a href="#forgot" className="forgot-password">
+                Forgot password
+              </a>
             </div>
 
             <button onClick={handleSubmit} className="login-button">
@@ -90,13 +177,19 @@ const Login = () => {
             </button>
 
             <p className="register-text">
-              Don't have an account? <a href="#register" className="register-link" onClick={goToRegister}>Register here!</a>
+              Don't have an account?{" "}
+              <a
+                href="#register"
+                className="register-link"
+                onClick={goToRegister}
+              >
+                Register here!
+              </a>
             </p>
           </div>
         </div>
       </div>
     </div>
-    </>
   );
 };
 
