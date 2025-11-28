@@ -432,3 +432,213 @@
     flex-direction: column;
   }
 }
+
+/* Enhanced Particle Types */
+.particle.sparkle {
+  background: linear-gradient(45deg, #FCD765, #FFFFFF);
+  width: 6px;
+  height: 6px;
+  box-shadow: 0 0 15px #FCD765, 0 0 30px #FCD765;
+  animation: sparkle-float linear infinite;
+}
+
+.particle.firefly {
+  background: #FFE380;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 20px #FFE380, 0 0 40px #FCD765;
+  animation: firefly-dance 4s ease-in-out infinite;
+}
+
+.particle.dust {
+  background: rgba(252, 215, 101, 0.4);
+  width: 3px;
+  height: 3px;
+  animation: float-particle linear infinite;
+}
+
+@keyframes sparkle-float {
+  0% {
+    transform: translateY(100vh) scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(50vh) scale(1.5) rotate(180deg);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-20vh) scale(0) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes firefly-dance {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translate(30px, -40px) scale(1.2);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-20px, -80px) scale(0.8);
+    opacity: 0.5;
+  }
+  75% {
+    transform: translate(40px, -50px) scale(1.5);
+    opacity: 1;
+  }
+}
+
+/* Floating Treasure Chest */
+.floating-treasure {
+  position: absolute;
+  top: 15%;
+  right: 10%;
+  z-index: 3;
+  animation: treasure-bounce 3s ease-in-out infinite;
+}
+
+.treasure-gem {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #FCD765 0%, #F4C430 50%, #B96C25 100%);
+  position: relative;
+  transform: rotate(45deg);
+  box-shadow: 
+    0 0 20px rgba(252, 215, 101, 0.6),
+    0 0 40px rgba(252, 215, 101, 0.4),
+    inset 0 0 20px rgba(255, 255, 255, 0.3);
+  animation: gem-rotate 4s ease-in-out infinite;
+}
+
+.treasure-gem::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 30%;
+  height: 30%;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  filter: blur(2px);
+}
+
+@keyframes gem-rotate {
+  0%, 100% {
+    transform: rotate(45deg) translateY(0) scale(1);
+    box-shadow: 
+      0 0 20px rgba(252, 215, 101, 0.6),
+      0 0 40px rgba(252, 215, 101, 0.4);
+  }
+  50% {
+    transform: rotate(45deg) translateY(-20px) scale(1.1);
+    box-shadow: 
+      0 0 40px rgba(252, 215, 101, 0.8),
+      0 0 60px rgba(252, 215, 101, 0.6);
+  }
+}
+
+@keyframes treasure-bounce {
+  0%, 100% {
+    transform: translateY(0) rotate(-5deg);
+  }
+  50% {
+    transform: translateY(-30px) rotate(5deg);
+  }
+}
+
+@keyframes treasure-glow {
+  0%, 100% {
+    filter: drop-shadow(0 10px 30px rgba(252, 215, 101, 0.6));
+  }
+  50% {
+    filter: drop-shadow(0 15px 50px rgba(252, 215, 101, 1));
+  }
+}
+
+/* Button Pulse Enhancement */
+.primary-game-btn {
+  animation: button-pulse 2s ease-in-out infinite;
+}
+
+@keyframes button-pulse {
+  0%, 100% {
+    box-shadow: 
+      0 5px 15px rgba(185, 108, 37, 0.5),
+      inset 0 1px 0 rgba(252, 215, 101, 0.3),
+      0 0 30px rgba(252, 215, 101, 0.2);
+  }
+  50% {
+    box-shadow: 
+      0 5px 20px rgba(185, 108, 37, 0.7),
+      inset 0 1px 0 rgba(252, 215, 101, 0.5),
+      0 0 50px rgba(252, 215, 101, 0.6);
+  }
+}
+
+/* Responsive - Hide treasure on mobile */
+@media (max-width: 768px) {
+  .floating-treasure {
+    display: none;
+  }
+  
+  .title-sparkles {
+    font-size: 1.5rem;
+  }
+}
+
+.mouse-trail-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.mouse-circle {
+  position: absolute;
+  /* width and height set dynamically via inline style */
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFFFFF 0%, #FCD765 30%, rgba(252, 215, 101, 0.6) 70%, transparent 100%);
+  box-shadow: 
+    0 0 30px rgba(252, 215, 101, 1),
+    0 0 60px rgba(252, 215, 101, 0.8),
+    0 0 90px rgba(252, 215, 101, 0.4);
+  pointer-events: none;
+  animation: circle-fade ease-out forwards;
+  /* duration set dynamically via inline style */
+  transform: translate(-50%, -50%);
+  filter: blur(0px);
+}
+
+@keyframes circle-fade {
+  0% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  30% {
+    opacity: 0.7;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}
+
+/* Optional: Throttle effect on mobile */
+@media (max-width: 768px) {
+  .mouse-sparkle {
+    font-size: 1rem;
+  }
+}

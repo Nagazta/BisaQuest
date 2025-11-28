@@ -1,24 +1,56 @@
-/* Register Card Wrapper */
+/* Prevent any scrolling */
+html, body {
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* Disable scrolling - fit in viewport */
+.login-page {
+  max-height: 100vh;
+  overflow: hidden;
+}
+
 .register-card-wrapper {
-  max-width: 900px;
+  max-width: 650px;
   display: flex;
   justify-content: center;
 }
 
+/* Register Card - Smaller background */
+.register-card {
+  background-image: url('../../assets/images/card.svg');
+  background-size: 190% 160%;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 1.5rem;
+  position: relative;
+  padding: 2rem 7rem 2rem 4rem;
+  max-height: 100vh;
+}
 
+.register-card .login-title {
+  padding-top: 4rem;
+  margin-bottom: 1rem;
+  font-size: 2.2rem;
+  margin-left: 15%;
+}
 
 /* Register Form Container */
 .register-form-container {
-  gap: 1.25rem;
+  
+  gap: 0.75rem;
 }
 
 /* Form Row - For side-by-side inputs */
 .form-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
-  width: 85%;
-  margin-left: 5px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.5rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 /* Form Group Small - For inputs in rows */
@@ -30,33 +62,72 @@
 
 /* Form Input Small */
 .form-input-small {
-  padding: 0.875rem 1rem;
+  padding: 0.8rem 1rem;
+  border: 3px solid #B96C25;
+  border-radius: 0.75rem;
   font-size: 0.9rem;
-  width: 80%;
+  color: #6B3E1D;
+  background-color: rgba(255, 254, 242, 0.9);
+  transition: all 0.3s ease;
+  font-family: inherit;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-input-small:focus {
+  outline: none;
+  border-color: #FCD765;
+  background-color: #FFFEF2;
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.1),
+    0 0 0 3px rgba(252, 215, 101, 0.3);
+}
+
+.form-input-small::placeholder {
+  color: #94785C;
+  opacity: 0.6;
 }
 
 /* Select Dropdown */
 .form-select {
+  padding: 0.75rem 1rem;
+  border: 3px solid #B96C25;
+  border-radius: 0.75rem;
+  font-size: 0.9rem;
+  color: #6B3E1D;
+  background-color: rgba(255, 254, 242, 0.9);
+  transition: all 0.3s ease;
+  font-family: inherit;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B3E1D' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 1rem center;
-  padding-right: 2.5rem;
+  padding-right: 2rem;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: #FCD765;
+  background-color: #FFFEF2;
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.1),
+    0 0 0 3px rgba(252, 215, 101, 0.3);
 }
 
 /* Register Button */
 .register-button {
   margin-top: 1rem;
-    width: 120px;
-    height: 45px;
-    align-self: center;
-    margin-right: 90px;
-
+  width: 120px;
+  height: 45px;
+  align-self: center;
+  margin-right: 0;
 }
 .register-text.register-link-text {
-    margin-right: 90px;
- 
+  margin-right: 0;
+  text-align: center;
 }
 
 /* Full Name Row - 3 columns */
@@ -105,9 +176,10 @@
     gap: 0.75rem;
   }
   
-  .register-form-container {
-    gap: 1rem;
-  }
+ .register-form-container {
+  gap: 1.25rem;
+  padding: 0 1rem 2rem 1rem;
+}
 }
 
 /* Ensure labels and inputs are properly aligned */
@@ -136,5 +208,173 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
 @media (max-width: 768px) {
   .form-input-small[style] {
     margin-top: 0 !important;
+  }
+}
+
+/* Mouse Trail Effect */
+.mouse-trail-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.mouse-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFFFFF 0%, #FCD765 30%, rgba(252, 215, 101, 0.6) 70%, transparent 100%);
+  box-shadow: 
+    0 0 30px rgba(252, 215, 101, 1),
+    0 0 60px rgba(252, 215, 101, 0.8),
+    0 0 90px rgba(252, 215, 101, 0.4);
+  pointer-events: none;
+  animation: circle-fade ease-out forwards;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes circle-fade {
+  0% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  30% {
+    opacity: 0.7;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}
+
+@media (max-width: 768px) {
+  .mouse-trail-container {
+    display: none;
+  }
+}
+
+/* Standalone Relationship Field */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.form-group .form-select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Particle Effects - Updated z-index for register layout */
+.particle-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: #FCD765;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #FCD765;
+  animation: float-particle linear infinite;
+  opacity: 0;
+}
+
+@keyframes float-particle {
+  0% {
+    transform: translateY(100vh) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) scale(1);
+    opacity: 0;
+  }
+}
+
+.particle.sparkle {
+  background: linear-gradient(45deg, #FCD765, #FFFFFF);
+  width: 6px;
+  height: 6px;
+  box-shadow: 0 0 15px #FCD765, 0 0 30px #FCD765;
+  animation: sparkle-float linear infinite;
+}
+
+.particle.firefly {
+  background: #FFE380;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 20px #FFE380, 0 0 40px #FCD765;
+  animation: firefly-dance 4s ease-in-out infinite;
+}
+
+.particle.dust {
+  background: rgba(252, 215, 101, 0.4);
+  width: 3px;
+  height: 3px;
+  animation: float-particle linear infinite;
+}
+
+@keyframes sparkle-float {
+  0% {
+    transform: translateY(100vh) scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(50vh) scale(1.5) rotate(180deg);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-20vh) scale(0) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes firefly-dance {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translate(30px, -40px) scale(1.2);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-20px, -80px) scale(0.8);
+    opacity: 0.5;
+  }
+  75% {
+    transform: translate(40px, -50px) scale(1.5);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .particle-container {
+    display: none;
   }
 }
