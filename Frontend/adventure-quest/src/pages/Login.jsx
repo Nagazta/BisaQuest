@@ -3,9 +3,11 @@ import "../pages/styles/Login.css";
 import boy from "../assets/images/characters/Boy.png";
 import girl from "../assets/images/characters/Girl.png";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login, user } = useAuth();
 
   const [particles] = useState(() => {
     return [...Array(30)].map((_, i) => ({
@@ -19,6 +21,19 @@ const Login = () => {
   });
 
   const [mouseTrail, setMouseTrail] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'teacher') {
+        navigate('/teacher-dashboard');
+      } else if (user.role === 'student') {
+        navigate('/dashboard');
+      }
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     let trailId = 0;
@@ -69,23 +84,50 @@ const Login = () => {
       ...prev,
       [name]: value,
     }));
+    if (error) setError("");
   };
 
-  const handleSubmit = (e) => {
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
+  setLoading(true);
+
+  try {
+    // Use username as email (or convert if needed)
+    const email = formData.username.includes('@') 
+      ? formData.username 
+      : `${formData.username}@adventurequest.com`;
+
+    const result = await login(email, formData.password);
+
+    if (result.success) {
+      // Navigate based on role
+      if (result.data.user.role === 'teacher') {
+        alert('Welcome Teacher! Dashboard coming soon...');
+        // navigate('/teacher-dashboard'); // Uncomment when ready
+      } else if (result.data.user.role === 'student') {
+        navigate('/dashboard');
+      }
+    } else {
+      setError(result.error || 'Login failed. Please check your credentials.');
+    }
+  } catch (err) {
+    setError('An unexpected error occurred. Please try again.');
+    console.error('Login error:', err);
+  } finally {
+    setLoading(false);
+  }
+};
+
+  const goToRegister = (e) => {
     e.preventDefault();
-    console.log("Login submitted:", formData);
-  };
-
-  const goToRegister = () => {
     navigate("/register");
   };
 
   return (
     <div className="login-page">
-      {/* Background Image - MUST BE FIRST */}
       <div className="login-background"></div>
 
-      {/* Animated particles/sparkles - MUST BE SECOND */}
       <div className="particle-container">
         {particles.map((particle) => (
           <div
@@ -101,7 +143,6 @@ const Login = () => {
         ))}
       </div>
 
-      {/* Mouse Trail - THIRD */}
       <div className="mouse-trail-container">
         {mouseTrail.map((particle) => (
           <div
@@ -118,7 +159,6 @@ const Login = () => {
         ))}
       </div>
 
-      {/* Characters - FOURTH */}
       <div className="character-container">
         <img
           src={boy}
@@ -136,10 +176,25 @@ const Login = () => {
         <div className="login-card">
           <h1 className="login-title">Login</h1>
 
-          <div className="login-form-container">
+          {error && (
+            <div style={{
+              background: 'linear-gradient(135deg, #ff6b6b, #ee5a6f)',
+              color: 'white',
+              padding: '1rem',
+              borderRadius: '0.75rem',
+              marginBottom: '1rem',
+              fontWeight: '600',
+              textAlign: 'center',
+              boxShadow: '0 4px 12px rgba(255, 107, 107, 0.3)'
+            }}>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="login-form-container">
             <div className="form-group">
               <label htmlFor="username" className="form-label">
-                Username
+                Username or Email
               </label>
               <input
                 type="text"
@@ -148,8 +203,9 @@ const Login = () => {
                 value={formData.username}
                 onChange={handleChange}
                 className="form-input-login"
-                placeholder="Enter your username"
+                placeholder="Enter your username or email"
                 required
+                disabled={loading}
               />
             </div>
 
@@ -166,14 +222,19 @@ const Login = () => {
                 className="form-input-login"
                 placeholder="Enter your password"
                 required
+                disabled={loading}
               />
               <a href="#forgot" className="forgot-password">
                 Forgot password
               </a>
             </div>
 
-            <button onClick={handleSubmit} className="login-button">
-              Login
+            <button 
+              type="submit" 
+              className="login-button"
+              disabled={loading}
+            >
+              {loading ? 'Logging in...' : 'Login'}
             </button>
 
             <p className="register-text">
@@ -186,7 +247,7 @@ const Login = () => {
                 Register here!
               </a>
             </p>
-          </div>
+          </form>
         </div>
       </div>
     </div>

@@ -1,0 +1,31 @@
+.btn {
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-primary {
+    color: #B96C25;
+    background-color: #FCD765;
+    border: 3px solid #B96C25;
+}
+
+.btn-primary:hover {
+    color: #FCD765;
+    background-color: #B96C25;
+    border: 3px solid #FCD765;
+}
