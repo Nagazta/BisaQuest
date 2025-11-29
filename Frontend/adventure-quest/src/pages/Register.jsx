@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import "../pages/styles/Login.css";
 import "../pages/styles/Register.css";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const Register = () => {
   const navigate = useNavigate();
+  const { register, user } = useAuth();
 
   const [particles] = useState(() => {
     return [...Array(30)].map((_, i) => ({
@@ -18,6 +20,19 @@ const Register = () => {
   });
 
   const [mouseTrail, setMouseTrail] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'teacher') {
+        navigate('/teacher-dashboard');
+      } else if (user.role === 'student') {
+        navigate('/dashboard');
+      }
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     let trailId = 0;
@@ -60,9 +75,7 @@ const Register = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    middleName: "",
-    relationship: "",
-    username: "",
+    teacherID: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -74,19 +87,82 @@ const Register = () => {
       ...prev,
       [name]: value,
     }));
+    if (error) setError("");
   };
 
-  const goToLogin = () => {
+  const goToLogin = (e) => {
+    e.preventDefault();
     navigate("/login");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Registration submitted:", formData);
+    setError("");
+
+    // Validation
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
+    if (!formData.email.includes('@')) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Pass teacherID instead of middleName
+      const result = await register(
+        formData.email,
+        formData.password,
+        formData.firstName,
+        formData.lastName,
+        formData.teacherID
+      );
+
+      if (result.success) {
+        alert("Register Sucessfuly! Navigating to login")
+        navigate('/login');
+      } else {
+        setError(result.error || 'Registration failed. Please try again.');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+      console.error('Registration error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="login-page">
+      {/* Background - FIRST */}
+      <div className="login-background"></div>
+
+      {/* Particles - SECOND */}
+      <div className="particle-container">
+        {particles.map((particle) => (
+          <div
+            key={particle.id}
+            className={`particle ${particle.type}`}
+            style={{
+              left: `${particle.left}%`,
+              animationDelay: `${particle.delay}s`,
+              animationDuration: `${particle.duration}s`,
+              top: `${particle.top}%`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Mouse Trail - THIRD */}
       <div className="mouse-trail-container">
         {mouseTrail.map((particle) => (
           <div
@@ -103,177 +179,153 @@ const Register = () => {
         ))}
       </div>
 
-      <div className="login-background"></div>
-
-      {/* Animated particles/sparkles */}
-      <div className="particle-container">
-        {particles.map((particle) => (
-          <div
-            key={particle.id}
-            className={`particle ${particle.type}`}
-            style={{
-              left: `${particle.left}%`,
-              animationDelay: `${particle.delay}s`,
-              animationDuration: `${particle.duration}s`,
-              top: `${particle.top}%`,
-            }}
-          />
-        ))}
-      </div>
-
-      <div className="login-card-wrapper register-card-wrapper">
-        <div className="login-card register-card">
+      {/* Register Card */}
+      <div className="register-card-wrapper">
+        <div className="register-card">
           <h1 className="login-title">Registration</h1>
 
-          <div className="login-form-container register-form-container">
+          {error && (
+            <div style={{
+              background: 'linear-gradient(135deg, #ff6b6b, #ee5a6f)',
+              color: 'white',
+              padding: '1rem',
+              borderRadius: '0.75rem',
+              marginBottom: '1rem',
+              fontWeight: '600',
+              textAlign: 'center',
+              boxShadow: '0 4px 12px rgba(255, 107, 107, 0.3)',
+              marginLeft: '4rem',
+              marginRight: '4rem'
+            }}>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="register-form-container">
+            {/* Full Name Row */}
             <div className="form-row">
               <div className="form-group-small">
-                <label htmlFor="firstName" className="form-label">
-                  Full name
-                </label>
+                <label className="form-label">First Name</label>
                 <input
                   type="text"
-                  id="firstName"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
-                  className="form-input form-input-small"
-                  placeholder="Enter First Name"
+                  className="form-input-small"
+                  placeholder="First Name"
                   required
+                  disabled={loading}
                 />
               </div>
-
               <div className="form-group-small">
+                <label className="form-label">Last Name</label>
                 <input
                   type="text"
-                  id="lastName"
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
-                  className="form-input form-input-small"
-                  placeholder="Enter Last Name"
+                  className="form-input-small"
+                  placeholder="Last Name"
                   required
-                  style={{ marginTop: "1.5rem" }}
+                  disabled={loading}
                 />
               </div>
-
               <div className="form-group-small">
+                <label className="form-label">Teacher ID</label>
                 <input
                   type="text"
-                  id="middleName"
-                  name="middleName"
-                  value={formData.middleName}
+                  name="teacherID"
+                  value={formData.teacherID}
                   onChange={handleChange}
-                  className="form-input form-input-small"
-                  placeholder="Enter Middle Name"
-                  style={{ marginTop: "1.5rem" }}
+                  className="form-input-small"
+                  placeholder="Teacher ID (Optional)"
+                  disabled={loading}
                 />
               </div>
             </div>
 
+            {/* Email */}
             <div className="form-group">
-              <label htmlFor="relationship" className="form-label">
-                Relationship to student
-              </label>
-              <select
-                id="relationship"
-                name="relationship"
-                value={formData.relationship}
+              <label className="form-label">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
                 onChange={handleChange}
-                className="form-input form-select"
+                className="form-input-small"
+                placeholder="Enter Email"
                 required
-              >
-                <option value="">Select relationship</option>
-                <option value="parent">Parent</option>
-                <option value="guardian">Guardian</option>
-                <option value="teacher">Teacher</option>
-                <option value="student">Student</option>
-                <option value="other">Other</option>
-              </select>
+                disabled={loading}
+              />
             </div>
 
+            {/* Password Row */}
             <div className="form-row">
               <div className="form-group-small">
-                <label htmlFor="username" className="form-label">
-                  Username
-                </label>
-                <input
-                  type="text"
-                  id="username"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  className="form-input form-input-small"
-                  placeholder="Enter Username"
-                  required
-                />
-              </div>
-
-              <div className="form-group-small">
-                <label htmlFor="email" className="form-label">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="form-input form-input-small"
-                  placeholder="Enter Email"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="form-row">
-              <div className="form-group-small">
-                <label htmlFor="password" className="form-label">
-                  Password
-                </label>
+                <label className="form-label">Password</label>
                 <input
                   type="password"
-                  id="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="form-input form-input-small"
+                  className="form-input-small"
                   placeholder="Enter Password"
                   required
+                  disabled={loading}
                 />
               </div>
-
               <div className="form-group-small">
-                <label htmlFor="confirmPassword" className="form-label">
-                  Confirm Password
-                </label>
+                <label className="form-label">Confirm Password</label>
                 <input
                   type="password"
-                  id="confirmPassword"
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="form-input form-input-small"
+                  className="form-input-small"
                   placeholder="Confirm Password"
                   required
+                  disabled={loading}
                 />
               </div>
             </div>
 
+            {/* Register Button */}
             <button
-              onClick={handleSubmit}
+              type="submit"
               className="login-button register-button"
+              disabled={loading}
             >
-              Register
+              {loading ? 'Registering...' : 'Register'}
             </button>
 
+            {/* Login Link */}
             <p className="register-text register-link-text">
               Already have an account?{" "}
               <a href="#login" className="register-link" onClick={goToLogin}>
                 Login here!
               </a>
             </p>
-          </div>
+
+            {/* Important Notice */}
+            <div style={{
+              marginTop: '1rem',
+              padding: '1rem',
+              background: 'linear-gradient(135deg, #FFF9E6 0%, #FFF4D1 100%)',
+              border: '3px solid #FCD765',
+              borderRadius: '0.75rem',
+              fontSize: '0.85rem',
+              color: '#6B3E1D'
+            }}>
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                <span style={{ fontSize: '1.2rem' }}>⚠</span>
+                <div>
+                  <strong style={{ display: 'block', marginBottom: '0.25rem' }}>Important Notice</strong>
+                  <p style={{ margin: '0.25rem 0' }}>Only teachers can create accounts.</p>
+                  <p style={{ margin: '0.25rem 0' }}>Students will be created by their teachers after registration is complete.</p>
+                </div>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>
