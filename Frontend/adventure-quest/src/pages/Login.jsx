@@ -88,16 +88,18 @@ const Login = () => {
   };
 
   // Replace the handleSubmit function in Login.jsx:
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      const email = formData.username.includes("@")
-        ? formData.username
-        : `${formData.username}@adventurequest.com`;
+      let email = formData.username;
+
+      // If not an email, convert to BisaQuest student email
+      if (!formData.username.includes("@")) {
+        email = `${formData.username}@bisaquest.app`;
+      }
 
       const result = await login(email, formData.password);
 

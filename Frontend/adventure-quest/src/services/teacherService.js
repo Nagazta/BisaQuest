@@ -19,8 +19,6 @@ export const teacherService = {
     async createStudent(studentData) {
         try {
             const session = JSON.parse(localStorage.getItem('session'));
-            const [firstName, ...lastNameParts] = studentData.fullName.split(' ');
-            const lastName = lastNameParts.join(' ');
 
             const response = await fetch(`${API_URL}/create-student`, {
                 method: 'POST',
@@ -29,10 +27,8 @@ export const teacherService = {
                     'Authorization': `Bearer ${session.access_token}`,
                 },
                 body: JSON.stringify({
-                    email: studentData.email,
-                    password: studentData.password,
-                    firstName,
-                    lastName
+                    fullname: studentData.fullname,
+                    studentId: studentData.studentId
                 }),
             });
 

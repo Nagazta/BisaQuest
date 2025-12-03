@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Add this
 import { useAuth } from "../../context/AuthContext";
 import { teacherService } from "../../services/teacherService";
 import AddStudentModal from "../../components/AddStudentModal";
 import StudentCard from "../../components/StudentCard";
+import SuccessNotification from "../../components/SuccessNotification";
+import Button from "../../components/Button"; // Add this
 import "./styles/TeacherDashboard.css";
 
 const TeacherDashboard = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [students, setStudents] = useState([]);
   const [statistics, setStatistics] = useState({
     totalStudents: 0,
@@ -19,6 +23,8 @@ const TeacherDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     fetchDashboardData();
@@ -43,6 +49,10 @@ const TeacherDashboard = () => {
     const result = await teacherService.createStudent(studentData);
     if (result.success) {
       setShowAddModal(false);
+      setSuccessMessage(
+        `Student "${studentData.fullname}" added successfully!`
+      );
+      setShowSuccess(true);
       fetchDashboardData();
     }
     return result;
@@ -67,6 +77,14 @@ const TeacherDashboard = () => {
     <div className="teacher-dashboard">
       <div className="teacher-dashboard-bg"></div>
 
+      {/* SUCCESS NOTIFICATION */}
+      {showSuccess && (
+        <SuccessNotification
+          message={successMessage}
+          onClose={() => setShowSuccess(false)}
+        />
+      )}
+
       {/* HEADER */}
       <header className="dashboard-header">
         <h1 className="dashboard-title">Teacher Dashboard</h1>
@@ -74,13 +92,20 @@ const TeacherDashboard = () => {
         <div className="teacher-profile">
           <span>{user?.fullname || "Teacher"}</span>
           <div className="profile-avatar"></div>
+          <Button
+            variant="danger"
+            onClick={async () => {
+              await logout();
+              navigate("/login");
+            }}
+          >
+            Logout
+          </Button>
         </div>
       </header>
 
       <div className="content-wrapper">
-        {/* ========================
-              STATS + TOP STUDENTS
-          ======================== */}
+        {/* STATS + TOP STUDENTS */}
         <div className="stats-and-top">
           <div className="stats-grid">
             <div className="stat-card">
@@ -114,9 +139,7 @@ const TeacherDashboard = () => {
           </div>
         </div>
 
-        {/* ========================
-              MY STUDENTS SECTION
-          ======================== */}
+        {/* MY STUDENTS SECTION */}
         <div className="students-section">
           <div className="section-header">
             <h2>My Students</h2>

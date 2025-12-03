@@ -27,8 +27,8 @@
   flex-direction: column;
   align-items: center;
 
-  padding-top: 120px;        /* Pull title down under top corners */
-  padding-bottom: 80px;
+  padding-top: 120px;        
+  padding-bottom: 100px;
   padding-left: 40px;
   padding-right: 40px;
 
@@ -113,6 +113,12 @@
   transform: translateY(-3px);
 }
 
+.create-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
 
 /* ===========================
    ERROR MESSAGE
@@ -128,4 +134,97 @@
   padding: 0.6rem;
   border-radius: 10px;
   font-weight: 600;
+}
+
+
+/* ===========================
+   CREDENTIALS MODAL (SUCCESS)
+=========================== */
+.credentials-modal {
+  padding-top: 150px;
+  text-align: center;
+}
+
+.credentials-modal h2 {
+  color: #2D8B4E;
+  font-size: 2.2rem;
+  margin-bottom: 30px;
+}
+
+.credentials-box {
+  background: rgba(255,255,255,0.9);
+  border: 3px solid #C89F5D;
+  border-radius: 16px;
+  padding: 30px;
+  margin: 30px auto;
+  width: 520px;
+  max-width: 90%;
+  text-align: left;
+  box-shadow: 0px 4px 0px #C89F5D;
+}
+
+.credentials-box p {
+  margin: 16px 0;
+  font-size: 1.1rem;
+  color: #5A3A00;
+  font-weight: 600;
+}
+
+.credentials-box strong {
+  color: #2D8B4E;
+  margin-right: 12px;
+  display: inline-block;
+  min-width: 110px;
+}
+
+.credentials-notice {
+  background: rgba(255, 243, 205, 0.95);
+  border: 3px solid #F8C400;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 24px auto;
+  width: 520px;
+  max-width: 90%;
+  color: #5A3A00;
+  font-size: 0.95rem;
+  font-weight: 700;
+  box-shadow: 0px 3px 0px #C89F5D;
+}
+
+.credentials-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.copy-btn, .close-btn {
+  padding: 14px 32px;
+  border: 3px solid #C89F5D;
+  border-radius: 2rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  box-shadow: 0px 6px 0px #5A3A00;
+}
+
+.copy-btn {
+  background: #2D8B4E;
+  color: white;
+}
+
+.copy-btn:hover {
+  background: #257A42;
+  transform: translateY(-3px);
+}
+
+.close-btn {
+  background: #8B7355;
+  color: white;
+}
+
+.close-btn:hover {
+  background: #6F5B42;
+  transform: translateY(-3px);
 }

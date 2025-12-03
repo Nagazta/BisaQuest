@@ -159,3 +159,21 @@
 .btn-arrow img {
   pointer-events: none;
 }
+
+.btn-danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: 3px solid #991b1b;
+  box-shadow: 0px 4px 0px #7f1d1d;
+}
+
+.btn-danger:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 0px #7f1d1d;
+}
+
+.btn-danger:active {
+  transform: translateY(2px);
+  box-shadow: 0px 2px 0px #7f1d1d;
+}

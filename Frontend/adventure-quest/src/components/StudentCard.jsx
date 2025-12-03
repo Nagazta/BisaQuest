@@ -31,11 +31,6 @@ const StudentCard = ({ student }) => {
           </div>
         ))}
       </div>
-
-      <div className="card-actions">
-        <button className="view-btn">View</button>
-        <div className="last-activity">Last Activity: Vocabulary Quest</div>
-      </div>
     </div>
   );
 };

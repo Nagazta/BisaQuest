@@ -4,12 +4,12 @@ import "./styles/AddStudentModal.css";
 const AddStudentModal = ({ onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     fullName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+    studentId: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showCredentials, setShowCredentials] = useState(false);
+  const [credentials, setCredentials] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -20,19 +20,85 @@ const AddStudentModal = ({ onClose, onSubmit }) => {
     e.preventDefault();
     setError("");
 
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+    if (!formData.fullName.trim()) {
+      setError("Full name is required");
+      return;
+    }
+
+    if (!formData.studentId.trim()) {
+      setError("Student ID is required");
       return;
     }
 
     setLoading(true);
-    const result = await onSubmit(formData);
+    const result = await onSubmit({
+      fullname: formData.fullName,
+      studentId: formData.studentId,
+    });
     setLoading(false);
 
-    if (!result.success) {
+    if (result.success) {
+      // Show credentials popup
+      setCredentials({
+        fullname: formData.fullName,
+        studentId: formData.studentId,
+        password: formData.studentId, // Password = Student ID
+      });
+      setShowCredentials(true);
+    } else {
       setError(result.error || "Failed to create student");
     }
   };
+
+  const handleCopyCredentials = () => {
+    const text = `Student Login Credentials\nName: ${credentials.fullname}\nStudent ID: ${credentials.studentId}\nPassword: ${credentials.password}`;
+    navigator.clipboard.writeText(text);
+    alert("Credentials copied to clipboard!");
+  };
+
+  const handleClose = () => {
+    setShowCredentials(false);
+    setFormData({ fullName: "", studentId: "" });
+    onClose();
+  };
+
+  if (showCredentials) {
+    return (
+      <div className="modal-overlay" onClick={handleClose}>
+        <div
+          className="modal-content credentials-modal"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <h2>✓ STUDENT CREATED!</h2>
+
+          <div className="credentials-box">
+            <p>
+              <strong>Name:</strong> {credentials.fullname}
+            </p>
+            <p>
+              <strong>Student ID:</strong> {credentials.studentId}
+            </p>
+            <p>
+              <strong>Password:</strong> {credentials.password}
+            </p>
+          </div>
+
+          <div className="credentials-notice">
+            💡 Password is the same as Student ID
+          </div>
+
+          <div className="credentials-actions">
+            <button className="copy-btn" onClick={handleCopyCredentials}>
+              Copy Credentials
+            </button>
+            <button className="close-btn" onClick={handleClose}>
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -51,26 +117,10 @@ const AddStudentModal = ({ onClose, onSubmit }) => {
             required
           />
           <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="password"
-            name="confirmPassword"
-            placeholder="Confirm Password"
-            value={formData.confirmPassword}
+            type="text"
+            name="studentId"
+            placeholder="Student ID (e.g., 2024-001)"
+            value={formData.studentId}
             onChange={handleChange}
             required
           />

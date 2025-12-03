@@ -9,7 +9,6 @@
   padding-bottom: 3rem;
 }
 
-
 /* FIXED BACKGROUND */
 .teacher-dashboard-bg {
   position: fixed;
@@ -18,7 +17,7 @@
   z-index: -1;
 }
 
-/* HEADER (MATCH FIGMA – THIN & CLEAN) */
+/* HEADER */
 .dashboard-header {
   width: 100%;
   max-width: 1400px;
@@ -30,12 +29,11 @@
   justify-content: space-between;
   align-items: center;
 
-  border-bottom: 3px solid #78350f;  /* Figma underline */
+  border-bottom: 3px solid #78350f;
   background: transparent;
   box-shadow: none;
   border-radius: 0;
 }
-
 
 .dashboard-title {
   font-size: 2rem;
@@ -44,14 +42,24 @@
   margin: 0;
 }
 
-
 .teacher-profile {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: 1rem;
   font-size: 1.2rem;
   color: #78350f;
   font-weight: 700;
+}
+
+.teacher-profile span {
+  margin-right: 0.5rem;
+}
+
+.teacher-profile .btn {
+  padding: 0.5rem 1.2rem;
+  font-size: 0.95rem;
+  height: auto;
+  min-width: auto;
 }
 
 .profile-avatar {
@@ -62,7 +70,6 @@
   border: 3px solid white;
 }
 
-
 /* WRAPPER FOR ALL CONTENT BELOW HEADER */
 .content-wrapper {
   width: 100%;
@@ -70,14 +77,11 @@
   margin: 0 auto;
 }
 
-/* ===========================
-   SMALL FIGMA-SIZED STAT CARDS
-=========================== */
+/* STATS AND TOP PERFORMERS */
 .stats-and-top {
   display: grid;
   grid-template-columns: 420px 1fr; 
   gap: 2rem;
-
   width: 100%;
   max-width: 1400px;
   margin: 0 auto 2rem auto;
@@ -91,24 +95,24 @@
   justify-content: start;        
 }
 
-/* SMALL CARD SIZE — EXACTLY LIKE YOUR FIGMA */
 .stat-card {
   background: linear-gradient(#f4e7c6, #e3c99d);
   border: 3px solid #78350f;
   border-radius: 14px;
   box-shadow: 0px 4px 0px #5a2c0c;
-
   width: 180px;
   height: 130px;
-
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
   color: #5a2c0c;
+  transition: transform 0.2s ease;
 }
 
+.stat-card:hover {
+  transform: translateY(-3px);
+}
 
 .stat-value {
   font-size: 2rem;
@@ -123,79 +127,54 @@
   color: #5a2c0c;
 }
 
-
-/* TOP PERFORMERS MATCH Figma SIZE */
+/* TOP PERFORMERS */
 .top-performers-card {
   background: linear-gradient(#f4e7c6, #e3c99d);
   border: 3px solid #78350f;
-  border-radius: 14px;
+  border-radius: 16px;
   box-shadow: 0px 4px 0px #5a2c0c;
-
-  width: 450px;
+  width: 420px;
   height: 300px;
-
   padding: 1.6rem;
   color: #5a2c0c;
-
   display: flex;
   flex-direction: column;
   align-items: center;
-  
 }
-
-/* TOP PERFORMERS MATCH Figma SIZE */
-.top-performers-card {
-  background-color: #fbbf24;
-  border: 3px solid #78350f;
-  border-radius: 16px;
-  box-shadow: 0px 4px 0px #78350f;
-
-  width: 420px;    /* NOT full responsive — perfect Figma width */
-  height: 300px;   /* Smaller height */
-
-  padding: 1.2rem;
-  color: #78350f;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-
 
 .top-performers-card h3 {
   font-size: 1.6rem;
   font-weight: 900;
   text-align: center;
   margin-bottom: 1.2rem;
+  color: #78350f;
 }
 
 .top-performers-card ol {
   list-style: decimal;
   padding-left: 1.5rem;
+  width: 100%;
 }
 
 .top-performers-card li {
   font-size: 1.15rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
+  color: #5a2c0c;
 }
 
-/* ===========================
-      STUDENTS SECTION
-=========================== */
+/* STUDENTS SECTION */
 .students-section {
   background: rgba(255,255,255,0.75);
   padding: 2rem 2.5rem;
   border: 3px solid #78350f;
   border-radius: 20px;
   box-shadow: 0px 4px 0px #78350f;
-
   width: 100%;
   max-width: 1350px;
   margin: 0 auto 3rem auto;
 }
 
-/* HEADER ROW: TITLE + BUTTONS */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -215,28 +194,24 @@
   gap: 1rem;
 }
 
-/* ADD STUDENT BUTTON */
 .add-student-btn {
-  background: linear-gradient(#f9d86a, #f8c23c); /* soft parchment gold */
+  background: linear-gradient(#fbbf24, #f59e0b);
   border: 3px solid #78350f;
   padding: 0.65rem 1.6rem;
   border-radius: 20px;
-
   font-weight: 800;
   font-size: 1rem;
   color: #5a2c0c;
-
   box-shadow: 0px 4px 0px #5a2c0c;
   cursor: pointer;
   transition: 0.15s ease;
 }
 
 .add-student-btn:hover {
-  background: linear-gradient(#fbe08a, #f7ba2a); 
+  background: linear-gradient(#fcd34d, #fbbf24);
   transform: translateY(-3px);
 }
 
-/* SEARCH INPUT */
 .search-input {
   background: #fffef5;
   border: 3px solid #78350f;
@@ -244,7 +219,6 @@
   font-size: 1rem;
   border-radius: 20px;
   width: 240px;
-
   color: #5a2c0c;
   font-weight: 600;
 }
@@ -253,35 +227,32 @@
   color: #9b7a52;
 }
 
-
-/* STUDENT CARD GRID (3 CARDS PER ROW) */
+/* STUDENT CARD GRID */
 .students-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 3rem;
-  padding: 1rem 1rem;
+  grid-template-columns: repeat(2, 1fr);  /* 2 cards = bigger */
+  gap: 2.5rem;
+  padding: 1rem 0.5rem;
 }
 
-/* ===========================
-      PAGINATION (ARROWS)
-=========================== */
+/* PAGINATION WITH ARROWS */
 .pagination {
-  margin-top: 2.2rem;
+  margin-top: 2.5rem;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 3rem;
 }
 
-/* LEFT/RIGHT ARROWS */
 .page-arrow {
-  width: 90px;
-  height: 70px;
+  width: 80px;
+  height: 80px;
   background: url('../../../assets/images/arrow.png') no-repeat center;
   background-size: contain;
   border: none;
   cursor: pointer;
   transition: transform 0.2s ease;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
 }
 
 .page-arrow.right {
@@ -289,12 +260,25 @@
 }
 
 .page-arrow:hover:not(:disabled) {
-  transform: scale(1.12);
+  transform: scale(1.15);
+}
+
+.page-arrow.right:hover:not(:disabled) {
+  transform: scaleX(-1) scale(1.15);
+}
+
+.page-arrow:active:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.page-arrow.right:active:not(:disabled) {
+  transform: scaleX(-1) scale(1.05);
 }
 
 .page-arrow:disabled {
-  opacity: 0.4;
+  opacity: 0.3;
   cursor: not-allowed;
+  filter: grayscale(1) drop-shadow(0 2px 3px rgba(0, 0, 0, 0.1));
 }
 
 .page-number {
@@ -303,7 +287,20 @@
   color: #78350f;
   background: #fbbf24;
   border: 3px solid #78350f;
-  padding: 0.5rem 1.4rem;
+  padding: 0.6rem 1.6rem;
   border-radius: 20px;
-  box-shadow: 0px 4px 0px #78350f;
+  box-shadow: 0px 4px 0px #5a2c0c;
+  min-width: 80px;
+  text-align: center;
+}
+
+/* LOADING STATE */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #78350f;
 }
