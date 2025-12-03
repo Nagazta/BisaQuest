@@ -1,0 +1,82 @@
+/* Base container - no positioning by default */
+.npc-character-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Instruction page variant - positioned absolutely with animation */
+.npc-character-container.instruction {
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -70%);
+  z-index: 5;
+}
+
+/* Modal variant - centered, smaller, no animation */
+.npc-character-container.modal {
+  width: 120px;
+  height: 120px;
+  margin: 10px 0;
+}
+
+/* Avatar variant - small size for cards */
+.npc-character-container.avatar {
+  width: 80px;
+  height: 80px;
+}
+
+/* Base image styling */
+.npc-character-image {
+  width: 180px;
+  height: auto;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+  image-rendering: pixelated;
+}
+
+/* Instruction variant image */
+.npc-character-container.instruction .npc-character-image {
+  width: 300px;
+  height: 500px;
+}
+
+/* Modal variant image */
+.npc-character-container.modal .npc-character-image {
+  margin-top: 40px;
+  width: 150%;
+  height: auto;
+  margin-left: 160%;
+}
+
+/* Avatar variant image */
+.npc-character-container.avatar .npc-character-image {
+  width: 100%;
+  height: auto;
+}
+
+/* Bobbing animation for modal */
+@keyframes bobAvatar {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@media (max-width: 768px) {
+  .npc-character-container.instruction .npc-character-image {
+    width: 140px;
+  }
+
+  .npc-character-container.modal {
+    width: 100px;
+    height: 100px;
+  }
+
+  .npc-character-container.avatar {
+    width: 60px;
+    height: 60px;
+  }
+}

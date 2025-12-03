@@ -159,3 +159,52 @@
 .btn-arrow img {
   pointer-events: none;
 }
+
+
+/* Secondary Button Variant */
+.btn-secondary {
+  background-color: #e5e7eb;
+  border: 3px solid #6b7280;
+  border-radius: 12px;
+  padding: 12px 32px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #374151;
+  min-width: 140px;
+  font-family: 'Georgia', serif;
+}
+
+.btn-secondary:hover {
+  background-color: #d1d5db;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Danger Button Variant */
+.btn-danger {
+  background-color: #dc2626;
+  border: 3px solid #991b1b;
+  border-radius: 12px;
+  padding: 12px 32px;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  min-width: 140px;
+  font-family: 'Georgia', serif;
+}
+
+.btn-danger:hover {
+  background-color: #b91c1c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(185, 28, 28, 0.4);
+}
+
+.btn-danger:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(185, 28, 28, 0.4);
+}
