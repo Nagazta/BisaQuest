@@ -11,6 +11,12 @@
   width: 200px;
   z-index: 10;
 }
+.progress-bar-wrapper.environment {
+  position: absolute;
+  left: 40px;
+  width: 200px;
+  z-index: 10;
+}
 
 /* Label for instruction variant */
 .progress-bar-label {

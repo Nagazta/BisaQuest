@@ -7,6 +7,8 @@ import CharacterSelection from "./pages/Student/CharacterSelectionPage";
 import LanguageSelectionPage from "./pages/student/LanguageSelectionPage";
 import InstructionsPage from "./pages/student/InstructionsPage";
 
+import VillagePage from "./pages/vocabulary/VillagePage";
+
 import TeacherDashboard from "./pages/Teacher/TeacherDashboard";
 import { useAuth } from "./context/AuthContext";
 import "./App.css";
@@ -27,6 +29,7 @@ function App() {
       <Route path="/student/characterSelection" element={<CharacterSelection/>}/>
       <Route path="/student/languageSelection" element={<LanguageSelectionPage/>}/>
       <Route path="/student/instructions" element={<InstructionsPage/>}/>
+      <Route path="/student/village" element={<VillagePage/>}/>
       <Route
         path="/dashboard"
         element={
