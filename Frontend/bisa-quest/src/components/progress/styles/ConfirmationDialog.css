@@ -1,0 +1,87 @@
+.confirmation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  animation: fadeIn 0.2s ease;
+}
+
+.confirmation-dialog {
+  max-width: 400px;
+  width: 90%;
+  animation: scaleIn 0.2s ease;
+}
+
+.confirmation-border {
+  background-image: url('../../../assets/images/cards.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  padding: 40px 35px;
+  border-radius: 16px;
+}
+
+.confirmation-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.confirmation-title {
+  font-family: 'Georgia', serif;
+  font-size: 24px;
+  font-weight: bold;
+  color: #b91c1c;
+  text-align: center;
+  margin: 0;
+}
+
+.confirmation-message {
+  font-family: 'Georgia', serif;
+  font-size: 16px;
+  color: #5D4037;
+  text-align: center;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.confirmation-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.confirmation-btn {
+  min-width: 120px;
+  padding: 10px 24px;
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .confirmation-border {
+    padding: 35px 30px;
+  }
+
+  .confirmation-title {
+    font-size: 20px;
+  }
+
+  .confirmation-message {
+    font-size: 15px;
+  }
+
+  .confirmation-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .confirmation-btn {
+    width: 100%;
+  }
+}

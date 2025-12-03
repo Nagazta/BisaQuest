@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ProgressBar from '../../components/ProgressBar'; // Your existing component!
+import ProgressBar from '../../components/ProgressBar';
 import NPCCharacter from '../../components/NPCCharacter';
+import Oldman from '../../assets/images/characters/oldman.png'
 import DialogueBox from '../../components/instructions/DialogueBox';
 import Button from '../../components/Button';
 import '../student/styles/InstructionsPage.css';
@@ -14,9 +15,11 @@ const InstructionsPage = () => {
   const instructions = [
     {
       text: "Welcome, brave adventurer! Your quest begins here in the village. Complete each challenge to unlock new areas and grow stronger.",
+      progress: 0
     },
     {
       text: "Listen carefully to the instructions. Each module will test your knowledge and skills. Don't worry, I'll guide you every step of the way!",
+      progress: 50
     }
   ];
 
@@ -34,7 +37,6 @@ const InstructionsPage = () => {
 
   return (
     <div className="instructions-page">
-
       <ProgressBar 
         progress={instructions[currentStep].progress} 
         variant="instruction"
@@ -49,8 +51,12 @@ const InstructionsPage = () => {
         ← Back
       </Button>
 
-     
-      <NPCCharacter characterImage="/assets/images/npc-wizard.png" />
+      {/* Using NPCCharacter with instruction variant */}
+      <NPCCharacter 
+        characterImage={Oldman}
+        variant="instruction"
+        alt="The Guide"
+      />
 
       <DialogueBox
         title="The Guide"
