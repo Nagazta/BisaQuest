@@ -132,3 +132,30 @@
 .btn-back:active {
     transform: scale(0.98);
 }
+
+/* Arrow Button Variant */
+.btn-arrow {
+  background: transparent;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-arrow:hover:not(:disabled) {
+  transform: translateX(5px);
+}
+
+.btn-arrow:active:not(:disabled) {
+  transform: translateX(8px);
+}
+
+.btn-arrow:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-arrow img {
+  pointer-events: none;
+}

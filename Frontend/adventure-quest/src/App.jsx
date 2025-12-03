@@ -5,6 +5,8 @@ import Register from "./pages/Register";
 import StudentDashboard from "./pages/Student/StudentDashboard";
 import CharacterSelection from "./pages/Student/CharacterSelectionPage";
 import LanguageSelectionPage from "./pages/student/LanguageSelectionPage";
+import InstructionsPage from "./pages/student/InstructionsPage";
+
 import TeacherDashboard from "./pages/Teacher/TeacherDashboard";
 import { useAuth } from "./context/AuthContext";
 import "./App.css";
@@ -24,6 +26,7 @@ function App() {
       <Route path="/dashboard" element={<StudentDashboard />} />
       <Route path="/student/characterSelection" element={<CharacterSelection/>}/>
       <Route path="/student/languageSelection" element={<LanguageSelectionPage/>}/>
+      <Route path="/student/instructions" element={<InstructionsPage/>}/>
       <Route
         path="/dashboard"
         element={
