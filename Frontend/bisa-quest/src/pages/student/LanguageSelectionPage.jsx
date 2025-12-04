@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import LanguageSelectionCard from "../../components/language/LanguageSelectionCard";
-import ErrorNotification from "../../components/ErrorNotification";
+import Notification from "../../components/Notification";
 import IllustrationPanel from "../../components/language/IllustrationPanel";
 import SaveProgressModal from "../../components/progress/SaveProgressModal";
 import Button from "../../components/Button";
@@ -170,7 +170,12 @@ const LanguageSelectionPage = () => {
           <IllustrationPanel />
         </div>
 
-        <ErrorNotification message={error} onClose={() => setError(null)} />
+        <Notification
+          type="error"
+          title="Unable to Save Language"
+          message={error}
+          onClose={() => setError(null)}
+        />
       </div>
 
       <SaveProgressModal

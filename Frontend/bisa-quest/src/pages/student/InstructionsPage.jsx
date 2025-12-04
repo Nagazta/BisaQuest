@@ -1,50 +1,50 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import ProgressBar from '../../components/ProgressBar';
-import NPCCharacter from '../../components/NPCCharacter';
-import Oldman from '../../assets/images/characters/oldman.png'
-import DialogueBox from '../../components/instructions/DialogueBox';
-import Button from '../../components/Button';
-import '../student/styles/InstructionsPage.css';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ProgressBar from "../../components/ProgressBar";
+import NPCCharacter from "../../components/NPCCharacter";
+import Oldman from "../../assets/images/characters/oldman.png";
+import DialogueBox from "../../components/instructions/DialogueBox";
+import Button from "../../components/Button";
+import "../student/styles/InstructionsPage.css";
 
 const InstructionsPage = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
-  const [language] = useState('en');
+  const [language] = useState("en");
 
   const instructions = [
     {
       text: "Welcome, brave adventurer! Your quest begins here in the village. Complete each challenge to unlock new areas and grow stronger.",
-      progress: 0
+      progress: 0,
     },
     {
       text: "Listen carefully to the instructions. Each module will test your knowledge and skills. Don't worry, I'll guide you every step of the way!",
-      progress: 50
-    }
+      progress: 50,
+    },
   ];
 
   const handleNext = () => {
     if (currentStep < instructions.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      navigate('/student/quest');
+      navigate("/student/quest");
     }
   };
 
   const handleBack = () => {
-    navigate('/student/languageSelection');
+    navigate("/student/languageSelection");
   };
 
   return (
     <div className="instructions-page">
-      <ProgressBar 
-        progress={instructions[currentStep].progress} 
+      <ProgressBar
+        progress={instructions[currentStep].progress}
         variant="instruction"
         showLabel={true}
       />
 
-      <Button 
-        variant="back" 
+      <Button
+        variant="back"
         className="back-button-instructions"
         onClick={handleBack}
       >
@@ -52,7 +52,7 @@ const InstructionsPage = () => {
       </Button>
 
       {/* Using NPCCharacter with instruction variant */}
-      <NPCCharacter 
+      <NPCCharacter
         characterImage={Oldman}
         variant="instruction"
         alt="The Guide"
