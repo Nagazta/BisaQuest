@@ -28,7 +28,8 @@ export const teacherService = {
                 },
                 body: JSON.stringify({
                     fullname: studentData.fullname,
-                    studentId: studentData.studentId
+                    studentId: studentData.studentId,
+                    classCode: studentData.classCode
                 }),
             });
 

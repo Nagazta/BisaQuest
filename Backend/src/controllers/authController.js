@@ -256,3 +256,47 @@ export const createStudent = async (req, res) => {
         });
     }
 };
+
+export const loginStudent = async (req, res) => {
+    try {
+        const { studentId, classCode } = req.body;
+
+        if (!studentId || !classCode) {
+            return res.status(400).json({
+                success: false,
+                error: 'Please provide student ID and class code'
+            });
+        }
+
+        const { data: studentData, error: studentError } = await supabase
+            .from('student')
+            .select('*, users(*)')
+            .eq('student_id', studentId)
+            .eq('class_code', classCode)
+            .single();
+
+        if (studentError || !studentData) {
+            return res.status(401).json({
+                success: false,
+                error: 'Invalid student ID or class code'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Student login successful',
+            data: {
+                user: studentData.users,
+                roleData: studentData,
+                session: { user_id: studentData.users.user_id },
+            }
+        });
+
+    } catch (error) {
+        console.error('Student login error:', error);
+        res.status(401).json({
+            success: false,
+            error: error.message || 'Student login failed'
+        });
+    }
+};
