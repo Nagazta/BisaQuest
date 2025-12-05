@@ -7,6 +7,7 @@
   overflow-y: auto;
   height: 100vh;
   padding-bottom: 3rem;
+  font-family: 'Pixelify Sans', 'Trebuchet MS', sans-serif;
 }
 
 /* FIXED BACKGROUND */
@@ -40,6 +41,7 @@
   font-weight: 900;
   color: #78350f;
   margin: 0;
+  font-family: 'Pixelify Sans', cursive;
 }
 
 .teacher-profile {
@@ -60,6 +62,9 @@
   font-size: 0.95rem;
   height: auto;
   min-width: auto;
+  border-radius: 8px;
+  box-shadow: 0px 4px 0px #991b1b;
+  font-family: 'Pixelify Sans', cursive;
 }
 
 .profile-avatar {
@@ -72,9 +77,7 @@
 
 /* WRAPPER FOR ALL CONTENT BELOW HEADER */
 .content-wrapper {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
+  padding-bottom: 3rem;
 }
 
 /* STATS AND TOP PERFORMERS */
@@ -198,13 +201,14 @@
   background: linear-gradient(#fbbf24, #f59e0b);
   border: 3px solid #78350f;
   padding: 0.65rem 1.6rem;
-  border-radius: 20px;
+  border-radius: 8px;
   font-weight: 800;
   font-size: 1rem;
   color: #5a2c0c;
   box-shadow: 0px 4px 0px #5a2c0c;
   cursor: pointer;
   transition: 0.15s ease;
+  font-family: 'Pixelify Sans', cursive;
 }
 
 .add-student-btn:hover {
@@ -217,10 +221,12 @@
   border: 3px solid #78350f;
   padding: 0.7rem 1.2rem;
   font-size: 1rem;
-  border-radius: 20px;
+  border-radius: 8px;
   width: 240px;
   color: #5a2c0c;
   font-weight: 600;
+  font-family: 'Trebuchet MS', sans-serif;
+  box-shadow: 0px 4px 0px #78350f;
 }
 
 .search-input::placeholder {
@@ -230,7 +236,7 @@
 /* STUDENT CARD GRID */
 .students-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);  /* 2 cards = bigger */
+  grid-template-columns: repeat(2, 1fr);
   gap: 2.5rem;
   padding: 1rem 0.5rem;
 }

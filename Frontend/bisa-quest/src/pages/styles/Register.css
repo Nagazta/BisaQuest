@@ -24,7 +24,7 @@ html, body {
   background-size: 200% 190%;
   background-repeat: no-repeat;
   background-position: center;
-  border-radius: 1.5rem;
+  border-radius: 0;
   position: relative;
   padding: 0rem 6rem 2rem 5rem;
   max-height: 90vh;
@@ -107,7 +107,7 @@ html, body {
 .form-input-small {
   padding: 0.8rem 1rem;
   border: 3px solid #B96C25;
-  border-radius: 0.75rem;
+  border-radius: 8px;
   font-size: 0.9rem;
   color: #6B3E1D;
   background-color: rgba(255, 254, 242, 0.9);
@@ -143,6 +143,8 @@ html, body {
   font-family: 'Pixelify Sans', cursive;
   text-transform: uppercase;
   margin-right: 0;
+  border-radius: 8px;
+  box-shadow: 0px 4px 0px #6B3E1D;
 }
 
 /* Full Name Row - 3 columns */
@@ -232,7 +234,7 @@ html, body {
   background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
   color: white;
   padding: 1rem;
-  border-radius: 0.75rem;
+  border-radius: 8px;
   margin-bottom: 1rem;
   margin-left: 4rem;
   margin-right: 4rem;
@@ -247,7 +249,7 @@ html, body {
   padding: 1rem;
   background: linear-gradient(135deg, #FFF9E6 0%, #FFF4D1 100%);
   border: 3px solid #FCD765;
-  border-radius: 0.75rem;
+  border-radius: 8px;
   font-size: 0.85rem;
   font-family: 'Pixelify Sans', cursive;
   color: #6B3E1D;

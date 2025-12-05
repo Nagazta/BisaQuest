@@ -67,7 +67,7 @@
   color: #6B3E1D;
   background: rgba(255, 254, 242, 0.95);
   border: 3px solid #B96C25;
-  border-radius: 0.75rem;
+  border-radius: 8px;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
@@ -94,21 +94,26 @@
   background: linear-gradient(135deg, #B96C25 0%, #6B3E1D 100%);
   color: #FCD765;
   border: 3px solid #FCD765;
-  border-radius: 0.75rem;
+  border-radius: 8px;
+  box-shadow: 0px 4px 0px #6B3E1D;
   font-family: 'Pixelify Sans', cursive;
   font-size: 1rem;
   font-weight: 800;
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 5px 15px rgba(185, 108, 37, 0.5);
 }
 
 .create-btn:hover:not(:disabled) {
   background: linear-gradient(135deg, #FCD765 0%, #B96C25 100%);
   color: #6B3E1D;
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(252, 215, 101, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 0px #6B3E1D;
+}
+
+.create-btn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0px 2px 0px #6B3E1D;
 }
 
 .create-btn:disabled {
@@ -123,7 +128,7 @@
   background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
   color: white;
   padding: 0.75rem;
-  border-radius: 0.75rem;
+  border-radius: 8px;
   font-weight: 600;
   margin-bottom: 1rem;
   box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
@@ -145,7 +150,7 @@
 .credentials-box {
   background: rgba(255, 254, 242, 0.95);
   border: 3px solid #B96C25;
-  border-radius: 0.75rem;
+  border-radius: 8px;
   padding: 2rem;
   margin: 1.5rem auto;
   width: 100%;
@@ -171,7 +176,7 @@
 .credentials-notice {
   background: linear-gradient(135deg, #FFF9E6 0%, #FFF4D1 100%);
   border: 3px solid #FCD765;
-  border-radius: 0.75rem;
+  border-radius: 8px;
   padding: 1rem;
   margin: 1.5rem auto;
   width: 100%;
@@ -193,14 +198,14 @@
 .close-btn {
   padding: 0.75rem 2rem;
   border: 3px solid #B96C25;
-  border-radius: 0.75rem;
+  border-radius: 8px;
+  box-shadow: 0px 4px 0px #6B3E1D;
   font-size: 0.95rem;
   font-weight: 800;
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.3s ease;
   font-family: inherit;
-  box-shadow: 0 5px 15px rgba(185, 108, 37, 0.3);
 }
 
 .copy-btn {
@@ -211,7 +216,8 @@
 .copy-btn:hover {
   background: linear-gradient(135deg, #FCD765 0%, #2D8B4E 100%);
   color: #1F6A38;
-  transform: translateY(-3px);
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 0px #1F6A38;
 }
 
 .close-btn {
@@ -222,7 +228,8 @@
 .close-btn:hover {
   background: linear-gradient(135deg, #FCD765 0%, #8B7355 100%);
   color: #6F5B42;
-  transform: translateY(-3px);
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 0px #6F5B42;
 }
 
 /* Responsive */

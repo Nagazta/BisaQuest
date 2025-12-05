@@ -86,7 +86,7 @@ background-image: url('/src/assets/images/bg-dashboard.png');
 /* Login Title */
 .login-title {
  font-family: 'Pixelify Sans', cursive;
-  font-size: 2.5rem;
+  font-size: 3rem;
   font-weight: 900;
   color: #6B3E1D;
   text-transform: uppercase;
@@ -132,7 +132,7 @@ background-image: url('/src/assets/images/bg-dashboard.png');
 .form-input-login {
   padding: 1rem 0.5rem;
   border: 3px solid #B96C25;
-  border-radius: 0.75rem;
+  border-radius: 8px;
   font-size: 1rem;
   font-family: 'Trebuchet MS', 'Verdana', sans-serif;
   font-weight: 500;
@@ -177,17 +177,18 @@ background-image: url('/src/assets/images/bg-dashboard.png');
   display: flex;
   gap: 10px;
   margin-bottom: 1rem;
-  padding: 3rem 4rem 0 4rem;
+  padding: 2rem 4rem 0 4rem;
 }
 
 .user-type-toggle button {
   flex: 1;
-  padding: 12px;
+  padding: 10px;
   border: 3px solid #B96C25;
   background: rgba(255, 254, 242, 0.9);
-  border-radius: 0.75rem;
+  border-radius: 8px;
+  box-shadow: 0px 3px 0px #6B3E1D;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
   font-family: 'Pixelify Sans', cursive;
   font-weight: 700;
   color: #6B3E1D;
@@ -232,15 +233,13 @@ background-image: url('/src/assets/images/bg-dashboard.png');
   background: linear-gradient(135deg, #B96C25 0%, #6B3E1D 100%);
   color: #FCD765;
   border: 3px solid #FCD765;
-  border-radius: 0.75rem;
+  border-radius: 8px;
+  box-shadow: 0px 4px 0px #6B3E1D;
   font-family: 'Pixelify Sans', cursive;
   font-weight: 800;
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 
-    0 5px 15px rgba(185, 108, 37, 0.5),
-    inset 0 1px 0 rgba(252, 215, 101, 0.3);
   width: 100px;
   height: 40px;
   align-self: center;
