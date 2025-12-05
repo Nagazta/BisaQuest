@@ -17,18 +17,8 @@ const SidebarNavigation = ({ onLogout }) => {
     { id: "badges", label: "Badges", icon: <BadgesIcon /> },
   ];
 
-  // Get initials from fullname
-  const getInitials = (name) => {
-    if (!name) return "A";
-    const names = name.split(" ");
-    return names.length > 1
-      ? `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase()
-      : names[0][0].toUpperCase();
-  };
-
   const handleProfileClick = () => {
     setActiveItem("profile");
-    // TODO: Navigate to profile page or open profile modal
     console.log("Profile clicked");
   };
 
@@ -45,7 +35,6 @@ const SidebarNavigation = ({ onLogout }) => {
         }`}
         onClick={handleProfileClick}
       >
-        <div className="student-avatar">{getInitials(user?.fullname)}</div>
         <div className="student-info">
           <p className="student-name">
             {user?.fullname ? user.fullname.split(" ")[0] : "Adventurer"}

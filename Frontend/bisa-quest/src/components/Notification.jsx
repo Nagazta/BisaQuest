@@ -4,13 +4,11 @@ import ErrorIcon from "../assets/icons/ErrorIcon";
 
 const Notification = ({ type = "success", message, onClose, title }) => {
   useEffect(() => {
-    if (type === "success") {
-      const timer = setTimeout(() => {
-        onClose();
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [type, onClose]);
+    const timer = setTimeout(() => {
+      if (onClose) onClose();
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   if (!message) return null;
 
@@ -26,12 +24,6 @@ const Notification = ({ type = "success", message, onClose, title }) => {
         )}
         <div className="notification-message">{message}</div>
       </div>
-
-      {type === "error" && (
-        <button className="notification-close" onClick={onClose}>
-          ×
-        </button>
-      )}
     </div>
   );
 };

@@ -1,68 +1,10 @@
-import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../components/styles/HeroSection.css";
 import bgImage from "../assets/images/bg-dashboard.png";
-import { useNavigate } from "react-router-dom";
+import ParticleEffects from "../components/ParticleEffects";
 
 const HeroSection = () => {
-  const [particles] = useState(() => {
-    // Generate particles once during initial render
-    return [...Array(30)].map((_, i) => ({
-      id: i,
-      type: i % 3 === 0 ? "sparkle" : i % 3 === 1 ? "firefly" : "dust",
-      left: Math.random() * 100,
-      delay: Math.random() * 5,
-      duration: 3 + Math.random() * 4,
-      top: Math.random() * 100,
-    }));
-  });
-
-  // Mouse trail effect
-  const [mouseTrail, setMouseTrail] = useState([]);
-
-  useEffect(() => {
-    let trailId = 0;
-    let mouseX = 0;
-    let mouseY = 0;
-
-    // Track mouse position
-    const handleMouseMove = (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    };
-
-    // Emit particles continuously every 50ms
-    const emitInterval = setInterval(() => {
-      // Create 2-3 particles per emission for cloud effect
-      const particleCount = Math.floor(Math.random() * 3) + 3;
-
-      for (let i = 0; i < particleCount; i++) {
-        const newParticle = {
-          id: trailId++,
-          x: mouseX + (Math.random() - 0.5) * 10,
-          y: mouseY + (Math.random() - 0.5) * 10,
-          size: Math.random() * 12 + 12,
-          duration: Math.random() * 1 + 1.5,
-        };
-
-        setMouseTrail((prev) => [...prev, newParticle]);
-
-        // Remove particle after its duration
-        setTimeout(() => {
-          setMouseTrail((prev) => prev.filter((p) => p.id !== newParticle.id));
-        }, newParticle.duration * 1000);
-      }
-    }, 50);
-
-    window.addEventListener("mousemove", handleMouseMove);
-
-    return () => {
-      clearInterval(emitInterval);
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, []);
-
   const navigate = useNavigate();
-
   const AboutUs = () => {
     navigate("/about");
   };
@@ -88,38 +30,7 @@ const HeroSection = () => {
       {/* Dark overlay for better text readability */}
       <div className="hero-overlay"></div>
 
-      {/* Animated particles/sparkles */}
-      <div className="particle-container">
-        {particles.map((particle) => (
-          <div
-            key={particle.id}
-            className={`particle ${particle.type}`}
-            style={{
-              left: `${particle.left}%`,
-              animationDelay: `${particle.delay}s`,
-              animationDuration: `${particle.duration}s`,
-              top: `${particle.top}%`,
-            }}
-          ></div>
-        ))}
-      </div>
-
-      {/* Mouse Trail - Golden Circles */}
-      <div className="mouse-trail-container">
-        {mouseTrail.map((particle) => (
-          <div
-            key={particle.id}
-            className="mouse-circle"
-            style={{
-              left: `${particle.x}px`,
-              top: `${particle.y}px`,
-              width: `${particle.size}px`,
-              height: `${particle.size}px`,
-              animationDuration: `${particle.duration}s`,
-            }}
-          ></div>
-        ))}
-      </div>
+      <ParticleEffects particleCount={50} enableMouseTrail={true} />
 
       {/* Center Content */}
       <div className="hero-content-game fade-in">

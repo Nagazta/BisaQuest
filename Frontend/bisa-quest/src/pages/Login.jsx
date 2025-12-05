@@ -7,23 +7,12 @@ import StudentIcon from "../assets/icons/StudentIcon";
 import TeacherIcon from "../assets/icons/TeacherIcon";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import ParticleEffects from "../components/ParticleEffects";
 
 const Login = () => {
   const navigate = useNavigate();
   const { login, loginStudent, user } = useAuth();
 
-  const [particles] = useState(() => {
-    return [...Array(30)].map((_, i) => ({
-      id: i,
-      type: i % 3 === 0 ? "sparkle" : i % 3 === 1 ? "firefly" : "dust",
-      left: Math.random() * 100,
-      delay: Math.random() * 5,
-      duration: 3 + Math.random() * 4,
-      top: Math.random() * 100,
-    }));
-  });
-
-  const [mouseTrail, setMouseTrail] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [userType, setUserType] = useState("student");
@@ -38,44 +27,6 @@ const Login = () => {
       }
     }
   }, [user, navigate]);
-
-  useEffect(() => {
-    let trailId = 0;
-    let mouseX = 0;
-    let mouseY = 0;
-
-    const handleMouseMove = (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    };
-
-    const emitInterval = setInterval(() => {
-      const particleCount = Math.floor(Math.random() * 3) + 3;
-
-      for (let i = 0; i < particleCount; i++) {
-        const newParticle = {
-          id: trailId++,
-          x: mouseX + (Math.random() - 0.5) * 10,
-          y: mouseY + (Math.random() - 0.5) * 10,
-          size: Math.random() * 13 + 13,
-          duration: Math.random() * 1 + 1.5,
-        };
-
-        setMouseTrail((prev) => [...prev, newParticle]);
-
-        setTimeout(() => {
-          setMouseTrail((prev) => prev.filter((p) => p.id !== newParticle.id));
-        }, newParticle.duration * 1000);
-      }
-    }, 50);
-
-    window.addEventListener("mousemove", handleMouseMove);
-
-    return () => {
-      clearInterval(emitInterval);
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, []);
 
   const [formData, setFormData] = useState({
     studentId: "",
@@ -136,36 +87,7 @@ const Login = () => {
     <div className="login-page">
       <div className="login-background"></div>
 
-      <div className="particle-container">
-        {particles.map((particle) => (
-          <div
-            key={particle.id}
-            className={`particle ${particle.type}`}
-            style={{
-              left: `${particle.left}%`,
-              animationDelay: `${particle.delay}s`,
-              animationDuration: `${particle.duration}s`,
-              top: `${particle.top}%`,
-            }}
-          />
-        ))}
-      </div>
-
-      <div className="mouse-trail-container">
-        {mouseTrail.map((particle) => (
-          <div
-            key={particle.id}
-            className="mouse-circle"
-            style={{
-              left: `${particle.x}px`,
-              top: `${particle.y}px`,
-              width: `${particle.size}px`,
-              height: `${particle.size}px`,
-              animationDuration: `${particle.duration}s`,
-            }}
-          />
-        ))}
-      </div>
+      <ParticleEffects enableMouseTrail={true} />
 
       <div className="character-container">
         <img

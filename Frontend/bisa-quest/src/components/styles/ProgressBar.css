@@ -1,6 +1,9 @@
 /* Default wrapper - no positioning */
 .progress-bar-wrapper {
-  width: 100%;
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 /* Instruction variant - positioned absolutely */
@@ -11,6 +14,7 @@
   width: 200px;
   z-index: 10;
 }
+
 .progress-bar-wrapper.environment {
   position: absolute;
   margin-top: 50px;

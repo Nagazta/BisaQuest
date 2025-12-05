@@ -15,18 +15,17 @@
 
 /* Student Profile Section */
 .student-profile {
-    padding: 16px 20px;
+    padding: 16px 24px;
     border-bottom: 4px solid #78350f;
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
     background: linear-gradient(135deg, #fbbf24, #f59e0b);
     width: 100%;             
     border: none;             
     cursor: pointer;          
     transition: all 0.2s ease; 
     text-align: left;
-    overflow: hidden;
 }
 
 .student-profile:hover {
@@ -36,24 +35,6 @@
 .student-profile.active {
     background: linear-gradient(135deg, #f97316, #ea580c);
     border-left: 4px solid #78350f;
-}
-
-.student-avatar {
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
-    border-radius: 8px;
-    background: linear-gradient(135deg, #78350f, #92400e);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Pixelify Sans', sans-serif;
-    font-size: 20px;
-    font-weight: 900;
-    color: #fef3c7;
-    border: 3px solid #78350f;
-    box-shadow: 0px 3px 0px #5a2c0c;
-    flex-shrink: 0;
 }
 
 .student-info {
@@ -140,5 +121,5 @@
 }
 
 .logout-btn {
-    width: 100%;
+    width: 80%;
 }

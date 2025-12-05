@@ -44,27 +44,27 @@
 
 /* Primary/Quest Start Button */
 .btn-primary {
-  background-color: #FBBC04;
-  border: 3px solid #8D6E63;
-  border-radius: 12px;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  border: 3px solid #78350f;
+  border-radius: 15px;
   padding: 12px 32px;
   font-size: 18px;
-  font-weight: bold;
-  color: #3e2723;
+  font-weight: 700;
+  color: #78350f;
   min-width: 140px;
-  font-family: 'Georgia', serif;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  font-family: 'Pixelify Sans', sans-serif;
+  box-shadow: 0px 4px 0px #78350f;
 }
 
 .btn-primary:hover {
-  background-color: #F9AB00;
+  background: linear-gradient(135deg, #f59e0b, #f97316);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 6px 0px #78350f;
 }
 
 .btn-primary:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transform: translateY(2px);
+  box-shadow: 0px 2px 0px #78350f;
 }
 
 /* Character Select Button */
@@ -184,9 +184,12 @@
   background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
   border: 3px solid #991b1b;
+  border-radius: 8px;
   box-shadow: 0px 4px 0px #7f1d1d;
-  font-family: 'Pixelify Sans', cursive;
-  text-transform: uppercase;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-weight: 700;
+  padding: 12px 32px;
+  font-size: 16px;
 }
 
 .btn-danger:hover {
@@ -199,3 +202,4 @@
   transform: translateY(2px);
   box-shadow: 0px 2px 0px #7f1d1d;
 }
+  

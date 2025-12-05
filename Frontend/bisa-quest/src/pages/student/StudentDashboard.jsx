@@ -9,21 +9,34 @@ import Kingdom from "../../assets/images/cardsImage/kingdom.png";
 import Throne from "../../assets/images/cardsImage/throne.png";
 import "./styles/StudentDashboard.css";
 import QuestStartModal from "../../components/QuestStartModal";
+import Notification from "../../components/Notification";
+import ParticleEffects from "../../components/ParticleEffects";
 
 const StudentDashboard = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const handleTabClose = () => {
-      sessionStorage.removeItem("user");
-      sessionStorage.removeItem("session");
+    const handleBeforeUnload = () => {
+      // Only clear on actual tab close, not refresh
+      // Set a flag that gets cleared on page load
+      sessionStorage.setItem("isRefreshing", "true");
     };
 
-    window.addEventListener("beforeunload", handleTabClose);
+    const handleUnload = () => {
+      if (sessionStorage.getItem("isRefreshing") !== "true") {
+        localStorage.removeItem("user");
+        localStorage.removeItem("session");
+      }
+    };
+    sessionStorage.removeItem("isRefreshing");
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("unload", handleUnload);
 
     return () => {
-      window.removeEventListener("beforeunload", handleTabClose);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("unload", handleUnload);
     };
   }, []);
 
@@ -69,11 +82,17 @@ const StudentDashboard = () => {
 
   const [showQuestModal, setShowQuestModal] = React.useState(false);
   const [selectedQuest, setSelectedQuest] = React.useState(null);
-
+  const [notification, setNotification] = React.useState(null);
   const handleStartQuest = (questId) => {
-    // Only allow Quest 1 (Vocabulary Quest) for now
+    // Close notification if open
+    setNotification(null);
+
     if (questId !== 1) {
-      alert("🔒 This quest is locked! Complete the previous quest first.");
+      setNotification({
+        type: "error",
+        title: "Quest Locked",
+        message: "This quest is locked! Complete the previous quest first.",
+      });
       return;
     }
 
@@ -89,6 +108,8 @@ const StudentDashboard = () => {
 
   return (
     <div className="dashboard-container">
+      <ParticleEffects enableMouseTrail={false} />
+
       <SidebarNavigation onLogout={handleLogout} />
 
       <div className="main-content">
@@ -114,6 +135,15 @@ const StudentDashboard = () => {
         questTitle={selectedQuest?.title}
         onConfirm={handleConfirmQuest}
       />
+
+      {notification && (
+        <Notification
+          type={notification.type}
+          title={notification.title}
+          message={notification.message}
+          onClose={() => setNotification(null)}
+        />
+      )}
     </div>
   );
 };
