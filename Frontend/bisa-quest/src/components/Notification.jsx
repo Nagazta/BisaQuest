@@ -8,7 +8,7 @@ const Notification = ({ type = "success", message, onClose, title }) => {
       if (onClose) onClose();
     }, 3000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [onClose]);
 
   if (!message) return null;
 
