@@ -3,8 +3,6 @@ import "../pages/styles/Login.css";
 import "../pages/styles/GlobalEffects.css";
 import boy from "../assets/images/characters/Boy.png";
 import girl from "../assets/images/characters/Girl.png";
-import StudentIcon from "../assets/icons/StudentIcon";
-import TeacherIcon from "../assets/icons/TeacherIcon";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import ParticleEffects from "../components/ParticleEffects";
@@ -145,7 +143,6 @@ const Login = () => {
               className={userType === "student" ? "active" : ""}
               onClick={() => setUserType("student")}
             >
-              <StudentIcon size={20} />
               <span>STUDENT</span>
             </button>
             <button
@@ -153,7 +150,6 @@ const Login = () => {
               className={userType === "teacher" ? "active" : ""}
               onClick={() => setUserType("teacher")}
             >
-              <TeacherIcon size={20} />
               <span>TEACHER</span>
             </button>
           </div>
@@ -207,7 +203,7 @@ const Login = () => {
                     value={formData.identifier}
                     onChange={handleChange}
                     className="form-input-login"
-                    placeholder="Enter your username or email"
+                    placeholder="Enter your email"
                     required
                     disabled={loading}
                   />
