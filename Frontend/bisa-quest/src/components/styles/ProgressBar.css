@@ -13,6 +13,7 @@
 }
 .progress-bar-wrapper.environment {
   position: absolute;
+  margin-top: 50px;
   left: 40px;
   width: 200px;
   z-index: 10;
