@@ -7,6 +7,7 @@ import teacherRoutes from './routes/teacherRoutes.js';
 import preferenceRoutes from './routes/preferenceRoutes.js';
 import progressRoutes from './routes/progressRoutes.js';
 import environmentRoutes from "./routes/environmentRoutes.js";
+import npcInteractionRoutes from './routes/npcInteractionRoutes.js';
 
 
 dotenv.config();
@@ -34,6 +35,7 @@ app.use('/api/progress', progressRoutes);
 app.use("/environment", environmentRoutes);
 
 app.use('/', environmentRoutes); // now /initialize and /interaction exist
+app.use('/api/npc', npcInteractionRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -54,7 +56,8 @@ app.get('/', (req, res) => {
             auth: '/api/auth',
             teacher: '/api/teacher',
             preferences: '/api/preferences',
-            progress: '/api/progress'
+            progress: '/api/progress',
+            npc: '/api/npc'  // NEW
         }
     });
 });
