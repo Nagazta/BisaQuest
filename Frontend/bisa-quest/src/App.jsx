@@ -6,6 +6,12 @@ import StudentDashboard from "./pages/student/StudentDashboard";
 import CharacterSelection from "./pages/student/CharacterSelectionPage";
 import LanguageSelectionPage from "./pages/student/LanguageSelectionPage";
 import InstructionsPage from "./pages/student/InstructionsPage";
+import VillagePage from "./pages/vocabulary/VillagePage"
+
+//Vocabulary Game
+import WordMatchingPage from "./pages/vocabulary/WordMatchingPage";
+import PictureAssociationPage from "./pages/vocabulary/PictureAssociationPage";
+import SentenceCompletionPage from "./pages/vocabulary/SentenceCompletionPage";
 
 import TeacherDashboard from "./pages/teacher/TeacherDashboard";
 import { useAuth } from "./context/AuthContext";
@@ -24,15 +30,15 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/dashboard" element={<StudentDashboard />} />
-      <Route
-        path="/student/characterSelection"
-        element={<CharacterSelection />}
-      />
-      <Route
-        path="/student/languageSelection"
-        element={<LanguageSelectionPage />}
-      />
+      <Route path="/student/characterSelection" element={<CharacterSelection />}/>
+      <Route path="/student/languageSelection" element={<LanguageSelectionPage />} />
       <Route path="/student/instructions" element={<InstructionsPage />} />
+      <Route path= "/student/village" element={<VillagePage/>}/>
+
+      <Route path="/student/wordMatching" element={<WordMatchingPage/>}/>
+      <Route path="/student/pictureAssociation" element={<PictureAssociationPage/>}/>
+      <Route path="/student/sentenceCompletion" element={<SentenceCompletionPage/>}/>
+
       <Route
         path="/dashboard"
         element={

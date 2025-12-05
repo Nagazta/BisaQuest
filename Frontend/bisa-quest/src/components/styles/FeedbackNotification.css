@@ -1,0 +1,44 @@
+.feedback-notification {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 14px 24px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 9999;
+  animation: fadeInOut 3s ease forwards;
+  color: white;
+}
+
+/* Types */
+.feedback-notification.success {
+  background-color: #4caf50;
+}
+
+.feedback-notification.error {
+  background-color: #f44336;
+}
+
+.feedback-notification.warning {
+  background-color: #ff9800;
+}
+
+.feedback-notification.info {
+  background-color: #2196f3;
+}
+
+.feedback-icon {
+  font-size: 20px;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translate(-50%, 20px); }
+  10% { opacity: 1; transform: translate(-50%, 0); }
+  90% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, 20px); }
+}
