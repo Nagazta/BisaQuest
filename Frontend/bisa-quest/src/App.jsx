@@ -2,14 +2,12 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "./components/HomeSection";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import StudentDashboard from "./pages/Student/StudentDashboard";
-import CharacterSelection from "./pages/Student/CharacterSelectionPage";
+import StudentDashboard from "./pages/student/StudentDashboard";
+import CharacterSelection from "./pages/student/CharacterSelectionPage";
 import LanguageSelectionPage from "./pages/student/LanguageSelectionPage";
 import InstructionsPage from "./pages/student/InstructionsPage";
 
-import VillagePage from "./pages/vocabulary/VillagePage";
-
-import TeacherDashboard from "./pages/Teacher/TeacherDashboard";
+import TeacherDashboard from "./pages/teacher/TeacherDashboard";
 import { useAuth } from "./context/AuthContext";
 import "./App.css";
 
@@ -26,10 +24,15 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/dashboard" element={<StudentDashboard />} />
-      <Route path="/student/characterSelection" element={<CharacterSelection/>}/>
-      <Route path="/student/languageSelection" element={<LanguageSelectionPage/>}/>
-      <Route path="/student/instructions" element={<InstructionsPage/>}/>
-      <Route path="/student/village" element={<VillagePage/>}/>
+      <Route
+        path="/student/characterSelection"
+        element={<CharacterSelection />}
+      />
+      <Route
+        path="/student/languageSelection"
+        element={<LanguageSelectionPage />}
+      />
+      <Route path="/student/instructions" element={<InstructionsPage />} />
       <Route
         path="/dashboard"
         element={

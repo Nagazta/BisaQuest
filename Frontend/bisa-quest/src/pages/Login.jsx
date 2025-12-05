@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import "../pages/styles/Login.css";
+import "../pages/styles/GlobalEffects.css";
 import boy from "../assets/images/characters/Boy.png";
 import girl from "../assets/images/characters/Girl.png";
+import StudentIcon from "../assets/icons/StudentIcon";
+import TeacherIcon from "../assets/icons/TeacherIcon";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -23,6 +26,7 @@ const Login = () => {
   const [mouseTrail, setMouseTrail] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [userType, setUserType] = useState("student");
 
   // Redirect if already logged in
   useEffect(() => {
@@ -74,7 +78,9 @@ const Login = () => {
   }, []);
 
   const [formData, setFormData] = useState({
-    username: "",
+    studentId: "",
+    classCode: "",
+    identifier: "",
     password: "",
   });
 
@@ -87,33 +93,39 @@ const Login = () => {
     if (error) setError("");
   };
 
-  // Replace the handleSubmit function in Login.jsx:
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      let email = formData.username;
+      let result;
+      if (userType === "student") {
+        const { authService } = await import("../services/authServices.js");
+        result = await authService.loginStudent(
+          formData.studentId,
+          formData.classCode
+        );
 
-      // If not an email, convert to BisaQuest student email
-      if (!formData.username.includes("@")) {
-        email = `${formData.username}@bisaquest.app`;
-      }
-
-      const result = await login(email, formData.password);
-
-      if (result.success) {
-        if (result.data.user.role === "teacher") {
-          navigate("/teacher-dashboard");
-        } else if (result.data.user.role === "student") {
-          navigate("/dashboard");
+        if (result.success) {
+          navigate("/student/language-selection");
         }
       } else {
-        setError(result.error || "Login failed.");
+        const email = formData.identifier.includes("@")
+          ? formData.identifier
+          : `${formData.identifier}@adventurequest.com`;
+        result = await login(email, formData.password);
+
+        if (result.success) {
+          navigate("/teacher/dashboard");
+        }
+      }
+
+      if (!result.success) {
+        setError(result.error || "Login failed");
       }
     } catch {
-      setError("An error occurred.");
+      setError("An unexpected error occurred");
     } finally {
       setLoading(false);
     }
@@ -176,75 +188,119 @@ const Login = () => {
         <div className="login-card">
           <h1 className="login-title">Login</h1>
 
-          {error && (
-            <div
-              style={{
-                background: "linear-gradient(135deg, #ff6b6b, #ee5a6f)",
-                color: "white",
-                padding: "1rem",
-                borderRadius: "0.75rem",
-                marginBottom: "1rem",
-                fontWeight: "600",
-                textAlign: "center",
-                boxShadow: "0 4px 12px rgba(255, 107, 107, 0.3)",
-              }}
+          {error && <div className="error-message-box">{error}</div>}
+
+          <div className="user-type-toggle">
+            <button
+              type="button"
+              className={userType === "student" ? "active" : ""}
+              onClick={() => setUserType("student")}
             >
-              {error}
-            </div>
-          )}
+              <StudentIcon size={20} />
+              <span>STUDENT</span>
+            </button>
+            <button
+              type="button"
+              className={userType === "teacher" ? "active" : ""}
+              onClick={() => setUserType("teacher")}
+            >
+              <TeacherIcon size={20} />
+              <span>TEACHER</span>
+            </button>
+          </div>
 
           <form onSubmit={handleSubmit} className="login-form-container">
-            <div className="form-group">
-              <label htmlFor="username" className="form-label">
-                Username or Email
-              </label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                className="form-input-login"
-                placeholder="Enter your username or email"
-                required
-                disabled={loading}
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="password" className="form-label">
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="form-input-login"
-                placeholder="Enter your password"
-                required
-                disabled={loading}
-              />
-              <a href="#forgot" className="forgot-password">
-                Forgot password
-              </a>
-            </div>
+            {userType === "student" ? (
+              <>
+                <div className="form-group">
+                  <label htmlFor="studentId" className="form-label">
+                    Student ID
+                  </label>
+                  <input
+                    type="text"
+                    id="studentId"
+                    name="studentId"
+                    value={formData.studentId}
+                    onChange={handleChange}
+                    className="form-input-login"
+                    placeholder="Enter your student ID"
+                    required
+                    disabled={loading}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="classCode" className="form-label">
+                    Class Code
+                  </label>
+                  <input
+                    type="text"
+                    id="classCode"
+                    name="classCode"
+                    value={formData.classCode}
+                    onChange={handleChange}
+                    className="form-input-login"
+                    placeholder="Enter your class code"
+                    required
+                    disabled={loading}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="form-group">
+                  <label htmlFor="identifier" className="form-label">
+                    Email
+                  </label>
+                  <input
+                    type="text"
+                    id="identifier"
+                    name="identifier"
+                    value={formData.identifier}
+                    onChange={handleChange}
+                    className="form-input-login"
+                    placeholder="Enter your username or email"
+                    required
+                    disabled={loading}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="password" className="form-label">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="form-input-login"
+                    placeholder="Enter your password"
+                    required
+                    disabled={loading}
+                  />
+                  <a href="#forgot" className="forgot-password">
+                    Forgot password
+                  </a>
+                </div>
+              </>
+            )}
 
             <button type="submit" className="login-button" disabled={loading}>
               {loading ? "Logging in..." : "Login"}
             </button>
 
-            <p className="register-text">
-              Don't have an account?{" "}
-              <a
-                href="#register"
-                className="register-link"
-                onClick={goToRegister}
-              >
-                Register here!
-              </a>
-            </p>
+            {userType === "teacher" && (
+              <p className="register-text">
+                Don't have an account?{" "}
+                <a
+                  href="#register"
+                  className="register-link"
+                  onClick={goToRegister}
+                >
+                  Register here!
+                </a>
+              </p>
+            )}
           </form>
         </div>
       </div>

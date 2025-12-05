@@ -76,13 +76,13 @@ export const getDashboardData = async (req, res) => {
 export const createStudent = async (req, res) => {
     try {
         const teacherUserId = req.user.id;
-        const { fullname, studentId } = req.body;
+        const { fullname, studentId, classCode } = req.body;
 
         // Validate inputs
-        if (!fullname || !studentId) {
+        if (!fullname || !studentId || !classCode) {
             return res.status(400).json({
                 success: false,
-                error: 'Full name and Student ID are required'
+                error: 'Full name, Student ID, and Class Code are required'
             });
         }
 
@@ -91,7 +91,7 @@ export const createStudent = async (req, res) => {
         const password = studentId;
 
 
-        console.log('Creating student:', { fullname, studentId, email });
+        console.log('Creating student:', { fullname, studentId, classCode, email });
 
         // Get teacher_id from Teacher table
         const { data: teacherData, error: teacherError } = await supabase
@@ -167,6 +167,7 @@ export const createStudent = async (req, res) => {
             .insert([{
                 user_id: authData.user.id,
                 teacher_id: teacherData.teacher_id,
+                class_code: classCode,
             }])
             .select()
             .single();
@@ -185,7 +186,7 @@ export const createStudent = async (req, res) => {
                 student: studentData,
                 credentials: {
                     studentId,
-                    password: studentId
+                    classCode
                 }
             }
         });

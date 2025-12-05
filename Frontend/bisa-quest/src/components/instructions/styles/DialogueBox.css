@@ -34,6 +34,37 @@
   position: relative;
 }
 
+.dialogue-text {
+  font-family: 'Georgia', serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #F5E6D3;
+  margin: 0;
+  text-align: left;
+}
+
+.dialogue-text.en {
+  letter-spacing: 0.3px;
+}
+
+.dialogue-text.ceb {
+  letter-spacing: 0.2px;
+}
+
+.next-arrow-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10;
+}
+
+.next-arrow-btn .arrow-icon {
+  width: 40px;
+  height: 40px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  display: block;
+}
+
 @media (max-width: 768px) {
   .dialogue-box {
     width: 95%;
@@ -50,5 +81,15 @@
 
   .dialogue-content {
     padding: 20px 24px 55px 24px;
+  }
+
+  .dialogue-text {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .next-arrow-btn .arrow-icon {
+    width: 32px;
+    height: 32px;
   }
 }

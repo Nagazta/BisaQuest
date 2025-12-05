@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Add this
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { teacherService } from "../../services/teacherService";
 import AddStudentModal from "../../components/AddStudentModal";
 import StudentCard from "../../components/StudentCard";
-import SuccessNotification from "../../components/SuccessNotification";
-import Button from "../../components/Button"; // Add this
+import Notification from "../../components/Notification";
+import Button from "../../components/Button";
 import "./styles/TeacherDashboard.css";
 
 const TeacherDashboard = () => {
@@ -79,7 +79,8 @@ const TeacherDashboard = () => {
 
       {/* SUCCESS NOTIFICATION */}
       {showSuccess && (
-        <SuccessNotification
+        <Notification
+          type="success"
           message={successMessage}
           onClose={() => setShowSuccess(false)}
         />

@@ -4,7 +4,8 @@ import {
     login,
     logout,
     getSession,
-    createStudent
+    createStudent,
+    loginStudent
 } from '../controllers/authController.js';
 
 const router = express.Router();
@@ -14,6 +15,8 @@ router.post('/register', register);
 
 // Login (both teacher and student)
 router.post('/login', login);
+
+router.post('/login-student', loginStudent);
 
 // Logout
 router.post('/logout', logout);

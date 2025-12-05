@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "../pages/styles/Login.css";
 import "../pages/styles/Register.css";
+import "../pages/styles/GlobalEffects.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -184,24 +185,7 @@ const Register = () => {
         <div className="register-card">
           <h1 className="login-title">Registration</h1>
 
-          {error && (
-            <div
-              style={{
-                background: "linear-gradient(135deg, #ff6b6b, #ee5a6f)",
-                color: "white",
-                padding: "1rem",
-                borderRadius: "0.75rem",
-                marginBottom: "1rem",
-                fontWeight: "600",
-                textAlign: "center",
-                boxShadow: "0 4px 12px rgba(255, 107, 107, 0.3)",
-                marginLeft: "4rem",
-                marginRight: "4rem",
-              }}
-            >
-              {error}
-            </div>
-          )}
+          {error && <div className="error-message-box">{error}</div>}
 
           <form onSubmit={handleSubmit} className="register-form-container">
             {/* Full Name Row */}
@@ -309,30 +293,12 @@ const Register = () => {
             </p>
 
             {/* Important Notice */}
-            <div
-              style={{
-                marginTop: "1rem",
-                padding: "1rem",
-                background: "linear-gradient(135deg, #FFF9E6 0%, #FFF4D1 100%)",
-                border: "3px solid #FCD765",
-                borderRadius: "0.75rem",
-                fontSize: "0.85rem",
-                color: "#6B3E1D",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  gap: "0.75rem",
-                  alignItems: "flex-start",
-                }}
-              >
-                <span style={{ fontSize: "1.2rem" }}>⚠</span>
+            <div className="important-notice">
+              <div className="important-notice-content">
+                <span className="important-notice-icon">⚠</span>
                 <div>
-                  <strong style={{ display: "block", marginBottom: "0.25rem" }}>
-                    Important Notice
-                  </strong>
-                  <p style={{ margin: "0.25rem 0" }}>
+                  <strong>Important Notice</strong>
+                  <p>
                     Only teachers can create accounts. Students will be created
                     by their teachers after registration is complete.
                   </p>

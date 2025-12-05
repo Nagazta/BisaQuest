@@ -1,10 +1,8 @@
-/* ===========================
-   MODAL OVERLAY
-=========================== */
+/* Modal Overlay */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;
@@ -12,219 +10,229 @@
   z-index: 1000;
 }
 
-
-/* ===========================
-   PARCHMENT MODAL CONTAINER
-=========================== */
+/* Modal Container */
 .modal-content {
   background: url('../../assets/images/card.svg') no-repeat center;
-  background-size: 110% 110%;
-
-  width: 900px;              
-  height: 900px;           
-
+  background-size: 195% 180%;
+  width: 500px;
+  min-height: 600px;
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  padding-top: 120px;        
-  padding-bottom: 100px;
-  padding-left: 40px;
-  padding-right: 40px;
-
+  padding: 6rem 4rem 4rem 4rem;
   box-sizing: border-box;
-  animation: modalIn 0.25s ease-out;
+  animation: modalIn 0.3s ease-out;
+  position: relative;
 }
 
 @keyframes modalIn {
-  from { transform: scale(.85); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
-
-/* ===========================
-   TITLE
-=========================== */
+/* Title */
 .modal-content h2 {
-  font-size: 2.5rem;
-  font-weight: 900;
-  color: #5A3A00;
-  margin-bottom: 50px;
+  font-family: 'Pixelify Sans', cursive;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #6B3E1D;
+  margin-bottom: 2rem;
   text-align: center;
+  text-transform: uppercase;
+  text-shadow: 1px 1px 0 rgba(252, 215, 101, 0.3);
 }
 
-
-/* ===========================
-   FORM
-=========================== */
+/* Form */
 .modal-content form {
-  width: 38%;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 10px; 
-  margin-top: 10px;                
+  gap: 1.25rem;
 }
 
-
-/* ===========================
-   INPUT FIELDS
-=========================== */
+/* Input Fields */
 .modal-content input {
-  width: 520px;              /* PERFECT width for inner parchment content */
-  max-width: 100%;
-
-  padding: 0.9rem 1.2rem;
-  font-size: 1rem;
-  color: #333;
-
-  background: rgba(255,255,255,0.96);
-  border: 3px solid #C89F5D;
-  border-radius: 12px;
-
-  box-shadow: 0px 2px 0px #C89F5D;
-  margin-top: 10px;
+  width: 100%;
+  max-width: 320px;
+  padding: 0.9rem;
+  font-size: 0.9rem;
+  font-family: 'Trebuchet MS', 'Verdana', sans-serif;
+  font-weight: 500;
+  color: #6B3E1D;
+  background: rgba(255, 254, 242, 0.95);
+  border: 3px solid #B96C25;
+  border-radius: 0.75rem;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
+.modal-content input:focus {
+  outline: none;
+  border-color: #FCD765;
+  background: #FFFEF2;
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.1),
+    0 0 0 3px rgba(252, 215, 101, 0.3);
+}
 
-/* ===========================
-   CREATE BUTTON
-=========================== */
+.modal-content input::placeholder {
+  color: #94785C;
+  opacity: 0.6;
+}
+
+/* Create Button */
 .create-btn {
-  width: 130px;               
-  padding: 0.5rem;
-  margin-top: 30px;
-
-  background: #F8C400;
-  border: 3px solid #C89F5D;
-  border-radius: 2rem;
-  box-shadow: 0px 6px 0px #5A3A00;
-
-  color: #5A3A00;
+  width: 130px;
+  padding: 0.75rem;
+  margin: 1.5rem auto 0;
+  background: linear-gradient(135deg, #B96C25 0%, #6B3E1D 100%);
+  color: #FCD765;
+  border: 3px solid #FCD765;
+  border-radius: 0.75rem;
+  font-family: 'Pixelify Sans', cursive;
   font-size: 1rem;
   font-weight: 800;
+  text-transform: uppercase;
   cursor: pointer;
-  text-align: center;
-
-  transition: 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(185, 108, 37, 0.5);
 }
 
-.create-btn:hover {
+.create-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #FCD765 0%, #B96C25 100%);
+  color: #6B3E1D;
   transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(252, 215, 101, 0.6);
 }
 
 .create-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  transform: none;
 }
 
-
-/* ===========================
-   ERROR MESSAGE
-=========================== */
+/* Error Message */
 .error-message {
-  width: 80%;
+  width: 100%;
   text-align: center;
-  margin-bottom: 10px;
-
-  background: #ff6b6b;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
   color: white;
-
-  padding: 0.6rem;
-  border-radius: 10px;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
   font-weight: 600;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
 }
 
-
-/* ===========================
-   CREDENTIALS MODAL (SUCCESS)
-=========================== */
+/* Credentials Modal (Success State) */
 .credentials-modal {
-  padding-top: 150px;
+  padding: 4rem 4rem 3rem;
   text-align: center;
 }
 
 .credentials-modal h2 {
+  font-family: 'Cinzel', 'Georgia', serif;
   color: #2D8B4E;
-  font-size: 2.2rem;
-  margin-bottom: 30px;
+  font-size: 2rem;
+  margin-bottom: 2rem;
 }
 
 .credentials-box {
-  background: rgba(255,255,255,0.9);
-  border: 3px solid #C89F5D;
-  border-radius: 16px;
-  padding: 30px;
-  margin: 30px auto;
-  width: 520px;
-  max-width: 90%;
+  background: rgba(255, 254, 242, 0.95);
+  border: 3px solid #B96C25;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  margin: 1.5rem auto;
+  width: 100%;
+  max-width: 450px;
   text-align: left;
-  box-shadow: 0px 4px 0px #C89F5D;
+  box-shadow: 0 4px 12px rgba(185, 108, 37, 0.3);
 }
 
 .credentials-box p {
-  margin: 16px 0;
-  font-size: 1.1rem;
-  color: #5A3A00;
+  margin: 1rem 0;
+  font-size: 1.05rem;
+  color: #6B3E1D;
   font-weight: 600;
 }
 
 .credentials-box strong {
   color: #2D8B4E;
-  margin-right: 12px;
+  margin-right: 0.75rem;
   display: inline-block;
-  min-width: 110px;
+  min-width: 120px;
 }
 
 .credentials-notice {
-  background: rgba(255, 243, 205, 0.95);
-  border: 3px solid #F8C400;
-  border-radius: 12px;
-  padding: 16px;
-  margin: 24px auto;
-  width: 520px;
-  max-width: 90%;
-  color: #5A3A00;
-  font-size: 0.95rem;
-  font-weight: 700;
-  box-shadow: 0px 3px 0px #C89F5D;
+  background: linear-gradient(135deg, #FFF9E6 0%, #FFF4D1 100%);
+  border: 3px solid #FCD765;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin: 1.5rem auto;
+  width: 100%;
+  max-width: 450px;
+  color: #6B3E1D;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(252, 215, 101, 0.3);
 }
 
 .credentials-actions {
   display: flex;
-  gap: 16px;
+  gap: 1rem;
   justify-content: center;
-  margin-top: 40px;
+  margin-top: 2rem;
 }
 
-.copy-btn, .close-btn {
-  padding: 14px 32px;
-  border: 3px solid #C89F5D;
-  border-radius: 2rem;
+.copy-btn,
+.close-btn {
+  padding: 0.75rem 2rem;
+  border: 3px solid #B96C25;
+  border-radius: 0.75rem;
   font-size: 0.95rem;
   font-weight: 800;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: transform 0.2s ease;
-  box-shadow: 0px 6px 0px #5A3A00;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  box-shadow: 0 5px 15px rgba(185, 108, 37, 0.3);
 }
 
 .copy-btn {
-  background: #2D8B4E;
-  color: white;
+  background: linear-gradient(135deg, #2D8B4E 0%, #1F6A38 100%);
+  color: #FCD765;
 }
 
 .copy-btn:hover {
-  background: #257A42;
+  background: linear-gradient(135deg, #FCD765 0%, #2D8B4E 100%);
+  color: #1F6A38;
   transform: translateY(-3px);
 }
 
 .close-btn {
-  background: #8B7355;
-  color: white;
+  background: linear-gradient(135deg, #8B7355 0%, #6F5B42 100%);
+  color: #FFFEF2;
 }
 
 .close-btn:hover {
-  background: #6F5B42;
+  background: linear-gradient(135deg, #FCD765 0%, #8B7355 100%);
+  color: #6F5B42;
   transform: translateY(-3px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 90%;
+    padding: 3rem 2rem;
+  }
+
+  .credentials-modal {
+    padding: 3rem 2rem;
+  }
 }

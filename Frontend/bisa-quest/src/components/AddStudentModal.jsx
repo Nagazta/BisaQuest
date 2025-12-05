@@ -5,6 +5,7 @@ const AddStudentModal = ({ onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     fullName: "",
     studentId: "",
+    classCode: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,19 +31,24 @@ const AddStudentModal = ({ onClose, onSubmit }) => {
       return;
     }
 
+    if (!formData.classCode.trim()) {
+      setError("Class code is required");
+      return;
+    }
+
     setLoading(true);
     const result = await onSubmit({
       fullname: formData.fullName,
       studentId: formData.studentId,
+      classCode: formData.classCode,
     });
     setLoading(false);
 
     if (result.success) {
-      // Show credentials popup
       setCredentials({
         fullname: formData.fullName,
         studentId: formData.studentId,
-        password: formData.studentId, // Password = Student ID
+        classCode: formData.classCode,
       });
       setShowCredentials(true);
     } else {
@@ -51,14 +57,14 @@ const AddStudentModal = ({ onClose, onSubmit }) => {
   };
 
   const handleCopyCredentials = () => {
-    const text = `Student Login Credentials\nName: ${credentials.fullname}\nStudent ID: ${credentials.studentId}\nPassword: ${credentials.password}`;
+    const text = `Student Login Credentials\nName: ${credentials.fullname}\nStudent ID: ${credentials.studentId}\nClass Code: ${credentials.classCode}`;
     navigator.clipboard.writeText(text);
     alert("Credentials copied to clipboard!");
   };
 
   const handleClose = () => {
     setShowCredentials(false);
-    setFormData({ fullName: "", studentId: "" });
+    setFormData({ fullName: "", studentId: "", classCode: "" });
     onClose();
   };
 
@@ -79,12 +85,12 @@ const AddStudentModal = ({ onClose, onSubmit }) => {
               <strong>Student ID:</strong> {credentials.studentId}
             </p>
             <p>
-              <strong>Password:</strong> {credentials.password}
+              <strong>Class Code:</strong> {credentials.classCode}
             </p>
           </div>
 
           <div className="credentials-notice">
-            💡 Password is the same as Student ID
+            Students login with Student ID + Class Code (no password needed)
           </div>
 
           <div className="credentials-actions">
@@ -121,6 +127,14 @@ const AddStudentModal = ({ onClose, onSubmit }) => {
             name="studentId"
             placeholder="Student ID (e.g., 2024-001)"
             value={formData.studentId}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="text"
+            name="classCode"
+            placeholder="Class Code (e.g., CS101)"
+            value={formData.classCode}
             onChange={handleChange}
             required
           />
