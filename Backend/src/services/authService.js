@@ -85,4 +85,28 @@ export const authService = {
             return { success: false, error: error.message };
         }
     },
+
+    async loginStudent(studentId, classCode) {
+        try {
+            const response = await fetch(`${API_URL}/login-student`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ studentId, classCode }),
+            });
+
+            const data = await response.json();
+
+            if (data.success && data.data.session) {
+                localStorage.setItem('session', JSON.stringify(data.data.session));
+                localStorage.setItem('user', JSON.stringify(data.data.user));
+            }
+
+            return data;
+        } catch (error) {
+            console.error('Student login error:', error);
+            return { success: false, error: error.message };
+        }
+    },
 };
