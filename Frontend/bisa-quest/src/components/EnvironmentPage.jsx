@@ -5,12 +5,55 @@ import './styles/EnvironmentPage.css';
 const EnvironmentPage = ({ 
   environmentType = 'village',
   backgroundImage,
-  npcs = [], // Array of NPC objects with position, character image, name
+  npcs = [],
   onNPCClick,
-  playerCharacter // Path to player character image
+  playerCharacter
 }) => {
   const [playerPosition, setPlayerPosition] = useState({ x: 50, y: 50 });
   const [keysPressed, setKeysPressed] = useState({});
+  const [environmentProgress, setEnvironmentProgress] = useState(0);
+  const [npcCompletionStatus, setNpcCompletionStatus] = useState({});
+
+  // Fetch environment progress
+  useEffect(() => {
+    fetchEnvironmentProgress();
+  }, [environmentType]);
+
+  const fetchEnvironmentProgress = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch(
+        `http://localhost:5000/api/npc/environment-progress?environmentType=${environmentType}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setEnvironmentProgress(result.data.progress);
+        
+        // Create a map of NPC completion status
+        const statusMap = {};
+        result.data.npcProgress.forEach(npc => {
+          statusMap[npc.npcId] = {
+            completed: npc.completed,
+            encounters: npc.encounters,
+            bestScore: npc.bestScore
+          };
+        });
+        setNpcCompletionStatus(statusMap);
+        
+        console.log('Environment Progress:', result.data);
+      }
+    } catch (error) {
+      console.error('Error fetching environment progress:', error);
+    }
+  };
 
   // Keyboard movement
   useEffect(() => {
@@ -65,25 +108,53 @@ const EnvironmentPage = ({
       <div className="environment-background" style={{ backgroundImage: `url(${backgroundImage})` }} />
 
       {/* NPCs */}
-      {npcs && npcs.map((npc, index) => (
-        <div 
-          key={npc.npcId || index} 
-          className="npc-on-map" 
-          style={{ left: `${npc.x}%`, top: `${npc.y}%` }}
-          onClick={() => onNPCClick?.(npc)}
-        >
-          <img src={npc.character} alt={npc.name} className="npc-image" />
-          {npc.showName && <div className="npc-name-tag">{npc.name}</div>}
-        </div>
-      ))}
+      {npcs && npcs.map((npc, index) => {
+        const status = npcCompletionStatus[npc.npcId];
+        const isCompleted = status?.completed || false;
+        
+        return (
+          <div 
+            key={npc.npcId || index} 
+            className={`npc-on-map ${isCompleted ? 'completed' : ''}`}
+            style={{ left: `${npc.x}%`, top: `${npc.y}%` }}
+            onClick={() => onNPCClick?.(npc)}
+          >
+            <img src={npc.character} alt={npc.name} className="npc-image" />
+            {npc.showName && (
+              <div className="npc-name-tag">
+                {npc.name}
+                {isCompleted && <span className="completion-badge">✓</span>}
+              </div>
+            )}
+            {status && status.encounters > 0 && (
+              <div className="npc-progress-indicator">
+                {status.encounters}/3
+              </div>
+            )}
+          </div>
+        );
+      })}
 
       {/* Player */}
       <div className="player-character" style={{ left: `${playerPosition.x}%`, top: `${playerPosition.y}%` }}>
-        {playerCharacter ? <img src={playerCharacter} alt="Player" className="player-image" /> : <div className="player-placeholder">👤</div>}
+        {playerCharacter ? (
+          <img src={playerCharacter} alt="Player" className="player-image" />
+        ) : (
+          <div className="player-placeholder">👤</div>
+        )}
       </div>
 
-      {/* Progress Bar */}
-      <ProgressBar progress={0} variant="environment" showLabel={true} />
+      {/* Progress Bar - Now dynamic */}
+      <ProgressBar 
+        progress={environmentProgress} 
+        variant="environment" 
+        showLabel={true} 
+      />
+
+      {/* Progress Details */}
+      <div className="environment-progress-info">
+        <span>{Object.values(npcCompletionStatus).filter(s => s.completed).length}/{npcs.length} Challenges Completed</span>
+      </div>
 
       {/* Controls Hint */}
       <div className="controls-hint">Use W, A, S, D to move</div>

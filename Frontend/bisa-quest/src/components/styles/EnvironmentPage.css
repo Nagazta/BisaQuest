@@ -233,6 +233,50 @@
   background: #e8b878;
   transform: translateY(-2px);
 }
+/* NPC Completion Styles */
+.npc-on-map.completed .npc-image {
+  filter: brightness(1.2);
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+}
+
+.completion-badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  background: #4CAF50;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+.npc-progress-indicator {
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(76, 175, 80, 0.9);
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.environment-progress-info {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  color: #333;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {

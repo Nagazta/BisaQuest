@@ -24,7 +24,6 @@ export const authService = {
             return { success: false, error: error.message };
         }
     },
-
     async login(email, password) {
         try {
             const response = await fetch(`${API_URL}/login`, {
@@ -36,6 +35,11 @@ export const authService = {
             });
 
             const data = await response.json();
+
+            // ADD THIS - Store token for teacher login too
+            if (data.success && data.data?.session?.access_token) {
+                localStorage.setItem('token', data.data.session.access_token);
+            }
 
             return data;
         } catch (error) {
@@ -56,6 +60,7 @@ export const authService = {
             const data = await response.json();
             localStorage.removeItem('session');
             localStorage.removeItem('user');
+            localStorage.removeItem('token'); // ADD THIS LINE
             return data;
         } catch (error) {
             console.error('Logout error:', error);
@@ -109,6 +114,11 @@ export const authService = {
             if (data.success) {
                 localStorage.setItem('user', JSON.stringify(data.data.user));
                 localStorage.setItem('session', JSON.stringify(data.data.session));
+                
+                // ADD THIS LINE - Store the access token separately
+                if (data.data.session?.access_token) {
+                    localStorage.setItem('token', data.data.session.access_token);
+                }
             }
             return data;
         } catch (error) {

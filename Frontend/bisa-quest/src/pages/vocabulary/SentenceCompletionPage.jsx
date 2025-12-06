@@ -1,35 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-
+import { getGameDataByNPC, getRandomGameSet } from '../../data/moduleOneGames';
 import ProgressBar from '../../components/ProgressBar';
-import Button from '../../components/Button';
+import NPCCharacter from '../../components/NPCCharacter';
 import FeedbackNotification from '../../components/FeedbackNotification';
+import Button from '../../components/Button';
 import GuideDialogueBox from '../../components/GuideDialogueBox';
-
-import VicenteCharacter from '../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png';
-
-import './styles/SentenceCompletionPage.css'
-
-const SENTENCE_DATA = [
-  {
-    id: 1,
-    sentence: "The food is very important. We see the [___] everyday",
-    correctAnswer: "sun",
-    choices: ["sun", "water", "air"],
-  },
-  {
-    id: 2,
-    sentence: "I need to buy some fresh vegetables from the [___].",
-    correctAnswer: "market",
-    choices: ["mountain", "market", "ocean"],
-  },
-  {
-    id: 3,
-    sentence: "The merchant packed his goods for the long [___].",
-    correctAnswer: "journey",
-    choices: ["house", "journey", "desk"],
-  }
-];
+import SentenceCompletionBg from '../../assets/images/environments/Vocabulary/well-bg.png';
+import './styles/SentenceCompletionPage.css';
 
 const SentencePrompt = ({ sentence, selectedAnswer, isSubmitted, correctAnswer }) => {
   const displayedWord =
@@ -71,7 +49,6 @@ const SentenceCompletionPanel = ({
   isSubmitted,
   correctAnswer
 }) => {
-
   const getChoiceButtonClass = (choice) => {
     let className = "choice-button";
 
@@ -87,7 +64,6 @@ const SentenceCompletionPanel = ({
 
   return (
     <div className="center-panel sentence-completion-box">
-
       <div className="title-header">Sentence Completion</div>
 
       <SentencePrompt
@@ -111,33 +87,159 @@ const SentenceCompletionPanel = ({
           </Button>
         ))}
       </div>
-
     </div>
   );
 };
 
-
 const SentenceCompletionPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const npcId = location.state?.npcId || 'vicente';
 
-  const returnTo = location.state?.returnTo || "/student/quest";
-
+  const [gameData, setGameData] = useState(null);
+  const [sentenceData, setSentenceData] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [progress, setProgress] = useState(0);
   const [selectedChoice, setSelectedChoice] = useState(null);
   const [feedback, setFeedback] = useState(null);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [startTime, setStartTime] = useState(null);
+  const [encountersRemaining, setEncountersRemaining] = useState(3);
+  const [latestAttempt, setLatestAttempt] = useState(null);
+  const [showReplayConfirm, setShowReplayConfirm] = useState(false);
+  const [gameStarted, setGameStarted] = useState(false);
 
-  const currentItem = SENTENCE_DATA[currentQuestionIndex];
-  const totalQuestions = SENTENCE_DATA.length;
+  useEffect(() => {
+    console.log('=== SENTENCE COMPLETION PAGE MOUNTED ===');
+    console.log('NPC ID from location.state:', location.state?.npcId);
+    console.log('Using npcId:', npcId);
+    
+    // Load game data for this NPC
+    const npcGameData = getGameDataByNPC(npcId);
+    console.log('Game data retrieved:', {
+      found: !!npcGameData,
+      gameType: npcGameData?.gameType,
+      npcName: npcGameData?.npcName
+    });
+    
+    if (npcGameData && npcGameData.gameType === 'sentence_completion') {
+      console.log('✅ Valid game data found, setting gameData state');
+      setGameData(npcGameData);
+    } else {
+      console.error('❌ Invalid NPC or game type for sentence completion', {
+        npcId,
+        gameData: npcGameData
+      });
+      navigate('/student/village');
+    }
+  }, [npcId]);
+
+  // Separate effect to check previous attempt after gameData is set
+  useEffect(() => {
+    if (gameData) {
+      console.log('GameData is now available, checking previous attempt');
+      checkPreviousAttempt();
+    }
+  }, [gameData]);
+
+  const checkPreviousAttempt = async () => {
+    console.log('=== CHECKING PREVIOUS ATTEMPT ===');
+    try {
+      const token = localStorage.getItem('token');
+      console.log('Token exists:', !!token);
+      console.log('Token (first 30 chars):', token?.substring(0, 30));
+      
+      const requestBody = {
+        npcId,
+        challengeType: 'sentence_completion'
+      };
+      
+      console.log('Sending POST to /api/npc/start with body:', requestBody);
+      
+      const response = await fetch('http://localhost:5000/api/npc/start', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+      
+      const result = await response.json();
+      console.log('Response body:', JSON.stringify(result, null, 2));
+      
+      if (result.success) {
+        console.log('✅ Previous attempt check successful');
+        console.log('Encounters remaining:', result.data.encountersRemaining);
+        console.log('Latest attempt:', result.data.latestAttempt);
+        
+        setEncountersRemaining(result.data.encountersRemaining);
+        setLatestAttempt(result.data.latestAttempt);
+        
+        if (result.data.latestAttempt) {
+          console.log('Found previous attempt, showing replay confirmation');
+          setShowReplayConfirm(true);
+        } else {
+          console.log('No previous attempt, starting fresh game');
+          startGame();
+        }
+      } else {
+        console.error('❌ API returned success: false', result);
+        startGame();
+      }
+    } catch (error) {
+      console.error('=== ERROR IN checkPreviousAttempt ===');
+      console.error('Error type:', error.constructor.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      startGame();
+    }
+  };
+
+  const startGame = () => {
+    console.log('=== STARTING GAME ===');
+    if (!gameData) {
+      console.error('❌ Cannot start game: gameData is null');
+      return;
+    }
+    
+    const selectedSet = getRandomGameSet(npcId);
+    console.log('Random game set selected:', {
+      found: !!selectedSet,
+      setId: selectedSet?.set_id,
+      sentenceCount: selectedSet?.sentences?.length
+    });
+    
+    if (selectedSet && selectedSet.sentences) {
+      console.log('✅ Game starting with sentences:', selectedSet.sentences.length);
+      setSentenceData(selectedSet.sentences);
+      setStartTime(Date.now());
+      setGameStarted(true);
+      setShowReplayConfirm(false);
+    } else {
+      console.error('❌ Invalid game set:', selectedSet);
+    }
+  };
+
+  const handleCancelReplay = () => {
+    console.log('User cancelled replay, navigating back to village');
+    navigate('/student/village');
+  };
+
+  const currentItem = sentenceData[currentQuestionIndex];
+  const totalQuestions = sentenceData.length;
   const isComplete = currentQuestionIndex >= totalQuestions;
 
   useEffect(() => {
-    const newProgress = Math.round((currentQuestionIndex / totalQuestions) * 100);
-    setProgress(newProgress);
-  }, [currentQuestionIndex, totalQuestions]);
+    if (sentenceData.length > 0) {
+      const newProgress = Math.round((currentQuestionIndex / totalQuestions) * 100);
+      setProgress(newProgress);
+    }
+  }, [currentQuestionIndex, sentenceData.length]);
 
   useEffect(() => {
     if (feedback) {
@@ -147,7 +249,7 @@ const SentenceCompletionPage = () => {
   }, [feedback]);
 
   const handleBack = () => {
-    navigate(returnTo);
+    navigate('/student/village');
   };
 
   const handleChoiceClick = (choice) => {
@@ -158,13 +260,11 @@ const SentenceCompletionPage = () => {
   };
 
   const handleSubmit = () => {
-    if (isComplete) {
-      navigate(returnTo, { state: { completed: true, npcId: "vicente" } });
-      return;
-    }
-
     if (!selectedChoice) {
-      setFeedback({ type: "warning", message: "Please select an answer choice first!" });
+      setFeedback({ 
+        type: "warning", 
+        message: "Please select an answer choice first!" 
+      });
       return;
     }
 
@@ -172,7 +272,12 @@ const SentenceCompletionPage = () => {
 
     if (selectedChoice === currentItem.correctAnswer) {
       setCorrectCount((count) => count + 1);
-      setFeedback({ type: "success", message: "Correct! Great job!" });
+      setFeedback({ 
+        type: "success", 
+        message: currentQuestionIndex === 0 
+          ? gameData.dialogues.firstCorrect 
+          : gameData.dialogues.correct 
+      });
 
       // Move to next question
       setTimeout(() => {
@@ -181,62 +286,148 @@ const SentenceCompletionPage = () => {
         setFeedback(null);
         setIsSubmitted(false);
       }, 1500);
-
     } else {
       setFeedback({
         type: "error",
-        message: `Incorrect. The correct answer was **${currentItem.correctAnswer}**.`
+        message: gameData.dialogues.incorrect
       });
       setIsSubmitted(false);
     }
   };
 
+  const handleComplete = async () => {
+    console.log('=== COMPLETING GAME ===');
+    try {
+      const token = localStorage.getItem('token');
+      const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+      
+      const submitData = {
+        npcId,
+        challengeType: 'sentence_completion',
+        score: correctCount,
+        totalQuestions: sentenceData.length,
+        timeSpent,
+        completed: true
+      };
+      
+      console.log('Submitting completion:', submitData);
+      
+      await fetch('http://localhost:5000/api/npc/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(submitData)
+      });
+      
+      console.log('✅ Completion submitted, navigating to village');
+      navigate('/student/village', { state: { completed: true } });
+    } catch (error) {
+      console.error('Error submitting challenge:', error);
+      navigate('/student/village', { state: { completed: true } });
+    }
+  };
+
+  if (!gameData) {
+    return <div className="loading-message">Loading...</div>;
+  }
+
+  // Replay confirmation modal
+  if (showReplayConfirm && latestAttempt) {
+    return (
+      <div className="sentence-completion-page">
+        <div 
+          className="sentence-completion-background"
+          style={{ backgroundImage: `url(${SentenceCompletionBg})` }}
+        />
+        
+        <div className="replay-confirmation-modal">
+          <div className="replay-modal-content">
+            <h2>Previous Attempt Found</h2>
+            <div className="previous-score-info">
+              <p><strong>Previous Score:</strong> {latestAttempt.score}/{latestAttempt.totalQuestions}</p>
+              <p><strong>Time Spent:</strong> {latestAttempt.timeSpent}s</p>
+              <p><strong>Attempts Remaining:</strong> {encountersRemaining}</p>
+            </div>
+            <p className="replay-warning">
+              Are you sure you want to play again? Your best score will be kept.
+            </p>
+            <div className="replay-modal-buttons">
+              <Button onClick={startGame} className="btn-confirm">
+                Yes, Play Again
+              </Button>
+              <Button onClick={handleCancelReplay} className="btn-cancel">
+                No, Go Back
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!gameStarted) {
+    return (
+      <div className="sentence-completion-page">
+        <div 
+          className="sentence-completion-background"
+          style={{ backgroundImage: `url(${SentenceCompletionBg})` }}
+        />
+        <div className="loading-message">Loading...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="quiz-page-container">
+    <div className="sentence-completion-page">
+      <div 
+        className="sentence-completion-background"
+        style={{ backgroundImage: `url(${SentenceCompletionBg})` }}
+      />
 
-      <Button variant="back" className="back-button-quiz" onClick={handleBack}>
+      <ProgressBar 
+        progress={isComplete ? 100 : progress} 
+        variant="environment" 
+        showLabel={true} 
+      />
+
+      <Button className="btn-back" onClick={handleBack}>
         ← Back
       </Button>
 
-      <ProgressBar
-        progress={isComplete ? 100 : progress}
-        variant="instruction"
-        showLabel={true}
-      />
+      <div className="encounters-info">
+        Attempts Remaining: {encountersRemaining}
+      </div>
 
       <div className="association-content">
-
-        {/* LEFT PANEL — Character + Dialogue + Submit */}
         <div className="left-panel-quiz">
-
-          <img
-            src={VicenteCharacter}
-            alt="Vicente"
-            className="guide-character-img"
+          <NPCCharacter 
+            characterImage={gameData.character}
+            variant="sentence"
+            alt={gameData.npcName}
           />
 
-          <Button
-            className="submit-button-quiz"
-            onClick={handleSubmit}
-            disabled={!selectedChoice && !isComplete}
-          >
-            {isComplete ? "Complete" : "Submit"}
-          </Button>
-
           <GuideDialogueBox
-            name="Vicente"
+            name={gameData.npcName}
             text={
               isComplete
-                ? `You've mastered these words! Final Score: ${correctCount}/${totalQuestions}`
-                : "A merchant needs to be clear with words. Complete the sentence below!"
+                ? gameData.dialogues.complete.replace('{score}', correctCount).replace('{total}', totalQuestions)
+                : currentQuestionIndex === 0
+                ? gameData.dialogues.hint
+                : gameData.dialogues.progress
             }
           />
 
+          <button 
+            className="submit-button-quiz"
+            onClick={isComplete ? handleComplete : handleSubmit}
+            disabled={!isComplete && !selectedChoice}
+          >
+            {isComplete ? 'Complete' : 'Submit'}
+          </button>
         </div>
 
-
-        {/* RIGHT PANEL — Question */}
         {!isComplete && currentItem && (
           <SentenceCompletionPanel
             sentence={currentItem.sentence}
@@ -247,11 +438,14 @@ const SentenceCompletionPage = () => {
             correctAnswer={currentItem.correctAnswer}
           />
         )}
-
       </div>
 
-      <FeedbackNotification type={feedback?.type} message={feedback?.message} />
+      <FeedbackNotification 
+        type={feedback?.type}
+        message={feedback?.message}
+      />
 
+      <div className="grass-decoration" />
     </div>
   );
 };

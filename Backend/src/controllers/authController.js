@@ -1,4 +1,5 @@
 import { supabase } from '../config/supabaseClient.js';
+import { jwtUtils } from '../utils/jwtUtils.js';
 
 export const register = async (req, res) => {
     try {
@@ -247,102 +248,120 @@ export const createStudent = async (req, res) => {
 };
 
 export const loginStudent = async (req, res) => {
-    try {
-        console.log('[STUDENT LOGIN] Attempt:', req.body);
-        const { studentId, classCode } = req.body;
+  try {
+    const { studentId, classCode } = req.body;
 
-        if (!studentId || !classCode) {
-            return res.status(400).json({
-                success: false,
-                error: 'Please provide student ID and class code'
-            });
-        }
+    console.log('[STUDENT LOGIN] Attempt:', { studentId, classCode });
 
-        // First find the user by username
-        const { data: userData, error: userError } = await supabase
-            .from('users')
-            .select('user_id')
-            .eq('username', studentId)
-            .single();
-
-        console.log('[USER LOOKUP]', { userData, userError });
-
-        if (userError || !userData) {
-            console.log('[ERROR] User not found');
-            return res.status(401).json({
-                success: false,
-                error: 'Invalid student ID or class code'
-            });
-        }
-
-        // Then find the student record
-        const { data: studentData, error: studentError } = await supabase
-            .from('student')
-            .select('student_id, class_code, teacher_id')
-            .eq('user_id', userData.user_id)
-            .single();
-
-        console.log('[STUDENT LOOKUP]', { studentData, studentError });
-
-        if (studentError || !studentData) {
-            console.log('[ERROR] Student record not found:', studentError?.message);
-            return res.status(401).json({
-                success: false,
-                error: 'Invalid student ID or class code'
-            });
-        }
-
-        // Verify class code matches
-        if (studentData.class_code !== classCode) {
-            console.log('[ERROR] Class code mismatch:', {
-                expected: studentData.class_code,
-                received: classCode
-            });
-            return res.status(401).json({
-                success: false,
-                error: 'Invalid student ID or class code'
-            });
-        }
-
-        // Get full user data
-        const { data: fullUserData, error: fullUserError } = await supabase
-            .from('users')
-            .select('*')
-            .eq('user_id', userData.user_id)
-            .single();
-
-        console.log('[FULL USER DATA]', { fullUserData, fullUserError });
-
-        if (fullUserError || !fullUserData) {
-            console.log('[ERROR] Could not fetch full user data');
-            return res.status(500).json({
-                success: false,
-                error: 'Login failed'
-            });
-        }
-
-        const responsePayload = {
-            success: true,
-            message: 'Student login successful',
-            data: {
-                user: fullUserData,
-                roleData: {
-                    student_id: studentData.student_id,
-                    class_code: studentData.class_code,
-                    teacher_id: studentData.teacher_id
-                },
-                session: { user_id: fullUserData.user_id }
-            }
-        };
-
-        console.log('[SUCCESS] Sending response:', JSON.stringify(responsePayload));
-        return res.status(200).json(responsePayload);
-
-    } catch (error) {
-        console.error('[CATCH] Student login error:', error);
-        res.status(401).json({
-            success: false,
-            error: error.message || 'Student login failed'
-        });
+    if (!studentId || !classCode) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please provide student ID and class code'
+      });
     }
+
+    // First find the user by username
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('user_id')
+      .eq('username', studentId)
+      .single();
+
+    console.log('[USER LOOKUP]', { userData, userError });
+
+    if (userError || !userData) {
+      console.log('[ERROR] User not found');
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid student ID or class code'
+      });
+    }
+
+    // Then find the student record
+    const { data: studentData, error: studentError } = await supabase
+      .from('student')
+      .select('student_id, class_code, teacher_id')
+      .eq('user_id', userData.user_id)
+      .single();
+
+    console.log('[STUDENT LOOKUP]', { studentData, studentError });
+
+    if (studentError || !studentData) {
+      console.log('[ERROR] Student record not found:', studentError?.message);
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid student ID or class code'
+      });
+    }
+
+    // Verify class code matches
+    if (studentData.class_code !== classCode) {
+      console.log('[ERROR] Class code mismatch:', {
+        expected: studentData.class_code,
+        received: classCode
+      });
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid student ID or class code'
+      });
+    }
+
+    // Get full user data
+    const { data: fullUserData, error: fullUserError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('user_id', userData.user_id)
+      .single();
+
+    console.log('[FULL USER DATA]', { fullUserData, fullUserError });
+
+    if (fullUserError || !fullUserData) {
+      console.log('[ERROR] Could not fetch full user data');
+      return res.status(500).json({
+        success: false,
+        error: 'Login failed'
+      });
+    }
+
+    // Generate JWT token for student
+    const tokenPayload = {
+      user_id: fullUserData.user_id,
+      student_id: studentData.student_id,
+      role: 'student',
+      class_code: classCode,
+      username: fullUserData.username
+    };
+
+    const access_token = jwtUtils.generateToken(tokenPayload);
+    console.log('[JWT] Generated token for student:', studentData.student_id);
+
+    const responsePayload = {
+      success: true,
+      message: 'Student login successful',
+      data: {
+        user: fullUserData,
+        roleData: {
+          student_id: studentData.student_id,
+          class_code: studentData.class_code,
+          teacher_id: studentData.teacher_id
+        },
+        session: { 
+          user_id: fullUserData.user_id,
+          access_token: access_token,
+          token_type: 'Bearer',
+          expires_in: 604800 // 7 days in seconds
+        }
+      }
+    };
+
+    console.log('[SUCCESS] Sending response with token');
+    return res.status(200).json(responsePayload);
+
+  } catch (error) {
+    console.error('[CATCH] Student login error:', error);
+    res.status(401).json({
+      success: false,
+      error: error.message || 'Student login failed'
+    });
+  }
 };

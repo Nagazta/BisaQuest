@@ -65,6 +65,11 @@ export const AuthProvider = ({ children }) => {
         });
 
         localStorage.setItem("session", JSON.stringify(result.data.session));
+        
+        // ADD THIS - Store token for teacher login
+        if (result.data.session?.access_token) {
+          localStorage.setItem("token", result.data.session.access_token);
+        }
       }
 
       return result;
@@ -87,6 +92,11 @@ export const AuthProvider = ({ children }) => {
           email: u.email,
           role: u.role,
         });
+        
+        // ADD THIS - Store token for student login
+        if (result.data.session?.access_token) {
+          localStorage.setItem("token", result.data.session.access_token);
+        }
       }
 
       return result;
@@ -101,6 +111,8 @@ export const AuthProvider = ({ children }) => {
       await authService.logout();
       localStorage.removeItem("session");
       localStorage.removeItem("user");
+      localStorage.removeItem("token"); // ADD THIS LINE
+      localStorage.removeItem("studentId"); // Also clear studentId
       setUser(null);
       return { success: true };
     } catch {

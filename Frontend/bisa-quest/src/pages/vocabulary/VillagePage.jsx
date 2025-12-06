@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import EnvironmentPage from '../../components/EnvironmentPage';
 import Button from '../../components/Button';
 import { environmentApi } from '../../services/environmentServices.js';
@@ -15,12 +15,24 @@ import './styles/VillagePage.css';
 
 const VillagePage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [villageNPCs, setVillageNPCs] = useState([]);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  // Refresh progress when returning from a completed game
+  useEffect(() => {
+    if (location.state?.completed) {
+      console.log('Challenge completed, refreshing village progress...');
+      setRefreshKey(prev => prev + 1);
+      // Clear the state
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, navigate, location.pathname]);
 
   useEffect(() => {
     initializeVillage();
-  }, []);
+  }, [refreshKey]); // Re-run when refreshKey changes
 
   const initializeVillage = async () => {
     setLoading(true);
@@ -32,11 +44,35 @@ const VillagePage = () => {
     }
     console.log("Found studentId in localStorage:", studentId);
 
-    // Frontend-defined NPCs
+    // Frontend-defined NPCs with showName property and quest types
     const npcs = [
-      { npcId: 'nando', name: 'Nando', x: 50, y: 35, character: NandoCharacter },
-      { npcId: 'ligaya', name: 'Ligaya', x: 70, y: 45, character: LigayaCharacter },
-      { npcId: 'vicente', name: 'Vicente', x: 20, y: 60, character: VicenteCharacter },
+      { 
+        npcId: 'nando', 
+        name: 'Nando', 
+        x: 50, 
+        y: 35, 
+        character: NandoCharacter,
+        showName: true,
+        quest: 'word_matching'
+      },
+      { 
+        npcId: 'ligaya', 
+        name: 'Ligaya', 
+        x: 70, 
+        y: 45, 
+        character: LigayaCharacter,
+        showName: true,
+        quest: 'word_association'
+      },
+      { 
+        npcId: 'vicente', 
+        name: 'Vicente', 
+        x: 20, 
+        y: 60, 
+        character: VicenteCharacter,
+        showName: true,
+        quest: 'sentence_completion'
+      },
     ];
     setVillageNPCs(npcs);
 
@@ -53,22 +89,44 @@ const VillagePage = () => {
     }
   };
 
-const handleNPCClick = async (npc) => {
-  const studentId = localStorage.getItem("studentId");
-  if (!studentId) return console.error("No student ID found");
+  const handleNPCClick = async (npc) => {
+    const studentId = localStorage.getItem("studentId");
+    if (!studentId) return console.error("No student ID found");
 
-  try {
-    await environmentApi.logNPCInteraction({ studentId, npcName: npc.name });
-    console.log("NPC interaction logged for:", npc.name);
-  } catch (err) {
-    console.error("Error logging NPC interaction:", err);
-  }
+    try {
+      await environmentApi.logNPCInteraction({ studentId, npcName: npc.name });
+      console.log("NPC interaction logged for:", npc.name);
+    } catch (err) {
+      console.error("Error logging NPC interaction:", err);
+    }
 
-  navigate("/student/instructions", {
-    state: { npcId: npc.name.toLowerCase(), returnTo: "/student/village" },
-  });
-};
-
+    // Navigate based on quest type
+    if (npc.quest === 'word_matching') {
+      navigate("/student/wordMatching", {
+        state: { 
+          npcId: npc.npcId,
+          npcName: npc.name,
+          returnTo: "/student/village" 
+        },
+      });
+    } else if (npc.quest === 'sentence_completion') {
+      navigate("/student/sentenceCompletion", {
+        state: { 
+          npcId: npc.npcId,
+          npcName: npc.name,
+          returnTo: "/student/village" 
+        },
+      });
+    } else if (npc.quest === 'word_association') {
+      navigate("/student/pictureAssociation", {
+        state: { 
+          npcId: npc.npcId,
+          npcName: npc.name,
+          returnTo: "/student/village" 
+        },
+      });
+    }
+  };
 
   const handleBackClick = () => navigate('/dashboard');
 
@@ -81,6 +139,7 @@ const handleNPCClick = async (npc) => {
       </Button>
 
       <EnvironmentPage
+        key={refreshKey} // Force re-render to fetch new progress
         environmentType="village"
         backgroundImage={VillageBackground}
         npcs={villageNPCs}

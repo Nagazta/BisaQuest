@@ -1,5 +1,6 @@
 import express from 'express';
-import { authenticateToken } from '../middleware/authMiddleware.js';
+import npcInteractionController from '../controllers/npcInteractionController.js';
+import { authenticateToken } from '../middleware/dualAuthMiddleware.js';
 
 const router = express.Router();
 
@@ -17,5 +18,8 @@ router.get('/progress', npcInteractionController.getProgress);
 
 // Get attempt history
 router.get('/history', npcInteractionController.getAttemptHistory);
+
+// Get Progress
+router.get('/environment-progress', npcInteractionController.getEnvironmentProgress);
 
 export default router;
