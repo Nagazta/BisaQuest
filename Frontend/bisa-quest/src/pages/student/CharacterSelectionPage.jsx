@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
 import CharacterCard from "../../components/CharacterCard";
@@ -9,7 +8,6 @@ import "../../pages/Student/styles/CharacterSelectionPage.css";
 
 const CharacterSelectionPage = () => {
   const navigate = useNavigate();
-  const [selectedCharacter, setSelectedCharacter] = useState(null);
 
   const characters = [
     {
@@ -28,16 +26,7 @@ const CharacterSelectionPage = () => {
     navigate("/dashboard");
   };
 
-  const handleCharacterSelect = (characterId) => {
-    setSelectedCharacter(characterId);
-  };
-
   const handleProceed = async (characterId) => {
-    if (!selectedCharacter) {
-      alert("Please select a character first!");
-      return;
-    }
-
     try {
       // Get user from session
       const sessionData = JSON.parse(localStorage.getItem("session"));
@@ -110,19 +99,9 @@ const CharacterSelectionPage = () => {
               <div key={character.id} className="character-option">
                 <CharacterCard
                   character={character}
-                  isSelected={selectedCharacter === character.id}
-                  onClick={() => handleCharacterSelect(character.id)}
-                />
-                <Button
-                  variant="character-select"
                   onClick={() => handleProceed(character.id)}
-                  disabled={selectedCharacter !== character.id}
-                  className={
-                    selectedCharacter === character.id ? "selected" : ""
-                  }
-                >
-                  {character.gender}
-                </Button>
+                />
+                <div className="character-name">{character.gender}</div>
               </div>
             ))}
           </div>

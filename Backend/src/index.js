@@ -32,10 +32,8 @@ app.use('/api/student', studentRoutes);
 app.use('/api/teacher', teacherRoutes);
 app.use('/api/preferences', preferenceRoutes);
 app.use('/api/progress', progressRoutes);
-app.use("/environment", environmentRoutes);
-
-app.use('/', environmentRoutes); // now /initialize and /interaction exist
-app.use('/api/npc', npcInteractionRoutes);
+app.use("/api", environmentRoutes);
+app.use('/api', npcInteractionRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

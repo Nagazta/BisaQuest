@@ -19,71 +19,83 @@
   background-repeat: no-repeat;
 }
 
-
 .matching-content {
   position: absolute;
-  top: 50%;                    
-  left: 50%;                   
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
-  width: 90%;                  
+  width: 90%;
+  max-width: 1400px;
+  height: 70%;
   display: flex;
+  gap: 100px;
+  align-items: center;
   justify-content: space-between;
-  gap: 40px;
   z-index: 10;
-  padding: 40px 0;
+  margin-top: 40px;
+  padding: 20px;
 }
 
 .guide-character-panel {
-  width: 280px;
-  margin: 0;
+  flex: 0 0 280px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 15px;
+  height: 100%;
+  justify-content: center;
 }
 
 .npc-character-container.matching {
-  width: 150px;
-  height: 200px;
-  margin-top: 30px;
+  width: 220px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
 }
 
 .npc-character-container.matching img {
-  margin-top: 100px;
   width: 100%;
   height: auto;
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
 }
 
 .guide-dialogue {
-  background-color: rgba(160, 130, 109, 0.95);
+  background-color: rgba(139, 69, 19, 0.95);
   border: 4px solid #654321;
   border-radius: 15px;
-  margin: 60px;
   padding: 20px;
-  width: 50%;
+  width: 100%;
+  max-width: 280px;
+  min-height: 100px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .guide-name {
-  font-family: 'Georgia', serif;
+  font-family: 'Pixelify Sans', sans-serif;
   font-size: 20px;
   font-weight: bold;
   color: #FFF8DC;
   margin-bottom: 10px;
+  text-align: center;
 }
 
 .guide-text {
-  font-family: Arial, sans-serif;
-  font-size: 15px;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 14px;
   color: #FFFFFF;
   line-height: 1.6;
+  text-align: center;
 }
 
 .submit-button {
-  width: 50%;
-  padding: 15px;
+  width: 100%;
+  max-width: 250px;
+  padding: 15px 30px;
   font-size: 20px;
   font-weight: bold;
-  font-family: 'Georgia', serif;
+  font-family: 'Pixelify Sans', sans-serif;
   background-color: #FF8C42;
   color: white;
   border: 4px solid #8B4513;
@@ -102,24 +114,22 @@
   transform: scale(0.98);
 }
 
-/* Word Button List (Middle) */
 .word-button-list {
   flex: 0 0 220px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  justify-content: flex-start;
+  gap: 12px;
+  justify-content: center;
   padding: 0;
-  margin-top: 100px;
-
+  height: 100%;
 }
 
 .word-button {
   background-color: #FDE68A;
   border: 4px solid #78350F;
-  border-radius: 15px;
+  border-radius: 12px;
   padding: 18px 25px;
-  font-family: 'Georgia', serif;
+  font-family: 'Pixelify Sans', sans-serif;
   font-size: 20px;
   font-weight: bold;
   color: #5D4037;
@@ -159,45 +169,28 @@
   cursor: not-allowed;
 }
 
-/* Definition List Panel (Right) */
 .definition-list-panel {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  overflow-y: auto;
-  padding: 0 40px;
-  margin: 0;                  
-}
-
-.definition-list-panel::-webkit-scrollbar {
-  width: 10px;
-}
-
-.definition-list-panel::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 10px;
-  border: 2px solid rgba(139, 69, 19, 0.3);
-}
-
-.definition-list-panel::-webkit-scrollbar-thumb {
-  background: rgba(139, 69, 19, 0.8);
-  border-radius: 10px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-.definition-list-panel::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 69, 19, 1);
+  gap: 22px;
+  overflow-y: hidden;
+  padding: 35px;
+  height: 100%;
+  justify-content: center;
 }
 
 .definition-card {
   background-color: rgba(253, 230, 138, 0.98);
   border: 4px solid #78350F;
-  border-radius: 15px;
-  padding: 25px;
+  border-radius: 12px;
+  padding: 22px 30px;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .definition-card:hover {
@@ -226,10 +219,12 @@
 
 .definition-card p {
   margin: 0;
-  font-family: Arial, sans-serif;
-  font-size: 15px;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 20px;
+  font-weight: bold;
   color: #5D4037;
-  line-height: 1.7;
+  line-height: 1.5;
+  text-align: center;
 }
 
 /* Replay Confirmation Modal */
@@ -332,14 +327,27 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 1.5rem;
-  color: white;
-  background: rgba(0, 0, 0, 0.7);
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #FFF8DC;
+  background: rgba(139, 69, 19, 0.95);
   padding: 2rem 3rem;
-  border-radius: 12px;
+  border-radius: 20px;
+  border: 5px solid #654321;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  animation: pulse 1.5s ease-in-out infinite;
 }
 
-
+@keyframes pulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+}
 
 @keyframes slideDown {
   from {

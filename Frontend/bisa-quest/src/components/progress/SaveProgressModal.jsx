@@ -1,7 +1,7 @@
 import { useState } from "react";
 import NPCCharacter from "../NPCCharacter";
 import LoadingBoy from "../../assets/images/characters/loading_screen_boy.png";
-import ConfirmationDialog from "../progress/ConfirmationDIalog";
+import ConfirmationDialog from "../progress/ConfirmationDialog";
 import Button from "../Button";
 import "../progress/styles/SaveProgressModal.css";
 

@@ -107,19 +107,27 @@ export const createStudent = async (req, res) => {
 
         console.log('Teacher found:', teacherData.teacher_id);
 
-        // Check if student ID already exists
+        // Check if student ID already exists in users table
         const { data: existingUser } = await supabase
             .from('users')
-            .select('username')
+            .select('user_id')
             .eq('username', studentId)
-            .single();
+            .maybeSingle();
 
-        if (existingUser) {
+        // Check for old deleted accounts
+        const { data: existingStudent } = await supabase
+            .from('student')
+            .select('student_id')
+            .eq('class_code', classCode)
+            .maybeSingle();
+
+        if (existingUser || existingStudent) {
             return res.status(400).json({
                 success: false,
                 error: 'Student ID already exists'
             });
         }
+
 
         console.log('Creating auth user with admin client...');
 

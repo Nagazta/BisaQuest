@@ -8,18 +8,18 @@ const router = express.Router();
 router.use(authenticateToken);
 
 // Start interaction with NPC
-router.post('/start', npcInteractionController.startInteraction);
+router.post('/npc/start', npcInteractionController.startInteraction);
 
 // Submit challenge completion
-router.post('/submit', npcInteractionController.submitChallenge);
+router.post('/npc/submit', npcInteractionController.submitChallenge);
 
 // Get student progress
-router.get('/progress', npcInteractionController.getProgress);
+router.get('/npc/progress', npcInteractionController.getProgress);
 
 // Get attempt history
-router.get('/history', npcInteractionController.getAttemptHistory);
+router.get('/npc/history', npcInteractionController.getAttemptHistory);
 
-// Get Progress
-router.get('/environment-progress', npcInteractionController.getEnvironmentProgress);
+// Get environment progress
+router.get('/npc/environment-progress', npcInteractionController.getEnvironmentProgress);
 
 export default router;

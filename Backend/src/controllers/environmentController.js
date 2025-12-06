@@ -1,13 +1,16 @@
 import { supabase } from "../config/supabaseClient.js";
 import { v4 as uuidv4 } from "uuid";
 
-/**
- * Initialize the student's environment state.
- * Creates a new row in environment_state if it doesn't exist.
- */
 export const initializeEnvironment = async (req, res) => {
   try {
     const { studentId, envType } = req.body;
+    if (!envType) {
+      return res.status(400).json({
+        success: false,
+        error: "Missing envType"
+      });
+    }
+
 
     console.log("Received initialize request:", { studentId, envType });
 
@@ -34,11 +37,11 @@ export const initializeEnvironment = async (req, res) => {
     });
 
     // 3️⃣ Attempt insert into environment_state
-const insertPayload = {
-  student_id: studentData.user_id, 
-  is_first_visit: true,
-  unlocked_areas: []
-};
+    const insertPayload = {
+      student_id: studentData.user_id,
+      is_first_visit: true,
+      unlocked_areas: []
+    };
 
 
     console.log("Insert payload:", insertPayload);
@@ -135,16 +138,16 @@ export const logNPCInteraction = async (req, res) => {
 
     // ✅ Insert into instruction_log
     const { data, error } = await supabase
-    .from("instruction_log")
-    .insert([
+      .from("instruction_log")
+      .insert([
         {
-        student_id: studentData.user_id,
-        npc_name: npcName,
-        first_time: true,
+          student_id: studentData.user_id,
+          npc_name: npcName,
+          first_time: true,
         }
-    ])
-    .select()
-    .single();
+      ])
+      .select()
+      .single();
 
     if (error) {
       console.error("Supabase insert error:", error);

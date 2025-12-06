@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api/auth';
+const API_URL = `${import.meta.env.VITE_API_URL}/api/auth`;
 
 export const authService = {
     async registerTeacher(email, password, firstName, lastName, teacherID = '') {
@@ -114,7 +114,7 @@ export const authService = {
             if (data.success) {
                 localStorage.setItem('user', JSON.stringify(data.data.user));
                 localStorage.setItem('session', JSON.stringify(data.data.session));
-                
+
                 // ADD THIS LINE - Store the access token separately
                 if (data.data.session?.access_token) {
                     localStorage.setItem('token', data.data.session.access_token);

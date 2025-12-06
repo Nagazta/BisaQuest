@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "../pages/styles/GlobalEffects.css";
 
-const ParticleEffects = ({ particleCount = 40, enableMouseTrail = true }) => {
+const ParticleEffects = ({ particleCount = 45, enableMouseTrail = true }) => {
   const [particles] = useState(() => {
     return [...Array(particleCount)].map((_, i) => ({
       id: i,

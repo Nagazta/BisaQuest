@@ -10,7 +10,7 @@
 }
 
 .dialogue-name {
-  font-family: 'Georgia', serif;
+  font-family: 'Pixelify Sans', sans-serif;
   font-size: 20px;
   font-weight: bold;
   color: #FFF8DC;
@@ -19,7 +19,7 @@
 }
 
 .dialogue-text {
-  font-family: Arial, sans-serif;
+  font-family: 'Pixelify Sans', sans-serif;
   font-size: 14px;
   color: #FFFFFF;
   line-height: 1.6;

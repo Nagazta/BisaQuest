@@ -9,6 +9,7 @@ import Kingdom from "../../assets/images/cardsImage/kingdom.png";
 import Throne from "../../assets/images/cardsImage/throne.png";
 import "./styles/StudentDashboard.css";
 import QuestStartModal from "../../components/QuestStartModal";
+import SaveProgressModal from "../../components/progress/SaveProgressModal";
 import Notification from "../../components/Notification";
 import ParticleEffects from "../../components/ParticleEffects";
 
@@ -18,8 +19,6 @@ const StudentDashboard = () => {
 
   useEffect(() => {
     const handleBeforeUnload = () => {
-      // Only clear on actual tab close, not refresh
-      // Set a flag that gets cleared on page load
       sessionStorage.setItem("isRefreshing", "true");
     };
 
@@ -81,9 +80,11 @@ const StudentDashboard = () => {
   ];
 
   const [showQuestModal, setShowQuestModal] = React.useState(false);
+  const [showSaveModal, setShowSaveModal] = React.useState(false);
+  const [savedProgress, setSavedProgress] = React.useState(null);
   const [selectedQuest, setSelectedQuest] = React.useState(null);
   const [notification, setNotification] = React.useState(null);
-  const handleStartQuest = (questId) => {
+  const handleStartQuest = async (questId) => {
     // Close notification if open
     setNotification(null);
 
@@ -98,7 +99,95 @@ const StudentDashboard = () => {
 
     const quest = quests.find((q) => q.id === questId);
     setSelectedQuest(quest);
-    setShowQuestModal(true);
+
+    // Check for saved progress before showing quest modal
+    await checkForSavedProgress();
+  };
+
+  const checkForSavedProgress = async () => {
+    try {
+      const sessionData = JSON.parse(localStorage.getItem("session"));
+      if (!sessionData?.user?.id) return;
+
+      const studentResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/student/by-user/${
+          sessionData.user.id
+        }`
+      );
+
+      if (!studentResponse.ok) return;
+
+      const studentData = await studentResponse.json();
+      const user_id = studentData.data.user_id;
+
+      const progressResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/progress/${user_id}/1`
+      );
+
+      if (!progressResponse.ok) {
+        // No saved progress, show quest start modal
+        setShowQuestModal(true);
+        return;
+      }
+
+      const progressData = await progressResponse.json();
+
+      if (progressData.hasProgress && progressData.data) {
+        // Has saved progress, show save progress modal
+        setSavedProgress(progressData.data);
+        setShowSaveModal(true);
+      } else {
+        // No saved progress, show quest start modal
+        setShowQuestModal(true);
+      }
+    } catch (err) {
+      console.error("Error checking progress:", err);
+      // On error, just show quest start modal
+      setShowQuestModal(true);
+    }
+  };
+
+  const handleContinue = () => {
+    setShowSaveModal(false);
+    navigate("/student/village");
+  };
+
+  const handleNewGame = async () => {
+    try {
+      const sessionData = JSON.parse(localStorage.getItem("session"));
+      const studentResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/student/by-user/${
+          sessionData.user.id
+        }`
+      );
+      const studentData = await studentResponse.json();
+      const user_id = studentData.data.user_id;
+
+      // Delete all student_progress records
+      const deleteProgressResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/progress/reset-all`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            student_id: user_id,
+          }),
+        }
+      );
+
+      if (!deleteProgressResponse.ok) {
+        throw new Error("Failed to reset progress");
+      }
+
+      console.log("Progress reset successfully");
+      setSavedProgress(null);
+      setShowSaveModal(false);
+      setShowQuestModal(true);
+    } catch (err) {
+      console.error("Error resetting progress:", err);
+      setShowSaveModal(false);
+      setShowQuestModal(true);
+    }
   };
 
   const handleConfirmQuest = () => {
@@ -134,6 +223,14 @@ const StudentDashboard = () => {
         isOpen={showQuestModal}
         questTitle={selectedQuest?.title}
         onConfirm={handleConfirmQuest}
+      />
+
+      <SaveProgressModal
+        isOpen={showSaveModal}
+        onContinue={handleContinue}
+        onNewGame={handleNewGame}
+        characterImage={savedProgress?.characterImage}
+        savedProgress={savedProgress}
       />
 
       {notification && (

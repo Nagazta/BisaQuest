@@ -1,6 +1,6 @@
 import express from 'express';
 import { getDashboardData, createStudent } from '../controllers/teacherController.js';
-import { authenticateToken } from '../middleware/authMiddleware.js';
+import { authenticateToken } from '../middleware/dualAuthMiddleware.js';
 
 const router = express.Router();
 

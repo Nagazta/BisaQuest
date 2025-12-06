@@ -98,6 +98,11 @@ const VillagePage = () => {
 
     try {
       await environmentApi.logNPCInteraction({ studentId, npcName: npc.name });
+      await environmentApi.startNPCInteraction({
+        npcId: npc.npcId,
+        challengeType: npc.quest,
+      });
+
       console.log("NPC interaction logged for:", npc.name);
     } catch (err) {
       console.error("Error logging NPC interaction:", err);
@@ -132,8 +137,6 @@ const VillagePage = () => {
   };
 
   const handleBackClick = () => navigate("/dashboard");
-
-  if (loading) return <p>Loading village...</p>;
 
   return (
     <div className="village-page-wrapper">

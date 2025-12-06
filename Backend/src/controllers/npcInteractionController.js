@@ -1,4 +1,3 @@
-// controllers/npcInteractionController.js
 import interactionService from '../services/interactionService.js';
 import progressTrackingService from '../services/progressTrackingService.js';
 
@@ -9,7 +8,7 @@ class NPCInteractionController {
       console.log('=== START INTERACTION REQUEST ===');
       console.log('Request body:', JSON.stringify(req.body, null, 2));
       console.log('User from token:', JSON.stringify(req.user, null, 2));
-      
+
       const { npcId, challengeType = 'word_matching' } = req.body;
       const studentId = req.user.id;
 
@@ -25,9 +24,9 @@ class NPCInteractionController {
 
       console.log('Step 1: Starting interaction service...');
       // Start interaction and get progress
-      const { progress, isNewInteraction, canContinue } = 
+      const { progress, isNewInteraction, canContinue } =
         await interactionService.startInteraction(studentId, npcId, challengeType);
-      
+
       console.log('Step 1 Complete - Interaction started:', {
         progress: progress?.id,
         isNewInteraction,
@@ -41,7 +40,7 @@ class NPCInteractionController {
         npcId,
         challengeType
       );
-      
+
       console.log('Step 2 Complete - Latest attempt:', latestAttempt ? 'Found' : 'None');
       if (latestAttempt) {
         console.log('Latest attempt details:', {
@@ -75,11 +74,11 @@ class NPCInteractionController {
       console.error('Error type:', error.constructor.name);
       console.error('Error message:', error.message);
       console.error('Error stack:', error.stack);
-      
+
       if (error.code) {
         console.error('Error code:', error.code);
       }
-      
+
       if (error.details) {
         console.error('Error details:', error.details);
       }
@@ -99,7 +98,7 @@ class NPCInteractionController {
     try {
       console.log('=== SUBMIT CHALLENGE REQUEST ===');
       console.log('Request body:', JSON.stringify(req.body, null, 2));
-      
+
       const { npcId, challengeType, score, totalQuestions, timeSpent, completed } = req.body;
       const studentId = req.user.id;
 
@@ -121,7 +120,7 @@ class NPCInteractionController {
         challengeType,
         { score, totalQuestions, timeSpent, completed }
       );
-      
+
       console.log('Step 1 Complete - Attempt recorded:', attempt.id);
 
       // Update progress if completed
@@ -153,7 +152,7 @@ class NPCInteractionController {
       console.error('Error type:', error.constructor.name);
       console.error('Error message:', error.message);
       console.error('Error stack:', error.stack);
-      
+
       if (error.code) {
         console.error('Error code:', error.code);
       }
@@ -230,7 +229,7 @@ class NPCInteractionController {
       console.log('=== GET ENVIRONMENT PROGRESS ===');
       const studentId = req.user.id;
       const { environmentType = 'village' } = req.query;
-      
+
       console.log('Request params:', { studentId, environmentType });
 
       const progress = await progressTrackingService.getEnvironmentProgress(

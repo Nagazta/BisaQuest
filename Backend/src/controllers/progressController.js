@@ -12,21 +12,39 @@ export const checkProgress = async (req, res) => {
             });
         }
 
-        const { data, error } = await supabase
-            .from('quest_progress')
+        // Check student_progress table for any completed challenges
+        const { data: progressData, error: progressError } = await supabase
+            .from('student_progress')
             .select('*')
             .eq('student_id', studentId)
-            .eq('quest_id', questId)
+            .gt('encounters_completed', 0); // Has at least 1 completed encounter
+
+        if (progressError && progressError.code !== 'PGRST116') {
+            throw progressError;
+        }
+
+        // Check if any challenges have been attempted
+        const { data: attemptData, error: attemptError } = await supabase
+            .from('challenge_attempts')
+            .select('*')
+            .eq('student_id', studentId)
+            .eq('completed', true)
+            .limit(1)
             .single();
 
-        if (error && error.code !== 'PGRST116') { // PGRST116 = no rows found
-            throw error;
+        if (attemptError && attemptError.code !== 'PGRST116') {
+            throw attemptError;
         }
+
+        const hasProgress = (progressData && progressData.length > 0) || !!attemptData;
 
         res.status(200).json({
             success: true,
-            hasProgress: !!data,
-            data: data || null
+            hasProgress: hasProgress,
+            data: hasProgress ? {
+                progressCount: progressData?.length || 0,
+                lastAttempt: attemptData
+            } : null
         });
 
     } catch (error) {
@@ -120,6 +138,59 @@ export const resetProgress = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to reset progress',
+            error: error.message
+        });
+    }
+};
+
+// Reset all progress (delete all student_progress and challenge_attempts)
+export const resetAllProgress = async (req, res) => {
+    try {
+        const { student_id } = req.body;
+
+        if (!student_id) {
+            return res.status(400).json({
+                success: false,
+                message: 'Missing student_id'
+            });
+        }
+
+        console.log('Resetting all progress for student:', student_id);
+
+        // Delete all student_progress records
+        const { error: progressError } = await supabase
+            .from('student_progress')
+            .delete()
+            .eq('student_id', student_id);
+
+        if (progressError) {
+            console.error('Error deleting student_progress:', progressError);
+            throw progressError;
+        }
+
+        // Delete all challenge_attempts records
+        const { error: attemptsError } = await supabase
+            .from('challenge_attempts')
+            .delete()
+            .eq('student_id', student_id);
+
+        if (attemptsError) {
+            console.error('Error deleting challenge_attempts:', attemptsError);
+            throw attemptsError;
+        }
+
+        console.log('All progress reset successfully');
+
+        res.status(200).json({
+            success: true,
+            message: 'All progress reset successfully'
+        });
+
+    } catch (error) {
+        console.error('Error resetting all progress:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to reset all progress',
             error: error.message
         });
     }

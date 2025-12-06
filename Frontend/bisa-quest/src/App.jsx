@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import HomePage from "./components/HomeSection";
+import HomePage from "./components/HeroSection";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import StudentDashboard from "./pages/student/StudentDashboard";
