@@ -8,6 +8,7 @@ import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Q
 import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
 import DialogueBox from "../../components/instructions/DialogueBox";
 import Button from "../../components/Button";
+import ParticleEffects from "../../components/ParticleEffects";
 import "../student/styles/InstructionsPage.css";
 
 const InstructionsPage = () => {
@@ -34,9 +35,9 @@ const InstructionsPage = () => {
         },
         {
           text: "Let's start with a word matching challenge! Match each word with its correct definition.",
-        }
+        },
       ],
-      nextRoute: '/student/wordMatching'
+      nextRoute: "/student/wordMatching",
     },
     ligaya: {
       character: LigayaCharacter,
@@ -50,9 +51,9 @@ const InstructionsPage = () => {
         },
         {
           text: "Let's start with picture associations! Look at each image and choose the correct word that describes it.",
-        }
+        },
       ],
-      nextRoute: '/student/pictureAssociation'
+      nextRoute: "/student/pictureAssociation",
     },
     vicente: {
       character: VicenteCharacter,
@@ -66,10 +67,10 @@ const InstructionsPage = () => {
         },
         {
           text: "Good luck on your learning journey!",
-        }
+        },
       ],
-      nextRoute: '/student/sentenceCompletion'
-    }
+      nextRoute: "/student/sentenceCompletion",
+    },
   };
 
   // Default instructions (original guide)
@@ -83,12 +84,15 @@ const InstructionsPage = () => {
   ];
 
   // Get the appropriate configuration
-  const config = npcId && npcConfigs[npcId] ? npcConfigs[npcId] : {
-    character: Oldman,
-    name: "The Guide",
-    instructions: defaultInstructions,
-    nextRoute: "/dashboard"
-  };
+  const config =
+    npcId && npcConfigs[npcId]
+      ? npcConfigs[npcId]
+      : {
+          character: Oldman,
+          name: "The Guide",
+          instructions: defaultInstructions,
+          nextRoute: "/dashboard",
+        };
 
   const handleNext = () => {
     if (currentStep < config.instructions.length - 1) {
@@ -97,10 +101,10 @@ const InstructionsPage = () => {
       // Navigate based on configuration
       if (npcId && config.nextRoute) {
         navigate(config.nextRoute, {
-          state: { 
+          state: {
             npcId: npcId,
-            returnTo: returnTo 
-          }
+            returnTo: returnTo,
+          },
         });
       } else {
         navigate("/student/village");
@@ -118,6 +122,8 @@ const InstructionsPage = () => {
 
   return (
     <div className="instructions-page">
+      <ParticleEffects enableMouseTrail={false} />
+
       <ProgressBar
         progress={config.instructions[currentStep].progress}
         variant="instruction"

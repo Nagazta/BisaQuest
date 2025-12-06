@@ -78,6 +78,7 @@
     font-weight: bold;
     color: #78350f;
     min-width: 200px;
+    font-family: 'Pixelify Sans', sans-serif;
 }
 
 .btn-character-select:hover {

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
 import CharacterCard from "../../components/CharacterCard";
+import ParticleEffects from "../../components/ParticleEffects";
 import Boy from "../../assets/images/characters/Boy.png";
 import Girl from "../../assets/images/characters/Girl.png";
 import "../../pages/Student/styles/CharacterSelectionPage.css";
@@ -88,6 +89,8 @@ const CharacterSelectionPage = () => {
 
   return (
     <div className="character-selection-container">
+      <ParticleEffects enableMouseTrail={false} />
+
       <div className="decorative-clouds">
         <div className="cloud cloud-1"></div>
         <div className="cloud cloud-2"></div>

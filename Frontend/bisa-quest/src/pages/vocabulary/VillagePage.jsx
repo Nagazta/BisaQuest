@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import EnvironmentPage from '../../components/EnvironmentPage';
-import Button from '../../components/Button';
-import { environmentApi } from '../../services/environmentServices.js';
-
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import EnvironmentPage from "../../components/EnvironmentPage";
+import Button from "../../components/Button";
+import ParticleEffects from "../../components/ParticleEffects";
+import { environmentApi } from "../../services/environmentServices.js";
 // Images
-import VillageBackground from '../../assets/images/environments/village.png';
-import NandoCharacter from '../../assets/images/characters/vocabulary/Village_Quest_NPC_1.png';
-import LigayaCharacter from '../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png';
-import VicenteCharacter from '../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png';
-import PlayerCharacter from '../../assets/images/characters/Boy.png';
+import VillageBackground from "../../assets/images/environments/village.png";
+import NandoCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_1.png";
+import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
+import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
+import PlayerCharacter from "../../assets/images/characters/Boy.png";
 
-import './styles/VillagePage.css';
+import "./styles/VillagePage.css";
 
 const VillagePage = () => {
   const navigate = useNavigate();
@@ -23,8 +23,8 @@ const VillagePage = () => {
   // Refresh progress when returning from a completed game
   useEffect(() => {
     if (location.state?.completed) {
-      console.log('Challenge completed, refreshing village progress...');
-      setRefreshKey(prev => prev + 1);
+      console.log("Challenge completed, refreshing village progress...");
+      setRefreshKey((prev) => prev + 1);
       // Clear the state
       navigate(location.pathname, { replace: true, state: {} });
     }
@@ -36,7 +36,7 @@ const VillagePage = () => {
 
   const initializeVillage = async () => {
     setLoading(true);
-    const studentId = localStorage.getItem('studentId');
+    const studentId = localStorage.getItem("studentId");
     if (!studentId) {
       console.error("No student ID found in localStorage");
       setLoading(false);
@@ -46,44 +46,47 @@ const VillagePage = () => {
 
     // Frontend-defined NPCs with showName property and quest types
     const npcs = [
-      { 
-        npcId: 'nando', 
-        name: 'Nando', 
-        x: 50, 
-        y: 35, 
+      {
+        npcId: "nando",
+        name: "Nando",
+        x: 50,
+        y: 35,
         character: NandoCharacter,
         showName: true,
-        quest: 'word_matching'
+        quest: "word_matching",
       },
-      { 
-        npcId: 'ligaya', 
-        name: 'Ligaya', 
-        x: 70, 
-        y: 45, 
+      {
+        npcId: "ligaya",
+        name: "Ligaya",
+        x: 70,
+        y: 45,
         character: LigayaCharacter,
         showName: true,
-        quest: 'word_association'
+        quest: "word_association",
       },
-      { 
-        npcId: 'vicente', 
-        name: 'Vicente', 
-        x: 20, 
-        y: 60, 
+      {
+        npcId: "vicente",
+        name: "Vicente",
+        x: 20,
+        y: 60,
         character: VicenteCharacter,
         showName: true,
-        quest: 'sentence_completion'
+        quest: "sentence_completion",
       },
     ];
     setVillageNPCs(npcs);
 
     // Initialize environment in backend
     try {
-      const response = await environmentApi.initializeEnvironment('village', studentId);
+      const response = await environmentApi.initializeEnvironment(
+        "village",
+        studentId
+      );
       if (!response.success) {
-        console.error('Backend environment init failed:', response.error);
+        console.error("Backend environment init failed:", response.error);
       }
     } catch (err) {
-      console.error('Error initializing environment:', err);
+      console.error("Error initializing environment:", err);
     } finally {
       setLoading(false);
     }
@@ -101,51 +104,62 @@ const VillagePage = () => {
     }
 
     // Navigate based on quest type
-    if (npc.quest === 'word_matching') {
+    if (npc.quest === "word_matching") {
       navigate("/student/wordMatching", {
-        state: { 
+        state: {
           npcId: npc.npcId,
           npcName: npc.name,
-          returnTo: "/student/village" 
+          returnTo: "/student/village",
         },
       });
-    } else if (npc.quest === 'sentence_completion') {
+    } else if (npc.quest === "sentence_completion") {
       navigate("/student/sentenceCompletion", {
-        state: { 
+        state: {
           npcId: npc.npcId,
           npcName: npc.name,
-          returnTo: "/student/village" 
+          returnTo: "/student/village",
         },
       });
-    } else if (npc.quest === 'word_association') {
+    } else if (npc.quest === "word_association") {
       navigate("/student/pictureAssociation", {
-        state: { 
+        state: {
           npcId: npc.npcId,
           npcName: npc.name,
-          returnTo: "/student/village" 
+          returnTo: "/student/village",
         },
       });
     }
   };
 
-  const handleBackClick = () => navigate('/dashboard');
+  const handleBackClick = () => navigate("/dashboard");
 
   if (loading) return <p>Loading village...</p>;
 
   return (
     <div className="village-page-wrapper">
-      <Button variant="back" className="back-button-village-overlay" onClick={handleBackClick}>
+      <ParticleEffects enableMouseTrail={false} />
+      <Button
+        variant="back"
+        className="back-button-village-overlay"
+        onClick={handleBackClick}
+      >
         ← Back
       </Button>
 
       <EnvironmentPage
-        key={refreshKey} // Force re-render to fetch new progress
+        key={refreshKey}
         environmentType="village"
         backgroundImage={VillageBackground}
         npcs={villageNPCs}
         onNPCClick={handleNPCClick}
         playerCharacter={PlayerCharacter}
       />
+
+      <div className="decorative-clouds">
+        <div className="cloud cloud-1"></div>
+        <div className="cloud cloud-2"></div>
+        <div className="cloud cloud-3"></div>
+      </div>
     </div>
   );
 };

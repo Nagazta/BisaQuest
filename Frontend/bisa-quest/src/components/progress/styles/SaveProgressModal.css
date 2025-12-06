@@ -59,7 +59,7 @@
 }
 
 .modal-title {
-  font-family: 'Georgia', serif;
+  font-family: 'Pixelify Sans', sans-serif;
   font-size: 28px;
   font-weight: bold;
   color: #3e2723;
@@ -127,4 +127,8 @@
   .modal-btn {
     width: 100%;
   }
+}
+
+.modal-btn {
+  font-family: 'Pixelify Sans', sans-serif;
 }
