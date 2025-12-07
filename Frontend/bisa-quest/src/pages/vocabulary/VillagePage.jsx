@@ -156,6 +156,56 @@ const VillagePage = () => {
       console.error("Error fetching summary data:", error);
     }
   };
+  const checkAndShowSummary = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const studentId = localStorage.getItem("studentId");
+
+      // Check environment progress
+      const progressResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=village`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      const result = await progressResponse.json();
+      
+      if (result.success) {
+        const progress = result.data.progress ?? result.data.progress_percentage ?? 0;
+        
+        // If 100% complete, automatically navigate to completion page
+        if (progress >= 100) {
+          navigate("/student/viewCompletion", {
+            state: {
+              showSummary: true,
+              environmentProgress: progress,
+              summaryData: result.data,
+              returnTo: "/student/village",
+            }
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error checking completion:", error);
+    }
+  };
+
+// Update the useEffect that handles completed state
+useEffect(() => {
+  if (location.state?.completed) {
+    console.log("Challenge completed, refreshing village progress...");
+    setRefreshKey((prev) => prev + 1);
+    
+    // Check if module is complete
+    checkAndShowSummary();
+    
+    // Clear the state
+    navigate(location.pathname, { replace: true, state: {} });
+  }
+}, [location.state, navigate, location.pathname]);
 
   const handleNPCClick = (npc) => {
     setSelectedNPC(npc);

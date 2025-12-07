@@ -5,6 +5,7 @@ import GuideDialogueBox from "../../components/GuideDialogueBox";
 import Button from "../../components/Button";
 import ParticleEffects from "../../components/ParticleEffects";
 import "./styles/ViewCompletionPage.css";
+import "../../components/styles/QuestStartModal.css"; // Import QuestStartModal styles
 
 // Import background image
 import VillageBackground from "../../assets/images/environments/village.png";
@@ -59,17 +60,71 @@ const ViewCompletionPage = () => {
     navigate(returnTo, { state: { completed: true } });
   };
 
-  const handleProceedToNext = () => {
-    // Navigate to next module or instructions
-    navigate("/dashboard", {
-      state: {
-        summaryCompleted: true,
-        returnTo: "/student/village",
-      },
-    });
+  const handleProceedToNext = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const sessionData = JSON.parse(localStorage.getItem("session"));
+
+      if (!sessionData?.user?.id || !token) {
+        console.error("Missing authentication data");
+        navigate("/dashboard");
+        return;
+      }
+
+      const studentResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/student/by-user/${sessionData.user.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!studentResponse.ok) {
+        throw new Error("Failed to fetch student data");
+      }
+
+      const studentData = await studentResponse.json();
+      const studentId = studentData.data.student_id;
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/completion/record`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            studentId: studentId,
+            moduleId: 1
+          })
+        }
+      );
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log('✅ Module completion recorded:', result.data);
+
+        setTimeout(() => {
+          navigate("/dashboard", {
+            state: {
+              moduleCompleted: true,
+              moduleId: 1
+            }
+          });
+        }, 500);
+      } else {
+        console.error('Failed to record completion:', result.message);
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Error recording completion:", error);
+      navigate("/dashboard");
+    }
   };
 
-  // Calculate total scores
   const calculateTotalScore = () => {
     if (!summaryData) return { correct: 0, total: 0 };
 
@@ -79,8 +134,7 @@ const ViewCompletionPage = () => {
     summaryData.npcProgress.forEach((npc) => {
       if (npc.bestScore !== null) {
         totalCorrect += npc.bestScore;
-        // Assuming each NPC has fixed number of questions (adjust as needed)
-        totalQuestions += 5; // or get from backend
+        totalQuestions += 5;
       }
     });
 
@@ -115,56 +169,87 @@ const ViewCompletionPage = () => {
     <div className="view-completion-page">
       <ParticleEffects enableMouseTrail={false} />
 
-      {/* Background */}
       <div
         className="completion-background"
         style={{ backgroundImage: `url(${VillageBackground})` }}
       />
 
-      {/* Progress Bar */}
       <ProgressBar
         progress={environmentProgress}
         variant="summary"
         showLabel={true}
       />
 
-      {/* Main Content - Centered Summary Box */}
+      {/* Using QuestStartModal classes */}
       <div className="completion-content-centered">
-        <div className="completion-summary-box">
-          <h2 className="summary-title">Summary Performance</h2>
+        <div className="quest-modal-scroll summary">
+          <div className="scroll-content">
+            <h2 className="quest-modal-title">Quest Complete!</h2>
 
-          <div className="summary-overall">
-            <p className="summary-stat">Words Correct: {correct}/{total}</p>
-            <p className="summary-stat">Final Score: {finalScore}</p>
-          </div>
+            <div className="quest-modal-divider"></div>
 
-          {/* Game Breakdown */}
-          <div className="game-breakdown">
-            <h3 className="breakdown-title">Quest Breakdown:</h3>
-            {summaryData?.npcProgress.map((npc) => (
-              <div key={npc.npcId} className="breakdown-item">
-                <span className="breakdown-npc-name">
-                  {getNPCDisplayName(npc.npcId)}
-                </span>
-                <div className="breakdown-stats">
-                  <span className="breakdown-stat">
-                    Attempts: {npc.encounters}/3
-                  </span>
-                  <span className="breakdown-stat">
-                    Best Score: {npc.bestScore !== null ? npc.bestScore : "N/A"}
-                  </span>
+            <div className="quest-modal-quest-name">
+              {finalScore}%
+            </div>
+
+            <p className="quest-modal-instructions">
+              Words Correct: {correct}/{total} | Progress: {environmentProgress}%
+            </p>
+
+            <div className="quest-modal-divider"></div>
+
+            <p className="quest-modal-message">Quest Breakdown:</p>
+
+            <div className="completion-npc-list">
+              {summaryData?.npcProgress.map((npc) => (
+                <div key={npc.npcId} className="completion-breakdown-item">
+                  <div className="breakdown-row">
+                    <span className="breakdown-npc-name">
+                      {getNPCDisplayName(npc.npcId)}
+                    </span>
+                    <span className={`breakdown-status ${npc.completed ? 'completed' : 'incomplete'}`}>
+                      {npc.completed ? '✓' : '○'}
+                    </span>
+                  </div>
+                  <div className="breakdown-stats">
+                    <span>Attempts: {npc.encounters}/3</span>
+                    <span>Best Score: {npc.bestScore !== null ? `${npc.bestScore}/5` : "N/A"}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
 
-          <Button onClick={handleReturn} variant="primary" className="return-button">
-            Return
-          </Button>
+            <div className="quest-modal-divider"></div>
+
+            <p className="quest-modal-encouragement">
+              {environmentProgress >= 100
+                ? "Excellent work! You've mastered all the village quests!"
+                : environmentProgress >= 75
+                ? "Great progress! Keep going to master them all!"
+                : "You're making good progress. Complete more quests!"}
+            </p>
+
+            <Button
+              onClick={handleReturn}
+              variant="primary"
+              className="quest-modal-button"
+            >
+              Return to Village
+            </Button>
+
+            {environmentProgress >= 75 && (
+              <Button
+                onClick={handleProceedToNext}
+                variant="primary"
+                className="quest-modal-button completion-dashboard-btn"
+              >
+                Go to Dashboard →
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Bottom Dialogue Box */}
       <div className="completion-dialogue-wrapper">
         <GuideDialogueBox
           name="The Guide"
@@ -178,18 +263,6 @@ const ViewCompletionPage = () => {
         />
       </div>
 
-      {/* Optional: Proceed Button if progress >= 75% */}
-      {environmentProgress >= 75 && (
-        <Button
-          onClick={handleProceedToNext}
-          variant="primary"
-          className="proceed-next-button"
-        >
-          Proceed to Dashboard →
-        </Button>
-      )}
-
-      {/* Decorative grass */}
       <div className="grass-decoration-completion" />
     </div>
   );

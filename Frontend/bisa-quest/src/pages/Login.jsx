@@ -58,23 +58,37 @@ const Login = () => {
         console.log("Login result:", result);
 
         if (result.success) {
-          const student_id = result.data.roleData?.student_id || formData.studentId;
-          console.log("Resolved student_id:", student_id);
+          // Get the student_id (UUID) from response
+          const studentUUID = result.data.roleData?.student_id; // This is the UUID
+          const userUUID = result.data.user?.user_id;
 
+          console.log("Login successful with UUIDs:", {
+            studentUUID,
+            userUUID,
+            username: result.data.roleData?.username
+          });
+
+          if (!studentUUID) {
+            console.error("No student UUID in response!");
+            setError("Failed to get student data");
+            return;
+          }
+
+          // Store the UUID (this is what we'll use for all database operations)
+          localStorage.setItem("studentId", studentUUID);
+          
           const session = {
             user: {
-              id: result.data.user.user_id,
-              student_id: student_id,
+              id: userUUID,
+              student_id: studentUUID,
               role: "student"
             }
           };
 
           console.log("Storing session:", session);
-
           localStorage.setItem("session", JSON.stringify(session));
-          localStorage.setItem("studentId", student_id);
 
-          console.log("Student ID saved in localStorage:", localStorage.getItem("studentId"));
+          console.log("✅ Student UUID saved to localStorage:", studentUUID);
 
           navigate("/dashboard");
           return;
@@ -85,9 +99,7 @@ const Login = () => {
           : `${formData.identifier}@gmail.com`;
 
         console.log("Attempting teacher login with:", email);
-
         result = await login(email, formData.password);
-        console.log("Login result:", result);
 
         if (result.success) {
           navigate("/teacher-dashboard");

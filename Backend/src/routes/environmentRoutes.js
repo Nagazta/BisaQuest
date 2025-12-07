@@ -4,11 +4,12 @@ import {
   logInstructionEntry,
   logNPCInteraction,
 } from "../controllers/environmentController.js";
+import { authenticateToken } from '../middleware/dualAuthMiddleware.js';
 
 const router = express.Router();
 
-router.post("/environment/initialize", initializeEnvironment);
-router.post("/environment/instruction", logInstructionEntry);
-router.post("/npc/log", logNPCInteraction);
+router.post('/initialize', authenticateToken, initializeEnvironment);
+router.post('/log-instruction', authenticateToken, logInstructionEntry);
+router.post('/log-npc-interaction', authenticateToken, logNPCInteraction);
 
 export default router;

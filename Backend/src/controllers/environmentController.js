@@ -1,50 +1,38 @@
 import { supabase } from "../config/supabaseClient.js";
-import { v4 as uuidv4 } from "uuid";
 
 export const initializeEnvironment = async (req, res) => {
   try {
-    const { studentId, envType } = req.body;
-    if (!envType) {
+    const { envType } = req.body;
+    // Try to get from token first, fallback to body
+    const studentId = req.user?.student_id || req.body.studentId;
+
+    if (!studentId || !envType) {
       return res.status(400).json({
         success: false,
-        error: "Missing envType"
+        error: "Missing studentId or envType"
       });
     }
 
+    console.log("Initialize environment:", { studentId, envType });
 
-    console.log("Received initialize request:", { studentId, envType });
-
-    // 1️⃣ Check if the student exists
     const { data: studentData, error: studentError } = await supabase
       .from("student")
       .select("*")
       .eq("student_id", studentId)
       .single();
 
-    console.log("Student lookup result:", { studentData, studentError });
-
     if (studentError || !studentData) {
       return res.status(400).json({
         success: false,
-        error: `Student with ID ${studentId} does not exist.`,
+        error: `Student not found`,
       });
     }
 
-    // 2️⃣ Log the type of studentId and envType
-    console.log("Payload types:", {
-      studentIdType: typeof studentId,
-      envTypeType: typeof envType,
-    });
-
-    // 3️⃣ Attempt insert into environment_state
     const insertPayload = {
-      student_id: studentData.user_id,
+      student_id: studentId,
       is_first_visit: true,
       unlocked_areas: []
     };
-
-
-    console.log("Insert payload:", insertPayload);
 
     const { data, error } = await supabase
       .from("environment_state")
@@ -52,31 +40,23 @@ export const initializeEnvironment = async (req, res) => {
       .select()
       .single();
 
-    if (error) {
-      console.error("Insert error:", error);
-      throw error;
-    }
+    if (error) throw error;
 
     res.json({
       success: true,
       message: "Environment initialized",
       session: data,
     });
-
   } catch (err) {
     console.error("Error initializing environment:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 };
 
-
-/**
- * Log student entering instructions.
- * Creates a new row in instruction_log.
- */
 export const logInstructionEntry = async (req, res) => {
   try {
-    const { studentId, firstTime } = req.body;
+    const { firstTime } = req.body;
+    const studentId = req.user.student_id; // Get from token
 
     if (!studentId) {
       return res.status(400).json({ success: false, error: "Missing studentId" });
@@ -89,7 +69,7 @@ export const logInstructionEntry = async (req, res) => {
       .insert([
         {
           student_id: studentId,
-          first_time: firstTime ?? true, // default to true
+          first_time: firstTime ?? true,
         }
       ])
       .select()
@@ -107,7 +87,6 @@ export const logInstructionEntry = async (req, res) => {
       message: "Instruction entry logged",
       entry: data,
     });
-
   } catch (err) {
     console.error("Error in logInstructionEntry:", err);
     res.status(500).json({ success: false, error: err.message });
@@ -116,15 +95,15 @@ export const logInstructionEntry = async (req, res) => {
 
 export const logNPCInteraction = async (req, res) => {
   try {
-    const { studentId, npcName } = req.body;
+    const { npcName } = req.body;
+    const studentId = req.user.student_id; // Get from token
 
-    if (!studentId || !npcName) {
-      return res.status(400).json({ success: false, error: "Missing studentId or npcName" });
+    if (!npcName) {
+      return res.status(400).json({ success: false, error: "Missing npcName" });
     }
 
-    console.log("Backend: Logging NPC interaction for student:", studentId, "NPC:", npcName);
+    console.log("Logging NPC interaction:", { studentId, npcName });
 
-    // ✅ Check if student exists
     const { data: studentData, error: studentError } = await supabase
       .from("student")
       .select("*")
@@ -132,16 +111,17 @@ export const logNPCInteraction = async (req, res) => {
       .single();
 
     if (studentError || !studentData) {
-      console.error("Student not found:", studentError);
-      return res.status(400).json({ success: false, error: `Student with ID ${studentId} does not exist` });
+      return res.status(400).json({ 
+        success: false, 
+        error: `Student not found` 
+      });
     }
 
-    // ✅ Insert into instruction_log
     const { data, error } = await supabase
       .from("instruction_log")
       .insert([
         {
-          student_id: studentData.user_id,
+          student_id: studentId,
           npc_name: npcName,
           first_time: true,
         }
@@ -151,15 +131,18 @@ export const logNPCInteraction = async (req, res) => {
 
     if (error) {
       console.error("Supabase insert error:", error);
-      return res.status(500).json({ success: false, error: error.message });
+      throw error;
     }
 
-    console.log("Backend: NPC interaction logged successfully:", data);
+    console.log("NPC interaction logged:", data);
 
-    return res.json({ success: true, message: "NPC interaction logged", entry: data });
-
+    return res.json({ 
+      success: true, 
+      message: "NPC interaction logged", 
+      entry: data 
+    });
   } catch (err) {
-    console.error("Unexpected error in logNPCInteraction:", err);
+    console.error("Error in logNPCInteraction:", err);
     return res.status(500).json({ success: false, error: err.message });
   }
 };

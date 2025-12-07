@@ -8,7 +8,8 @@ import preferenceRoutes from './routes/preferenceRoutes.js';
 import progressRoutes from './routes/progressRoutes.js';
 import environmentRoutes from "./routes/environmentRoutes.js";
 import npcInteractionRoutes from './routes/npcInteractionRoutes.js';
-
+import completionRoutes from './routes/completionRoutes.js';
+import debugRoutes from './routes/debugRoutes.js';
 
 dotenv.config();
 
@@ -34,6 +35,8 @@ app.use('/api/preferences', preferenceRoutes);
 app.use('/api/progress', progressRoutes);
 app.use("/api", environmentRoutes);
 app.use('/api', npcInteractionRoutes);
+app.use('/api/completion', completionRoutes);
+app.use('/api/debug', debugRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

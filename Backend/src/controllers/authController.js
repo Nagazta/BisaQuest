@@ -323,30 +323,37 @@ export const loginStudent = async (req, res) => {
       });
     }
 
-    // Generate JWT token for student
+    // Generate JWT token for student with student_id (UUID)
     const tokenPayload = {
-      user_id: fullUserData.user_id,
-      student_id: studentData.student_id,
+      id: fullUserData.user_id,           // user_id
+      user_id: fullUserData.user_id,      // Keep this for compatibility
+      student_id: studentData.student_id, // This is the UUID from student table
       role: 'student',
       class_code: classCode,
       username: fullUserData.username
     };
 
     const access_token = jwtUtils.generateToken(tokenPayload);
-    console.log('[JWT] Generated token for student:', studentData.student_id);
+    console.log('[JWT] Generated token for student UUID:', studentData.student_id);
 
     const responsePayload = {
       success: true,
       message: 'Student login successful',
       data: {
-        user: fullUserData,
+        user: {
+          ...fullUserData,
+          student_uuid: studentData.student_id // Add this explicitly
+        },
         roleData: {
-          student_id: studentData.student_id,
+          student_id: studentData.student_id,   // This is the UUID
+          student_uuid: studentData.student_id, // Explicit UUID field
           class_code: studentData.class_code,
-          teacher_id: studentData.teacher_id
+          teacher_id: studentData.teacher_id,
+          username: studentId                   // The login username
         },
         session: { 
           user_id: fullUserData.user_id,
+          student_id: studentData.student_id,   // Add UUID here too
           access_token: access_token,
           token_type: 'Bearer',
           expires_in: 604800 // 7 days in seconds
@@ -354,7 +361,7 @@ export const loginStudent = async (req, res) => {
       }
     };
 
-    console.log('[SUCCESS] Sending response with token');
+    console.log('[SUCCESS] Sending response with student UUID:', studentData.student_id);
     return res.status(200).json(responsePayload);
 
   } catch (error) {
