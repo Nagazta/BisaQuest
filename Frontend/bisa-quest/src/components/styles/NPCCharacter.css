@@ -8,9 +8,9 @@
 /* Instruction page variant - positioned absolutely with animation */
 .npc-character-container.instruction {
   position: absolute;
-  top: 70%;
+  top: 45%;
   left: 50%;
-  transform: translate(-50%, -70%);
+  transform: translate(-50%, -50%);
   z-index: 5;
 }
 
