@@ -19,8 +19,11 @@ const QuestStartModal = ({
     if (!isOpen) return null;
 
     return (
-      <div className="quest-modal-overlay">
-        <div className="quest-modal-scroll">
+      <div className="quest-modal-overlay" onClick={onClose}>
+        <div
+          className="quest-modal-scroll"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="scroll-content">
             <h2 className="quest-modal-title">Ready for Adventure?</h2>
             <div className="quest-modal-divider"></div>

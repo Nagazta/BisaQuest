@@ -223,6 +223,7 @@ const StudentDashboard = () => {
         isOpen={showQuestModal}
         questTitle={selectedQuest?.title}
         onConfirm={handleConfirmQuest}
+        onClose={() => setShowQuestModal(false)}
       />
 
       <SaveProgressModal

@@ -1,11 +1,21 @@
-import React from 'react';
-import '../components/styles/Button.css';
+import React from "react";
+import "../components/styles/Button.css";
 
-const Button = ({ children, onClick, variant = 'primary', className = '' }) => {
+const Button = ({
+  children,
+  onClick,
+  variant = "primary",
+  className = "",
+  disabled,
+}) => {
+  const baseClass = variant === "custom" ? "" : "btn";
+  const variantClass = variant === "custom" ? "" : `btn-${variant}`;
+
   return (
-    <button 
+    <button
       onClick={onClick}
-      className={`btn btn-${variant} ${className}`}
+      className={`${baseClass} ${variantClass} ${className}`.trim()}
+      disabled={disabled}
     >
       {children}
     </button>
