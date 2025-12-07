@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { getGameDataByNPC, getRandomGameSet } from "../../data/moduleOneGames";
+import { getGameDataByNPC } from "../../data/moduleOneGames";
 import ProgressBar from "../../components/ProgressBar";
 import NPCCharacter from "../../components/NPCCharacter";
 import FeedbackNotification from "../../components/FeedbackNotification";
@@ -9,6 +9,7 @@ import GuideDialogueBox from "../../components/GuideDialogueBox";
 import SentenceCompletionBg from "../../assets/images/environments/Vocabulary/well-bg.png";
 import "./styles/SentenceCompletionPage.css";
 import ReplayConfirmModal from "../../components/ReplayConfirmModal";
+import { useGameSession } from "../../hooks/useGameSession";
 
 const SentencePrompt = ({
   sentence,
@@ -105,26 +106,11 @@ const SentenceCompletionPage = () => {
   const location = useLocation();
   const npcId = location.state?.npcId || "vicente";
 
-  const [gameData, setGameData] = useState(null);
-  const [sentenceData, setSentenceData] = useState([]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedChoice, setSelectedChoice] = useState(null);
-  const [feedback, setFeedback] = useState(null);
-  const [progress, setProgress] = useState(0);
-  const [correctCount, setCorrectCount] = useState(0);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [startTime, setStartTime] = useState(null);
-  const [encountersRemaining, setEncountersRemaining] = useState(3);
-  const [latestAttempt, setLatestAttempt] = useState(null);
-  const [showReplayConfirm, setShowReplayConfirm] = useState(false);
-  const [gameStarted, setGameStarted] = useState(false);
-
-  useEffect(() => {
+  const gameData = useMemo(() => {
     console.log("=== SENTENCE COMPLETION PAGE MOUNTED ===");
     console.log("NPC ID from location.state:", location.state?.npcId);
     console.log("Using npcId:", npcId);
 
-    // Load game data for this NPC
     const npcGameData = getGameDataByNPC(npcId);
     console.log("Game data retrieved:", {
       found: !!npcGameData,
@@ -133,127 +119,45 @@ const SentenceCompletionPage = () => {
     });
 
     if (npcGameData && npcGameData.gameType === "sentence_completion") {
-      console.log("✅ Valid game data found, setting gameData state");
-      setGameData(npcGameData);
+      console.log("✅ Valid game data found");
+      return npcGameData;
     } else {
       console.error("❌ Invalid NPC or game type for sentence completion", {
         npcId,
         gameData: npcGameData,
       });
       navigate("/student/village");
+      return null;
     }
-  }, [npcId]);
+  }, [npcId, navigate, location.state?.npcId]);
 
-  // Separate effect to check previous attempt after gameData is set
-  useEffect(() => {
-    if (gameData) {
-      console.log("GameData is now available, checking previous attempt");
-      checkPreviousAttempt();
-    }
-  }, [gameData]);
+  const {
+    encountersRemaining,
+    latestAttempt,
+    showReplayConfirm,
+    gameStarted,
+    gameContent: sentenceData,
+    startTime,
+    startGame,
+    handleCancelReplay,
+  } = useGameSession(npcId, gameData, "sentence_completion");
 
-  const checkPreviousAttempt = async () => {
-    console.log("=== CHECKING PREVIOUS ATTEMPT ===");
-    try {
-      const token = localStorage.getItem("token");
-      console.log("Token exists:", !!token);
-      console.log("Token (first 30 chars):", token?.substring(0, 30));
-
-      const requestBody = {
-        npcId,
-        challengeType: "sentence_completion",
-      };
-
-      console.log("Sending POST to /api/npc/start with body:", requestBody);
-
-      const response = await fetch("http://localhost:5000/api/npc/start", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      console.log("Response status:", response.status);
-      console.log("Response ok:", response.ok);
-
-      const result = await response.json();
-      console.log("Response body:", JSON.stringify(result, null, 2));
-
-      if (result.success) {
-        console.log("✅ Previous attempt check successful");
-        console.log("Encounters remaining:", result.data.encountersRemaining);
-        console.log("Latest attempt:", result.data.latestAttempt);
-
-        setEncountersRemaining(result.data.encountersRemaining);
-        setLatestAttempt(result.data.latestAttempt);
-
-        if (result.data.latestAttempt) {
-          console.log("Found previous attempt, showing replay confirmation");
-          setShowReplayConfirm(true);
-        } else {
-          console.log("No previous attempt, starting fresh game");
-          startGame();
-        }
-      } else {
-        console.error("❌ API returned success: false", result);
-        startGame();
-      }
-    } catch (error) {
-      console.error("=== ERROR IN checkPreviousAttempt ===");
-      console.error("Error type:", error.constructor.name);
-      console.error("Error message:", error.message);
-      console.error("Error stack:", error.stack);
-      startGame();
-    }
-  };
-
-  const startGame = () => {
-    console.log("=== STARTING GAME ===");
-    if (!gameData) {
-      console.error("❌ Cannot start game: gameData is null");
-      return;
-    }
-
-    const selectedSet = getRandomGameSet(npcId);
-    console.log("Random game set selected:", {
-      found: !!selectedSet,
-      setId: selectedSet?.set_id,
-      sentenceCount: selectedSet?.sentences?.length,
-    });
-
-    if (selectedSet && selectedSet.sentences) {
-      console.log(
-        "✅ Game starting with sentences:",
-        selectedSet.sentences.length
-      );
-      setSentenceData(selectedSet.sentences);
-      setStartTime(Date.now());
-      setGameStarted(true);
-      setShowReplayConfirm(false);
-    } else {
-      console.error("❌ Invalid game set:", selectedSet);
-    }
-  };
-
-  const handleCancelReplay = () => {
-    console.log("User cancelled replay, navigating back to village");
-    navigate("/student/village");
-  };
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [selectedChoice, setSelectedChoice] = useState(null);
+  const [feedback, setFeedback] = useState(null);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const currentItem = sentenceData[currentQuestionIndex];
   const totalQuestions = sentenceData.length;
   const isComplete = currentQuestionIndex >= totalQuestions;
 
-  useEffect(() => {
+  const progress = useMemo(() => {
     if (sentenceData.length > 0) {
-      const newProgress = Math.round(
-        (currentQuestionIndex / totalQuestions) * 100
-      );
-      setProgress(newProgress);
+      return Math.round((currentQuestionIndex / totalQuestions) * 100);
     }
-  }, [currentQuestionIndex, sentenceData.length]);
+    return 0;
+  }, [currentQuestionIndex, sentenceData.length, totalQuestions]);
 
   useEffect(() => {
     if (feedback) {

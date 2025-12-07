@@ -152,6 +152,10 @@ const StudentDashboard = () => {
     navigate("/student/village");
   };
 
+  const handleCloseSaveModal = () => {
+    setShowSaveModal(false);
+  };
+
   const handleNewGame = async () => {
     try {
       const sessionData = JSON.parse(localStorage.getItem("session"));
@@ -230,6 +234,7 @@ const StudentDashboard = () => {
         isOpen={showSaveModal}
         onContinue={handleContinue}
         onNewGame={handleNewGame}
+        onClose={handleCloseSaveModal}
         characterImage={savedProgress?.characterImage}
         savedProgress={savedProgress}
       />

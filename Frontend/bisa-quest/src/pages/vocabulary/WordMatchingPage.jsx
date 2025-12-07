@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { getGameDataByNPC, getRandomGameSet } from "../../data/moduleOneGames";
+import { getGameDataByNPC } from "../../data/moduleOneGames";
 import ProgressBar from "../../components/ProgressBar";
 import NPCCharacter from "../../components/NPCCharacter";
 import FeedbackNotification from "../../components/FeedbackNotification";
@@ -9,117 +9,50 @@ import GuideDialogueBox from "../../components/GuideDialogueBox";
 import WordMatchingBg from "../../assets/images/environments/Vocabulary/village-bg.png";
 import "./styles/WordMatchingPage.css";
 import ReplayConfirmModal from "../../components/ReplayConfirmModal";
+import { useGameSession } from "../../hooks/useGameSession";
 
 const WordMatchingPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const npcId = location.state?.npcId || "nando";
 
-  const [gameData, setGameData] = useState(null);
-  const [wordMatchingData, setWordMatchingData] = useState([]);
   const [selectedWord, setSelectedWord] = useState(null);
   const [selectedDefinition, setSelectedDefinition] = useState(null);
   const [matches, setMatches] = useState([]);
   const [feedback, setFeedback] = useState(null);
-  const [progress, setProgress] = useState(0);
   const [completedWords, setCompletedWords] = useState([]);
   const [showHint, setShowHint] = useState(true);
-  const [startTime, setStartTime] = useState(null);
-  const [encountersRemaining, setEncountersRemaining] = useState(3);
-  const [latestAttempt, setLatestAttempt] = useState(null);
-  const [showReplayConfirm, setShowReplayConfirm] = useState(false);
-  const [gameStarted, setGameStarted] = useState(false);
 
-  useEffect(() => {
-    // Load game data for this NPC
+  const gameData = useMemo(() => {
     const npcGameData = getGameDataByNPC(npcId);
     console.log("Loading game data for npcId:", npcId, "Result:", npcGameData);
 
     if (npcGameData && npcGameData.gameType === "word_matching") {
-      setGameData(npcGameData);
+      return npcGameData;
     } else {
       console.error("Invalid NPC or game type for word matching");
       navigate("/student/village");
+      return null;
     }
-  }, [npcId]);
+  }, [npcId, navigate]);
 
-  useEffect(() => {
-    if (gameData) {
-      checkPreviousAttempt();
-    }
-  }, [gameData]);
+  const {
+    encountersRemaining,
+    latestAttempt,
+    showReplayConfirm,
+    gameStarted,
+    gameContent: wordMatchingData,
+    startTime,
+    startGame,
+    handleCancelReplay,
+  } = useGameSession(npcId, gameData, "word_matching");
 
-  const checkPreviousAttempt = async () => {
-    console.log(
-      "checkPreviousAttempt called, gameData at this point:",
-      gameData
-    );
-    try {
-      const token = localStorage.getItem("token");
-
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/npc/start`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            npcId,
-            challengeType: "word_matching",
-          }),
-        }
-      );
-
-      const result = await response.json();
-
-      if (result.success) {
-        setEncountersRemaining(result.data.encountersRemaining);
-        setLatestAttempt(result.data.latestAttempt);
-
-        if (result.data.latestAttempt) {
-          setShowReplayConfirm(true);
-        } else {
-          // No previous attempt, start game immediately
-          startGame();
-        }
-      }
-    } catch (error) {
-      console.error("Error checking previous attempt:", error);
-      startGame();
-    }
-  };
-
-  const startGame = () => {
-    console.log("startGame called, gameData:", gameData);
-    if (!gameData) {
-      console.log("No gameData, returning");
-      return;
-    }
-
-    const selectedSet = getRandomGameSet(npcId);
-    console.log("selectedSet:", selectedSet);
-    if (selectedSet && selectedSet.words) {
-      setWordMatchingData(selectedSet.words);
-      setStartTime(Date.now());
-      setGameStarted(true);
-      setShowReplayConfirm(false);
-    }
-  };
-
-  const handleCancelReplay = () => {
-    navigate("/student/village");
-  };
-
-  useEffect(() => {
+  const progress = useMemo(() => {
     if (wordMatchingData.length > 0) {
-      const newProgress = Math.round(
-        (matches.length / wordMatchingData.length) * 100
-      );
-      setProgress(newProgress);
+      return Math.round((matches.length / wordMatchingData.length) * 100);
     }
-  }, [matches, wordMatchingData.length]);
+    return 0;
+  }, [matches.length, wordMatchingData.length]);
 
   useEffect(() => {
     if (feedback) {

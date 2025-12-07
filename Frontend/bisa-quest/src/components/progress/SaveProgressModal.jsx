@@ -5,7 +5,7 @@ import ConfirmationDialog from "../progress/ConfirmationDialog";
 import Button from "../Button";
 import "../progress/styles/SaveProgressModal.css";
 
-const SaveProgressModal = ({ isOpen, onContinue, onNewGame }) => {
+const SaveProgressModal = ({ isOpen, onContinue, onNewGame, onClose }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   if (!isOpen) return null;
@@ -25,8 +25,11 @@ const SaveProgressModal = ({ isOpen, onContinue, onNewGame }) => {
 
   return (
     <>
-      <div className="modal-overlay">
-        <div className="save-progress-modal">
+      <div className="modal-overlay" onClick={onClose}>
+        <div
+          className="save-progress-modal"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="modal-scroll-border">
             <div className="modal-content-progess">
               <h2 className="modal-title">Save Progress Detected</h2>
