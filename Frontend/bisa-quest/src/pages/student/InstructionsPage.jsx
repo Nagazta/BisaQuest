@@ -29,12 +29,15 @@ const InstructionsPage = () => {
       instructions: [
         {
           text: "Welcome, young learner! I am the village elder, and I'm delighted to guide you through our beautiful village today.",
+          progress: 33,
         },
         {
           text: "Our village is a place of learning and discovery. Here, you'll meet friendly villagers who will help you master new skills and vocabulary.",
+          progress: 66,
         },
         {
           text: "Let's start with a word matching challenge! Match each word with its correct definition.",
+          progress: 100,
         },
       ],
       nextRoute: "/student/wordMatching",
@@ -77,9 +80,11 @@ const InstructionsPage = () => {
   const defaultInstructions = [
     {
       text: "Welcome, brave adventurer! Your quest begins here in the village. Complete each challenge to unlock new areas and grow stronger.",
+      progress: 50,
     },
     {
       text: "Listen carefully to the instructions. Each module will test your knowledge and skills. Don't worry, I'll guide you every step of the way!",
+      progress: 100,
     },
   ];
 

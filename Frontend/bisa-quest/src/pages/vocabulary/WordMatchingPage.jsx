@@ -311,6 +311,7 @@ const WordMatchingPage = () => {
           {wordMatchingData.map((item) => (
             <Button
               key={item.id}
+              variant="custom"
               className={`word-button ${
                 selectedWord?.id === item.id ? "selected" : ""
               } ${completedWords.includes(item.id) ? "completed" : ""}`}

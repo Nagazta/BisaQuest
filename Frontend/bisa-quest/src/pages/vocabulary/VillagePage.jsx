@@ -21,6 +21,7 @@ const VillagePage = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedNPC, setSelectedNPC] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
 
   // Refresh progress when returning from a completed game
   useEffect(() => {
@@ -151,7 +152,14 @@ const VillagePage = () => {
     setSelectedNPC(null);
   };
 
-  const handleBackClick = () => navigate("/dashboard");
+  const handleBackClick = () => setShowExitConfirm(true);
+
+  const handleConfirmExit = () => {
+    setShowExitConfirm(false);
+    navigate("/dashboard");
+  };
+
+  const handleCancelExit = () => setShowExitConfirm(false);
 
   return (
     <div className="village-page-wrapper">
@@ -187,6 +195,46 @@ const VillagePage = () => {
           onStart={handleStartQuest}
           onClose={handleCloseModal}
         />
+      )}
+
+      {showExitConfirm && (
+        <div className="quest-modal-overlay" onClick={handleCancelExit}>
+          <div
+            className="quest-modal-scroll"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="scroll-content">
+              <h2 className="quest-modal-title">Exit Village?</h2>
+              <div className="quest-modal-divider"></div>
+              <p className="quest-modal-instructions">
+                Your progress is saved.
+              </p>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "15px",
+                  justifyContent: "center",
+                  marginTop: "20px",
+                }}
+              >
+                <Button
+                  onClick={handleConfirmExit}
+                  variant="primary"
+                  className="quest-modal-button"
+                >
+                  Leave
+                </Button>
+                <Button
+                  onClick={handleCancelExit}
+                  variant="secondary"
+                  className="quest-modal-button"
+                >
+                  Stay
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
