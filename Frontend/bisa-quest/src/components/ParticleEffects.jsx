@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import "../pages/styles/GlobalEffects.css";
 
-const ParticleEffects = ({ particleCount = 45, enableMouseTrail = true }) => {
+const ParticleEffects = ({ particleCount = 50, enableMouseTrail = true }) => {
   const [particles] = useState(() => {
     return [...Array(particleCount)].map((_, i) => ({
       id: i,
       type: i % 3 === 0 ? "sparkle" : i % 3 === 1 ? "firefly" : "dust",
       left: Math.random() * 100,
       delay: Math.random() * 5,
-      duration: 3 + Math.random() * 4,
+      duration: 2.5 + Math.random() * 3,
       top: Math.random() * 100,
     }));
   });
@@ -28,15 +28,15 @@ const ParticleEffects = ({ particleCount = 45, enableMouseTrail = true }) => {
     };
 
     const emitInterval = setInterval(() => {
-      const particleCount = Math.floor(Math.random() * 3) + 3; // Original: 3-6 particles
+      const particleCount = Math.floor(Math.random() * 3) + 3;
 
       for (let i = 0; i < particleCount; i++) {
         const newParticle = {
           id: trailId++,
           x: mouseX + (Math.random() - 0.5) * 10,
           y: mouseY + (Math.random() - 0.5) * 10,
-          size: Math.random() * 13 + 13, // Original size
-          duration: Math.random() * 1 + 1.5,
+          size: Math.random() * 13 + 13,
+          duration: Math.random() * 0.8 + 1.2,
         };
 
         setMouseTrail((prev) => [...prev, newParticle]);
@@ -45,7 +45,7 @@ const ParticleEffects = ({ particleCount = 45, enableMouseTrail = true }) => {
           setMouseTrail((prev) => prev.filter((p) => p.id !== newParticle.id));
         }, newParticle.duration * 1000);
       }
-    }, 50); // Original: 50ms emission rate
+    }, 50);
 
     window.addEventListener("mousemove", handleMouseMove);
 

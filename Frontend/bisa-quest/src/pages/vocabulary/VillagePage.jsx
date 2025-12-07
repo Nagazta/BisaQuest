@@ -11,14 +11,16 @@ import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Q
 import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
 import PlayerCharacter from "../../assets/images/characters/Boy.png";
 
+import QuestStartModal from "../../components/QuestStartModal";
 import "./styles/VillagePage.css";
 
 const VillagePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [loading, setLoading] = useState(true);
   const [villageNPCs, setVillageNPCs] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [selectedNPC, setSelectedNPC] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   // Refresh progress when returning from a completed game
   useEffect(() => {
@@ -35,11 +37,9 @@ const VillagePage = () => {
   }, [refreshKey]); // Re-run when refreshKey changes
 
   const initializeVillage = async () => {
-    setLoading(true);
     const studentId = localStorage.getItem("studentId");
     if (!studentId) {
       console.error("No student ID found in localStorage");
-      setLoading(false);
       return;
     }
     console.log("Found studentId in localStorage:", studentId);
@@ -88,52 +88,67 @@ const VillagePage = () => {
     } catch (err) {
       console.error("Error initializing environment:", err);
     } finally {
-      setLoading(false);
+      /* empty */
     }
   };
 
-  const handleNPCClick = async (npc) => {
+  const handleNPCClick = (npc) => {
+    setSelectedNPC(npc);
+    setShowModal(true);
+  };
+
+  const handleStartQuest = async () => {
+    if (!selectedNPC) return;
+
     const studentId = localStorage.getItem("studentId");
     if (!studentId) return console.error("No student ID found");
 
     try {
-      await environmentApi.logNPCInteraction({ studentId, npcName: npc.name });
+      await environmentApi.logNPCInteraction({
+        studentId,
+        npcName: selectedNPC.name,
+      });
       await environmentApi.startNPCInteraction({
-        npcId: npc.npcId,
-        challengeType: npc.quest,
+        npcId: selectedNPC.npcId,
+        challengeType: selectedNPC.quest,
       });
 
-      console.log("NPC interaction logged for:", npc.name);
+      console.log("NPC interaction logged for:", selectedNPC.name);
     } catch (err) {
       console.error("Error logging NPC interaction:", err);
     }
 
     // Navigate based on quest type
-    if (npc.quest === "word_matching") {
+    if (selectedNPC.quest === "word_matching") {
       navigate("/student/wordMatching", {
         state: {
-          npcId: npc.npcId,
-          npcName: npc.name,
+          npcId: selectedNPC.npcId,
+          npcName: selectedNPC.name,
           returnTo: "/student/village",
         },
       });
-    } else if (npc.quest === "sentence_completion") {
+    } else if (selectedNPC.quest === "sentence_completion") {
       navigate("/student/sentenceCompletion", {
         state: {
-          npcId: npc.npcId,
-          npcName: npc.name,
+          npcId: selectedNPC.npcId,
+          npcName: selectedNPC.name,
           returnTo: "/student/village",
         },
       });
-    } else if (npc.quest === "word_association") {
+    } else if (selectedNPC.quest === "word_association") {
       navigate("/student/pictureAssociation", {
         state: {
-          npcId: npc.npcId,
-          npcName: npc.name,
+          npcId: selectedNPC.npcId,
+          npcName: selectedNPC.name,
           returnTo: "/student/village",
         },
       });
     }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedNPC(null);
   };
 
   const handleBackClick = () => navigate("/dashboard");
@@ -163,6 +178,16 @@ const VillagePage = () => {
         <div className="cloud cloud-2"></div>
         <div className="cloud cloud-3"></div>
       </div>
+
+      {showModal && selectedNPC && (
+        <QuestStartModal
+          npcName={selectedNPC.name}
+          npcImage={selectedNPC.character}
+          questType={selectedNPC.quest}
+          onStart={handleStartQuest}
+          onClose={handleCloseModal}
+        />
+      )}
     </div>
   );
 };

@@ -3,6 +3,7 @@
   background: url('../../../assets/images/dashboard.png') no-repeat center center/cover;
   position: relative;
   overflow: hidden;
+  font-family: 'Pixelify Sans', sans-serif;
 }
 
 .back-button-instructions {
