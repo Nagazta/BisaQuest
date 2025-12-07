@@ -16,6 +16,7 @@ import SentenceCompletionPage from "./pages/vocabulary/SentenceCompletionPage";
 import TeacherDashboard from "./pages/teacher/TeacherDashboard";
 import { useAuth } from "./context/AuthContext";
 import "./App.css";
+import ViewCompletionPage from "./pages/student/ViewCompletionPage";
 
 function App() {
   const { user, loading } = useAuth();
@@ -49,6 +50,7 @@ function App() {
         path="/student/sentenceCompletion"
         element={<SentenceCompletionPage />}
       />
+      <Route path="/student/summary" element={<ViewCompletionPage />} />
 
       <Route
         path="/dashboard"

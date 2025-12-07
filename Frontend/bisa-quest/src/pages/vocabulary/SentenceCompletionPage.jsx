@@ -240,8 +240,45 @@ const SentenceCompletionPage = () => {
         body: JSON.stringify(submitData),
       });
 
-      console.log("✅ Completion submitted, navigating to village");
-      navigate("/student/village", { state: { completed: true } });
+      // Check environment progress after submission
+      const progressResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=village`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      const progressResult = await progressResponse.json();
+      
+      if (progressResult.success) {
+        const progress = progressResult.data.progress ?? progressResult.data.progress_percentage ?? 0;
+        
+        // If progress >= 75%, show option to view summary
+        if (progress >= 75) {
+          console.log("✅ Progress >= 75%, showing summary option");
+          navigate("/student/summary", {
+            state: {
+              showSummary: true,
+              environmentProgress: progress,
+              returnTo: "/student/village",
+              completedQuest: {
+                npcId,
+                npcName: gameData.npcName,
+                score: correctCount,
+                totalQuestions: sentenceData.length,
+                timeSpent
+              }
+            }
+          });
+        } else {
+          console.log("✅ Completion submitted, navigating to village");
+          navigate("/student/village", { state: { completed: true } });
+        }
+      } else {
+        navigate("/student/village", { state: { completed: true } });
+      }
     } catch (error) {
       console.error("Error submitting challenge:", error);
       navigate("/student/village", { state: { completed: true } });
@@ -320,13 +357,13 @@ const SentenceCompletionPage = () => {
             }
           />
 
-          <button
+          <Button
             className="submit-button-quiz"
             onClick={isComplete ? handleComplete : handleSubmit}
             disabled={!isComplete && !selectedChoice}
           >
             {isComplete ? "Complete" : "Submit"}
-          </button>
+          </Button>
         </div>
 
         {!isComplete && currentItem && (
