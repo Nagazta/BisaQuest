@@ -8,6 +8,7 @@ import Button from "../../components/Button";
 import GuideDialogueBox from "../../components/GuideDialogueBox";
 import WordMatchingBg from "../../assets/images/environments/Vocabulary/village-bg.png";
 import "./styles/WordMatchingPage.css";
+import ReplayConfirmModal from "../../components/ReplayConfirmModal";
 
 const WordMatchingPage = () => {
   const navigate = useNavigate();
@@ -213,41 +214,14 @@ const WordMatchingPage = () => {
   // Replay confirmation modal
   if (showReplayConfirm && latestAttempt) {
     return (
-      <div className="word-matching-page">
-        <div
-          className="word-matching-background"
-          style={{ backgroundImage: `url(${WordMatchingBg})` }}
-        />
-
-        <div className="replay-confirmation-modal">
-          <div className="replay-modal-content">
-            <h2>Previous Attempt Found</h2>
-            <div className="previous-score-info">
-              <p>
-                <strong>Previous Score:</strong> {latestAttempt.score}/
-                {latestAttempt.totalQuestions}
-              </p>
-              <p>
-                <strong>Time Spent:</strong> {latestAttempt.timeSpent}s
-              </p>
-              <p>
-                <strong>Attempts Remaining:</strong> {encountersRemaining}
-              </p>
-            </div>
-            <p className="replay-warning">
-              Are you sure you want to play again? Your best score will be kept.
-            </p>
-            <div className="replay-modal-buttons">
-              <Button onClick={startGame} className="btn-confirm">
-                Yes, Play Again
-              </Button>
-              <Button onClick={handleCancelReplay} className="btn-cancel">
-                No, Go Back
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ReplayConfirmModal
+        isOpen={showReplayConfirm}
+        latestAttempt={latestAttempt}
+        encountersRemaining={encountersRemaining}
+        onPlayAgain={startGame}
+        onGoBack={handleCancelReplay}
+        backgroundImage={WordMatchingBg}
+      />
     );
   }
 
