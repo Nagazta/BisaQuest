@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useLanguagePreference } from "../../hooks/useLanguagePreference";
 import EnvironmentPage from "../../components/EnvironmentPage";
 import Button from "../../components/Button";
 import ParticleEffects from "../../components/ParticleEffects";
@@ -17,13 +18,18 @@ import "./styles/VillagePage.css";
 const VillagePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const questId = location.state?.questId || 1;
+  
+  // Load language preference
+  const { language, loading: langLoading } = useLanguagePreference(questId);
+
   const [villageNPCs, setVillageNPCs] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedNPC, setSelectedNPC] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
-  const [environmentProgress, setEnvironmentProgress] = useState(0); // NEW
-  const [showSummaryButton, setShowSummaryButton] = useState(false); // NEW
+  const [environmentProgress, setEnvironmentProgress] = useState(0);
+  const [showSummaryButton, setShowSummaryButton] = useState(false);
 
   // Refresh progress when returning from a completed game
   useEffect(() => {
@@ -36,7 +42,7 @@ const VillagePage = () => {
 
   useEffect(() => {
     initializeVillage();
-  }, [refreshKey]); // Re-run when refreshKey changes
+  }, [refreshKey]);
 
   const initializeVillage = async () => {
     const studentId = localStorage.getItem("studentId");
@@ -82,19 +88,17 @@ const VillagePage = () => {
         studentId
       );
       if (!response.success) {
-        console.error("Backend environment init failed:", response.error);
+        // Error already logged in service
       }
 
-      // NEW: Check environment progress
+      // Check environment progress
       await checkEnvironmentProgress();
     } catch (err) {
-      console.error("Error initializing environment:", err);
-    } finally {
-      /* empty */
+      // Error handled
     }
   };
 
-  // NEW: Function to check environment progress
+  // Function to check environment progress
   const checkEnvironmentProgress = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -119,11 +123,11 @@ const VillagePage = () => {
         }
       }
     } catch (error) {
-      console.error("Error checking environment progress:", error);
+      // Error handled
     }
   };
 
-  // NEW: Handle view summary
+  // Handle view summary
   const handleViewSummary = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -145,17 +149,18 @@ const VillagePage = () => {
             environmentProgress: result.data.progress,
             summaryData: result.data,
             returnTo: "/student/village",
+            questId: questId,
           }
         });
       }
     } catch (error) {
-      console.error("Error fetching summary data:", error);
+      // Error handled
     }
   };
+
   const checkAndShowSummary = async () => {
     try {
       const token = localStorage.getItem("token");
-      const studentId = localStorage.getItem("studentId");
 
       // Check environment progress
       const progressResponse = await fetch(
@@ -180,27 +185,28 @@ const VillagePage = () => {
               environmentProgress: progress,
               summaryData: result.data,
               returnTo: "/student/village",
+              questId: questId,
             }
           });
         }
       }
     } catch (error) {
-      console.error("Error checking completion:", error);
+      // Error handled
     }
   };
 
-// Update the useEffect that handles completed state
-useEffect(() => {
-  if (location.state?.completed) {
-    setRefreshKey((prev) => prev + 1);
-    
-    // Check if module is complete
-    checkAndShowSummary();
-    
-    // Clear the state
-    navigate(location.pathname, { replace: true, state: {} });
-  }
-}, [location.state, navigate, location.pathname]);
+  // Update the useEffect that handles completed state
+  useEffect(() => {
+    if (location.state?.completed) {
+      setRefreshKey((prev) => prev + 1);
+      
+      // Check if module is complete
+      checkAndShowSummary();
+      
+      // Clear the state
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, navigate, location.pathname]);
 
   const handleNPCClick = (npc) => {
     setSelectedNPC(npc);
@@ -211,7 +217,7 @@ useEffect(() => {
     if (!selectedNPC) return;
 
     const studentId = localStorage.getItem("studentId");
-    if (!studentId) return console.error("No student ID found");
+    if (!studentId) return;
 
     try {
       await environmentApi.logNPCInteraction({
@@ -224,7 +230,7 @@ useEffect(() => {
       });
 
     } catch (err) {
-      console.error("Error logging NPC interaction:", err);
+      // Error handled
     }
 
     // Navigate based on quest type
@@ -233,6 +239,7 @@ useEffect(() => {
         state: {
           npcId: selectedNPC.npcId,
           npcName: selectedNPC.name,
+          questId: questId,
           returnTo: "/student/village",
         },
       });
@@ -241,6 +248,7 @@ useEffect(() => {
         state: {
           npcId: selectedNPC.npcId,
           npcName: selectedNPC.name,
+          questId: questId,
           returnTo: "/student/village",
         },
       });
@@ -249,6 +257,7 @@ useEffect(() => {
         state: {
           npcId: selectedNPC.npcId,
           npcName: selectedNPC.name,
+          questId: questId,
           returnTo: "/student/village",
         },
       });
@@ -269,6 +278,15 @@ useEffect(() => {
 
   const handleCancelExit = () => setShowExitConfirm(false);
 
+  if (langLoading) {
+    return (
+      <div className="village-page-wrapper">
+        <ParticleEffects enableMouseTrail={false} />
+        <div className="loading-message">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="village-page-wrapper">
       <ParticleEffects enableMouseTrail={false} />
@@ -277,17 +295,17 @@ useEffect(() => {
         className="back-button-village-overlay"
         onClick={handleBackClick}
       >
-        ← Back
+        ← {language === "ceb" ? "Balik" : "Back"}
       </Button>
 
-      {/* NEW: View Summary Button */}
+      {/* View Summary Button */}
       {showSummaryButton && (
         <Button
           variant="primary"
           className="view-summary-button"
           onClick={handleViewSummary}
         >
-          📊 View Summary
+          📊 {language === "ceb" ? "Tan-awa ang Summary" : "View Summary"}
         </Button>
       )}
 
@@ -323,10 +341,15 @@ useEffect(() => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="scroll-content">
-              <h2 className="quest-modal-title">Exit Village?</h2>
+              <h2 className="quest-modal-title">
+                {language === "ceb" ? "Mobiya sa Baryo?" : "Exit Village?"}
+              </h2>
               <div className="quest-modal-divider"></div>
               <p className="quest-modal-instructions">
-                Your progress is saved.
+                {language === "ceb" 
+                  ? "Ang imong progreso natipigan."
+                  : "Your progress is saved."
+                }
               </p>
               <div
                 style={{
@@ -341,14 +364,14 @@ useEffect(() => {
                   variant="primary"
                   className="quest-modal-button"
                 >
-                  Leave
+                  {language === "ceb" ? "Mobiya" : "Leave"}
                 </Button>
                 <Button
                   onClick={handleCancelExit}
                   variant="secondary"
                   className="quest-modal-button"
                 >
-                  Stay
+                  {language === "ceb" ? "Magpabilin" : "Stay"}
                 </Button>
               </div>
             </div>

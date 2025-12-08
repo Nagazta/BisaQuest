@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getGameDataByNPC } from "../../data/moduleOneGames";
+import { useLanguagePreference } from "../../hooks/useLanguagePreference";
 import ProgressBar from "../../components/ProgressBar";
 import NPCCharacter from "../../components/NPCCharacter";
 import FeedbackNotification from "../../components/FeedbackNotification";
@@ -58,6 +59,7 @@ const SentenceCompletionPanel = ({
   handleChoiceClick,
   isSubmitted,
   correctAnswer,
+  language,
 }) => {
   const getChoiceButtonClass = (choice) => {
     let className = "choice-button";
@@ -74,7 +76,9 @@ const SentenceCompletionPanel = ({
 
   return (
     <div className="center-panel sentence-completion-box">
-      <div className="title-header">Sentence Completion</div>
+      <div className="title-header">
+        {language === "ceb" ? "Pagpuno sa Sentence" : "Sentence Completion"}
+      </div>
 
       <SentencePrompt
         sentence={sentence}
@@ -83,7 +87,9 @@ const SentenceCompletionPanel = ({
         correctAnswer={correctAnswer}
       />
 
-      <div className="choices-label">Choices</div>
+      <div className="choices-label">
+        {language === "ceb" ? "Mga Pili" : "Choices"}
+      </div>
 
       <div className="choices-container">
         {choices.map((choice, index) => (
@@ -105,16 +111,22 @@ const SentenceCompletionPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const npcId = location.state?.npcId || "vicente";
+  const questId = location.state?.questId || 1;
+
+  // Load language preference
+  const { language, loading: langLoading } = useLanguagePreference(questId);
 
   const gameData = useMemo(() => {
-    const npcGameData = getGameDataByNPC(npcId);
+    if (langLoading) return null;
+
+    const npcGameData = getGameDataByNPC(npcId, language);
     if (npcGameData && npcGameData.gameType === "sentence_completion") {
       return npcGameData;
     } else {
       navigate("/student/village");
       return null;
     }
-  }, [npcId, navigate, location.state?.npcId]);
+  }, [npcId, language, langLoading, navigate]);
 
   const {
     encountersRemaining,
@@ -125,7 +137,7 @@ const SentenceCompletionPage = () => {
     startTime,
     startGame,
     handleCancelReplay,
-  } = useGameSession(npcId, gameData, "sentence_completion");
+  } = useGameSession(npcId, gameData, "sentence_completion", language);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedChoice, setSelectedChoice] = useState(null);
@@ -152,7 +164,9 @@ const SentenceCompletionPage = () => {
   }, [feedback]);
 
   const handleBack = () => {
-    navigate("/student/village");
+    navigate("/student/village", {
+      state: { questId }
+    });
   };
 
   const handleChoiceClick = (choice) => {
@@ -166,7 +180,9 @@ const SentenceCompletionPage = () => {
     if (!selectedChoice) {
       setFeedback({
         type: "warning",
-        message: "Please select an answer choice first!",
+        message: language === "ceb" 
+          ? "Palihug pilia ang tubag sa una!"
+          : "Please select an answer choice first!",
       });
       return;
     }
@@ -244,6 +260,7 @@ const SentenceCompletionPage = () => {
               showSummary: true,
               environmentProgress: progress,
               returnTo: "/student/village",
+              questId: questId,
               completedQuest: {
                 npcId,
                 npcName: gameData.npcName,
@@ -254,15 +271,44 @@ const SentenceCompletionPage = () => {
             }
           });
         } else {
-          navigate("/student/village", { state: { completed: true } });
+          navigate("/student/village", { 
+            state: { 
+              completed: true,
+              questId: questId
+            } 
+          });
         }
       } else {
-        navigate("/student/village", { state: { completed: true } });
+        navigate("/student/village", { 
+          state: { 
+            completed: true,
+            questId: questId
+          } 
+        });
       }
     } catch (error) {
-      navigate("/student/village", { state: { completed: true } });
+      navigate("/student/village", { 
+        state: { 
+          completed: true,
+          questId: questId
+        } 
+      });
     }
   };
+
+  if (langLoading) {
+    return (
+      <div className="sentence-completion-page">
+        <div
+          className="sentence-completion-background"
+          style={{ backgroundImage: `url(${SentenceCompletionBg})` }}
+        />
+        <div className="loading-message">
+          {language === "ceb" ? "Nag-load..." : "Loading language..."}
+        </div>
+      </div>
+    );
+  }
 
   if (!gameData) {
     return <div className="loading-message">Loading...</div>;
@@ -308,11 +354,11 @@ const SentenceCompletionPage = () => {
       />
 
       <Button className="btn-back" onClick={handleBack}>
-        ← Back
+        ← {language === "ceb" ? "Balik" : "Back"}
       </Button>
 
       <div className="encounters-info">
-        Attempts Remaining: {encountersRemaining}
+        {language === "ceb" ? "Mga Sulay nga Nahibilin" : "Attempts Remaining"}: {encountersRemaining}
       </div>
 
       <div className="association-content">
@@ -341,7 +387,10 @@ const SentenceCompletionPage = () => {
             onClick={isComplete ? handleComplete : handleSubmit}
             disabled={!isComplete && !selectedChoice}
           >
-            {isComplete ? "Complete" : "Submit"}
+            {isComplete 
+              ? (language === "ceb" ? "Kompleto" : "Complete")
+              : (language === "ceb" ? "Isumite" : "Submit")
+            }
           </Button>
         </div>
 
@@ -353,6 +402,7 @@ const SentenceCompletionPage = () => {
             handleChoiceClick={handleChoiceClick}
             isSubmitted={isSubmitted}
             correctAnswer={currentItem.correctAnswer}
+            language={language}
           />
         )}
       </div>

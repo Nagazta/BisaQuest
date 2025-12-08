@@ -1,11 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import ProgressBar from "../../components/ProgressBar";
 import NPCCharacter from "../../components/NPCCharacter";
 import Oldman from "../../assets/images/characters/oldman.png";
-import NandoCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_1.png";
-import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
-import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
 import DialogueBox from "../../components/instructions/DialogueBox";
 import Button from "../../components/Button";
 import ParticleEffects from "../../components/ParticleEffects";
@@ -15,89 +12,111 @@ const InstructionsPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [currentStep, setCurrentStep] = useState(0);
-  const [language] = useState("en");
+  const [language, setLanguage] = useState("en");
+  const [loading, setLoading] = useState(true);
 
-  // Get NPC context from navigation state
+  // Get context from navigation state
   const npcId = location.state?.npcId || null;
-  const returnTo = location.state?.returnTo || "/student/quest";
+  const questId = location.state?.questId || 1;
+  const returnTo = location.state?.returnTo || "/student/languageSelection";
 
-  // NPC configurations
-  const npcConfigs = {
-    nando: {
-      character: NandoCharacter,
-      name: "Nando",
-      instructions: [
-        {
-          text: "Welcome, young learner! I am the village elder, and I'm delighted to guide you through our beautiful village today.",
-          progress: 33,
-        },
-        {
-          text: "Our village is a place of learning and discovery. Here, you'll meet friendly villagers who will help you master new skills and vocabulary.",
-          progress: 66,
-        },
-        {
-          text: "Let's start with a word matching challenge! Match each word with its correct definition.",
-          progress: 100,
-        },
-      ],
-      nextRoute: "/student/wordMatching",
-    },
-    ligaya: {
-      character: LigayaCharacter,
-      name: "Ligaya",
-      instructions: [
-        {
-          text: "Hello there! I'm the village farmer. I tend to the crops and animals around here.",
-        },
-        {
-          text: "Would you like to help me with some tasks? I have vocabulary challenges about nature and farming!",
-        },
-        {
-          text: "Let's start with picture associations! Look at each image and choose the correct word that describes it.",
-        },
-      ],
-      nextRoute: "/student/pictureAssociation",
-    },
-    vicente: {
-      character: VicenteCharacter,
-      name: "Vicente",
-      instructions: [
-        {
-          text: "Greetings! I'm the village merchant. I travel far and wide to bring goods to our village.",
-        },
-        {
-          text: "I have exciting vocabulary challenges about trading, items, and adventures!",
-        },
-        {
-          text: "Good luck on your learning journey!",
-        },
-      ],
-      nextRoute: "/student/sentenceCompletion",
-    },
+  // Load language preference
+  useEffect(() => {
+    const loadLanguage = async () => {
+      try {
+        // First try localStorage (fastest)
+        const cachedLanguage = localStorage.getItem(`quest_${questId}_language`);
+        if (cachedLanguage) {
+          setLanguage(cachedLanguage);
+          setLoading(false);
+          return;
+        }
+
+        // If not in cache, fetch from API
+        const sessionData = JSON.parse(localStorage.getItem("session"));
+        if (!sessionData?.user?.id) {
+          setLanguage("en");
+          setLoading(false);
+          return;
+        }
+
+        const studentResponse = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/student/by-user/${sessionData.user.id}`
+        );
+
+        if (!studentResponse.ok) {
+          setLanguage("en");
+          setLoading(false);
+          return;
+        }
+
+        const studentData = await studentResponse.json();
+        const student_id = studentData.data.student_id;
+
+        // Fetch language preference
+        const langResponse = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/language-preferences?student_id=${student_id}&quest_id=${questId}`
+        );
+
+        if (langResponse.ok) {
+          const langData = await langResponse.json();
+          const preferredLanguage = langData.data?.language_code || "en";
+          setLanguage(preferredLanguage);
+          localStorage.setItem(`quest_${questId}_language`, preferredLanguage);
+        } else {
+          setLanguage("en");
+        }
+      } catch (error) {
+        setLanguage("en");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadLanguage();
+  }, [questId]);
+
+  // Default instructions with multi-language support
+  const defaultInstructions = {
+    en: [
+      {
+        text: "Welcome, brave adventurer! Your quest begins here in the village. Complete each challenge to unlock new areas and grow stronger.",
+        progress: 50,
+      },
+      {
+        text: "Listen carefully to the instructions. Each module will test your knowledge and skills. Don't worry, I'll guide you every step of the way!",
+        progress: 100,
+      },
+    ],
+    ceb: [
+      {
+        text: "Maayong pag-abot, maisugon nga adventurer! Magsugod ang imong quest dinhi sa baryo. Kompleto ang matag hagit aron mabuksan ang bag-ong mga lugar ug molig-on.",
+        progress: 50,
+      },
+      {
+        text: "Paminaw pag-ayo sa mga instruksyon. Ang matag module mosulay sa imong kahibalo ug kahanas. Ayaw kabalaka, giyahan ko ikaw sa matag lakang!",
+        progress: 100,
+      },
+    ],
   };
 
-  // Default instructions (original guide)
-  const defaultInstructions = [
-    {
-      text: "Welcome, brave adventurer! Your quest begins here in the village. Complete each challenge to unlock new areas and grow stronger.",
-      progress: 50,
-    },
-    {
-      text: "Listen carefully to the instructions. Each module will test your knowledge and skills. Don't worry, I'll guide you every step of the way!",
-      progress: 100,
-    },
-  ];
+  // NPC-specific configurations (if needed in the future)
+  const npcConfigs = {
+    // Add NPC-specific instructions here if needed
+    // nando: { ... },
+    // ligaya: { ... },
+    // vicente: { ... },
+  };
 
   // Get the appropriate configuration
-  const config =
-    npcId && npcConfigs[npcId]
-      ? npcConfigs[npcId]
-      : {
-          character: Oldman,
-          name: "The Guide",
-          instructions: defaultInstructions,
-          nextRoute: "/dashboard",
-        };
+  const config = npcId && npcConfigs[npcId]
+    ? npcConfigs[npcId]
+    : {
+        character: Oldman,
+        name: language === "ceb" ? "Ang Giya" : "The Guide",
+        instructions: defaultInstructions[language] || defaultInstructions.en,
+        nextRoute: "/student/village",
+      };
 
   const handleNext = () => {
     if (currentStep < config.instructions.length - 1) {
@@ -108,22 +127,46 @@ const InstructionsPage = () => {
         navigate(config.nextRoute, {
           state: {
             npcId: npcId,
+            questId: questId,
+            language: language,
             returnTo: returnTo,
           },
         });
       } else {
-        navigate("/student/village");
+        navigate("/student/village", {
+          state: {
+            questId: questId,
+            language: language,
+          },
+        });
       }
     }
   };
 
   const handleBack = () => {
     if (npcId) {
-      navigate(returnTo);
+      navigate(returnTo, {
+        state: {
+          questId: questId,
+        },
+      });
     } else {
-      navigate("/student/languageSelection");
+      navigate("/student/languageSelection", {
+        state: {
+          questId: questId,
+        },
+      });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="instructions-page loading">
+        <ParticleEffects enableMouseTrail={false} />
+        <div className="loading-text">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="instructions-page">
@@ -140,7 +183,7 @@ const InstructionsPage = () => {
         className="back-button-instructions"
         onClick={handleBack}
       >
-        ← Back
+        ← {language === "ceb" ? "Balik" : "Back"}
       </Button>
 
       {/* Using NPCCharacter with instruction variant */}

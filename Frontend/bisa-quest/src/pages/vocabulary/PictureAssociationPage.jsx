@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getGameDataByNPC } from "../../data/moduleOneGames";
+import { useLanguagePreference } from "../../hooks/useLanguagePreference";
 import ProgressBar from "../../components/ProgressBar";
 import NPCCharacter from "../../components/NPCCharacter";
 import Button from "../../components/Button";
@@ -15,18 +16,15 @@ const PictureAssociationPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const npcId = location.state?.npcId || "ligaya";
+  const questId = location.state?.questId || 1;
+
+  // Load language preference
+  const { language, loading: langLoading } = useLanguagePreference(questId);
 
   const gameData = useMemo(() => {
-    console.log("=== PICTURE ASSOCIATION PAGE MOUNTED ===");
-    console.log("NPC ID from location.state:", location.state?.npcId);
-    console.log("Using npcId:", npcId);
+    if (langLoading) return null;
 
-    const npcGameData = getGameDataByNPC(npcId);
-    console.log("Game data retrieved:", {
-      found: !!npcGameData,
-      gameType: npcGameData?.gameType,
-      npcName: npcGameData?.npcName,
-    });
+    const npcGameData = getGameDataByNPC(npcId, language);
 
     if (npcGameData && npcGameData.gameType === "word_association") {
       return npcGameData;
@@ -34,7 +32,7 @@ const PictureAssociationPage = () => {
       navigate("/student/village");
       return null;
     }
-  }, [npcId, navigate, location.state?.npcId]);
+  }, [npcId, language, langLoading, navigate]);
 
   const {
     encountersRemaining,
@@ -45,7 +43,7 @@ const PictureAssociationPage = () => {
     startTime,
     startGame,
     handleCancelReplay,
-  } = useGameSession(npcId, gameData, "word_association");
+  } = useGameSession(npcId, gameData, "word_association", language);
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedChoice, setSelectedChoice] = useState(null);
@@ -84,7 +82,9 @@ const PictureAssociationPage = () => {
     if (!selectedChoice) {
       setFeedback({
         type: "warning",
-        message: "Please select a choice first!",
+        message: language === "ceb" 
+          ? "Palihug pilia usa una!"
+          : "Please select a choice first!",
       });
       return;
     }
@@ -119,7 +119,9 @@ const PictureAssociationPage = () => {
   };
 
   const handleBack = () => {
-    navigate("/student/village");
+    navigate("/student/village", {
+      state: { questId }
+    });
   };
 
   const handleComplete = async () => {
@@ -166,6 +168,7 @@ const PictureAssociationPage = () => {
               showSummary: true,
               environmentProgress: progress,
               returnTo: "/student/village",
+              questId: questId,
               completedQuest: {
                 npcId,
                 npcName: gameData.npcName,
@@ -176,15 +179,44 @@ const PictureAssociationPage = () => {
             }
           });
         } else {
-          navigate("/student/village", { state: { completed: true } });
+          navigate("/student/village", { 
+            state: { 
+              completed: true,
+              questId: questId
+            } 
+          });
         }
       } else {
-        navigate("/student/village", { state: { completed: true } });
+        navigate("/student/village", { 
+          state: { 
+            completed: true,
+            questId: questId
+          } 
+        });
       }
     } catch (error) {
-      navigate("/student/village", { state: { completed: true } });
+      navigate("/student/village", { 
+        state: { 
+          completed: true,
+          questId: questId
+        } 
+      });
     }
   };
+
+  if (langLoading) {
+    return (
+      <div className="picture-association-page">
+        <div
+          className="picture-association-background"
+          style={{ backgroundImage: `url(${PictureAssociationBg})` }}
+        />
+        <div className="loading-message">
+          {language === "ceb" ? "Nag-load..." : "Loading language..."}
+        </div>
+      </div>
+    );
+  }
 
   if (!gameData) {
     return <div className="loading-message">Loading...</div>;
@@ -225,7 +257,7 @@ const PictureAssociationPage = () => {
       />
 
       <Button className="btn-back" onClick={handleBack}>
-        ← Back
+        ← {language === "ceb" ? "Balik" : "Back"}
       </Button>
 
       {/* Progress Bar */}
@@ -236,7 +268,7 @@ const PictureAssociationPage = () => {
       />
 
       <div className="encounters-info">
-        Attempts Remaining: {encountersRemaining}
+        {language === "ceb" ? "Mga Sulay nga Nahibilin" : "Attempts Remaining"}: {encountersRemaining}
       </div>
 
       {/* Main Content Area */}
@@ -265,14 +297,19 @@ const PictureAssociationPage = () => {
             onClick={isComplete ? handleComplete : handleSubmit}
             disabled={!isComplete && !selectedChoice}
           >
-            {isComplete ? "Complete" : "Submit"}
+            {isComplete 
+              ? (language === "ceb" ? "Kompleto" : "Complete")
+              : (language === "ceb" ? "Isumite" : "Submit")
+            }
           </button>
         </div>
 
         {/* Center - Picture Display */}
         {!isComplete && currentItem && (
           <div className="center-panel">
-            <div className="title-header">Picture Association</div>
+            <div className="title-header">
+              {language === "ceb" ? "Pagtugma sa Hulagway" : "Picture Association"}
+            </div>
 
             <div className="picture-display">
               <img
@@ -287,7 +324,9 @@ const PictureAssociationPage = () => {
         {/* Right Side - Choice Buttons */}
         {!isComplete && currentItem && (
           <div className="right-panel">
-            <div className="choices-label">Choices</div>
+            <div className="choices-label">
+              {language === "ceb" ? "Mga Pili" : "Choices"}
+            </div>
             <div className="choices-container">
               {currentItem.choices?.map((choice, index) => (
                 <button
