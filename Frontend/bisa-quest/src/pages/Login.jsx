@@ -7,8 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import ParticleEffects from "../components/ParticleEffects";
 
-
-
 const Login = () => {
   const navigate = useNavigate();
   const { login, loginStudent, user } = useAuth();
@@ -65,7 +63,7 @@ const Login = () => {
           console.log("Login successful with UUIDs:", {
             studentUUID,
             userUUID,
-            username: result.data.roleData?.username
+            username: result.data.roleData?.username,
           });
 
           if (!studentUUID) {
@@ -76,13 +74,13 @@ const Login = () => {
 
           // Store the UUID (this is what we'll use for all database operations)
           localStorage.setItem("studentId", studentUUID);
-          
+
           const session = {
             user: {
               id: userUUID,
               student_id: studentUUID,
-              role: "student"
-            }
+              role: "student",
+            },
           };
 
           console.log("Storing session:", session);
@@ -235,9 +233,6 @@ const Login = () => {
                     required
                     disabled={loading}
                   />
-                  <a href="#forgot" className="forgot-password">
-                    Forgot password
-                  </a>
                 </div>
               </>
             )}
