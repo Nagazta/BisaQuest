@@ -84,4 +84,4 @@ export const useGameSession = (npcId, gameData, challengeType) => {
         startGame,
         handleCancelReplay
     };
-};
+}; ``

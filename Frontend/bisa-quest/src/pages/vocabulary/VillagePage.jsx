@@ -103,20 +103,23 @@ const VillagePage = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=village`,
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/npc/environment-progress?environmentType=village`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
-        const progress = result.data.progress ?? result.data.progress_percentage ?? 0;
+        const progress =
+          result.data.progress ?? result.data.progress_percentage ?? 0;
         setEnvironmentProgress(progress);
-        
+
         // Show summary button if progress >= 75%
         if (progress >= 75) {
           setShowSummaryButton(true);
@@ -132,16 +135,18 @@ const VillagePage = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=village`,
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/npc/environment-progress?environmentType=village`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
         navigate("/student/summary", {
           state: {
@@ -149,7 +154,7 @@ const VillagePage = () => {
             environmentProgress: result.data.progress,
             summaryData: result.data,
             returnTo: "/student/village",
-          }
+          },
         });
       }
     } catch (error) {
@@ -163,19 +168,22 @@ const VillagePage = () => {
 
       // Check environment progress
       const progressResponse = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=village`,
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/npc/environment-progress?environmentType=village`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      
+
       const result = await progressResponse.json();
-      
+
       if (result.success) {
-        const progress = result.data.progress ?? result.data.progress_percentage ?? 0;
-        
+        const progress =
+          result.data.progress ?? result.data.progress_percentage ?? 0;
+
         // If 100% complete, automatically navigate to completion page
         if (progress >= 100) {
           navigate("/student/viewCompletion", {
@@ -184,7 +192,7 @@ const VillagePage = () => {
               environmentProgress: progress,
               summaryData: result.data,
               returnTo: "/student/village",
-            }
+            },
           });
         }
       }
@@ -193,19 +201,19 @@ const VillagePage = () => {
     }
   };
 
-// Update the useEffect that handles completed state
-useEffect(() => {
-  if (location.state?.completed) {
-    console.log("Challenge completed, refreshing village progress...");
-    setRefreshKey((prev) => prev + 1);
-    
-    // Check if module is complete
-    checkAndShowSummary();
-    
-    // Clear the state
-    navigate(location.pathname, { replace: true, state: {} });
-  }
-}, [location.state, navigate, location.pathname]);
+  // Update the useEffect that handles completed state
+  useEffect(() => {
+    if (location.state?.completed) {
+      console.log("Challenge completed, refreshing village progress...");
+      setRefreshKey((prev) => prev + 1);
+
+      // Check if module is complete
+      checkAndShowSummary();
+
+      // Clear the state
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, navigate, location.pathname]);
 
   const handleNPCClick = (npc) => {
     setSelectedNPC(npc);
@@ -343,18 +351,18 @@ useEffect(() => {
                 }}
               >
                 <Button
-                  onClick={handleConfirmExit}
-                  variant="primary"
-                  className="quest-modal-button"
-                >
-                  Leave
-                </Button>
-                <Button
                   onClick={handleCancelExit}
                   variant="secondary"
                   className="quest-modal-button"
                 >
                   Stay
+                </Button>
+                <Button
+                  onClick={handleConfirmExit}
+                  variant="primary"
+                  className="quest-modal-button"
+                >
+                  Leave
                 </Button>
               </div>
             </div>
