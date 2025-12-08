@@ -3,26 +3,28 @@ export const environmentCollisions = {
     village: {
         // Houses
         houses: [
-            { x: 9, y: 25, width: 15, height: 40, name: "Vicente's House" },
-            { x: 31, y: 0, width: 15, height: 35, name: "Nando's House" },
-            { x: 72, y: 58, width: 15, height: 18, name: "Bottom Right House" },
+            { x: 9, y: 30, width: 15, height: 35, name: "Vicente's House" },
+            { x: 33, y: 0, width: 15, height: 35, name: "Nando's House" },
+            { x: 50, y: 54, width: 15, height: 25, name: "Bottom Right House" },
+            { x: 6, y: 75, width: 17, height: 25, name: "Bottom left House" },
+            { x: 75, y: 50, width: 17, height: 30, name: "Bottom right-right House" },
+
         ],
 
         // Natural obstacles
         obstacles: [
             // Trees
-            { x: 38, y: 62, width: 6, height: 8, name: "Tree" },
-            { x: 63, y: 36, width: 6, height: 8, name: "Tree" },
+            { x: 38, y: 50, width: 9, height: 25, name: "Tree" },
             { x: 85, y: 45, width: 5, height: 6, name: "Bush" },
 
             // Well
-            { x: 66, y: 50, width: 8, height: 10, name: "Well" },
+            { x: 52, y: 15, width: 8, height: 13, name: "Well" },
 
             // Farm plots
-            { x: 70, y: 30, width: 22, height: 15, name: "Farm Plot" },
+            { x: 62, y: 30, width: 22, height: 15, name: "Farm Plot" },
         ],
 
-        playerSize: 5, // Player hitbox size
+        playerSize: 1, // Player hitbox size
         boundaries: { minX: 0, maxX: 95, minY: 0, maxY: 90 },
     },
 

@@ -7,7 +7,7 @@ import Button from "../../components/Button";
 import ParticleEffects from "../../components/ParticleEffects";
 import { environmentApi } from "../../services/environmentServices.js";
 // Images
-import VillageBackground from "../../assets/images/environments/village.png";
+import VillageBackground from "../../assets/images/environments/Vocabulary/village-bg.png";
 import NandoCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_1.png";
 import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
 import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
