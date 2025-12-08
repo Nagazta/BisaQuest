@@ -53,7 +53,7 @@ const LanguageSelectionPage = () => {
   }, [questId]);
 
   const handleBack = () => {
-    navigate("/dashboard");
+    navigate("/student/characterSelection");
   };
 
   const handleNext = async () => {

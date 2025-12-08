@@ -99,13 +99,13 @@
 
 .continue-btn {
   background-color: #FBBC04;
-  border: 3px solid #8D6E63;
+  border: 3px solid #78350f;
   color: #3e2723;
 }
 
 .new-game-btn {
   background: linear-gradient(180deg, #ff3b3b, #b80000);
-  border: 3px solid #6b7280;
+  border: 3px solid #78350f;
   color: #ffffff;
   padding: 12px 28px;
   font-size: 1.2rem;
@@ -114,13 +114,13 @@
   cursor: pointer;
   letter-spacing: 1px;
   text-shadow: 0 0 5px rgba(0,0,0,0.4);
-  box-shadow: 0 4px 0 #6b7280, 0 6px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 0 #78350f, 0 6px 12px rgba(0,0,0,0.3);
   transition: all 0.15s ease-in-out;
 }
 
 .new-game-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 0 #6b7280, 0 10px 16px rgba(0,0,0,0.4);
+  box-shadow: 0 6px 0 #78350f, 0 10px 16px rgba(0,0,0,0.4);
   background: linear-gradient(180deg, #ff4f4f, #d10000);
 }
 
