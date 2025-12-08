@@ -162,10 +162,7 @@ const VillagePage = () => {
             environmentProgress: result.data.progress,
             summaryData: result.data,
             returnTo: "/student/village",
-<<<<<<< HEAD
-=======
             questId: questId,
->>>>>>> 9bf3b1c8dd795143d73984fdfc203ea7bfaea68d
           },
         });
       }
@@ -204,10 +201,7 @@ const VillagePage = () => {
               environmentProgress: progress,
               summaryData: result.data,
               returnTo: "/student/village",
-<<<<<<< HEAD
-=======
               questId: questId,
->>>>>>> 9bf3b1c8dd795143d73984fdfc203ea7bfaea68d
             },
           });
         }
@@ -220,10 +214,6 @@ const VillagePage = () => {
   // Update the useEffect that handles completed state
   useEffect(() => {
     if (location.state?.completed) {
-<<<<<<< HEAD
-      console.log("Challenge completed, refreshing village progress...");
-=======
->>>>>>> 9bf3b1c8dd795143d73984fdfc203ea7bfaea68d
       setRefreshKey((prev) => prev + 1);
 
       // Check if module is complete
@@ -341,6 +331,7 @@ const VillagePage = () => {
         npcs={villageNPCs}
         onNPCClick={handleNPCClick}
         playerCharacter={PlayerCharacter}
+        debugMode={true}  
       />
 
       <div className="decorative-clouds">
