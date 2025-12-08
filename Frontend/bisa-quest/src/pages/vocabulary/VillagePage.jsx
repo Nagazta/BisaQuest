@@ -21,7 +21,7 @@ const VillagePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const questId = location.state?.questId || 1;
-  
+
   // Load language preference
   const { language, loading: langLoading } = useLanguagePreference(questId);
   
@@ -111,20 +111,23 @@ const VillagePage = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=village`,
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/npc/environment-progress?environmentType=village`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
-        const progress = result.data.progress ?? result.data.progress_percentage ?? 0;
+        const progress =
+          result.data.progress ?? result.data.progress_percentage ?? 0;
         setEnvironmentProgress(progress);
-        
+
         // Show summary button if progress >= 75%
         if (progress >= 75) {
           setShowSummaryButton(true);
@@ -140,16 +143,18 @@ const VillagePage = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=village`,
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/npc/environment-progress?environmentType=village`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
         navigate("/student/summary", {
           state: {
@@ -158,7 +163,7 @@ const VillagePage = () => {
             summaryData: result.data,
             returnTo: "/student/village",
             questId: questId,
-          }
+          },
         });
       }
     } catch (error) {
@@ -172,19 +177,22 @@ const VillagePage = () => {
 
       // Check environment progress
       const progressResponse = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=village`,
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/npc/environment-progress?environmentType=village`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      
+
       const result = await progressResponse.json();
-      
+
       if (result.success) {
-        const progress = result.data.progress ?? result.data.progress_percentage ?? 0;
-        
+        const progress =
+          result.data.progress ?? result.data.progress_percentage ?? 0;
+
         // If 100% complete, automatically navigate to completion page
         if (progress >= 100) {
           navigate("/student/viewCompletion", {
@@ -194,7 +202,7 @@ const VillagePage = () => {
               summaryData: result.data,
               returnTo: "/student/village",
               questId: questId,
-            }
+            },
           });
         }
       }
@@ -207,10 +215,10 @@ const VillagePage = () => {
   useEffect(() => {
     if (location.state?.completed) {
       setRefreshKey((prev) => prev + 1);
-      
+
       // Check if module is complete
       checkAndShowSummary();
-      
+
       // Clear the state
       navigate(location.pathname, { replace: true, state: {} });
     }
@@ -236,7 +244,6 @@ const VillagePage = () => {
         npcId: selectedNPC.npcId,
         challengeType: selectedNPC.quest,
       });
-
     } catch (err) {
       // Error handled
     }
@@ -354,10 +361,9 @@ const VillagePage = () => {
               </h2>
               <div className="quest-modal-divider"></div>
               <p className="quest-modal-instructions">
-                {language === "ceb" 
+                {language === "ceb"
                   ? "Ang imong progreso natipigan."
-                  : "Your progress is saved."
-                }
+                  : "Your progress is saved."}
               </p>
               <div
                 style={{
@@ -368,18 +374,18 @@ const VillagePage = () => {
                 }}
               >
                 <Button
-                  onClick={handleConfirmExit}
-                  variant="primary"
-                  className="quest-modal-button"
-                >
-                  {language === "ceb" ? "Mobiya" : "Leave"}
-                </Button>
-                <Button
                   onClick={handleCancelExit}
                   variant="secondary"
                   className="quest-modal-button"
                 >
                   {language === "ceb" ? "Magpabilin" : "Stay"}
+                </Button>
+                <Button
+                  onClick={handleConfirmExit}
+                  variant="primary"
+                  className="quest-modal-button"
+                >
+                  {language === "ceb" ? "Mobiya" : "Leave"}
                 </Button>
               </div>
             </div>

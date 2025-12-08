@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }) => {
         });
 
         localStorage.setItem("session", JSON.stringify(result.data.session));
-        
+
         // ADD THIS - Store token for teacher login
         if (result.data.session?.access_token) {
           localStorage.setItem("token", result.data.session.access_token);
@@ -92,7 +92,7 @@ export const AuthProvider = ({ children }) => {
           email: u.email,
           role: u.role,
         });
-        
+
         // ADD THIS - Store token for student login
         if (result.data.session?.access_token) {
           localStorage.setItem("token", result.data.session.access_token);
@@ -106,13 +106,29 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const register = async (email, password, firstName, lastName, teacherID) => {
+    try {
+      const result = await authService.registerTeacher(
+        email,
+        password,
+        firstName,
+        lastName,
+        teacherID
+      );
+      return result;
+    } catch (err) {
+      console.error("Registration error:", err);
+      return { success: false, error: err.message };
+    }
+  };
+
   const logout = async () => {
     try {
       await authService.logout();
       localStorage.removeItem("session");
       localStorage.removeItem("user");
-      localStorage.removeItem("token"); // ADD THIS LINE
-      localStorage.removeItem("studentId"); // Also clear studentId
+      localStorage.removeItem("token");
+      localStorage.removeItem("studentId");
       setUser(null);
       return { success: true };
     } catch {
@@ -122,7 +138,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, login, loginStudent, logout }}
+      value={{ user, loading, register, login, loginStudent, logout }}
     >
       {children}
     </AuthContext.Provider>
