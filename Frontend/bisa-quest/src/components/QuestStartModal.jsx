@@ -30,7 +30,7 @@ const QuestStartModal = ({
             <p className="quest-modal-instructions">
               You're about to start the
             </p>
-            <p className="quest-modal-quest-name">{questTitle}</p>
+            <div className="quest-modal-quest-name">{questTitle}</div>
             <p className="quest-modal-encouragement">
               Let's go on an exciting journey!
             </p>
