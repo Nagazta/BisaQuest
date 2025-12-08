@@ -1,5 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import ProgressBar from "./ProgressBar";
+import CollisionDebugger from "../config/CollisionDebugger";
+import { getCollisionZones, checkCollisionWithZones } from "../config/environmentCollisions";
 import "./styles/EnvironmentPage.css";
 
 const EnvironmentPage = ({
@@ -8,11 +10,47 @@ const EnvironmentPage = ({
   npcs = [],
   onNPCClick,
   playerCharacter,
+  debugMode = false, // Set to true to enable debug overlay
 }) => {
   const [playerPosition, setPlayerPosition] = useState({ x: 50, y: 50 });
   const [keysPressed, setKeysPressed] = useState({});
   const [environmentProgress, setEnvironmentProgress] = useState(0);
   const [npcCompletionStatus, setNpcCompletionStatus] = useState({});
+
+  // Get collision configuration for this environment
+  const collisionConfig = useMemo(() => {
+    return getCollisionZones(environmentType);
+  }, [environmentType]);
+
+  // Check if position collides
+  const checkCollision = (newX, newY) => {
+    // Check static zones from config
+    if (checkCollisionWithZones(
+      newX,
+      newY,
+      collisionConfig.zones,
+      collisionConfig.playerSize,
+      collisionConfig.boundaries
+    )) {
+      return true;
+    }
+
+    // Check NPC collision (can't walk through NPCs)
+    const playerSize = collisionConfig.playerSize;
+    for (const npc of npcs) {
+      const npcSize = 5;
+      if (
+        newX < npc.x + npcSize &&
+        newX + playerSize > npc.x &&
+        newY < npc.y + npcSize &&
+        newY + playerSize > npc.y
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  };
 
   // Fetch environment progress
   useEffect(() => {
@@ -27,7 +65,6 @@ const EnvironmentPage = ({
         `${
           import.meta.env.VITE_API_URL
         }/api/npc/environment-progress?environmentType=${environmentType}`,
-
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -51,11 +88,9 @@ const EnvironmentPage = ({
           };
         });
         setNpcCompletionStatus(statusMap);
-
-        console.log("Environment Progress:", result.data);
       }
     } catch (error) {
-      console.error("Error fetching environment progress:", error);
+      // Error handled
     }
   };
 
@@ -90,10 +125,28 @@ const EnvironmentPage = ({
       setPlayerPosition((prev) => {
         let newX = prev.x;
         let newY = prev.y;
-        if (keysPressed["w"]) newY = Math.max(0, prev.y - moveSpeed);
-        if (keysPressed["s"]) newY = Math.min(90, prev.y + moveSpeed);
-        if (keysPressed["a"]) newX = Math.max(0, prev.x - moveSpeed);
-        if (keysPressed["d"]) newX = Math.min(90, prev.x + moveSpeed);
+        
+        // Calculate new position
+        if (keysPressed["w"]) newY = prev.y - moveSpeed;
+        if (keysPressed["s"]) newY = prev.y + moveSpeed;
+        if (keysPressed["a"]) newX = prev.x - moveSpeed;
+        if (keysPressed["d"]) newX = prev.x + moveSpeed;
+        
+        // Check collision before moving
+        if (checkCollision(newX, newY)) {
+          // If collision, try moving only on one axis
+          if (checkCollision(newX, prev.y)) {
+            newX = prev.x; // Can't move horizontally
+          }
+          if (checkCollision(prev.x, newY)) {
+            newY = prev.y; // Can't move vertically
+          }
+          // If still colliding, don't move at all
+          if (checkCollision(newX, newY)) {
+            return prev;
+          }
+        }
+        
         return { x: newX, y: newY };
       });
       animationFrameId = requestAnimationFrame(updatePosition);
@@ -104,7 +157,7 @@ const EnvironmentPage = ({
     }
 
     return () => cancelAnimationFrame(animationFrameId);
-  }, [keysPressed]);
+  }, [keysPressed, npcs, collisionConfig]);
 
   return (
     <div className={`environment-page ${environmentType}`}>
@@ -155,7 +208,7 @@ const EnvironmentPage = ({
         )}
       </div>
 
-      {/* Progress Bar - Now dynamic */}
+      {/* Progress Bar */}
       <ProgressBar
         progress={environmentProgress}
         variant="environment"
@@ -172,6 +225,15 @@ const EnvironmentPage = ({
 
       {/* Controls Hint */}
       <div className="controls-hint">Use W, A, S, D to move</div>
+
+      {/* Debug Overlay */}
+      {debugMode && (
+        <CollisionDebugger
+          collisionZones={collisionConfig.zones}
+          playerPosition={playerPosition}
+          environmentType={environmentType}
+        />
+      )}
     </div>
   );
 };

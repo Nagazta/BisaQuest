@@ -202,7 +202,7 @@ const VillagePage = () => {
               summaryData: result.data,
               returnTo: "/student/village",
               questId: questId,
-            },
+            }
           });
         }
       }
@@ -331,6 +331,7 @@ const VillagePage = () => {
         npcs={villageNPCs}
         onNPCClick={handleNPCClick}
         playerCharacter={PlayerCharacter}
+        debugMode={true}  
       />
 
       <div className="decorative-clouds">
