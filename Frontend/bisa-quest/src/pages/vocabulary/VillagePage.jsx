@@ -202,7 +202,7 @@ const VillagePage = () => {
               summaryData: result.data,
               returnTo: "/student/village",
               questId: questId,
-            }
+            },
           });
         }
       }
@@ -387,6 +387,13 @@ const VillagePage = () => {
                   className="quest-modal-button"
                 >
                   {language === "ceb" ? "Mobiya" : "Leave"}
+                </Button>
+                <Button
+                  onClick={handleConfirmExit}
+                  variant="primary"
+                  className="quest-modal-button"
+                >
+                  Leave
                 </Button>
               </div>
             </div>

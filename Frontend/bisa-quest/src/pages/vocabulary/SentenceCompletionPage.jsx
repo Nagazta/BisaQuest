@@ -240,19 +240,24 @@ const SentenceCompletionPage = () => {
 
       // Check environment progress after submission
       const progressResponse = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=village`,
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/npc/environment-progress?environmentType=village`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      
+
       const progressResult = await progressResponse.json();
-      
+
       if (progressResult.success) {
-        const progress = progressResult.data.progress ?? progressResult.data.progress_percentage ?? 0;
-        
+        const progress =
+          progressResult.data.progress ??
+          progressResult.data.progress_percentage ??
+          0;
+
         // If progress >= 75%, show option to view summary
         if (progress >= 75) {
           navigate("/student/summary", {
@@ -266,9 +271,9 @@ const SentenceCompletionPage = () => {
                 npcName: gameData.npcName,
                 score: correctCount,
                 totalQuestions: sentenceData.length,
-                timeSpent
-              }
-            }
+                timeSpent,
+              },
+            },
           });
         } else {
           navigate("/student/village", { 

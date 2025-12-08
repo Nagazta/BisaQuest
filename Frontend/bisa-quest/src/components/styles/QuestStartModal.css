@@ -93,17 +93,32 @@
 
 .quest-modal-quest-name {
   font-family: 'Pixelify Sans', sans-serif;
-  font-size: 24px;
+  font-size: 35px;
   font-weight: 900;
   color: #5a2c0c;
   margin: 15px auto;
-  padding: 14px 30px;
-  background: #FCD34D;
-  border: 5px solid #5a2c0c;
-  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
   display: inline-block;
-  box-shadow: 4px 4px 0 #8B4513;
   max-width: 90%;
+  text-shadow: 
+    3px 3px 0 #FCD34D,
+    -1px -1px 0 #FCD34D,
+    1px -1px 0 #FCD34D,
+    -1px 1px 0 #FCD34D,
+    1px 1px 0 #FCD34D;
+  letter-spacing: 2px;
+  animation: questGlow 2s ease-in-out infinite;
+}
+
+@keyframes questGlow {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 .quest-modal-encouragement {

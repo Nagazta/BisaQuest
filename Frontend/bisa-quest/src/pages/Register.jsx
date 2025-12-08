@@ -5,13 +5,14 @@ import "../pages/styles/GlobalEffects.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import ParticleEffects from "../components/ParticleEffects";
+import Notification from "../components/Notification";
 
 const Register = () => {
   const navigate = useNavigate();
   const { register, user } = useAuth();
-
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState(null);
 
   // Redirect if already logged in
   useEffect(() => {
@@ -80,8 +81,13 @@ const Register = () => {
       );
 
       if (result.success) {
-        alert("Register Sucessfuly! Navigating to login");
-        navigate("/login");
+        setNotification({
+          type: "success",
+          message: "Registration successful! Redirecting to login...",
+        });
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
       } else {
         setError(result.error || "Registration failed. Please try again.");
       }
@@ -228,6 +234,14 @@ const Register = () => {
           </form>
         </div>
       </div>
+
+      {notification && (
+        <Notification
+          type={notification.type}
+          message={notification.message}
+          onClose={() => setNotification(null)}
+        />
+      )}
     </div>
   );
 };
