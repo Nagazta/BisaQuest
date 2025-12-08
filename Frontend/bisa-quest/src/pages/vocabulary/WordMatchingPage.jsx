@@ -30,7 +30,7 @@ const WordMatchingPage = () => {
 
   const gameData = useMemo(() => {
     if (langLoading) return null;
-    
+
     const npcGameData = getGameDataByNPC(npcId, language);
 
     if (npcGameData && npcGameData.gameType === "word_matching") {
@@ -82,9 +82,10 @@ const WordMatchingPage = () => {
     if (!selectedWord || !selectedDefinition) {
       setFeedback({
         type: "warning",
-        message: language === "ceb" 
-          ? "Palihug pilia ang pulong ug kahulogan!"
-          : "Please select both a word and a definition!",
+        message:
+          language === "ceb"
+            ? "Palihug pilia ang pulong ug kahulogan!"
+            : "Please select both a word and a definition!",
       });
       return;
     }
@@ -115,7 +116,7 @@ const WordMatchingPage = () => {
 
   const handleBack = () => {
     navigate("/student/village", {
-      state: { questId }
+      state: { questId },
     });
   };
 
@@ -142,19 +143,24 @@ const WordMatchingPage = () => {
 
       // Check environment progress
       const progressResponse = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=village`,
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/npc/environment-progress?environmentType=village`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      
+
       const progressResult = await progressResponse.json();
-      
+
       if (progressResult.success) {
-        const progress = progressResult.data.progress ?? progressResult.data.progress_percentage ?? 0;
-        
+        const progress =
+          progressResult.data.progress ??
+          progressResult.data.progress_percentage ??
+          0;
+
         if (progress >= 75) {
           navigate("/student/summary", {
             state: {
@@ -167,32 +173,32 @@ const WordMatchingPage = () => {
                 npcName: gameData.npcName,
                 score: matches.length,
                 totalQuestions: wordMatchingData.length,
-                timeSpent
-              }
-            }
+                timeSpent,
+              },
+            },
           });
         } else {
-          navigate("/student/village", { 
-            state: { 
+          navigate("/student/village", {
+            state: {
               completed: true,
-              questId: questId
-            } 
+              questId: questId,
+            },
           });
         }
       } else {
-        navigate("/student/village", { 
-          state: { 
+        navigate("/student/village", {
+          state: {
             completed: true,
-            questId: questId
-          } 
+            questId: questId,
+          },
         });
       }
     } catch (error) {
-      navigate("/student/village", { 
-        state: { 
+      navigate("/student/village", {
+        state: {
           completed: true,
-          questId: questId
-        } 
+          questId: questId,
+        },
       });
     }
   };
@@ -255,67 +261,77 @@ const WordMatchingPage = () => {
       </Button>
 
       <div className="encounters-info">
-        {language === "ceb" ? "Mga Sulay nga Nahibilin" : "Attempts Remaining"}: {encountersRemaining}
+        {language === "ceb" ? "Mga Sulay nga Nahibilin" : "Attempts Remaining"}:{" "}
+        {encountersRemaining}
+      </div>
+
+      <div className="guide-character-panel">
+        <NPCCharacter
+          characterImage={gameData.character}
+          variant="matching"
+          alt={gameData.npcName}
+        />
+
+        <GuideDialogueBox
+          name={gameData.npcName}
+          text={
+            showHint && matches.length === 0
+              ? gameData.dialogues.hint
+              : isComplete
+              ? gameData.dialogues.complete
+              : gameData.dialogues.progress
+          }
+        />
+
+        <button
+          className="submit-button"
+          onClick={isComplete ? handleComplete : handleSubmit}
+        >
+          {isComplete
+            ? language === "ceb"
+              ? "Kompleto"
+              : "Complete"
+            : language === "ceb"
+            ? "Isumite"
+            : "Submit"}
+        </button>
       </div>
 
       <div className="matching-content">
-        <div className="guide-character-panel">
-          <NPCCharacter
-            characterImage={gameData.character}
-            variant="matching"
-            alt={gameData.npcName}
-          />
+        <h1 className="matching-title">
+          {language === "ceb" ? "Pagpares sa Pulong" : "Word Matching"}
+        </h1>
 
-          <GuideDialogueBox
-            name={gameData.npcName}
-            text={
-              showHint && matches.length === 0
-                ? gameData.dialogues.hint
-                : isComplete
-                ? gameData.dialogues.complete
-                : gameData.dialogues.progress
-            }
-          />
+        <div className="matching-game-area">
+          <div className="word-button-list">
+            {wordMatchingData.map((item) => (
+              <Button
+                key={item.id}
+                variant="custom"
+                className={`word-button ${
+                  selectedWord?.id === item.id ? "selected" : ""
+                } ${completedWords.includes(item.id) ? "completed" : ""}`}
+                onClick={() => handleWordClick(item)}
+                disabled={completedWords.includes(item.id)}
+              >
+                {item.word}
+              </Button>
+            ))}
+          </div>
 
-          <button
-            className="submit-button"
-            onClick={isComplete ? handleComplete : handleSubmit}
-          >
-            {isComplete 
-              ? (language === "ceb" ? "Kompleto" : "Complete")
-              : (language === "ceb" ? "Isumite" : "Submit")
-            }
-          </button>
-        </div>
-
-        <div className="word-button-list">
-          {wordMatchingData.map((item) => (
-            <Button
-              key={item.id}
-              variant="custom"
-              className={`word-button ${
-                selectedWord?.id === item.id ? "selected" : ""
-              } ${completedWords.includes(item.id) ? "completed" : ""}`}
-              onClick={() => handleWordClick(item)}
-              disabled={completedWords.includes(item.id)}
-            >
-              {item.word}
-            </Button>
-          ))}
-        </div>
-
-        <div className="definition-list-panel">
-          {wordMatchingData.map((item) => (
-            <div
-              key={item.id}
-              className={`definition-card ${
-                selectedDefinition?.id === item.id ? "selected" : ""
-              } ${completedWords.includes(item.id) ? "completed" : ""}`}
-              onClick={() => handleDefinitionClick(item)}
-            >
-              <p>{item.definition}</p>
-            </div>
-          ))}
+          <div className="definition-list-panel">
+            {wordMatchingData.map((item) => (
+              <div
+                key={item.id}
+                className={`definition-card ${
+                  selectedDefinition?.id === item.id ? "selected" : ""
+                } ${completedWords.includes(item.id) ? "completed" : ""}`}
+                onClick={() => handleDefinitionClick(item)}
+              >
+                <p>{item.definition}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
