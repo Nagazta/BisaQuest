@@ -50,7 +50,6 @@ const ViewCompletionPage = () => {
         setSummaryData(result.data);
       }
     } catch (error) {
-      console.error("Error fetching summary:", error);
     } finally {
       setLoading(false);
     }
@@ -66,7 +65,6 @@ const ViewCompletionPage = () => {
       const sessionData = JSON.parse(localStorage.getItem("session"));
 
       if (!sessionData?.user?.id || !token) {
-        console.error("Missing authentication data");
         navigate("/dashboard");
         return;
       }
@@ -105,8 +103,6 @@ const ViewCompletionPage = () => {
       const result = await response.json();
 
       if (result.success) {
-        console.log('✅ Module completion recorded:', result.data);
-
         setTimeout(() => {
           navigate("/dashboard", {
             state: {
@@ -116,11 +112,9 @@ const ViewCompletionPage = () => {
           });
         }, 500);
       } else {
-        console.error('Failed to record completion:', result.message);
         navigate("/dashboard");
       }
     } catch (error) {
-      console.error("Error recording completion:", error);
       navigate("/dashboard");
     }
   };

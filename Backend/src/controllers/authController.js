@@ -248,127 +248,110 @@ export const createStudent = async (req, res) => {
 };
 
 export const loginStudent = async (req, res) => {
-  try {
-    const { studentId, classCode } = req.body;
+    try {
+        const { studentId, classCode } = req.body;
 
-    console.log('[STUDENT LOGIN] Attempt:', { studentId, classCode });
-
-    if (!studentId || !classCode) {
-      return res.status(400).json({
-        success: false,
-        error: 'Please provide student ID and class code'
-      });
-    }
-
-    // First find the user by username
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('user_id')
-      .eq('username', studentId)
-      .single();
-
-    console.log('[USER LOOKUP]', { userData, userError });
-
-    if (userError || !userData) {
-      console.log('[ERROR] User not found');
-      return res.status(401).json({
-        success: false,
-        error: 'Invalid student ID or class code'
-      });
-    }
-
-    // Then find the student record
-    const { data: studentData, error: studentError } = await supabase
-      .from('student')
-      .select('student_id, class_code, teacher_id')
-      .eq('user_id', userData.user_id)
-      .single();
-
-    console.log('[STUDENT LOOKUP]', { studentData, studentError });
-
-    if (studentError || !studentData) {
-      console.log('[ERROR] Student record not found:', studentError?.message);
-      return res.status(401).json({
-        success: false,
-        error: 'Invalid student ID or class code'
-      });
-    }
-
-    // Verify class code matches
-    if (studentData.class_code !== classCode) {
-      console.log('[ERROR] Class code mismatch:', {
-        expected: studentData.class_code,
-        received: classCode
-      });
-      return res.status(401).json({
-        success: false,
-        error: 'Invalid student ID or class code'
-      });
-    }
-
-    // Get full user data
-    const { data: fullUserData, error: fullUserError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('user_id', userData.user_id)
-      .single();
-
-    console.log('[FULL USER DATA]', { fullUserData, fullUserError });
-
-    if (fullUserError || !fullUserData) {
-      console.log('[ERROR] Could not fetch full user data');
-      return res.status(500).json({
-        success: false,
-        error: 'Login failed'
-      });
-    }
-
-    // Generate JWT token for student with student_id (UUID)
-    const tokenPayload = {
-      id: fullUserData.user_id,           // user_id
-      user_id: fullUserData.user_id,      // Keep this for compatibility
-      student_id: studentData.student_id, // This is the UUID from student table
-      role: 'student',
-      class_code: classCode,
-      username: fullUserData.username
-    };
-
-    const access_token = jwtUtils.generateToken(tokenPayload);
-    console.log('[JWT] Generated token for student UUID:', studentData.student_id);
-
-    const responsePayload = {
-      success: true,
-      message: 'Student login successful',
-      data: {
-        user: {
-          ...fullUserData,
-          student_uuid: studentData.student_id // Add this explicitly
-        },
-        roleData: {
-          student_id: studentData.student_id,   // This is the UUID
-          student_uuid: studentData.student_id, // Explicit UUID field
-          class_code: studentData.class_code,
-          teacher_id: studentData.teacher_id,
-          username: studentId                   // The login username
-        },
-        session: { 
-          user_id: fullUserData.user_id,
-          student_id: studentData.student_id,   // Add UUID here too
-          access_token: access_token,
-          token_type: 'Bearer',
-          expires_in: 604800 // 7 days in seconds
+        if (!studentId || !classCode) {
+            return res.status(400).json({
+                success: false,
+                error: 'Please provide student ID and class code'
+            });
         }
-      }
-    };
 
-    console.log('[SUCCESS] Sending response with student UUID:', studentData.student_id);
-    return res.status(200).json(responsePayload);
+        // First find the user by username
+        const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('user_id')
+            .eq('username', studentId)
+            .single();
 
-  } catch (error) {
-    console.error('[CATCH] Student login error:', error);
-    res.status(401).json({
-      success: false,
-      error: error.message || 'Student login failed'
-    });
-  }
+        if (userError || !userData) {
+            return res.status(401).json({
+                success: false,
+                error: 'Invalid student ID or class code'
+            });
+        }
+
+        // Then find the student record
+        const { data: studentData, error: studentError } = await supabase
+            .from('student')
+            .select('student_id, class_code, teacher_id')
+            .eq('user_id', userData.user_id)
+            .single();
+
+        if (studentError || !studentData) {
+            return res.status(401).json({
+                success: false,
+                error: 'Invalid student ID or class code'
+            });
+        }
+
+        // Verify class code matches
+        if (studentData.class_code !== classCode) {
+            return res.status(401).json({
+                success: false,
+                error: 'Invalid student ID or class code'
+            });
+        }
+
+        // Get full user data
+        const { data: fullUserData, error: fullUserError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('user_id', userData.user_id)
+            .single();
+
+        if (fullUserError || !fullUserData) {
+            return res.status(500).json({
+                success: false,
+                error: 'Login failed'
+            });
+        }
+
+        // Generate JWT token for student with student_id (UUID)
+        const tokenPayload = {
+            id: fullUserData.user_id,           // user_id
+            user_id: fullUserData.user_id,      // Keep this for compatibility
+            student_id: studentData.student_id, // This is the UUID from student table
+            role: 'student',
+            class_code: classCode,
+            username: fullUserData.username
+        };
+
+        const access_token = jwtUtils.generateToken(tokenPayload);
+
+        const responsePayload = {
+            success: true,
+            message: 'Student login successful',
+            data: {
+                user: {
+                    ...fullUserData,
+                    student_uuid: studentData.student_id // Add this explicitly
+                },
+                roleData: {
+                    student_id: studentData.student_id,   // This is the UUID
+                    student_uuid: studentData.student_id, // Explicit UUID field
+                    class_code: studentData.class_code,
+                    teacher_id: studentData.teacher_id,
+                    username: studentId                   // The login username
+                },
+                session: {
+                    user_id: fullUserData.user_id,
+                    student_id: studentData.student_id,   // Add UUID here too
+                    access_token: access_token,
+                    token_type: 'Bearer',
+                    expires_in: 604800 // 7 days in seconds
+                }
+            }
+        };
+
+        return res.status(200).json(responsePayload);
+
+    } catch (error) {
+        console.error('Student login error:', error);
+        res.status(401).json({
+            success: false,
+            error: error.message || 'Student login failed'
+        });
+    }
 };

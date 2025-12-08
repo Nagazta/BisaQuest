@@ -46,6 +46,7 @@
 }
 
 .progress-bar-percentage {
+  margin-left: 100px;
   color: #8D6E63;
   font-weight: bold;
 }

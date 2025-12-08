@@ -74,8 +74,6 @@ const StudentDashboard = () => {
       const studentData = await studentResponse.json();
       const studentId = studentData.data.student_id;
 
-      console.log("Fetching completions for student_id:", studentId);
-
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/completion/student/${studentId}`,
         {
@@ -86,7 +84,6 @@ const StudentDashboard = () => {
       );
 
       if (!response.ok) {
-        console.log("No completions found yet");
         return;
       }
 
@@ -98,10 +95,8 @@ const StudentDashboard = () => {
           progressMap[completion.module_id] = completion.completion_percentage;
         });
         setModuleProgress(progressMap);
-        console.log("Module progress loaded:", progressMap);
       }
     } catch (error) {
-      console.error("Error fetching module progress:", error);
     }
   };
 
@@ -179,23 +174,17 @@ const StudentDashboard = () => {
   };
 
   const checkForSavedProgress = async () => {
-    try {
-      console.log("🔍 Starting checkForSavedProgress...");
-      
+    try {      
       const sessionData = JSON.parse(localStorage.getItem("session"));
-      console.log("📦 Session data:", sessionData);
       
       if (!sessionData?.user?.id) {
-        console.log("❌ No session user ID found");
         return;
       }
 
-      console.log("🌐 Fetching student data for user:", sessionData.user.id);
       const studentResponse = await fetch(
         `${import.meta.env.VITE_API_URL}/api/student/by-user/${sessionData.user.id}`
       );
 
-      console.log("📡 Student response status:", studentResponse.status, studentResponse.ok);
 
       if (!studentResponse.ok) {
         console.log("❌ Student response not OK");
@@ -203,40 +192,28 @@ const StudentDashboard = () => {
       }
 
       const studentData = await studentResponse.json();
-      console.log("👤 Student data received:", studentData);
       
       // FIXED: Use student_id instead of user_id
       const student_id = studentData.data.student_id;
-      console.log("🆔 Using student_id for progress check:", student_id);
 
-      console.log("🌐 Fetching progress for student_id:", student_id, "quest: 1");
       const progressResponse = await fetch(
         `${import.meta.env.VITE_API_URL}/api/progress/${student_id}/1`
       );
 
-      console.log("📡 Progress response status:", progressResponse.status, progressResponse.ok);
-
       if (!progressResponse.ok) {
-        console.log("ℹ️ No progress found (response not OK) - showing quest modal");
         setShowQuestModal(true);
         return;
       }
 
       const progressData = await progressResponse.json();
-      console.log("💾 Progress data received:", progressData);
-      console.log("✅ hasProgress:", progressData.hasProgress);
-      console.log("📊 data:", progressData.data);
 
       if (progressData.hasProgress && progressData.data) {
-        console.log("🎉 Progress found! Showing save modal");
         setSavedProgress(progressData.data);
         setShowSaveModal(true);
       } else {
-        console.log("ℹ️ No hasProgress flag or data - showing quest modal");
         setShowQuestModal(true);
       }
     } catch (err) {
-      console.error("💥 Error checking progress:", err);
       setShowQuestModal(true);
     }
   };
@@ -275,14 +252,12 @@ const StudentDashboard = () => {
         throw new Error("Failed to reset progress");
       }
 
-      console.log("Progress reset successfully");
       setSavedProgress(null);
       setShowSaveModal(false);
       setShowQuestModal(true);
       
       fetchModuleProgress();
     } catch (err) {
-      console.error("Error resetting progress:", err);
       setShowSaveModal(false);
       setShowQuestModal(true);
     }

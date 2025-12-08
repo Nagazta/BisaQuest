@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useLanguagePreference } from "../../hooks/useLanguagePreference";
+import { useCharacterPreference } from "../../hooks/useCharacterPreference";
 import EnvironmentPage from "../../components/EnvironmentPage";
 import Button from "../../components/Button";
 import ParticleEffects from "../../components/ParticleEffects";
@@ -9,7 +11,8 @@ import VillageBackground from "../../assets/images/environments/village.png";
 import NandoCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_1.png";
 import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
 import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
-import PlayerCharacter from "../../assets/images/characters/Boy.png";
+import BoyCharacter from "../../assets/images/characters/Boy.png";
+import GirlCharacter from "../../assets/images/characters/Girl.png";
 
 import QuestStartModal from "../../components/QuestStartModal";
 import "./styles/VillagePage.css";
@@ -17,18 +20,28 @@ import "./styles/VillagePage.css";
 const VillagePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const questId = location.state?.questId || 1;
+
+  // Load language preference
+  const { language, loading: langLoading } = useLanguagePreference(questId);
+  
+  // Load character preference
+  const { character, loading: charLoading } = useCharacterPreference(questId);
+
   const [villageNPCs, setVillageNPCs] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedNPC, setSelectedNPC] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
-  const [environmentProgress, setEnvironmentProgress] = useState(0); // NEW
-  const [showSummaryButton, setShowSummaryButton] = useState(false); // NEW
+  const [environmentProgress, setEnvironmentProgress] = useState(0);
+  const [showSummaryButton, setShowSummaryButton] = useState(false);
+
+  // Get the appropriate player character image
+  const PlayerCharacter = character === 'female' ? GirlCharacter : BoyCharacter;
 
   // Refresh progress when returning from a completed game
   useEffect(() => {
     if (location.state?.completed) {
-      console.log("Challenge completed, refreshing village progress...");
       setRefreshKey((prev) => prev + 1);
       // Clear the state
       navigate(location.pathname, { replace: true, state: {} });
@@ -37,16 +50,13 @@ const VillagePage = () => {
 
   useEffect(() => {
     initializeVillage();
-  }, [refreshKey]); // Re-run when refreshKey changes
+  }, [refreshKey]);
 
   const initializeVillage = async () => {
     const studentId = localStorage.getItem("studentId");
     if (!studentId) {
-      console.error("No student ID found in localStorage");
       return;
     }
-    console.log("Found studentId in localStorage:", studentId);
-
     // Frontend-defined NPCs with showName property and quest types
     const npcs = [
       {
@@ -86,19 +96,17 @@ const VillagePage = () => {
         studentId
       );
       if (!response.success) {
-        console.error("Backend environment init failed:", response.error);
+        // Error already logged in service
       }
 
-      // NEW: Check environment progress
+      // Check environment progress
       await checkEnvironmentProgress();
     } catch (err) {
-      console.error("Error initializing environment:", err);
-    } finally {
-      /* empty */
+      // Error handled
     }
   };
 
-  // NEW: Function to check environment progress
+  // Function to check environment progress
   const checkEnvironmentProgress = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -126,11 +134,11 @@ const VillagePage = () => {
         }
       }
     } catch (error) {
-      console.error("Error checking environment progress:", error);
+      // Error handled
     }
   };
 
-  // NEW: Handle view summary
+  // Handle view summary
   const handleViewSummary = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -154,17 +162,21 @@ const VillagePage = () => {
             environmentProgress: result.data.progress,
             summaryData: result.data,
             returnTo: "/student/village",
+<<<<<<< HEAD
+=======
+            questId: questId,
+>>>>>>> 9bf3b1c8dd795143d73984fdfc203ea7bfaea68d
           },
         });
       }
     } catch (error) {
-      console.error("Error fetching summary data:", error);
+      // Error handled
     }
   };
+
   const checkAndShowSummary = async () => {
     try {
       const token = localStorage.getItem("token");
-      const studentId = localStorage.getItem("studentId");
 
       // Check environment progress
       const progressResponse = await fetch(
@@ -192,19 +204,26 @@ const VillagePage = () => {
               environmentProgress: progress,
               summaryData: result.data,
               returnTo: "/student/village",
+<<<<<<< HEAD
+=======
+              questId: questId,
+>>>>>>> 9bf3b1c8dd795143d73984fdfc203ea7bfaea68d
             },
           });
         }
       }
     } catch (error) {
-      console.error("Error checking completion:", error);
+      // Error handled
     }
   };
 
   // Update the useEffect that handles completed state
   useEffect(() => {
     if (location.state?.completed) {
+<<<<<<< HEAD
       console.log("Challenge completed, refreshing village progress...");
+=======
+>>>>>>> 9bf3b1c8dd795143d73984fdfc203ea7bfaea68d
       setRefreshKey((prev) => prev + 1);
 
       // Check if module is complete
@@ -224,7 +243,7 @@ const VillagePage = () => {
     if (!selectedNPC) return;
 
     const studentId = localStorage.getItem("studentId");
-    if (!studentId) return console.error("No student ID found");
+    if (!studentId) return;
 
     try {
       await environmentApi.logNPCInteraction({
@@ -235,10 +254,8 @@ const VillagePage = () => {
         npcId: selectedNPC.npcId,
         challengeType: selectedNPC.quest,
       });
-
-      console.log("NPC interaction logged for:", selectedNPC.name);
     } catch (err) {
-      console.error("Error logging NPC interaction:", err);
+      // Error handled
     }
 
     // Navigate based on quest type
@@ -247,6 +264,7 @@ const VillagePage = () => {
         state: {
           npcId: selectedNPC.npcId,
           npcName: selectedNPC.name,
+          questId: questId,
           returnTo: "/student/village",
         },
       });
@@ -255,6 +273,7 @@ const VillagePage = () => {
         state: {
           npcId: selectedNPC.npcId,
           npcName: selectedNPC.name,
+          questId: questId,
           returnTo: "/student/village",
         },
       });
@@ -263,6 +282,7 @@ const VillagePage = () => {
         state: {
           npcId: selectedNPC.npcId,
           npcName: selectedNPC.name,
+          questId: questId,
           returnTo: "/student/village",
         },
       });
@@ -283,6 +303,15 @@ const VillagePage = () => {
 
   const handleCancelExit = () => setShowExitConfirm(false);
 
+  if (langLoading || charLoading) {
+    return (
+      <div className="village-page-wrapper">
+        <ParticleEffects enableMouseTrail={false} />
+        <div className="loading-message">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="village-page-wrapper">
       <ParticleEffects enableMouseTrail={false} />
@@ -291,17 +320,17 @@ const VillagePage = () => {
         className="back-button-village-overlay"
         onClick={handleBackClick}
       >
-        ← Back
+        ← {language === "ceb" ? "Balik" : "Back"}
       </Button>
 
-      {/* NEW: View Summary Button */}
+      {/* View Summary Button */}
       {showSummaryButton && (
         <Button
           variant="primary"
           className="view-summary-button"
           onClick={handleViewSummary}
         >
-          📊 View Summary
+          📊 {language === "ceb" ? "Tan-awa ang Summary" : "View Summary"}
         </Button>
       )}
 
@@ -337,10 +366,14 @@ const VillagePage = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="scroll-content">
-              <h2 className="quest-modal-title">Exit Village?</h2>
+              <h2 className="quest-modal-title">
+                {language === "ceb" ? "Mobiya sa Baryo?" : "Exit Village?"}
+              </h2>
               <div className="quest-modal-divider"></div>
               <p className="quest-modal-instructions">
-                Your progress is saved.
+                {language === "ceb"
+                  ? "Ang imong progreso natipigan."
+                  : "Your progress is saved."}
               </p>
               <div
                 style={{
@@ -355,7 +388,14 @@ const VillagePage = () => {
                   variant="secondary"
                   className="quest-modal-button"
                 >
-                  Stay
+                  {language === "ceb" ? "Magpabilin" : "Stay"}
+                </Button>
+                <Button
+                  onClick={handleConfirmExit}
+                  variant="primary"
+                  className="quest-modal-button"
+                >
+                  {language === "ceb" ? "Mobiya" : "Leave"}
                 </Button>
                 <Button
                   onClick={handleConfirmExit}

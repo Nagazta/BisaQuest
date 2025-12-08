@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import LanguageSelectionCard from "../../components/language/LanguageSelectionCard";
 import Notification from "../../components/Notification";
 import IllustrationPanel from "../../components/language/IllustrationPanel";
@@ -9,18 +9,55 @@ import "../student/styles/LanguageSelectionPage.css";
 
 const LanguageSelectionPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
+  // Get quest_id from navigation state or default to 1 (Vocabulary Quest)
+  const questId = location.state?.questId || 1;
+
+  // Load existing language preference if any
   useEffect(() => {
-    console.log("=== LanguageSelectionPage mounted ===");
-  }, []);
+    const loadExistingPreference = async () => {
+      try {
+        const sessionData = JSON.parse(localStorage.getItem("session"));
+        if (!sessionData?.user?.id) return;
+
+        const studentResponse = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/student/by-user/${sessionData.user.id}`
+        );
+        
+        if (!studentResponse.ok) return;
+
+        const studentData = await studentResponse.json();
+        const student_id = studentData.data.student_id;
+
+        // Check if there's already a language preference for this quest
+        const prefResponse = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/language-preferences?student_id=${student_id}&quest_id=${questId}`
+        );
+
+        if (prefResponse.ok) {
+          const prefData = await prefResponse.json();
+          if (prefData.success && prefData.data && prefData.data.language_code) {
+            setSelectedLanguage(prefData.data.language_code);
+          }
+        }
+      } catch (err) {
+        // Silently fail - will use default language
+      }
+    };
+
+    loadExistingPreference();
+  }, [questId]);
 
   const handleBack = () => {
-    navigate("/dashboard");
+    navigate("/student/characterSelection");
   };
 
   const handleNext = async () => {
+    setLoading(true);
     try {
       const sessionData = JSON.parse(localStorage.getItem("session"));
 
@@ -29,9 +66,7 @@ const LanguageSelectionPage = () => {
       }
 
       const studentResponse = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/student/by-user/${
-          sessionData.user.id
-        }`
+        `${import.meta.env.VITE_API_URL}/api/student/by-user/${sessionData.user.id}`
       );
 
       if (!studentResponse.ok) {
@@ -41,15 +76,16 @@ const LanguageSelectionPage = () => {
       const studentData = await studentResponse.json();
       const student_id = studentData.data.student_id;
 
+      // Save to NEW language_preferences table
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/preferences/language`,
+        `${import.meta.env.VITE_API_URL}/api/language-preferences`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             student_id: student_id,
-            quest_id: 1,
-            language_preference: selectedLanguage === "en" ? "en" : "ceb",
+            quest_id: questId,
+            language_code: selectedLanguage, // "en" or "ceb"
           }),
         }
       );
@@ -58,15 +94,35 @@ const LanguageSelectionPage = () => {
         throw new Error("Failed to save language preference");
       }
 
-      const data = await response.json();
-      console.log("Language saved successfully:", data);
+      // Store in localStorage for quick access
+      localStorage.setItem(`quest_${questId}_language`, selectedLanguage);
 
-      navigate("/student/instructions");
+      // Navigate to instructions
+      navigate("/student/instructions", {
+        state: {
+          questId: questId,
+          language: selectedLanguage
+        }
+      });
+
     } catch (err) {
+      // Fallback to localStorage only
+      localStorage.setItem(`quest_${questId}_language`, selectedLanguage);
       setError(
         "Your language preference could not be saved. A session default will be used temporarily."
       );
-      console.error("Error saving language:", err);
+      
+      // Still navigate even if save fails
+      setTimeout(() => {
+        navigate("/student/instructions", {
+          state: {
+            questId: questId,
+            language: selectedLanguage
+          }
+        });
+      }, 2000);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -79,6 +135,7 @@ const LanguageSelectionPage = () => {
             onClick={handleBack}
             variant="back"
             className="back-button language"
+            disabled={loading}
           >
             ← Back
           </Button>
@@ -89,6 +146,7 @@ const LanguageSelectionPage = () => {
             selectedLanguage={selectedLanguage}
             onLanguageChange={setSelectedLanguage}
             onNext={handleNext}
+            disabled={loading}
           />
           <IllustrationPanel />
         </div>

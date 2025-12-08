@@ -73,7 +73,6 @@ export const saveCharacterPreference = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error saving character preference:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to save character preference',
@@ -82,7 +81,7 @@ export const saveCharacterPreference = async (req, res) => {
     }
 };
 
-// Save language preference
+// Save language preference (DEPRECATED - use /api/language-preferences instead)
 export const saveLanguagePreference = async (req, res) => {
     try {
         const { student_id, quest_id, language_preference } = req.body;
@@ -155,7 +154,6 @@ export const saveLanguagePreference = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error saving language preference:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to save language preference',
@@ -193,7 +191,6 @@ export const getPreferences = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error fetching preferences:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to fetch preferences',

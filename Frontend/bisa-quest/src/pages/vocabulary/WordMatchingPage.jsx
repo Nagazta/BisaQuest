@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getGameDataByNPC } from "../../data/moduleOneGames";
+import { useLanguagePreference } from "../../hooks/useLanguagePreference";
 import ProgressBar from "../../components/ProgressBar";
 import NPCCharacter from "../../components/NPCCharacter";
 import FeedbackNotification from "../../components/FeedbackNotification";
@@ -15,6 +16,10 @@ const WordMatchingPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const npcId = location.state?.npcId || "nando";
+  const questId = location.state?.questId || 1;
+
+  // Load language preference
+  const { language, loading: langLoading } = useLanguagePreference(questId);
 
   const [selectedWord, setSelectedWord] = useState(null);
   const [selectedDefinition, setSelectedDefinition] = useState(null);
@@ -24,17 +29,17 @@ const WordMatchingPage = () => {
   const [showHint, setShowHint] = useState(true);
 
   const gameData = useMemo(() => {
-    const npcGameData = getGameDataByNPC(npcId);
-    console.log("Loading game data for npcId:", npcId, "Result:", npcGameData);
+    if (langLoading) return null;
+    
+    const npcGameData = getGameDataByNPC(npcId, language);
 
     if (npcGameData && npcGameData.gameType === "word_matching") {
       return npcGameData;
     } else {
-      console.error("Invalid NPC or game type for word matching");
       navigate("/student/village");
       return null;
     }
-  }, [npcId, navigate]);
+  }, [npcId, language, langLoading, navigate]);
 
   const {
     encountersRemaining,
@@ -45,7 +50,7 @@ const WordMatchingPage = () => {
     startTime,
     startGame,
     handleCancelReplay,
-  } = useGameSession(npcId, gameData, "word_matching");
+  } = useGameSession(npcId, gameData, "word_matching", language);
 
   const progress = useMemo(() => {
     if (wordMatchingData.length > 0) {
@@ -77,7 +82,9 @@ const WordMatchingPage = () => {
     if (!selectedWord || !selectedDefinition) {
       setFeedback({
         type: "warning",
-        message: "Please select both a word and a definition!",
+        message: language === "ceb" 
+          ? "Palihug pilia ang pulong ug kahulogan!"
+          : "Please select both a word and a definition!",
       });
       return;
     }
@@ -107,7 +114,9 @@ const WordMatchingPage = () => {
   };
 
   const handleBack = () => {
-    navigate("/student/village");
+    navigate("/student/village", {
+      state: { questId }
+    });
   };
 
   const handleComplete = async () => {
@@ -152,6 +161,7 @@ const WordMatchingPage = () => {
               showSummary: true,
               environmentProgress: progress,
               returnTo: "/student/village",
+              questId: questId,
               completedQuest: {
                 npcId,
                 npcName: gameData.npcName,
@@ -162,18 +172,44 @@ const WordMatchingPage = () => {
             }
           });
         } else {
-          navigate("/student/village", { state: { completed: true } });
+          navigate("/student/village", { 
+            state: { 
+              completed: true,
+              questId: questId
+            } 
+          });
         }
       } else {
-        navigate("/student/village", { state: { completed: true } });
+        navigate("/student/village", { 
+          state: { 
+            completed: true,
+            questId: questId
+          } 
+        });
       }
     } catch (error) {
-      console.error("Error submitting challenge:", error);
-      navigate("/student/village", { state: { completed: true } });
+      navigate("/student/village", { 
+        state: { 
+          completed: true,
+          questId: questId
+        } 
+      });
     }
   };
 
   const isComplete = matches.length === wordMatchingData.length;
+
+  if (langLoading) {
+    return (
+      <div className="word-matching-page">
+        <div
+          className="word-matching-background"
+          style={{ backgroundImage: `url(${WordMatchingBg})` }}
+        />
+        <div className="loading-message">Loading language...</div>
+      </div>
+    );
+  }
 
   if (!gameData) {
     return <div className="loading-message">Loading...</div>;
@@ -215,11 +251,11 @@ const WordMatchingPage = () => {
       <ProgressBar progress={progress} variant="environment" showLabel={true} />
 
       <Button className="btn-back" onClick={handleBack}>
-        ← Back
+        ← {language === "ceb" ? "Balik" : "Back"}
       </Button>
 
       <div className="encounters-info">
-        Attempts Remaining: {encountersRemaining}
+        {language === "ceb" ? "Mga Sulay nga Nahibilin" : "Attempts Remaining"}: {encountersRemaining}
       </div>
 
       <div className="matching-content">
@@ -245,7 +281,10 @@ const WordMatchingPage = () => {
             className="submit-button"
             onClick={isComplete ? handleComplete : handleSubmit}
           >
-            {isComplete ? "Complete" : "Submit"}
+            {isComplete 
+              ? (language === "ceb" ? "Kompleto" : "Complete")
+              : (language === "ceb" ? "Isumite" : "Submit")
+            }
           </button>
         </div>
 
