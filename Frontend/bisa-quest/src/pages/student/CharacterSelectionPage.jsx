@@ -28,26 +28,13 @@ const CharacterSelectionPage = () => {
 
   const handleProceed = async (characterId) => {
     try {
-      // Get user from session
       const sessionData = JSON.parse(localStorage.getItem("session"));
-
-      if (!sessionData || !sessionData.user || !sessionData.user.id) {
-        throw new Error("Student not logged in");
-      }
-
-      // Get student_id from user_id
       const studentResponse = await fetch(
         `http://localhost:5000/api/student/by-user/${sessionData.user.id}`
       );
-
-      if (!studentResponse.ok) {
-        throw new Error("Failed to fetch student data");
-      }
-
       const studentData = await studentResponse.json();
       const student_id = studentData.data.student_id;
 
-      // Save character preference to backend
       const response = await fetch(
         "http://localhost:5000/api/preferences/character",
         {
@@ -65,9 +52,9 @@ const CharacterSelectionPage = () => {
         throw new Error("Failed to save character preference");
       }
 
-      const data = await response.json();
+      // ADD THIS LINE - Update the cache
+      localStorage.setItem('quest_1_character', characterId);
 
-      // Navigate to language selection
       navigate("/student/languageSelection");
     } catch (err) {
       console.error("Error saving character:", err);
