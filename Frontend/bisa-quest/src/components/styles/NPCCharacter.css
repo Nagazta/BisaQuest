@@ -16,8 +16,8 @@
 
 /* Modal variant - centered, smaller, no animation */
 .npc-character-container.modal {
-  width: 120px;
-  height: 120px;
+  width: 130px;
+  height: 200px;
   margin: 10px 0;
 }
 
@@ -29,8 +29,8 @@
 
 /* Base image styling */
 .npc-character-image {
-  width: 180px;
-  height: auto;
+  width: 250px !important;
+  height: 250px !important;
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
   image-rendering: pixelated;
 }

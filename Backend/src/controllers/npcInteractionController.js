@@ -2,55 +2,33 @@ import interactionService from '../services/interactionService.js';
 import progressTrackingService from '../services/progressTrackingService.js';
 
 class NPCInteractionController {
-  // Start NPC interaction
   async startInteraction(req, res) {
     try {
       console.log('=== START INTERACTION REQUEST ===');
-      console.log('Request body:', JSON.stringify(req.body, null, 2));
-      console.log('User from token:', JSON.stringify(req.user, null, 2));
+      console.log('Token payload:', req.user);
 
       const { npcId, challengeType = 'word_matching' } = req.body;
-      const studentId = req.user.id;
+      const studentId = req.user.student_id; // ← CHANGED from req.user.id
 
-      console.log('Extracted values:', { npcId, challengeType, studentId });
+      console.log('Using student_id:', studentId);
 
-      if (!npcId) {
-        console.log('❌ Missing npcId');
+      if (!npcId || !studentId) {
         return res.status(400).json({
           success: false,
           message: 'NPC ID is required'
         });
       }
 
-      console.log('Step 1: Starting interaction service...');
-      // Start interaction and get progress
       const { progress, isNewInteraction, canContinue } =
         await interactionService.startInteraction(studentId, npcId, challengeType);
 
-      console.log('Step 1 Complete - Interaction started:', {
-        progress: progress?.id,
-        isNewInteraction,
-        canContinue
-      });
-
-      console.log('Step 2: Getting latest attempt...');
-      // Get latest attempt (if any)
       const latestAttempt = await progressTrackingService.getLatestAttempt(
         studentId,
         npcId,
         challengeType
       );
 
-      console.log('Step 2 Complete - Latest attempt:', latestAttempt ? 'Found' : 'None');
-      if (latestAttempt) {
-        console.log('Latest attempt details:', {
-          score: latestAttempt.score,
-          totalQuestions: latestAttempt.total_questions,
-          timeSpent: latestAttempt.time_spent
-        });
-      }
-
-      const responseData = {
+      res.json({
         success: true,
         data: {
           npcId,
@@ -65,55 +43,32 @@ class NPCInteractionController {
             timeSpent: latestAttempt.time_spent
           } : null
         }
-      };
-
-      console.log('✅ SUCCESS - Sending response:', JSON.stringify(responseData, null, 2));
-      res.json(responseData);
+      });
     } catch (error) {
-      console.error('=== START INTERACTION ERROR ===');
-      console.error('Error type:', error.constructor.name);
-      console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
-
-      if (error.code) {
-        console.error('Error code:', error.code);
-      }
-
-      if (error.details) {
-        console.error('Error details:', error.details);
-      }
-
+      console.error('❌ ERROR in startInteraction:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to start interaction',
-        error: error.message,
-        errorType: error.constructor.name,
-        errorCode: error.code || 'UNKNOWN'
+        error: error.message
       });
     }
   }
 
-  // Submit challenge completion
   async submitChallenge(req, res) {
     try {
       console.log('=== SUBMIT CHALLENGE REQUEST ===');
-      console.log('Request body:', JSON.stringify(req.body, null, 2));
-
       const { npcId, challengeType, score, totalQuestions, timeSpent, completed } = req.body;
-      const studentId = req.user.id;
+      const studentId = req.user.student_id; // ← CHANGED from req.user.id
 
-      console.log('Extracted values:', { npcId, challengeType, score, totalQuestions, timeSpent, completed, studentId });
+      console.log('Using student_id:', studentId);
 
       if (!npcId || !challengeType || score === undefined || !totalQuestions) {
-        console.log('❌ Missing required fields');
         return res.status(400).json({
           success: false,
-          message: 'Missing required fields: npcId, challengeType, score, totalQuestions'
+          message: 'Missing required fields'
         });
       }
 
-      console.log('Step 1: Recording attempt...');
-      // Record attempt
       const attempt = await progressTrackingService.recordAttempt(
         studentId,
         npcId,
@@ -121,55 +76,37 @@ class NPCInteractionController {
         { score, totalQuestions, timeSpent, completed }
       );
 
-      console.log('Step 1 Complete - Attempt recorded:', attempt.id);
-
-      // Update progress if completed
       let updatedProgress = null;
       if (completed) {
-        console.log('Step 2: Updating progress (completed=true)...');
         updatedProgress = await progressTrackingService.updateProgress(
           studentId,
           npcId,
           challengeType,
           score
         );
-        console.log('Step 2 Complete - Progress updated:', updatedProgress.id);
       }
 
-      const responseData = {
+      res.json({
         success: true,
         data: {
           attempt,
           progress: updatedProgress,
           message: completed ? 'Challenge completed successfully!' : 'Attempt recorded'
         }
-      };
-
-      console.log('✅ SUCCESS - Sending response');
-      res.json(responseData);
+      });
     } catch (error) {
-      console.error('=== SUBMIT CHALLENGE ERROR ===');
-      console.error('Error type:', error.constructor.name);
-      console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
-
-      if (error.code) {
-        console.error('Error code:', error.code);
-      }
-
+      console.error('❌ ERROR in submitChallenge:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to submit challenge',
-        error: error.message,
-        errorType: error.constructor.name
+        error: error.message
       });
     }
   }
 
-  // Get student progress
   async getProgress(req, res) {
     try {
-      const studentId = req.user.id;
+      const studentId = req.user.student_id; // ← CHANGED
       const { npcId, challengeType } = req.query;
 
       let progress;
@@ -197,10 +134,9 @@ class NPCInteractionController {
     }
   }
 
-  // Get attempt history
   async getAttemptHistory(req, res) {
     try {
-      const studentId = req.user.id;
+      const studentId = req.user.student_id; // ← CHANGED
       const { npcId, limit = 10 } = req.query;
 
       const history = await progressTrackingService.getAttemptHistory(
@@ -223,28 +159,24 @@ class NPCInteractionController {
     }
   }
 
-  // Get environment progress
   async getEnvironmentProgress(req, res) {
     try {
-      console.log('=== GET ENVIRONMENT PROGRESS ===');
-      const studentId = req.user.id;
+      const studentId = req.user.student_id; // ← CHANGED
       const { environmentType = 'village' } = req.query;
 
-      console.log('Request params:', { studentId, environmentType });
+      console.log('Fetching environment progress for student_id:', studentId);
 
       const progress = await progressTrackingService.getEnvironmentProgress(
         studentId,
         environmentType
       );
 
-      console.log('✅ Environment progress fetched:', progress);
       res.json({
         success: true,
         data: progress
       });
     } catch (error) {
-      console.error('=== GET ENVIRONMENT PROGRESS ERROR ===');
-      console.error('Error:', error);
+      console.error('❌ ERROR in getEnvironmentProgress:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to fetch environment progress',

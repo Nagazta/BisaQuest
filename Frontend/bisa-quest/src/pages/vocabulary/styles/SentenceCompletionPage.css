@@ -1,8 +1,19 @@
-.quiz-page-container {
-  background-image: url('../../../assets/images/environments/Vocabulary/well-bg.png');
+.sentence-completion-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  width: 100%;
-  min-height: 100vh;
+  z-index: -1;
+}
+
+.submit-button-quiz {
+  margin: 0 auto;
+  display: block;
+}
+.guide-dialogue-box{
+  margin: 10px;
 }

@@ -22,6 +22,8 @@ const VillagePage = () => {
   const [selectedNPC, setSelectedNPC] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const [environmentProgress, setEnvironmentProgress] = useState(0); // NEW
+  const [showSummaryButton, setShowSummaryButton] = useState(false); // NEW
 
   // Refresh progress when returning from a completed game
   useEffect(() => {
@@ -86,12 +88,124 @@ const VillagePage = () => {
       if (!response.success) {
         console.error("Backend environment init failed:", response.error);
       }
+
+      // NEW: Check environment progress
+      await checkEnvironmentProgress();
     } catch (err) {
       console.error("Error initializing environment:", err);
     } finally {
       /* empty */
     }
   };
+
+  // NEW: Function to check environment progress
+  const checkEnvironmentProgress = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=village`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        const progress = result.data.progress ?? result.data.progress_percentage ?? 0;
+        setEnvironmentProgress(progress);
+        
+        // Show summary button if progress >= 75%
+        if (progress >= 75) {
+          setShowSummaryButton(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error checking environment progress:", error);
+    }
+  };
+
+  // NEW: Handle view summary
+  const handleViewSummary = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=village`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        navigate("/student/summary", {
+          state: {
+            showSummary: true,
+            environmentProgress: result.data.progress,
+            summaryData: result.data,
+            returnTo: "/student/village",
+          }
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching summary data:", error);
+    }
+  };
+  const checkAndShowSummary = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const studentId = localStorage.getItem("studentId");
+
+      // Check environment progress
+      const progressResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=village`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      const result = await progressResponse.json();
+      
+      if (result.success) {
+        const progress = result.data.progress ?? result.data.progress_percentage ?? 0;
+        
+        // If 100% complete, automatically navigate to completion page
+        if (progress >= 100) {
+          navigate("/student/viewCompletion", {
+            state: {
+              showSummary: true,
+              environmentProgress: progress,
+              summaryData: result.data,
+              returnTo: "/student/village",
+            }
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error checking completion:", error);
+    }
+  };
+
+// Update the useEffect that handles completed state
+useEffect(() => {
+  if (location.state?.completed) {
+    console.log("Challenge completed, refreshing village progress...");
+    setRefreshKey((prev) => prev + 1);
+    
+    // Check if module is complete
+    checkAndShowSummary();
+    
+    // Clear the state
+    navigate(location.pathname, { replace: true, state: {} });
+  }
+}, [location.state, navigate, location.pathname]);
 
   const handleNPCClick = (npc) => {
     setSelectedNPC(npc);
@@ -171,6 +285,17 @@ const VillagePage = () => {
       >
         ← Back
       </Button>
+
+      {/* NEW: View Summary Button */}
+      {showSummaryButton && (
+        <Button
+          variant="primary"
+          className="view-summary-button"
+          onClick={handleViewSummary}
+        >
+          📊 View Summary
+        </Button>
+      )}
 
       <EnvironmentPage
         key={refreshKey}

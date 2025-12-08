@@ -153,8 +153,42 @@ const PictureAssociationPage = () => {
         body: JSON.stringify(submitData),
       });
 
-      console.log("✅ Completion submitted, navigating to village");
-      navigate("/student/village", { state: { completed: true } });
+      // Check environment progress
+      const progressResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=village`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      const progressResult = await progressResponse.json();
+      
+      if (progressResult.success) {
+        const progress = progressResult.data.progress ?? progressResult.data.progress_percentage ?? 0;
+        
+        if (progress >= 75) {
+          navigate("/student/summary", {
+            state: {
+              showSummary: true,
+              environmentProgress: progress,
+              returnTo: "/student/village",
+              completedQuest: {
+                npcId,
+                npcName: gameData.npcName,
+                score: correctAnswers,
+                totalQuestions: pictureData.length,
+                timeSpent
+              }
+            }
+          });
+        } else {
+          navigate("/student/village", { state: { completed: true } });
+        }
+      } else {
+        navigate("/student/village", { state: { completed: true } });
+      }
     } catch (error) {
       console.error("Error submitting challenge:", error);
       navigate("/student/village", { state: { completed: true } });
