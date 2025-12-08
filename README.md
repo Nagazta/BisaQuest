@@ -1,6 +1,7 @@
-# BisaQuest: English Learning Adventure
+# BisaQuest:  An Interactive Story-Based Learning Adventure for Grade 3 Learners
 
-BisaQuest is an educational gamified learning platform designed to help students practice **synonyms and antonyms** through interactive quests and engaging challenges. The system provides real-time scoring, user progress tracking, and a fun learning narrative featuring the Forest Guide NPC.
+
+BisaQuest is a web-based, story-driven learning game designed to help Grade 3 students improve their reading comprehension skills. It integrates interactive quests, NPC-guided lessons, and bilingual support in English and Cebuano, allowing learners to explore and practice vocabulary through play. The platform features a standalone learning environment for students and a teacher dashboard for tracking progress and performance.
 
 ---
 
