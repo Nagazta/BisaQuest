@@ -24,7 +24,7 @@ const VillagePage = () => {
 
   // Load language preference
   const { language, loading: langLoading } = useLanguagePreference(questId);
-  
+
   // Load character preference
   const { character, loading: charLoading } = useCharacterPreference(questId);
 
@@ -37,7 +37,7 @@ const VillagePage = () => {
   const [showSummaryButton, setShowSummaryButton] = useState(false);
 
   // Get the appropriate player character image
-  const PlayerCharacter = character === 'female' ? GirlCharacter : BoyCharacter;
+  const PlayerCharacter = character === "female" ? GirlCharacter : BoyCharacter;
 
   // Refresh progress when returning from a completed game
   useEffect(() => {
@@ -387,13 +387,6 @@ const VillagePage = () => {
                   className="quest-modal-button"
                 >
                   {language === "ceb" ? "Mobiya" : "Leave"}
-                </Button>
-                <Button
-                  onClick={handleConfirmExit}
-                  variant="primary"
-                  className="quest-modal-button"
-                >
-                  Leave
                 </Button>
               </div>
             </div>
