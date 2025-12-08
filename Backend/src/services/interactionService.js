@@ -4,12 +4,8 @@ import { supabase } from '../config/supabaseClient.js';
 class InteractionService {
   // Start interaction with NPC
   async startInteraction(studentId, npcId, challengeType = 'word_matching') {
-    try {
-      console.log('=== INTERACTION SERVICE: START ===');
-      console.log('Input params:', { studentId, npcId, challengeType });
-      
+    try {      
       // Check if student has existing progress
-      console.log('Querying student_progress table...');
       const { data: progress, error: progressError } = await supabase
         .from('student_progress')
         .select('*')
@@ -18,15 +14,6 @@ class InteractionService {
         .eq('challenge_type', challengeType)
         .single();
 
-      console.log('Query result:', {
-        foundProgress: !!progress,
-        error: progressError ? {
-          message: progressError.message,
-          code: progressError.code,
-          details: progressError.details
-        } : null
-      });
-
       if (progressError && progressError.code !== 'PGRST116') {
         console.error('❌ Unexpected error from Supabase:', progressError);
         throw progressError;
@@ -34,7 +21,6 @@ class InteractionService {
 
       // If no progress exists, create new record
       if (!progress) {
-        console.log('No existing progress found. Creating new record...');
         const newProgressData = {
           student_id: studentId,
           npc_id: npcId,
@@ -45,9 +31,7 @@ class InteractionService {
             started_at: new Date().toISOString()
           }
         };
-        
-        console.log('Inserting new progress:', newProgressData);
-        
+                
         const { data: newProgress, error: createError } = await supabase
           .from('student_progress')
           .insert(newProgressData)
@@ -64,7 +48,6 @@ class InteractionService {
           throw createError;
         }
         
-        console.log('✅ New progress created:', newProgress.id);
         return { 
           progress: newProgress, 
           isNewInteraction: true,
@@ -73,7 +56,6 @@ class InteractionService {
       }
 
       // Update existing session
-      console.log('Existing progress found. Updating session...');
       const updateData = {
         current_session: {
           is_active: true,
@@ -81,9 +63,7 @@ class InteractionService {
         },
         last_interaction: new Date().toISOString()
       };
-      
-      console.log('Update data:', updateData);
-      
+            
       const { data: updatedProgress, error: updateError } = await supabase
         .from('student_progress')
         .update(updateData)
@@ -100,7 +80,6 @@ class InteractionService {
         throw updateError;
       }
 
-      console.log('✅ Progress updated:', updatedProgress.id);
       return { 
         progress: updatedProgress, 
         isNewInteraction: false,

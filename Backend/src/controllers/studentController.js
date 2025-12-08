@@ -34,7 +34,6 @@ export const getStudentByUserId = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error fetching student:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to fetch student data',

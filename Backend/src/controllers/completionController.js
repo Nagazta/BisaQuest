@@ -23,7 +23,6 @@ const completionController = {
         data: completionStatus
       });
     } catch (error) {
-      console.error('Error checking completion:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to check completion',
@@ -60,7 +59,6 @@ const completionController = {
         data: completion
       });
     } catch (error) {
-      console.error('Error recording completion:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to record completion',
@@ -90,7 +88,6 @@ const completionController = {
         data: summary
       });
     } catch (error) {
-      console.error('Error fetching module summary:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to fetch module summary',
@@ -123,7 +120,6 @@ const completionController = {
         data: data || []
       });
     } catch (error) {
-      console.error('Error fetching student completions:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to fetch student completions',
@@ -131,45 +127,45 @@ const completionController = {
       });
     }
   },
+
   async testData(req, res) {
-  try {
-    const { studentId } = req.params;
-    
-    // Check challenge_attempts
-    const { data: attempts, error: attemptsError } = await supabase
-      .from('challenge_attempts')
-      .select('*')
-      .eq('student_id', studentId)
-      .eq('completed', true);
+    try {
+      const { studentId } = req.params;
 
-    if (attemptsError) throw attemptsError;
+      // Check challenge_attempts
+      const { data: attempts, error: attemptsError } = await supabase
+        .from('challenge_attempts')
+        .select('*')
+        .eq('student_id', studentId)
+        .eq('completed', true);
 
-    // Check student_progress
-    const { data: progress, error: progressError } = await supabase
-      .from('student_progress')
-      .select('*')
-      .eq('student_id', studentId);
+      if (attemptsError) throw attemptsError;
 
-    if (progressError) throw progressError;
+      // Check student_progress
+      const { data: progress, error: progressError } = await supabase
+        .from('student_progress')
+        .select('*')
+        .eq('student_id', studentId);
 
-    res.json({
-      success: true,
-      studentId,
-      attempts: attempts || [],
-      progress: progress || [],
-      summary: {
-        totalAttempts: attempts?.length || 0,
-        progressRecords: progress?.length || 0
-      }
-    });
-  } catch (error) {
-    console.error('Error fetching test data:', error);
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+      if (progressError) throw progressError;
+
+      res.json({
+        success: true,
+        studentId,
+        attempts: attempts || [],
+        progress: progress || [],
+        summary: {
+          totalAttempts: attempts?.length || 0,
+          progressRecords: progress?.length || 0
+        }
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
   }
-}
 };
 
 export default completionController;

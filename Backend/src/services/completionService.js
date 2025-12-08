@@ -43,17 +43,13 @@ class CompletionService {
    * Record module completion
    */
   async recordModuleCompletion(studentId, moduleId, completionData) {
-    try {
-        console.log('Recording module completion:', { studentId, moduleId, completionData });
-        
+    try {        
         const { npcBreakdown, totalScore, totalQuestions, timeSpent } = completionData;
 
         // Ensure we don't divide by zero and have valid percentage
         const completionPercentage = totalQuestions > 0 
         ? Math.round((totalScore / totalQuestions) * 100) 
         : 0;
-
-        console.log('Calculated completion percentage:', completionPercentage);
 
         // Check if completion already exists
         const { data: existingCompletion, error: checkError } = await supabase
@@ -77,7 +73,6 @@ class CompletionService {
         };
 
         if (existingCompletion) {
-        console.log('Completion already exists, updating...');
         const { data, error } = await supabase
             .from('module_completions')
             .update(completionRecord)
@@ -186,12 +181,8 @@ class CompletionService {
 
   async calculateCompletionData(studentId, moduleId) {
     try {
-        console.log('=== CALCULATING COMPLETION DATA ===');
-        console.log('Student ID:', studentId);
-        console.log('Module ID:', moduleId);
         
         const challenges = this.getChallengesForModule(moduleId);
-        console.log('Challenges for module:', challenges);
         
         let totalScore = 0;
         let totalQuestions = 0;
@@ -199,7 +190,6 @@ class CompletionService {
         const npcBreakdown = {};
 
         for (const { npcId, challengeType } of challenges) {
-        console.log(`Fetching attempts for ${npcId} (${challengeType})...`);
         
         const { data: attempts, error } = await supabase
             .from('challenge_attempts')
@@ -214,8 +204,6 @@ class CompletionService {
             console.error(`Error fetching attempts for ${npcId}:`, error);
             throw error;
         }
-
-        console.log(`Found ${attempts?.length || 0} attempts for ${npcId}`);
 
         if (attempts && attempts.length > 0) {
             const bestAttempt = attempts[0];
@@ -237,25 +225,9 @@ class CompletionService {
             bestScore: bestAttempt.score || 0,
             totalTime: totalTime
             };
-        } else {
-            console.warn(`No attempts found for ${npcId}`);
-            // Add default values even if no attempts found
-            npcBreakdown[npcId] = {
-            score: 0,
-            total: 0,
-            attempts: 0,
-            bestScore: 0,
-            totalTime: 0
-            };
-        }
-        }
+        } 
+      }
 
-        console.log('Final calculation:', {
-        totalScore,
-        totalQuestions,
-        totalTimeSpent,
-        npcBreakdown
-        });
 
         // Ensure we have valid data
         if (totalQuestions === 0) {

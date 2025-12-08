@@ -48,7 +48,6 @@ export const checkProgress = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error checking progress:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to check progress',
@@ -97,7 +96,6 @@ export const saveProgress = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error saving progress:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to save progress',
@@ -134,7 +132,6 @@ export const resetProgress = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error resetting progress:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to reset progress',
@@ -155,8 +152,6 @@ export const resetAllProgress = async (req, res) => {
             });
         }
 
-        console.log('Resetting all progress for student:', student_id);
-
         // Delete all student_progress records
         const { error: progressError } = await supabase
             .from('student_progress')
@@ -164,7 +159,6 @@ export const resetAllProgress = async (req, res) => {
             .eq('student_id', student_id);
 
         if (progressError) {
-            console.error('Error deleting student_progress:', progressError);
             throw progressError;
         }
 
@@ -175,11 +169,8 @@ export const resetAllProgress = async (req, res) => {
             .eq('student_id', student_id);
 
         if (attemptsError) {
-            console.error('Error deleting challenge_attempts:', attemptsError);
             throw attemptsError;
         }
-
-        console.log('All progress reset successfully');
 
         res.status(200).json({
             success: true,
@@ -187,7 +178,6 @@ export const resetAllProgress = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error resetting all progress:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to reset all progress',

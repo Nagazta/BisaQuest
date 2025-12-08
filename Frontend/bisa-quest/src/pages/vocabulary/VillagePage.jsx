@@ -28,7 +28,6 @@ const VillagePage = () => {
   // Refresh progress when returning from a completed game
   useEffect(() => {
     if (location.state?.completed) {
-      console.log("Challenge completed, refreshing village progress...");
       setRefreshKey((prev) => prev + 1);
       // Clear the state
       navigate(location.pathname, { replace: true, state: {} });
@@ -42,11 +41,8 @@ const VillagePage = () => {
   const initializeVillage = async () => {
     const studentId = localStorage.getItem("studentId");
     if (!studentId) {
-      console.error("No student ID found in localStorage");
       return;
     }
-    console.log("Found studentId in localStorage:", studentId);
-
     // Frontend-defined NPCs with showName property and quest types
     const npcs = [
       {
@@ -196,7 +192,6 @@ const VillagePage = () => {
 // Update the useEffect that handles completed state
 useEffect(() => {
   if (location.state?.completed) {
-    console.log("Challenge completed, refreshing village progress...");
     setRefreshKey((prev) => prev + 1);
     
     // Check if module is complete
@@ -228,7 +223,6 @@ useEffect(() => {
         challengeType: selectedNPC.quest,
       });
 
-      console.log("NPC interaction logged for:", selectedNPC.name);
     } catch (err) {
       console.error("Error logging NPC interaction:", err);
     }
