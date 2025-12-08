@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getRandomGameSet } from '../data/moduleOneGames';
 
-export const useGameSession = (npcId, gameData, challengeType) => {
+export const useGameSession = (npcId, gameData, challengeType, language = 'en') => {
     const navigate = useNavigate();
     const [encountersRemaining, setEncountersRemaining] = useState(3);
     const [latestAttempt, setLatestAttempt] = useState(null);
@@ -15,7 +15,8 @@ export const useGameSession = (npcId, gameData, challengeType) => {
     const startGame = useCallback(() => {
         if (!gameData) return;
 
-        const selectedSet = getRandomGameSet(npcId);
+        // Pass language to getRandomGameSet
+        const selectedSet = getRandomGameSet(npcId, language);
 
         if (selectedSet) {
             const content = selectedSet.words || selectedSet.items || selectedSet.sentences;
@@ -26,7 +27,7 @@ export const useGameSession = (npcId, gameData, challengeType) => {
                 setShowReplayConfirm(false);
             }
         }
-    }, [npcId, gameData]);
+    }, [npcId, gameData, language]); // Add language to dependencies
 
     useEffect(() => {
         if (!gameData || hasCheckedAttempt.current) return;
@@ -62,7 +63,6 @@ export const useGameSession = (npcId, gameData, challengeType) => {
                     }
                 }
             } catch (error) {
-                console.error('Error checking previous attempt:', error);
                 startGame();
             }
         };

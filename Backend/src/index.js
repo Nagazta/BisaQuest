@@ -10,6 +10,7 @@ import environmentRoutes from "./routes/environmentRoutes.js";
 import npcInteractionRoutes from './routes/npcInteractionRoutes.js';
 import completionRoutes from './routes/completionRoutes.js';
 import debugRoutes from './routes/debugRoutes.js';
+import languagePreferenceRoutes from './routes/languagePreferenceRoutes.js'; 
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/student', studentRoutes);
 app.use('/api/teacher', teacherRoutes);
 app.use('/api/preferences', preferenceRoutes);
+app.use('/api/language-preferences', languagePreferenceRoutes);
 app.use('/api/progress', progressRoutes);
 app.use("/api", environmentRoutes);
 app.use('/api', npcInteractionRoutes);

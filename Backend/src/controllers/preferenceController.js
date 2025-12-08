@@ -81,7 +81,7 @@ export const saveCharacterPreference = async (req, res) => {
     }
 };
 
-// Save language preference
+// Save language preference (DEPRECATED - use /api/language-preferences instead)
 export const saveLanguagePreference = async (req, res) => {
     try {
         const { student_id, quest_id, language_preference } = req.body;
