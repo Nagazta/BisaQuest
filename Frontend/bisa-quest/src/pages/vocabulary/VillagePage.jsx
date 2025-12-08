@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useLanguagePreference } from "../../hooks/useLanguagePreference";
+import { useCharacterPreference } from "../../hooks/useCharacterPreference";
 import EnvironmentPage from "../../components/EnvironmentPage";
 import Button from "../../components/Button";
 import ParticleEffects from "../../components/ParticleEffects";
@@ -10,7 +11,8 @@ import VillageBackground from "../../assets/images/environments/village.png";
 import NandoCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_1.png";
 import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
 import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
-import PlayerCharacter from "../../assets/images/characters/Boy.png";
+import BoyCharacter from "../../assets/images/characters/Boy.png";
+import GirlCharacter from "../../assets/images/characters/Girl.png";
 
 import QuestStartModal from "../../components/QuestStartModal";
 import "./styles/VillagePage.css";
@@ -22,6 +24,9 @@ const VillagePage = () => {
 
   // Load language preference
   const { language, loading: langLoading } = useLanguagePreference(questId);
+  
+  // Load character preference
+  const { character, loading: charLoading } = useCharacterPreference(questId);
 
   const [villageNPCs, setVillageNPCs] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -30,6 +35,9 @@ const VillagePage = () => {
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [environmentProgress, setEnvironmentProgress] = useState(0);
   const [showSummaryButton, setShowSummaryButton] = useState(false);
+
+  // Get the appropriate player character image
+  const PlayerCharacter = character === 'female' ? GirlCharacter : BoyCharacter;
 
   // Refresh progress when returning from a completed game
   useEffect(() => {
@@ -285,7 +293,7 @@ const VillagePage = () => {
 
   const handleCancelExit = () => setShowExitConfirm(false);
 
-  if (langLoading) {
+  if (langLoading || charLoading) {
     return (
       <div className="village-page-wrapper">
         <ParticleEffects enableMouseTrail={false} />
