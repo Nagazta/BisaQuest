@@ -25,7 +25,6 @@ const WordMatchingPage = () => {
 
   const gameData = useMemo(() => {
     const npcGameData = getGameDataByNPC(npcId);
-    console.log("Loading game data for npcId:", npcId, "Result:", npcGameData);
 
     if (npcGameData && npcGameData.gameType === "word_matching") {
       return npcGameData;

@@ -4,7 +4,6 @@ export const getDashboardData = async (req, res) => {
     try {
         const teacherUserId = req.user.id;
 
-        console.log('Getting dashboard for teacher user_id:', teacherUserId);
         const { data: teacherData, error: teacherError } = await supabase
             .from('teacher')
             .select('teacher_id')
@@ -12,11 +11,8 @@ export const getDashboardData = async (req, res) => {
             .single();
 
         if (teacherError || !teacherData) {
-            console.error('Teacher lookup error:', teacherError);
             throw new Error('Teacher not found');
         }
-
-        console.log('Found teacher_id:', teacherData.teacher_id);
 
         const { data: students, error: studentsError } = await supabase
             .from('student')
@@ -28,14 +24,11 @@ export const getDashboardData = async (req, res) => {
                     username
                 )
             `)
-            .eq('teacher_id', teacherData.teacher_id); // Use teacher_id, not user_id
+            .eq('teacher_id', teacherData.teacher_id);
 
         if (studentsError) {
-            console.error('Students query error:', studentsError);
             throw studentsError;
         }
-
-        console.log('Found students:', students?.length || 0);
 
         const formattedStudents = students.map(s => ({
             ...s,
@@ -68,7 +61,6 @@ export const getDashboardData = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Dashboard error:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 };
@@ -90,9 +82,6 @@ export const createStudent = async (req, res) => {
         const email = `${studentId}@bisaquest.app`;
         const password = studentId;
 
-
-        console.log('Creating student:', { fullname, studentId, classCode, email });
-
         // Get teacher_id from Teacher table
         const { data: teacherData, error: teacherError } = await supabase
             .from('teacher')
@@ -101,11 +90,8 @@ export const createStudent = async (req, res) => {
             .single();
 
         if (teacherError || !teacherData) {
-            console.error('Teacher lookup error:', teacherError);
             throw new Error('Teacher not found');
         }
-
-        console.log('Teacher found:', teacherData.teacher_id);
 
         // Check if student ID already exists in users table
         const { data: existingUser } = await supabase
@@ -128,9 +114,6 @@ export const createStudent = async (req, res) => {
             });
         }
 
-
-        console.log('Creating auth user with admin client...');
-
         // USE ADMIN CLIENT - bypasses email confirmation
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
             email,
@@ -144,11 +127,8 @@ export const createStudent = async (req, res) => {
         });
 
         if (authError) {
-            console.error('Auth creation error:', authError);
             throw authError;
         }
-
-        console.log('Auth user created:', authData.user.id);
 
         // Insert into Users table
         const { data: userData, error: userError } = await supabase
@@ -164,11 +144,8 @@ export const createStudent = async (req, res) => {
             .single();
 
         if (userError) {
-            console.error('Users table insert error:', userError);
             throw userError;
         }
-
-        console.log('User record created:', userData.user_id);
 
         const { data: studentData, error: studentError } = await supabase
             .from('student')
@@ -181,11 +158,8 @@ export const createStudent = async (req, res) => {
             .single();
 
         if (studentError) {
-            console.error('Student table insert error:', studentError);
             throw studentError;
         }
-
-        console.log('Student record created:', studentData.student_id);
 
         res.status(201).json({
             success: true,
@@ -199,7 +173,6 @@ export const createStudent = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Create student error:', error);
         res.status(400).json({
             success: false,
             error: error.message || 'Failed to create student'

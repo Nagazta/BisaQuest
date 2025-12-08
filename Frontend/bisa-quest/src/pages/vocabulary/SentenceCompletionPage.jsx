@@ -107,25 +107,10 @@ const SentenceCompletionPage = () => {
   const npcId = location.state?.npcId || "vicente";
 
   const gameData = useMemo(() => {
-    console.log("=== SENTENCE COMPLETION PAGE MOUNTED ===");
-    console.log("NPC ID from location.state:", location.state?.npcId);
-    console.log("Using npcId:", npcId);
-
     const npcGameData = getGameDataByNPC(npcId);
-    console.log("Game data retrieved:", {
-      found: !!npcGameData,
-      gameType: npcGameData?.gameType,
-      npcName: npcGameData?.npcName,
-    });
-
     if (npcGameData && npcGameData.gameType === "sentence_completion") {
-      console.log("✅ Valid game data found");
       return npcGameData;
     } else {
-      console.error("❌ Invalid NPC or game type for sentence completion", {
-        npcId,
-        gameData: npcGameData,
-      });
       navigate("/student/village");
       return null;
     }
@@ -215,7 +200,6 @@ const SentenceCompletionPage = () => {
   };
 
   const handleComplete = async () => {
-    console.log("=== COMPLETING GAME ===");
     try {
       const token = localStorage.getItem("token");
       const timeSpent = Math.floor((Date.now() - startTime) / 1000);
@@ -228,8 +212,6 @@ const SentenceCompletionPage = () => {
         timeSpent,
         completed: true,
       };
-
-      console.log("Submitting completion:", submitData);
 
       await fetch("http://localhost:5000/api/npc/submit", {
         method: "POST",
@@ -257,7 +239,6 @@ const SentenceCompletionPage = () => {
         
         // If progress >= 75%, show option to view summary
         if (progress >= 75) {
-          console.log("✅ Progress >= 75%, showing summary option");
           navigate("/student/summary", {
             state: {
               showSummary: true,
@@ -273,14 +254,12 @@ const SentenceCompletionPage = () => {
             }
           });
         } else {
-          console.log("✅ Completion submitted, navigating to village");
           navigate("/student/village", { state: { completed: true } });
         }
       } else {
         navigate("/student/village", { state: { completed: true } });
       }
     } catch (error) {
-      console.error("Error submitting challenge:", error);
       navigate("/student/village", { state: { completed: true } });
     }
   };

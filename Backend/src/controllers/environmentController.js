@@ -13,8 +13,6 @@ export const initializeEnvironment = async (req, res) => {
       });
     }
 
-    console.log("Initialize environment:", { studentId, envType });
-
     const { data: studentData, error: studentError } = await supabase
       .from("student")
       .select("*")
@@ -48,7 +46,6 @@ export const initializeEnvironment = async (req, res) => {
       session: data,
     });
   } catch (err) {
-    console.error("Error initializing environment:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 };
@@ -62,8 +59,6 @@ export const logInstructionEntry = async (req, res) => {
       return res.status(400).json({ success: false, error: "Missing studentId" });
     }
 
-    console.log("Logging instruction entry for student:", studentId);
-
     const { data, error } = await supabase
       .from("instruction_log")
       .insert([
@@ -75,12 +70,7 @@ export const logInstructionEntry = async (req, res) => {
       .select()
       .single();
 
-    if (error) {
-      console.error("Supabase error inserting instruction_log:", error);
-      throw error;
-    }
-
-    console.log("Instruction entry logged:", data);
+    if (error) throw error;
 
     res.json({
       success: true,
@@ -88,7 +78,6 @@ export const logInstructionEntry = async (req, res) => {
       entry: data,
     });
   } catch (err) {
-    console.error("Error in logInstructionEntry:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 };
@@ -102,8 +91,6 @@ export const logNPCInteraction = async (req, res) => {
       return res.status(400).json({ success: false, error: "Missing npcName" });
     }
 
-    console.log("Logging NPC interaction:", { studentId, npcName });
-
     const { data: studentData, error: studentError } = await supabase
       .from("student")
       .select("*")
@@ -111,9 +98,9 @@ export const logNPCInteraction = async (req, res) => {
       .single();
 
     if (studentError || !studentData) {
-      return res.status(400).json({ 
-        success: false, 
-        error: `Student not found` 
+      return res.status(400).json({
+        success: false,
+        error: `Student not found`
       });
     }
 
@@ -129,20 +116,14 @@ export const logNPCInteraction = async (req, res) => {
       .select()
       .single();
 
-    if (error) {
-      console.error("Supabase insert error:", error);
-      throw error;
-    }
+    if (error) throw error;
 
-    console.log("NPC interaction logged:", data);
-
-    return res.json({ 
-      success: true, 
-      message: "NPC interaction logged", 
-      entry: data 
+    return res.json({
+      success: true,
+      message: "NPC interaction logged",
+      entry: data
     });
   } catch (err) {
-    console.error("Error in logNPCInteraction:", err);
     return res.status(500).json({ success: false, error: err.message });
   }
 };

@@ -29,13 +29,8 @@ const PictureAssociationPage = () => {
     });
 
     if (npcGameData && npcGameData.gameType === "word_association") {
-      console.log("✅ Valid game data found");
       return npcGameData;
     } else {
-      console.error("❌ Invalid NPC or game type for word association", {
-        npcId,
-        gameData: npcGameData,
-      });
       navigate("/student/village");
       return null;
     }
@@ -128,7 +123,6 @@ const PictureAssociationPage = () => {
   };
 
   const handleComplete = async () => {
-    console.log("=== COMPLETING GAME ===");
     try {
       const token = localStorage.getItem("token");
       const timeSpent = Math.floor((Date.now() - startTime) / 1000);
@@ -141,8 +135,6 @@ const PictureAssociationPage = () => {
         timeSpent,
         completed: true,
       };
-
-      console.log("Submitting completion:", submitData);
 
       await fetch("http://localhost:5000/api/npc/submit", {
         method: "POST",
@@ -190,7 +182,6 @@ const PictureAssociationPage = () => {
         navigate("/student/village", { state: { completed: true } });
       }
     } catch (error) {
-      console.error("Error submitting challenge:", error);
       navigate("/student/village", { state: { completed: true } });
     }
   };

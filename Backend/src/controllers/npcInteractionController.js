@@ -4,13 +4,8 @@ import progressTrackingService from '../services/progressTrackingService.js';
 class NPCInteractionController {
   async startInteraction(req, res) {
     try {
-      console.log('=== START INTERACTION REQUEST ===');
-      console.log('Token payload:', req.user);
-
       const { npcId, challengeType = 'word_matching' } = req.body;
-      const studentId = req.user.student_id; // ← CHANGED from req.user.id
-
-      console.log('Using student_id:', studentId);
+      const studentId = req.user.student_id;
 
       if (!npcId || !studentId) {
         return res.status(400).json({
@@ -45,7 +40,6 @@ class NPCInteractionController {
         }
       });
     } catch (error) {
-      console.error('❌ ERROR in startInteraction:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to start interaction',
@@ -56,11 +50,8 @@ class NPCInteractionController {
 
   async submitChallenge(req, res) {
     try {
-      console.log('=== SUBMIT CHALLENGE REQUEST ===');
       const { npcId, challengeType, score, totalQuestions, timeSpent, completed } = req.body;
-      const studentId = req.user.student_id; // ← CHANGED from req.user.id
-
-      console.log('Using student_id:', studentId);
+      const studentId = req.user.student_id;
 
       if (!npcId || !challengeType || score === undefined || !totalQuestions) {
         return res.status(400).json({
@@ -95,7 +86,6 @@ class NPCInteractionController {
         }
       });
     } catch (error) {
-      console.error('❌ ERROR in submitChallenge:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to submit challenge',
@@ -106,7 +96,7 @@ class NPCInteractionController {
 
   async getProgress(req, res) {
     try {
-      const studentId = req.user.student_id; // ← CHANGED
+      const studentId = req.user.student_id;
       const { npcId, challengeType } = req.query;
 
       let progress;
@@ -125,7 +115,6 @@ class NPCInteractionController {
         data: progress
       });
     } catch (error) {
-      console.error('Error in getProgress:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to fetch progress',
@@ -136,7 +125,7 @@ class NPCInteractionController {
 
   async getAttemptHistory(req, res) {
     try {
-      const studentId = req.user.student_id; // ← CHANGED
+      const studentId = req.user.student_id;
       const { npcId, limit = 10 } = req.query;
 
       const history = await progressTrackingService.getAttemptHistory(
@@ -150,7 +139,6 @@ class NPCInteractionController {
         data: history
       });
     } catch (error) {
-      console.error('Error in getAttemptHistory:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to fetch attempt history',
@@ -161,10 +149,8 @@ class NPCInteractionController {
 
   async getEnvironmentProgress(req, res) {
     try {
-      const studentId = req.user.student_id; // ← CHANGED
+      const studentId = req.user.student_id;
       const { environmentType = 'village' } = req.query;
-
-      console.log('Fetching environment progress for student_id:', studentId);
 
       const progress = await progressTrackingService.getEnvironmentProgress(
         studentId,
@@ -176,7 +162,6 @@ class NPCInteractionController {
         data: progress
       });
     } catch (error) {
-      console.error('❌ ERROR in getEnvironmentProgress:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to fetch environment progress',

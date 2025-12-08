@@ -12,10 +12,6 @@ const LanguageSelectionPage = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    console.log("=== LanguageSelectionPage mounted ===");
-  }, []);
-
   const handleBack = () => {
     navigate("/dashboard");
   };
@@ -59,14 +55,12 @@ const LanguageSelectionPage = () => {
       }
 
       const data = await response.json();
-      console.log("Language saved successfully:", data);
 
       navigate("/student/instructions");
     } catch (err) {
       setError(
         "Your language preference could not be saved. A session default will be used temporarily."
       );
-      console.error("Error saving language:", err);
     }
   };
 

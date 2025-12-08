@@ -66,7 +66,6 @@ const CharacterSelectionPage = () => {
       }
 
       const data = await response.json();
-      console.log("Character saved successfully:", data);
 
       // Navigate to language selection
       navigate("/student/languageSelection");

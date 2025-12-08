@@ -73,7 +73,6 @@ export const saveCharacterPreference = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error saving character preference:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to save character preference',
@@ -155,7 +154,6 @@ export const saveLanguagePreference = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error saving language preference:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to save language preference',
@@ -193,7 +191,6 @@ export const getPreferences = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error fetching preferences:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to fetch preferences',
