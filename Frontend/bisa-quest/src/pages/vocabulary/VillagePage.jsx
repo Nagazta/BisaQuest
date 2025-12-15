@@ -320,7 +320,7 @@ const VillagePage = () => {
           className="view-summary-button"
           onClick={handleViewSummary}
         >
-          📊 {language === "ceb" ? "Tan-awa ang Summary" : "View Summary"}
+          {language === "ceb" ? "Tan-awa ang Summary" : "View Summary"}
         </Button>
       )}
 
@@ -331,7 +331,7 @@ const VillagePage = () => {
         npcs={villageNPCs}
         onNPCClick={handleNPCClick}
         playerCharacter={PlayerCharacter}
-        debugMode={true}  
+        debugMode={false}  
       />
 
       <div className="decorative-clouds">
