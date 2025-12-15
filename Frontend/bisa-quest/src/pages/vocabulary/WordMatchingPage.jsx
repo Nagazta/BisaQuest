@@ -52,6 +52,21 @@ const WordMatchingPage = () => {
     handleCancelReplay,
   } = useGameSession(npcId, gameData, "word_matching", language);
 
+  // Shuffle function using Fisher-Yates algorithm
+  const shuffleArray = (array) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  // Shuffled definitions - memoized to prevent reshuffling on every render
+  const shuffledDefinitions = useMemo(() => {
+    return shuffleArray(wordMatchingData);
+  }, [wordMatchingData]);
+
   const progress = useMemo(() => {
     if (wordMatchingData.length > 0) {
       return Math.round((matches.length / wordMatchingData.length) * 100);
@@ -320,7 +335,7 @@ const WordMatchingPage = () => {
           </div>
 
           <div className="definition-list-panel">
-            {wordMatchingData.map((item) => (
+            {shuffledDefinitions.map((item) => (
               <div
                 key={item.id}
                 className={`definition-card ${

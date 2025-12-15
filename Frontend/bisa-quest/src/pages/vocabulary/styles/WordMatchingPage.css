@@ -139,6 +139,7 @@
   flex: 0 0 200px;
   display: flex;
   flex-direction: column;
+  margin-top: 60px;
   gap: 14px;
 }
 
@@ -217,10 +218,9 @@
 }
 
 .definition-card.selected {
-  background-color: #60A5FA;
-  border-color: #1E40AF;
-  transform: scale(1.05);
-  box-shadow: 0 8px 16px rgba(96, 165, 250, 0.5);
+  background-color: #FFC107;
+  border-color: #F57C00;
+  transform: scale(1.02);
 }
 
 .definition-card.selected p {
