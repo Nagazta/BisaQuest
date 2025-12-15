@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useLanguagePreference } from "../../hooks/useLanguagePreference";
 import { useCharacterPreference } from "../../hooks/useCharacterPreference";
@@ -13,6 +13,8 @@ import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Q
 import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
 import BoyCharacter from "../../assets/images/characters/Boy.png";
 import GirlCharacter from "../../assets/images/characters/Girl.png";
+// Music
+import bgMusic from "../../assets/music/bg-music.mp3";
 
 import QuestStartModal from "../../components/QuestStartModal";
 import "./styles/VillagePage.css";
@@ -21,6 +23,7 @@ const VillagePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const questId = location.state?.questId || 1;
+  const audioRef = useRef(null);
 
   // Load language preference
   const { language, loading: langLoading } = useLanguagePreference(questId);
@@ -35,9 +38,36 @@ const VillagePage = () => {
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [environmentProgress, setEnvironmentProgress] = useState(0);
   const [showSummaryButton, setShowSummaryButton] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
 
   // Get the appropriate player character image
   const PlayerCharacter = character === "female" ? GirlCharacter : BoyCharacter;
+
+  // Background music effect
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = 0.3; // Adjust volume (0.0 to 1.0)
+      audioRef.current.play().catch(error => {
+        console.log('Autoplay prevented:', error);
+      });
+    }
+
+    // Cleanup: stop music when component unmounts
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    };
+  }, []);
+
+  // Toggle mute function
+  const toggleMute = () => {
+    if (audioRef.current) {
+      audioRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
 
   // Refresh progress when returning from a completed game
   useEffect(() => {
@@ -304,7 +334,22 @@ const VillagePage = () => {
 
   return (
     <div className="village-page-wrapper">
+      {/* Background Music */}
+      <audio ref={audioRef} loop>
+        <source src={bgMusic} type="audio/mpeg" />
+      </audio>
+
       <ParticleEffects enableMouseTrail={false} />
+      
+      {/* Mute/Unmute Button */}
+      <button 
+        className="music-toggle-button"
+        onClick={toggleMute}
+        aria-label={isMuted ? "Unmute" : "Mute"}
+      >
+        {isMuted ? "🔇" : "🔊"}
+      </button>
+
       <Button
         variant="back"
         className="back-button-village-overlay"

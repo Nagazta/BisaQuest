@@ -37,3 +37,33 @@
   }
 }
 
+/* Music Toggle Button */
+.music-toggle-button {
+  position: fixed;
+  top: 650px;
+  right: 20px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  border: 3px solid #8b4513;
+  border-radius: 50%;
+  width: 55px;
+  height: 55px;
+  font-size: 26px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  font-family: 'Pixelify Sans', sans-serif;
+}
+
+.music-toggle-button:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.music-toggle-button:active {
+  transform: scale(0.95);
+}
