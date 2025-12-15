@@ -22,10 +22,10 @@
 .matching-content {
   position: absolute;
   top: 50%;
-  right: 80px;
+  right: 10px;
   transform: translateY(-50%);
   width: 62%;
-  max-width: 880px;
+  max-width: 850px;
   height: auto;
   min-height: 500px;
   background: rgba(237, 224, 192, 0.92);
@@ -111,6 +111,7 @@
 }
 
 .submit-button {
+  margin-top: 20px;
   width: 100%;
   max-width: 200px;
   padding: 12px 24px;
