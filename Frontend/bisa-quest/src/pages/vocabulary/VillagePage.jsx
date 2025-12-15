@@ -43,14 +43,32 @@ const VillagePage = () => {
   // Get the appropriate player character image
   const PlayerCharacter = character === "female" ? GirlCharacter : BoyCharacter;
 
-  // Background music effect
+  // Background music effect - auto play on any interaction
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = 0.3; // Adjust volume (0.0 to 1.0)
-      audioRef.current.play().catch(error => {
-        console.log('Autoplay prevented:', error);
-      });
-    }
+    const playMusic = () => {
+      if (audioRef.current) {
+        audioRef.current.volume = 0.3;
+        audioRef.current.play().catch(error => {
+          console.log('Waiting for user interaction to play music');
+        });
+      }
+    };
+
+    // Try to play immediately
+    playMusic();
+
+    // Add listeners for user interactions
+    const handleInteraction = () => {
+      playMusic();
+      // Remove listeners after first successful play
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('keydown', handleInteraction);
+      document.removeEventListener('touchstart', handleInteraction);
+    };
+
+    document.addEventListener('click', handleInteraction);
+    document.addEventListener('keydown', handleInteraction);
+    document.addEventListener('touchstart', handleInteraction);
 
     // Cleanup: stop music when component unmounts
     return () => {
@@ -58,6 +76,9 @@ const VillagePage = () => {
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
       }
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('keydown', handleInteraction);
+      document.removeEventListener('touchstart', handleInteraction);
     };
   }, []);
 
@@ -340,9 +361,9 @@ const VillagePage = () => {
       </audio>
 
       <ParticleEffects enableMouseTrail={false} />
-      
+
       {/* Mute/Unmute Button */}
-      <button 
+      <button
         className="music-toggle-button"
         onClick={toggleMute}
         aria-label={isMuted ? "Unmute" : "Mute"}
@@ -376,7 +397,7 @@ const VillagePage = () => {
         npcs={villageNPCs}
         onNPCClick={handleNPCClick}
         playerCharacter={PlayerCharacter}
-        debugMode={false}  
+        debugMode={false}
       />
 
       <div className="decorative-clouds">
