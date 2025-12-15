@@ -155,6 +155,20 @@ export const moduleOneGames = {
               image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500',
               description: 'The bright star in the sky',
               choices: ['Moon', 'Sun', 'Cloud']
+            },
+            {
+              id: 4,
+              word: 'Bird',
+              image: 'https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=500',
+              description: 'An animal that can fly',
+              choices: ['Fish', 'Bird', 'Dog']
+            },
+            {
+              id: 5,
+              word: 'Rain',
+              image: 'https://images.unsplash.com/photo-1428908728789-d2de25dbd4e2?w=500',
+              description: 'Water falling from the sky',
+              choices: ['Snow', 'Wind', 'Rain']
             }
           ]
         },
@@ -181,6 +195,20 @@ export const moduleOneGames = {
               image: 'https://images.unsplash.com/photo-1609220136736-443140cffec6?w=500',
               description: 'People related to you',
               choices: ['Family', 'Strangers', 'Animals']
+            },
+            {
+              id: 4,
+              word: 'Star',
+              image: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=500',
+              description: 'Bright objects in the night sky',
+              choices: ['Planet', 'Star', 'Comet']
+            },
+            {
+              id: 5,
+              word: 'Cloud',
+              image: 'https://images.unsplash.com/photo-1534088568595-a066f410bcda?w=500',
+              description: 'White fluffy things in the sky',
+              choices: ['Fog', 'Smoke', 'Cloud']
             }
           ]
         },
@@ -207,6 +235,20 @@ export const moduleOneGames = {
               image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=500',
               description: 'Where people live',
               choices: ['Building', 'House', 'School']
+            },
+            {
+              id: 4,
+              word: 'Butterfly',
+              image: 'https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?w=500',
+              description: 'A colorful insect with wings',
+              choices: ['Bee', 'Butterfly', 'Dragonfly']
+            },
+            {
+              id: 5,
+              word: 'Rainbow',
+              image: 'https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?w=500',
+              description: 'Colorful arc in the sky after rain',
+              choices: ['Lightning', 'Rainbow', 'Sunset']
             }
           ]
         }
@@ -235,6 +277,20 @@ export const moduleOneGames = {
               image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500',
               description: 'Ang hayag nga bituon sa langit',
               choices: ['Bulan', 'Adlaw', 'Panganod']
+            },
+            {
+              id: 4,
+              word: 'Langgam',
+              image: 'https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=500',
+              description: 'Usa ka hayop nga makaalupad',
+              choices: ['Isda', 'Langgam', 'Iro']
+            },
+            {
+              id: 5,
+              word: 'Ulan',
+              image: 'https://images.unsplash.com/photo-1428908728789-d2de25dbd4e2?w=500',
+              description: 'Tubig nga nahulog gikan sa langit',
+              choices: ['Niyebe', 'Hangin', 'Ulan']
             }
           ]
         },
@@ -261,6 +317,20 @@ export const moduleOneGames = {
               image: 'https://images.unsplash.com/photo-1609220136736-443140cffec6?w=500',
               description: 'Mga tawo nga may kalabotan kanimo',
               choices: ['Pamilya', 'Estranghero', 'Hayop']
+            },
+            {
+              id: 4,
+              word: 'Bituon',
+              image: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=500',
+              description: 'Mahayag nga mga butang sa langit sa gabii',
+              choices: ['Planeta', 'Bituon', 'Kometa']
+            },
+            {
+              id: 5,
+              word: 'Panganod',
+              image: 'https://images.unsplash.com/photo-1534088568595-a066f410bcda?w=500',
+              description: 'Puti ug humok nga mga butang sa langit',
+              choices: ['Gabon', 'Aso', 'Panganod']
             }
           ]
         },
@@ -287,6 +357,20 @@ export const moduleOneGames = {
               image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=500',
               description: 'Diin mopuyo ang mga tawo',
               choices: ['Bilding', 'Balay', 'Eskwelahan']
+            },
+            {
+              id: 4,
+              word: 'Alibangbang',
+              image: 'https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?w=500',
+              description: 'Usa ka maanyag nga insekto nga adunay pako',
+              choices: ['Buyog', 'Alibangbang', 'Tutuburon']
+            },
+            {
+              id: 5,
+              word: 'Balangaw',
+              image: 'https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?w=500',
+              description: 'Maanyag nga kurba sa langit human sa ulan',
+              choices: ['Kilat', 'Balangaw', 'Takipsilim']
             }
           ]
         }
@@ -345,6 +429,18 @@ export const moduleOneGames = {
               sentence: "The merchant packed his goods for the long [___].",
               correctAnswer: "journey",
               choices: ["house", "journey", "desk"]
+            },
+            {
+              id: 4,
+              sentence: "We cook our meals using [___] from the well.",
+              correctAnswer: "water",
+              choices: ["sand", "water", "stone"]
+            },
+            {
+              id: 5,
+              sentence: "The children play in the [___] near the village.",
+              correctAnswer: "field",
+              choices: ["cave", "field", "wall"]
             }
           ]
         },
@@ -368,6 +464,18 @@ export const moduleOneGames = {
               sentence: "The harvest was stored in the [___].",
               correctAnswer: "barn",
               choices: ["barn", "lake", "mountain"]
+            },
+            {
+              id: 4,
+              sentence: "The [___] provides shade on hot days.",
+              correctAnswer: "tree",
+              choices: ["rock", "tree", "stream"]
+            },
+            {
+              id: 5,
+              sentence: "We cross the [___] to reach the next town.",
+              correctAnswer: "bridge",
+              choices: ["fence", "bridge", "gate"]
             }
           ]
         },
@@ -391,6 +499,18 @@ export const moduleOneGames = {
               sentence: "At night, we rest in our [___].",
               correctAnswer: "home",
               choices: ["field", "home", "road"]
+            },
+            {
+              id: 4,
+              sentence: "The village elder shares stories by the [___].",
+              correctAnswer: "fire",
+              choices: ["water", "fire", "wind"]
+            },
+            {
+              id: 5,
+              sentence: "We gather [___] from the forest for cooking.",
+              correctAnswer: "wood",
+              choices: ["metal", "wood", "cloth"]
             }
           ]
         }
@@ -416,6 +536,18 @@ export const moduleOneGames = {
               sentence: "Ang negosyante nagputos sa iyang mga baligya alang sa taas nga [___].",
               correctAnswer: "panaw",
               choices: ["balay", "panaw", "lamesa"]
+            },
+            {
+              id: 4,
+              sentence: "Nagluto kita gamit ang [___] gikan sa atabay.",
+              correctAnswer: "tubig",
+              choices: ["balas", "tubig", "bato"]
+            },
+            {
+              id: 5,
+              sentence: "Ang mga bata nagdula sa [___] duol sa baryo.",
+              correctAnswer: "uma",
+              choices: ["lungag", "uma", "pader"]
             }
           ]
         },
@@ -439,6 +571,18 @@ export const moduleOneGames = {
               sentence: "Ang ani gitipigan sa [___].",
               correctAnswer: "bodega",
               choices: ["bodega", "linaw", "bukid"]
+            },
+            {
+              id: 4,
+              sentence: "Ang [___] naghatag ug landong sa init nga adlaw.",
+              correctAnswer: "kahoy",
+              choices: ["bato", "kahoy", "sapa"]
+            },
+            {
+              id: 5,
+              sentence: "Molabang kita sa [___] aron makaabot sa sunod nga lungsod.",
+              correctAnswer: "tulay",
+              choices: ["kural", "tulay", "ganghaan"]
             }
           ]
         },
@@ -462,6 +606,18 @@ export const moduleOneGames = {
               sentence: "Sa gabii, mopahulay kita sa atong [___].",
               correctAnswer: "balay",
               choices: ["uma", "balay", "dalan"]
+            },
+            {
+              id: 4,
+              sentence: "Ang tigulang sa baryo nagpaambit ug mga sugilanon duol sa [___].",
+              correctAnswer: "kalayo",
+              choices: ["tubig", "kalayo", "hangin"]
+            },
+            {
+              id: 5,
+              sentence: "Mangolekta kita ug [___] gikan sa lasang alang sa pagluto.",
+              correctAnswer: "kahoy",
+              choices: ["metal", "kahoy", "panapton"]
             }
           ]
         }
