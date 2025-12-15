@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import ProgressBar from "./ProgressBar";
 import CollisionDebugger from "../config/CollisionDebugger";
 import { getCollisionZones, checkCollisionWithZones } from "../config/environmentCollisions";
@@ -16,11 +16,49 @@ const EnvironmentPage = ({
   const [keysPressed, setKeysPressed] = useState({});
   const [environmentProgress, setEnvironmentProgress] = useState(0);
   const [npcCompletionStatus, setNpcCompletionStatus] = useState({});
+  const [nearbyNPC, setNearbyNPC] = useState(null);
+  const [interactionRange] = useState(8); // Distance in % to trigger interaction
 
   // Get collision configuration for this environment
   const collisionConfig = useMemo(() => {
     return getCollisionZones(environmentType);
   }, [environmentType]);
+
+  // Calculate distance between player and NPC
+  const calculateDistance = useCallback((npc) => {
+    const dx = playerPosition.x - npc.x;
+    const dy = playerPosition.y - npc.y;
+    return Math.sqrt(dx * dx + dy * dy);
+  }, [playerPosition]);
+
+  // Check for nearby NPCs
+  useEffect(() => {
+    let closestNPC = null;
+    let closestDistance = Infinity;
+
+    npcs.forEach((npc) => {
+      const distance = calculateDistance(npc);
+      if (distance < interactionRange && distance < closestDistance) {
+        closestDistance = distance;
+        closestNPC = npc;
+      }
+    });
+
+    setNearbyNPC(closestNPC);
+  }, [playerPosition, npcs, calculateDistance, interactionRange]);
+
+  // Handle E key press for interaction
+  useEffect(() => {
+    const handleInteraction = (e) => {
+      if (e.key.toLowerCase() === 'e' && nearbyNPC) {
+        e.preventDefault();
+        onNPCClick?.(nearbyNPC);
+      }
+    };
+
+    window.addEventListener('keydown', handleInteraction);
+    return () => window.removeEventListener('keydown', handleInteraction);
+  }, [nearbyNPC, onNPCClick]);
 
   // Check if position collides
   const checkCollision = (newX, newY) => {
@@ -159,6 +197,14 @@ const EnvironmentPage = ({
     return () => cancelAnimationFrame(animationFrameId);
   }, [keysPressed, npcs, collisionConfig]);
 
+  // Handle NPC click - only if in range
+  const handleNPCClick = (npc) => {
+    const distance = calculateDistance(npc);
+    if (distance < interactionRange) {
+      onNPCClick?.(npc);
+    }
+  };
+
   return (
     <div className={`environment-page ${environmentType}`}>
       {/* Background */}
@@ -172,13 +218,14 @@ const EnvironmentPage = ({
         npcs.map((npc, index) => {
           const status = npcCompletionStatus[npc.npcId];
           const isCompleted = status?.completed || false;
+          const isNearby = nearbyNPC?.npcId === npc.npcId;
 
           return (
             <div
               key={npc.npcId || index}
-              className={`npc-on-map ${isCompleted ? "completed" : ""}`}
+              className={`npc-on-map ${isCompleted ? "completed" : ""} ${isNearby ? "nearby" : ""}`}
               style={{ left: `${npc.x}%`, top: `${npc.y}%` }}
-              onClick={() => onNPCClick?.(npc)}
+              onClick={() => handleNPCClick(npc)}
             >
               <img src={npc.character} alt={npc.name} className="npc-image" />
               {npc.showName && (
@@ -190,6 +237,12 @@ const EnvironmentPage = ({
               {status && status.encounters > 0 && (
                 <div className="npc-progress-indicator">
                   {status.encounters}/3
+                </div>
+              )}
+              {/* Interaction indicator when nearby */}
+              {isNearby && (
+                <div className="interaction-prompt">
+                  Press E to interact
                 </div>
               )}
             </div>
@@ -224,7 +277,9 @@ const EnvironmentPage = ({
       </div>
 
       {/* Controls Hint */}
-      <div className="controls-hint">Use W, A, S, D to move</div>
+      <div className="controls-hint">
+        Use W, A, S, D to move • Press E to interact with NPCs
+      </div>
 
       {/* Debug Overlay */}
       {debugMode && (
