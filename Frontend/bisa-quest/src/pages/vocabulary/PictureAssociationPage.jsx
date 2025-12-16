@@ -304,8 +304,10 @@ const PictureAssociationPage = () => {
           </button>
         </div>
 
-        {/* Center - Picture Display */}
-        {!isComplete && currentItem && (
+         {/* Center + Choices Column */}
+      {!isComplete && currentItem && (
+        <div className="middle-column">
+          {/* Center - Picture Display */}
           <div className="center-panel">
             <div className="title-header">
               {language === "ceb" ? "Pagtugma sa Hulagway" : "Picture Association"}
@@ -319,14 +321,13 @@ const PictureAssociationPage = () => {
               />
             </div>
           </div>
-        )}
 
-        {/* Right Side - Choice Buttons */}
-        {!isComplete && currentItem && (
+          {/* Right Side - Choice Buttons (now under center) */}
           <div className="right-panel">
             <div className="choices-label">
               {language === "ceb" ? "Mga Pili" : "Choices"}
             </div>
+
             <div className="choices-container">
               {currentItem.choices?.map((choice, index) => (
                 <button
@@ -341,6 +342,7 @@ const PictureAssociationPage = () => {
               ))}
             </div>
           </div>
+        </div>
         )}
       </div>
 

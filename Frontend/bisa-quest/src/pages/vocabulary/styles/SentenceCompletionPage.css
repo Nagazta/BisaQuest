@@ -69,7 +69,7 @@
 }
 
 /* Title header */
-.title-header {
+.title-header.sentence {
   background-color: #8B4513;
   color: #FFE88D;
   text-align: center;
@@ -116,7 +116,8 @@
 }
 
 /* Choices section */
-.choices-label {
+.choices-label.sentence {
+  margin-top: 30px;
   font-size: 16px;
   font-weight: bold;
   color: #8B4513;
@@ -124,9 +125,8 @@
   width: 80%;
 }
 
-.choices-container {
+.choices-container.sentence {
   display: flex;
-  flex-direction: column;
   width: 80%;
   gap: 12px;
 }
