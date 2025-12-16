@@ -76,7 +76,7 @@ const SentenceCompletionPanel = ({
 
   return (
     <div className="center-panel sentence-completion-box">
-      <div className="title-header">
+      <div className="title-header sentence">
         {language === "ceb" ? "Pagpuno sa Sentence" : "Sentence Completion"}
       </div>
 
@@ -87,11 +87,11 @@ const SentenceCompletionPanel = ({
         correctAnswer={correctAnswer}
       />
 
-      <div className="choices-label">
+      <div className="choices-label sentence">
         {language === "ceb" ? "Mga Pili" : "Choices"}
       </div>
 
-      <div className="choices-container">
+      <div className="choices-container sentence">
         {choices.map((choice, index) => (
           <Button
             key={index}
