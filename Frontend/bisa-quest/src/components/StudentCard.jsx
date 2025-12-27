@@ -1,5 +1,5 @@
 import React from "react";
-import "./styles/StudentCard.css";
+import "./StudentCard.css";
 
 const StudentCard = ({ student }) => {
   const quests = [

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "../pages/styles/GlobalEffects.css";
+import "../pages/GlobalEffects.css";
 
 const ParticleEffects = ({ particleCount = 50, enableMouseTrail = true }) => {
   const [particles] = useState(() => {

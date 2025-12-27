@@ -1,55 +1,64 @@
-.dashboard-container {
+/* CharacterSelectionPage.css */
+.character-selection-container {
     display: flex;
     height: 100vh;
-    background: url('../../../assets/images/dashboard.png') no-repeat center center/cover;
-}
-
-.welcome-text {
-    font-family: 'Pixelify Sans', sans-serif;
-    font-size: 32px;
-    font-weight: 900;
-    color: #78350f;
-    margin: 0;
-    text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.5);
-}
-
-.welcome-subtitle {
-    font-family: 'Pixelify Sans', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: #92400e;
-    margin: 8px 0 0 0;
+    background: url('../../assets/images/dashboard.png') no-repeat center center/cover;
 }
 
 .main-content {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     overflow-y: auto;
     padding: 20px 30px;
-    position: relative;
+    position: relative; 
 }
 
-.header {
+/* Selection Content */
+.selection-content {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    margin-bottom: 20px;
+    justify-content: center;
 }
 
-.page-title {
+.selection-prompt {
     font-family: 'Pixelify Sans', sans-serif;
-    font-size: 36px;
+    font-size: 48px;
     font-weight: bold;
     color: #78350f;
+    text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.5);
+    margin-bottom: 60px;
 }
 
-.quests-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    position: relative;
-    min-width: 1000px;
-    margin-top: 400px;
-    margin-left: 100px;
+.characters-container {
+    display: flex;
+    gap: 100px;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.character-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.character-name {
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 32px;
+    font-weight: bold;
+    color: #5D4037;
+    text-align: center;
+    background: rgba(253, 230, 138, 0.95);
+    border: 4px solid #78350F;
+    border-radius: 15px;
+    padding: 15px 40px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    margin-top: -10px;
 }
 
 .decorative-clouds {
@@ -144,13 +153,32 @@
 }
 
 @keyframes float {
-
-    0%,
-    100% {
+    0%, 100% {
         transform: translateY(0px);
     }
-
     50% {
         transform: translateY(-20px);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .characters-container {
+        gap: 50px;
+    }
+
+    .selection-prompt {
+        font-size: 36px;
+    }
+}
+
+@media (max-width: 768px) {
+    .characters-container {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .selection-prompt {
+        font-size: 28px;
     }
 }

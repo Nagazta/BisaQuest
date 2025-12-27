@@ -1,6 +1,6 @@
 import Button from "../Button";
 import Arrow from "../../assets/images/signs/arrow.png";
-import "./styles/DialogueBox.css";
+import "./DialogueBox.css";
 
 const DialogueBox = ({
   title = "The Guide",

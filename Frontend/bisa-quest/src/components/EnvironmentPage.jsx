@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import ProgressBar from "./ProgressBar";
 import CollisionDebugger from "../config/CollisionDebugger";
 import { getCollisionZones, checkCollisionWithZones } from "../config/environmentCollisions";
-import "./styles/EnvironmentPage.css";
+import "./EnvironmentPage.css";
 
 const EnvironmentPage = ({
   environmentType = "village",

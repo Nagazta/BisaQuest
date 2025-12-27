@@ -1,4 +1,4 @@
-import '../components/styles/NPCCharacter.css';
+import './NPCCharacter.css';
 import Oldman from '../assets/images/characters/oldman.png';
 
 const NPCCharacter = ({ characterImage, variant = 'default', alt = 'Character' }) => {

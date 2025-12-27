@@ -1,6 +1,6 @@
 import React from "react";
 import Button from "./Button";
-import "./styles/QuestStartModal.css";
+import "./QuestStartModal.css";
 
 const QuestStartModal = ({
   // Village NPC props

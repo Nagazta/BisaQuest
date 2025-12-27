@@ -1,5 +1,5 @@
 import Button from '../Button';
-import '../progress/styles/ConfirmationDialog.css';
+import './ConfirmationDialog.css';
 
 const ConfirmationDialog = ({ 
   isOpen, 

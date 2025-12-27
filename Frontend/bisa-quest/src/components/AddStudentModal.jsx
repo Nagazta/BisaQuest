@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./styles/AddStudentModal.css";
+import "./AddStudentModal.css";
 
 const AddStudentModal = ({ onClose, onSubmit }) => {
   const [formData, setFormData] = useState({

@@ -1,6 +1,6 @@
 import React from "react";
 import Button from "./Button";
-import "./styles/ReplayConfirmModal.css";
+import "./ReplayConfirmModal.css";
 
 const ReplayConfirmModal = ({
   isOpen,

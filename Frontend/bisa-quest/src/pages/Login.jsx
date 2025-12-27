@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import "../pages/styles/Login.css";
-import "../pages/styles/GlobalEffects.css";
+import "../pages/Login.css";
+import "../pages/GlobalEffects.css";
 import boy from "../assets/images/characters/Boy.png";
 import girl from "../assets/images/characters/Girl.png";
 import { useNavigate } from "react-router-dom";

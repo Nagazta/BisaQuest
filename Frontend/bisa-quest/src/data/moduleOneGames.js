@@ -591,7 +591,7 @@ export const moduleOneGames = {
           sentences: [
             {
               id: 1,
-              sentence: "Ang negosyante mobiyahe pinaagi sa [___] aron ibaligya ang mga butang.",
+              sentence: "Ang negosyante mubiyahe pinaagi sa [___] aron ibaligya ang mga butang.",
               correctAnswer: "kariton",
               choices: ["barko", "kariton", "langgam"]
             },

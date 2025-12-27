@@ -8,7 +8,7 @@ import FeedbackNotification from "../../components/FeedbackNotification";
 import Button from "../../components/Button";
 import GuideDialogueBox from "../../components/GuideDialogueBox";
 import WordMatchingBg from "../../assets/images/environments/Vocabulary/village-bg.png";
-import "./styles/WordMatchingPage.css";
+import "./WordMatchingPage.css";
 import ReplayConfirmModal from "../../components/ReplayConfirmModal";
 import { useGameSession } from "../../hooks/useGameSession";
 
@@ -307,7 +307,7 @@ const WordMatchingPage = () => {
               ? "Kompleto"
               : "Complete"
             : language === "ceb"
-            ? "Isumite"
+            ? "Ipasa"
             : "Submit"}
         </button>
       </div>

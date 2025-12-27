@@ -7,7 +7,7 @@ import Village from "../../assets/images/cardsImage/village.png";
 import Forest from "../../assets/images/cardsImage/forest.png";
 import Kingdom from "../../assets/images/cardsImage/kingdom.png";
 import Throne from "../../assets/images/cardsImage/throne.png";
-import "./styles/StudentDashboard.css";
+import "./StudentDashboard.css";
 import QuestStartModal from "../../components/QuestStartModal";
 import SaveProgressModal from "../../components/progress/SaveProgressModal";
 import Notification from "../../components/Notification";

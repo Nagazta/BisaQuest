@@ -71,9 +71,8 @@ background-image: url('/src/assets/images/bg-dashboard.png');
 }
 
 /* Login Card */
-/* Login Card */
 .login-card{
-  background-image: url('../../assets/images/card.svg');
+  background-image: url('../assets/images/card.svg');
   background-size: 200% 220%;
   background-repeat: no-repeat;
   background-position: center;

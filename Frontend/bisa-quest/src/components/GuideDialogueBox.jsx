@@ -1,5 +1,5 @@
 import React from "react";
-import "./styles/GuideDialogueBox.css";
+import "./GuideDialogueBox.css";
 
 const GuideDialogueBox = ({ name = "Guide", text = "" }) => {
   return (

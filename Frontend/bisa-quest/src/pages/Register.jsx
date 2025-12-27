@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import "../pages/styles/Login.css";
-import "../pages/styles/Register.css";
-import "../pages/styles/GlobalEffects.css";
+import "../pages/Login.css";
+import "../pages/Register.css";
+import "../pages/GlobalEffects.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import ParticleEffects from "../components/ParticleEffects";
