@@ -13,7 +13,7 @@ import WordMatchingPage from "./pages/vocabulary/WordMatchingPage";
 import PictureAssociationPage from "./pages/vocabulary/PictureAssociationPage";
 import SentenceCompletionPage from "./pages/vocabulary/SentenceCompletionPage";
 
-import TeacherDashboard from "./pages/teacher/TeacherDashboard";
+import TeacherDashboard from "./pages/Teacher/TeacherDashboard";
 import { useAuth } from "./context/AuthContext";
 import "./App.css";
 import ViewCompletionPage from "./pages/student/ViewCompletionPage";

@@ -93,26 +93,21 @@ export const createStudent = async (req, res) => {
             throw new Error('Teacher not found');
         }
 
-        // Check if student ID already exists in users table
+        // ONLY check if student ID already exists in users table (username must be unique)
         const { data: existingUser } = await supabase
             .from('users')
             .select('user_id')
             .eq('username', studentId)
             .maybeSingle();
 
-        // Check for old deleted accounts
-        const { data: existingStudent } = await supabase
-            .from('student')
-            .select('student_id')
-            .eq('class_code', classCode)
-            .maybeSingle();
-
-        if (existingUser || existingStudent) {
+        if (existingUser) {
             return res.status(400).json({
                 success: false,
-                error: 'Student ID already exists'
+                error: `Student ID "${studentId}" is already registered`
             });
         }
+
+        // REMOVED: class_code check - multiple students can have the same class_code!
 
         // USE ADMIN CLIENT - bypasses email confirmation
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({

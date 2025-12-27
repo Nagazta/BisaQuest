@@ -17,7 +17,7 @@ import GirlCharacter from "../../assets/images/characters/Girl.png";
 import bgMusic from "../../assets/music/bg-music.mp3";
 
 import QuestStartModal from "../../components/QuestStartModal";
-import "./styles/VillagePage.css";
+import "./VillagePage.css";
 
 const VillagePage = () => {
   const navigate = useNavigate();
@@ -397,7 +397,7 @@ const VillagePage = () => {
         npcs={villageNPCs}
         onNPCClick={handleNPCClick}
         playerCharacter={PlayerCharacter}
-        debugMode={false}
+        debugMode={true}
       />
 
       <div className="decorative-clouds">
@@ -424,7 +424,7 @@ const VillagePage = () => {
           >
             <div className="scroll-content">
               <h2 className="quest-modal-title">
-                {language === "ceb" ? "Mobiya sa Baryo?" : "Exit Village?"}
+                {language === "ceb" ? "Mubiya sa Baryo?" : "Exit Village?"}
               </h2>
               <div className="quest-modal-divider"></div>
               <p className="quest-modal-instructions">
@@ -452,7 +452,7 @@ const VillagePage = () => {
                   variant="primary"
                   className="quest-modal-button"
                 >
-                  {language === "ceb" ? "Mobiya" : "Leave"}
+                  {language === "ceb" ? "Mubiya" : "Leave"}
                 </Button>
               </div>
             </div>

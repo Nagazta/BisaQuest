@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import "../components/styles/HeroSection.css";
+import "./HeroSection.css";
 import bgImage from "../assets/images/bg-dashboard.png";
 import ParticleEffects from "../components/ParticleEffects";
 

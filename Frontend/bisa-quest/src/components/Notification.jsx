@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import "./styles/Notification.css";
+import "./Notification.css";
 import ErrorIcon from "../assets/icons/ErrorIcon";
 
 const Notification = ({ type = "success", message, onClose, title }) => {

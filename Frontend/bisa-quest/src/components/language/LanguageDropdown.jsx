@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import '../language/styles/LanguageDropdown.css'
+import './LanguageDropdown.css'
 
 const LanguageDropdown = ({ value, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);

@@ -1,6 +1,6 @@
 import Button from "./Button";
 import Card from '../assets/images/cards.png';
-import '../components/styles/CharacterCard.css';
+import './CharacterCard.css';
 
 const CharacterCard = ({ character, isSelected, onClick }) => {
   return (

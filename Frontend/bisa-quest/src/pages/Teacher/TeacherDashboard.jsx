@@ -6,7 +6,7 @@ import AddStudentModal from "../../components/AddStudentModal";
 import StudentCard from "../../components/StudentCard";
 import Notification from "../../components/Notification";
 import Button from "../../components/Button";
-import "./styles/TeacherDashboard.css";
+import "./TeacherDashboard.css";
 
 const TeacherDashboard = () => {
   const { user, logout } = useAuth();
@@ -25,6 +25,8 @@ const TeacherDashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     fetchDashboardData();
@@ -54,6 +56,11 @@ const TeacherDashboard = () => {
       );
       setShowSuccess(true);
       fetchDashboardData();
+    } else {
+      // Show the actual error message
+      setErrorMessage(result.error || 'Failed to create student');
+      setShowError(true);
+      console.error('Create student failed:', result);
     }
     return result;
   };
@@ -83,6 +90,15 @@ const TeacherDashboard = () => {
           type="success"
           message={successMessage}
           onClose={() => setShowSuccess(false)}
+        />
+      )}
+
+      {/* ERROR NOTIFICATION */}
+      {showError && (
+        <Notification
+          type="error"
+          message={errorMessage}
+          onClose={() => setShowError(false)}
         />
       )}
 

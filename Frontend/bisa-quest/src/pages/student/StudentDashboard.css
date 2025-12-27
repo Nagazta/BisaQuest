@@ -1,48 +1,57 @@
-.language-selection-page {
-  min-height: 100vh;
-  background: url('../../../assets/images/bg-dashboard.png') no-repeat center center/cover;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  padding: 20px;
+.dashboard-container {
+    display: flex;
+    height: 100vh;
+    background: url('../../assets/images/dashboard.png') no-repeat center center/cover;
 }
 
-.back-button.language {
-  position: absolute;
-  top: 30px;
-  left: 40px;
-  z-index: 10;
+.welcome-text {
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    color: #78350f;
+    margin: 0;
+    text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.5);
 }
 
-.content-container {
-  background: rgba(234, 213, 168, 0.6); 
-  backdrop-filter: blur(12px);         
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.4); 
-  margin-top: 30px;
-  height: 600px;
-  max-height: 600px;
-  display: flex;
-  gap: 40px;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  z-index: 1;
-  margin-left: 80px;
-  max-width: 1200px;
-  width: 100%;
+.welcome-subtitle {
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #92400e;
+    margin: 8px 0 0 0;
 }
 
-
-@media (max-width: 1024px) {
-  .content-container {
-    flex-direction: column;
-    gap: 30px;
-  }
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 30px;
+    position: relative;
 }
 
-/* Decorative Clouds */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.page-title {
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 36px;
+    font-weight: bold;
+    color: #78350f;
+}
+
+.quests-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    position: relative;
+    min-width: 1000px;
+    margin-top: 400px;
+    margin-left: 100px;
+}
+
 .decorative-clouds {
     position: fixed;
     top: 0;
@@ -135,9 +144,12 @@
 }
 
 @keyframes float {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0px);
     }
+
     50% {
         transform: translateY(-20px);
     }

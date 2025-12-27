@@ -8,7 +8,7 @@ import Button from "../../components/Button";
 import FeedbackNotification from "../../components/FeedbackNotification";
 import GuideDialogueBox from "../../components/GuideDialogueBox";
 import PictureAssociationBg from "../../assets/images/environments/Vocabulary/farm-bg.png";
-import "./styles/PictureAssociationPage.css";
+import "./PictureAssociationPage.css";
 import ReplayConfirmModal from "../../components/ReplayConfirmModal";
 import { useGameSession } from "../../hooks/useGameSession";
 
@@ -299,7 +299,7 @@ const PictureAssociationPage = () => {
           >
             {isComplete 
               ? (language === "ceb" ? "Kompleto" : "Complete")
-              : (language === "ceb" ? "Isumite" : "Submit")
+              : (language === "ceb" ? "Ipasa" : "Submit")
             }
           </button>
         </div>
@@ -310,7 +310,7 @@ const PictureAssociationPage = () => {
           {/* Center - Picture Display */}
           <div className="center-panel">
             <div className="title-header">
-              {language === "ceb" ? "Pagtugma sa Hulagway" : "Picture Association"}
+              {language === "ceb" ? "Tag-ana ang Hulagway" : "Picture Association"}
             </div>
 
             <div className="picture-display">
@@ -325,7 +325,7 @@ const PictureAssociationPage = () => {
           {/* Right Side - Choice Buttons (now under center) */}
           <div className="right-panel">
             <div className="choices-label">
-              {language === "ceb" ? "Mga Pili" : "Choices"}
+              {language === "ceb" ? "Mga Pilianan" : "Choices"}
             </div>
 
             <div className="choices-container">

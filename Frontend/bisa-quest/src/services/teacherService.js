@@ -33,7 +33,14 @@ export const teacherService = {
                 }),
             });
 
-            return await response.json();
+            const result = await response.json();
+            
+            // Log the actual error
+            if (!response.ok) {
+                console.error('Server error:', result);
+            }
+            
+            return result;
         } catch (error) {
             console.error('Create student error:', error);
             return { success: false, error: error.message };

@@ -8,7 +8,7 @@ import FeedbackNotification from "../../components/FeedbackNotification";
 import Button from "../../components/Button";
 import GuideDialogueBox from "../../components/GuideDialogueBox";
 import SentenceCompletionBg from "../../assets/images/environments/Vocabulary/well-bg.png";
-import "./styles/SentenceCompletionPage.css";
+import "./SentenceCompletionPage.css";
 import ReplayConfirmModal from "../../components/ReplayConfirmModal";
 import { useGameSession } from "../../hooks/useGameSession";
 
@@ -77,7 +77,7 @@ const SentenceCompletionPanel = ({
   return (
     <div className="center-panel sentence-completion-box">
       <div className="title-header sentence">
-        {language === "ceb" ? "Pagpuno sa Sentence" : "Sentence Completion"}
+        {language === "ceb" ? "Butangi ang blanko" : "Sentence Completion"}
       </div>
 
       <SentencePrompt
@@ -88,7 +88,7 @@ const SentenceCompletionPanel = ({
       />
 
       <div className="choices-label sentence">
-        {language === "ceb" ? "Mga Pili" : "Choices"}
+        {language === "ceb" ? "Mga Pilianan" : "Choices"}
       </div>
 
       <div className="choices-container sentence">
@@ -394,7 +394,7 @@ const SentenceCompletionPage = () => {
           >
             {isComplete 
               ? (language === "ceb" ? "Kompleto" : "Complete")
-              : (language === "ceb" ? "Isumite" : "Submit")
+              : (language === "ceb" ? "Ipasa" : "Submit")
             }
           </Button>
         </div>

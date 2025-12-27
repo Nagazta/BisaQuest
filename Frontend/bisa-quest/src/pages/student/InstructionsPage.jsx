@@ -6,7 +6,7 @@ import Oldman from "../../assets/images/characters/oldman.png";
 import DialogueBox from "../../components/instructions/DialogueBox";
 import Button from "../../components/Button";
 import ParticleEffects from "../../components/ParticleEffects";
-import "../student/styles/InstructionsPage.css";
+import "./InstructionsPage.css";
 
 const InstructionsPage = () => {
   const navigate = useNavigate();

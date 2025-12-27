@@ -4,7 +4,7 @@ import Button from "../components/Button";
 import HomeIcon from "../assets/icons/HomeIcon";
 import ProgressIcon from "../assets/icons/ProgressIcon";
 import BadgesIcon from "../assets/icons/BadgesIcon";
-import "../components/styles/SidebarNavigation.css";
+import "./SidebarNavigation.css";
 
 const SidebarNavigation = ({ onLogout }) => {
   const { user } = useAuth();

@@ -1,5 +1,5 @@
 import LanguageImage from '../../assets/images/languageSelection.png'
-import '../language/styles/IllustrationPanel.css'
+import './IllustrationPanel.css'
 
 const IllustrationPanel = () => {
   return (

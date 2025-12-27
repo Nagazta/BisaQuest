@@ -2,7 +2,7 @@ import React from 'react';
 import Button from '../components/Button';
 import ProgressBar from '../components/ProgressBar';
 import cardBackground from '../assets/images/cards.png';
-import '../components/styles/QuestCard.css';
+import './QuestCard.css';
 
 const QuestCard = ({ quest, onStartQuest }) => {
   return (

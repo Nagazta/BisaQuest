@@ -1,4 +1,4 @@
-import './styles/FeedbackNotification.css';
+import './FeedbackNotification.css';
 
 const FeedbackNotification = ({ type = "info", message }) => {
   if (!message) return null;

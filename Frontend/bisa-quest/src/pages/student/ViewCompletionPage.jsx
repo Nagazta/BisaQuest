@@ -4,8 +4,8 @@ import ProgressBar from "../../components/ProgressBar";
 import GuideDialogueBox from "../../components/GuideDialogueBox";
 import Button from "../../components/Button";
 import ParticleEffects from "../../components/ParticleEffects";
-import "./styles/ViewCompletionPage.css";
-import "../../components/styles/QuestStartModal.css"; // Import QuestStartModal styles
+import "./ViewCompletionPage.css";
+import "../../components/QuestStartModal.css"; // Import QuestStartModal styles
 
 // Import background image
 import VillageBackground from "../../assets/images/environments/village.png";

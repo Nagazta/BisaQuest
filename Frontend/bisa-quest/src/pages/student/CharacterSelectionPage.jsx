@@ -4,7 +4,7 @@ import CharacterCard from "../../components/CharacterCard";
 import ParticleEffects from "../../components/ParticleEffects";
 import Boy from "../../assets/images/characters/Boy.png";
 import Girl from "../../assets/images/characters/Girl.png";
-import "../../pages/Student/styles/CharacterSelectionPage.css";
+import "../../pages/Student/CharacterSelectionPage.css";
 
 const CharacterSelectionPage = () => {
   const navigate = useNavigate();

@@ -5,7 +5,7 @@ import Notification from "../../components/Notification";
 import IllustrationPanel from "../../components/language/IllustrationPanel";
 import Button from "../../components/Button";
 import ParticleEffects from "../../components/ParticleEffects";
-import "../student/styles/LanguageSelectionPage.css";
+import "./LanguageSelectionPage.css";
 
 const LanguageSelectionPage = () => {
   const navigate = useNavigate();

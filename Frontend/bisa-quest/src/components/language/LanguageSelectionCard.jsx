@@ -1,7 +1,7 @@
 import LanguageDropdown from './LanguageDropDown';
 import Card from '../../assets/images/cards.png';
 import Button from '../Button';
-import '../language/styles/LanguageSelectionCard.css'
+import './LanguageSelectionCard.css'
 
 const LanguageSelectionCard = ({ selectedLanguage, onLanguageChange, onNext }) => {
   return (

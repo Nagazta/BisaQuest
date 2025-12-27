@@ -20,7 +20,7 @@ html, body {
 }
 
 .register-card {
-  background-image: url('../../assets/images/card.svg');
+  background-image: url('../assets/images/card.svg');
   background-size: 200% 190%;
   background-repeat: no-repeat;
   background-position: center;
