@@ -19,7 +19,7 @@
 }
 
 .confirmation-border {
-  background-image: url('../../../assets/images/cards.png');
+  background-image: url('../../assets/images/cards.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
   padding: 40px 35px;

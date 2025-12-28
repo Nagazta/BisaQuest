@@ -1,259 +1,213 @@
 import { useState, useEffect } from "react";
-import "../pages/Login.css";
-import "../pages/GlobalEffects.css";
+import "./Login.css";
+import "./GlobalEffects.css";
 import boy from "../assets/images/characters/Boy.png";
 import girl from "../assets/images/characters/Girl.png";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import ParticleEffects from "../components/ParticleEffects";
+import SaveProgressModal from "../components/progress/SaveProgressModal";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login, loginStudent, user } = useAuth();
-
-  const [error, setError] = useState("");
+  const { user, createNewUser, hardLogout, getStats } = useAuth();
+  
+  const [nickname, setNickname] = useState("");
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [userType, setUserType] = useState("student");
+  const [error, setError] = useState("");
+  const [showAccountModal, setShowAccountModal] = useState(false);
 
-  // Redirect if already logged in
+  // Check for existing account on mount - but skip if we just chose to continue
   useEffect(() => {
-    if (user) {
-      if (user.role === "teacher") {
-        navigate("/teacher-dashboard");
-      } else if (user.role === "student") {
-        navigate("/dashboard");
-      }
+    const justChoseContinue = sessionStorage.getItem('bisaquest_continue_clicked');
+    
+    if (justChoseContinue) {
+      // User just clicked continue - don't show modal again, let AuthContext load
+      console.log('🔄 User chose continue, waiting for AuthContext to load user...');
+      sessionStorage.removeItem('bisaquest_continue_clicked');
+      return;
     }
-  }, [user, navigate]);
+    
+    const checkForAccount = async () => {
+      const userId = localStorage.getItem('bisaquest_user_id');
+      const studentId = localStorage.getItem('bisaquest_student_id');
+      
+      if (userId && studentId && !user) {
+        console.log('🔍 Existing account detected in localStorage');
+        setShowAccountModal(true);
+        
+        // Try to load stats
+        try {
+          const result = await getStats();
+          if (result.success) {
+            setStats(result.data);
+            console.log('📊 Stats loaded for modal:', result.data);
+          }
+        } catch (error) {
+          console.error('Failed to load stats:', error);
+        }
+      }
+    };
+    
+    checkForAccount();
+  }, [user, getStats]);
 
-  const [formData, setFormData] = useState({
-    studentId: "",
-    classCode: "",
-    identifier: "",
-    password: "",
-  });
+  // Load stats for returning players with active session
+  useEffect(() => {
+    const loadStats = async () => {
+      if (user && user.id) {
+        console.log('📊 Loading stats for user:', user.nickname);
+        try {
+          const result = await getStats();
+          if (result.success) {
+            setStats(result.data);
+            console.log('✅ Stats loaded:', result.data);
+          }
+        } catch (error) {
+          console.error('❌ Error loading stats:', error);
+        }
+      }
+    };
+    
+    loadStats();
+  }, [user, getStats]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    if (error) setError("");
+  // Auto-navigate to dashboard when user loads
+  useEffect(() => {
+    if (user && !showAccountModal) {
+      console.log('✅ User loaded, navigating to dashboard');
+      navigate("/dashboard");
+    }
+  }, [user, showAccountModal, navigate]);
+
+  const handleContinueExisting = () => {
+    console.log('✅ User chose to continue with existing account');
+    // Mark that user chose to continue
+    sessionStorage.setItem('bisaquest_continue_clicked', 'true');
+    // Reload to let AuthContext load the user
+    window.location.reload();
   };
 
-  const handleSubmit = async (e) => {
+  const handleCreateNewFromModal = async () => {
+    console.log('🆕 User chose to create new account from modal');
+    await hardLogout();
+    setShowAccountModal(false);
+    setStats(null);
+  };
+
+  const handleCloseModal = () => {
+    // Don't allow closing - user must choose
+    console.log('ℹ️ Modal close blocked - user must choose an option');
+  };
+
+  const handlePlayNow = async (e) => {
     e.preventDefault();
     setError("");
+    
+    if (!nickname.trim()) {
+      setError('Please enter your name to start playing!');
+      return;
+    }
+    
     setLoading(true);
-
+    
     try {
-      let result;
-      if (userType === "student") {
-        console.log("Attempting student login with:", formData);
-
-        result = await loginStudent(formData.studentId, formData.classCode);
-        console.log("Login result:", result);
-
-        if (result.success) {
-          // Get the student_id (UUID) from response
-          const studentUUID = result.data.roleData?.student_id; // This is the UUID
-          const userUUID = result.data.user?.user_id;
-
-          console.log("Login successful with UUIDs:", {
-            studentUUID,
-            userUUID,
-            username: result.data.roleData?.username,
-          });
-
-          if (!studentUUID) {
-            console.error("No student UUID in response!");
-            setError("Failed to get student data");
-            return;
-          }
-
-          // Store the UUID (this is what we'll use for all database operations)
-          localStorage.setItem("studentId", studentUUID);
-
-          const session = {
-            user: {
-              id: userUUID,
-              student_id: studentUUID,
-              role: "student",
-            },
-          };
-
-          console.log("Storing session:", session);
-          localStorage.setItem("session", JSON.stringify(session));
-
-          console.log("✅ Student UUID saved to localStorage:", studentUUID);
-
-          navigate("/dashboard");
-          return;
-        }
-      } else {
-        const email = formData.identifier.includes("@")
-          ? formData.identifier
-          : `${formData.identifier}@gmail.com`;
-
-        console.log("Attempting teacher login with:", email);
-        result = await login(email, formData.password);
-
-        if (result.success) {
-          navigate("/teacher-dashboard");
-          return;
-        }
-      }
-
+      console.log('🎮 Starting game with nickname:', nickname.trim());
+      
+      const result = await createNewUser(nickname.trim());
+      
       if (!result.success) {
-        console.log("Login failed with error:", result.error);
-        setError(result.error || "Login failed");
+        setError(result.error || 'Failed to create user. Please try again!');
+        console.error('❌ Failed to create user:', result.error);
+        return;
       }
-    } catch (err) {
-      console.error("Unexpected error during login:", err);
-      setError("An unexpected error occurred");
+      
+      console.log('✅ User created successfully, navigating to dashboard...');
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("❌ Error starting game:", error);
+      setError("Something went wrong. Please try again!");
     } finally {
       setLoading(false);
     }
   };
 
-  const goToRegister = (e) => {
-    e.preventDefault();
-    navigate("/register");
-  };
+  // If modal is showing, only render background and modal
+  if (showAccountModal) {
+    return (
+      <div className="login-page">
+        <div className="login-background"></div>
+        <ParticleEffects enableMouseTrail={true} />
+        
+        <SaveProgressModal
+          isOpen={showAccountModal}
+          onContinue={handleContinueExisting}
+          onNewGame={handleCreateNewFromModal}
+          onClose={handleCloseModal}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="login-page">
       <div className="login-background"></div>
-
       <ParticleEffects enableMouseTrail={true} />
 
       <div className="character-container">
-        <img
-          src={boy}
-          alt="Boy Character"
-          className="character boy-character"
-        />
-        <img
-          src={girl}
-          alt="Girl Character"
-          className="character girl-character"
-        />
+        <img src={boy} alt="Boy Character" className="character boy-character" />
+        <img src={girl} alt="Girl Character" className="character girl-character" />
       </div>
 
       <div className="login-card-wrapper">
         <div className="login-card">
-          <h1 className="login-title">Login</h1>
+          <h1 className="login-title">BisaQuest</h1>
+          
+          {error && (
+            <div className="error-message-box">
+              {error}
+            </div>
+          )}
+          
+          <p className="welcome-subtitle">
+            Start your Cebuano learning adventure!
+          </p>
 
-          {error && <div className="error-message-box">{error}</div>}
+          <form onSubmit={handlePlayNow} className="login-form-container">
+            <div className="form-group">
+              <label htmlFor="nickname" className="form-label">
+                Enter Your Name
+              </label>
+              <input
+                type="text"
+                id="nickname"
+                name="nickname"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                className="form-input-login"
+                placeholder="Your name here"
+                maxLength={50}
+                required
+                autoFocus
+                disabled={loading}
+              />
+            </div>
 
-          <div className="user-type-toggle">
-            <button
-              type="button"
-              className={userType === "student" ? "active" : ""}
-              onClick={() => setUserType("student")}
+            <button 
+              type="submit"
+              className="login-button"
+              disabled={loading || !nickname.trim()}
             >
-              <span>STUDENT</span>
+              {loading ? "Creating..." : "Play Now"}
             </button>
-            <button
-              type="button"
-              className={userType === "teacher" ? "active" : ""}
-              onClick={() => setUserType("teacher")}
-            >
-              <span>TEACHER</span>
-            </button>
-          </div>
-
-          <form onSubmit={handleSubmit} className="login-form-container">
-            {userType === "student" ? (
-              <>
-                <div className="form-group">
-                  <label htmlFor="studentId" className="form-label">
-                    Student ID
-                  </label>
-                  <input
-                    type="text"
-                    id="studentId"
-                    name="studentId"
-                    value={formData.studentId}
-                    onChange={handleChange}
-                    className="form-input-login"
-                    placeholder="Enter your student ID"
-                    required
-                    disabled={loading}
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="classCode" className="form-label">
-                    Class Code
-                  </label>
-                  <input
-                    type="text"
-                    id="classCode"
-                    name="classCode"
-                    value={formData.classCode}
-                    onChange={handleChange}
-                    className="form-input-login"
-                    placeholder="Enter your class code"
-                    required
-                    disabled={loading}
-                  />
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="form-group">
-                  <label htmlFor="identifier" className="form-label">
-                    Email
-                  </label>
-                  <input
-                    type="text"
-                    id="identifier"
-                    name="identifier"
-                    value={formData.identifier}
-                    onChange={handleChange}
-                    className="form-input-login"
-                    placeholder="Enter your email"
-                    required
-                    disabled={loading}
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="password" className="form-label">
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="form-input-login"
-                    placeholder="Enter your password"
-                    required
-                    disabled={loading}
-                  />
-                </div>
-              </>
-            )}
-
-            <button type="submit" className="login-button" disabled={loading}>
-              {loading ? "Logging in..." : "Login"}
-            </button>
-
-            {userType === "teacher" && (
-              <p className="register-text">
-                Don't have an account?{" "}
-                <a
-                  href="#register"
-                  className="register-link"
-                  onClick={goToRegister}
-                >
-                  Register here!
-                </a>
-              </p>
-            )}
           </form>
+
+          <div className="game-info">
+            <p className="info-text">
+              Your progress will be saved automatically
+            </p>
+          </div>
         </div>
       </div>
     </div>

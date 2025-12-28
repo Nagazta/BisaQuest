@@ -13,13 +13,7 @@
     text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.5);
 }
 
-.welcome-subtitle {
-    font-family: 'Pixelify Sans', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: #92400e;
-    margin: 8px 0 0 0;
-}
+
 
 .main-content {
     flex: 1;
