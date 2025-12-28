@@ -10,7 +10,8 @@ import environmentRoutes from "./routes/environmentRoutes.js";
 import npcInteractionRoutes from './routes/npcInteractionRoutes.js';
 import completionRoutes from './routes/completionRoutes.js';
 import debugRoutes from './routes/debugRoutes.js';
-import languagePreferenceRoutes from './routes/languagePreferenceRoutes.js'; 
+import languagePreferenceRoutes from './routes/languagePreferenceRoutes.js';
+import autoUserRoutes from './routes/userRoutes.js'; 
 
 dotenv.config();
 
@@ -28,7 +29,17 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
+// ============================================
+// PUBLIC ROUTES (NO AUTHENTICATION REQUIRED)
+// ============================================
+
+// ⚠️ IMPORTANT: Auto-user routes MUST be public - no auth middleware!
+app.use('/api/auto-user', autoUserRoutes);
+
+// ============================================
+// PROTECTED ROUTES (MAY HAVE AUTH MIDDLEWARE)
+// ============================================
+
 app.use('/api/auth', authRoutes);
 app.use('/api/student', studentRoutes);
 app.use('/api/teacher', teacherRoutes);
@@ -57,10 +68,11 @@ app.get('/', (req, res) => {
         endpoints: {
             health: '/api/health',
             auth: '/api/auth',
+            autoUser: '/api/auto-user', // ← ADD THIS
             teacher: '/api/teacher',
             preferences: '/api/preferences',
             progress: '/api/progress',
-            npc: '/api/npc'  // NEW
+            npc: '/api/npc'
         }
     });
 });
@@ -86,6 +98,7 @@ app.use((req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 Backend server running on http://localhost:${PORT}`);
     console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
+    console.log(`🎮 Auto-User API: http://localhost:${PORT}/api/auto-user`); // ← ADD THIS
     console.log(`🔐 Auth API: http://localhost:${PORT}/api/auth`);
     console.log(`👨‍🏫 Teacher API: http://localhost:${PORT}/api/teacher`);
     console.log(`⚙️ Preferences API: http://localhost:${PORT}/api/preferences`);

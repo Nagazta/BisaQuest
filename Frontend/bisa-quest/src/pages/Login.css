@@ -24,7 +24,7 @@ html, body {
   left: 0;
   width: 100%;
   height: 100%;
-background-image: url('/src/assets/images/bg-dashboard.png');
+  background-image: url('/src/assets/images/bg-dashboard.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -61,6 +61,11 @@ background-image: url('/src/assets/images/bg-dashboard.png');
   animation-delay: 1.5s;
 }
 
+@keyframes character-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
 /* Login Card Wrapper */
 .login-card-wrapper {
   position: relative;
@@ -70,8 +75,19 @@ background-image: url('/src/assets/images/bg-dashboard.png');
   animation: fadeInUp 0.8s ease-out;
 }
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Login Card */
-.login-card{
+.login-card {
   background-image: url('../assets/images/card.svg');
   background-size: 200% 220%;
   background-repeat: no-repeat;
@@ -84,7 +100,7 @@ background-image: url('/src/assets/images/bg-dashboard.png');
 
 /* Login Title */
 .login-title {
- font-family: 'Pixelify Sans', cursive;
+  font-family: 'Pixelify Sans', cursive;
   font-size: 3rem;
   font-weight: 900;
   color: #6B3E1D;
@@ -99,6 +115,90 @@ background-image: url('/src/assets/images/bg-dashboard.png');
   z-index: 10;
 }
 
+/* Welcome Subtitle (New Players) */
+.welcome-subtitle {
+  margin-top: 60px;
+  text-align: center;
+  color: #6B3E1D;
+  font-size: 1.1rem;
+  font-family: 'Trebuchet MS', 'Verdana', sans-serif;
+  font-weight: 600;
+  padding: 0.75rem;
+  border-radius: 8px;
+}
+
+/* Player Stats (Returning Players) */
+.player-stats {
+  margin: 2rem 3rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #B96C25 0%, #6B3E1D 100%);
+  border-radius: 12px;
+  border: 3px solid #FCD765;
+  box-shadow: 0 8px 20px rgba(107, 62, 29, 0.4);
+}
+
+.welcome-back {
+  font-family: 'Pixelify Sans', cursive;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #FCD765;
+  text-align: center;
+  margin: 0 0 0.5rem 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.player-name {
+  font-family: 'Pixelify Sans', cursive;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #FFFEF2;
+  text-align: center;
+  margin: 0 0 1.5rem 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 1rem 0.5rem;
+  background: rgba(255, 254, 242, 0.15);
+  border-radius: 8px;
+  border: 2px solid rgba(252, 215, 101, 0.3);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+  background: rgba(255, 254, 242, 0.25);
+  transform: translateY(-3px);
+  border-color: #FCD765;
+}
+
+.stat-value {
+  display: block;
+  font-family: 'Pixelify Sans', cursive;
+  font-size: 2rem;
+  font-weight: 900;
+  color: #FCD765;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  display: block;
+  font-family: 'Trebuchet MS', 'Verdana', sans-serif;
+  font-size: 0.75rem;
+  color: #FFFEF2;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
 /* Form Container */
 .login-form-container {
   display: flex;
@@ -108,7 +208,7 @@ background-image: url('/src/assets/images/bg-dashboard.png');
   padding-right: 4rem;
   padding-bottom: 3rem;
   max-width: fit-content;
-  margin-top: 0;
+  margin-top: 1rem;
 }
 
 /* Form Group */
@@ -121,7 +221,7 @@ background-image: url('/src/assets/images/bg-dashboard.png');
 
 .form-label {
   font-size: 1rem;
-  font-weight: 400;
+  font-weight: 600;
   font-family: 'Trebuchet MS', 'Verdana', sans-serif;
   color: #6B3E1D;
   text-transform: capitalize;
@@ -157,74 +257,9 @@ background-image: url('/src/assets/images/bg-dashboard.png');
   opacity: 0.6;
 }
 
-/* Error Message Box */
-.error-message-box {
-  background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
-  color: white;
-  padding: 1rem;
-  border-radius: 0.75rem;
-  margin-bottom: 1rem;
-  margin-left: 4rem;
-  margin-right: 4rem;
-  font-weight: 600;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
-}
-
-/* Toggle Buttons */
-.user-type-toggle {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 1rem;
-  padding: 2rem 4rem 0 4rem;
-}
-
-.user-type-toggle button {
-  flex: 1;
-  padding: 10px;
-  border: 3px solid #B96C25;
-  background: rgba(255, 254, 242, 0.9);
-  border-radius: 8px;
-  box-shadow: 0px 3px 0px #6B3E1D;
-  cursor: pointer;
-  font-size: 16px;
-  font-family: 'Pixelify Sans', cursive;
-  font-weight: 700;
-  color: #6B3E1D;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.user-type-toggle button.active {
-  background: linear-gradient(135deg, #B96C25 0%, #6B3E1D 100%);
-  color: #FCD765;
-  border-color: #FCD765;
-  box-shadow: 0 4px 12px rgba(185, 108, 37, 0.5);
-}
-
-.user-type-toggle button:hover {
-  border-color: #FCD765;
-  transform: translateY(-2px);
-}
-
-/* Forgot Password Link */
-.forgot-password {
-  align-self: flex-end;
-  font-size: 0.875rem;
-  font-family: 'Trebuchet MS', 'Verdana', sans-serif;
-  color: #B96C25;
-  text-decoration: none;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  margin-top: 0.25rem;
-}
-
-.forgot-password:hover {
-  color: #6B3E1D;
-  text-decoration: underline;
+.form-input-login:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* Login Button */
@@ -239,13 +274,14 @@ background-image: url('/src/assets/images/bg-dashboard.png');
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.3s ease;
-  width: 100px;
-  height: 40px;
+  min-width: 150px;
+  height: 50px;
+  font-size: 1.1rem;
   align-self: center;
-  margin-top: -5px
+  margin-top: 0.5rem;
 }
 
-.login-button:hover {
+.login-button:hover:not(:disabled) {
   background: linear-gradient(135deg, #FCD765 0%, #B96C25 100%);
   color: #6B3E1D;
   transform: translateY(-3px);
@@ -254,30 +290,37 @@ background-image: url('/src/assets/images/bg-dashboard.png');
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
-.login-button:active {
+.login-button:active:not(:disabled) {
   transform: translateY(-1px);
+  box-shadow: 0px 2px 0px #6B3E1D;
 }
 
-/* Register Text */
-.register-text {
+.login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Game Info */
+.game-info {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  padding-left: 4rem;
+  padding-right: 4rem;
+  border-top: 2px solid rgba(185, 108, 37, 0.2);
+}
+
+.info-text {
   text-align: center;
   font-size: 0.85rem;
+  font-family: 'Trebuchet MS', 'Verdana', sans-serif;
   color: #6B3E1D;
-  font-family: 'Pixelify Sans', cursive;
-  margin-top: 0.5rem;
-  margin-bottom: 4rem;
-}
-
-.register-link {
-  color: #B96C25;
-  font-weight: 700;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
-.register-link:hover {
-  color: #FCD765;
-  text-decoration: underline;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 500;
 }
 
 /* Responsive Design */
@@ -312,11 +355,40 @@ background-image: url('/src/assets/images/bg-dashboard.png');
   }
   
   .login-card {
-    padding: 2.5rem 2rem;
+    padding: 2rem 1.5rem;
+    min-height: 550px;
   }
   
   .login-title {
-    font-size: 2rem;
+    font-size: 2.5rem;
+  }
+
+  .login-form-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .game-info {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .player-stats {
+    margin: 2rem 2rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .stat-value {
+    font-size: 1.75rem;
+  }
+
+  .welcome-subtitle {
+    margin: 1rem 1.5rem 2rem 1.5rem;
+    font-size: 1rem;
   }
 }
 
@@ -330,16 +402,63 @@ background-image: url('/src/assets/images/bg-dashboard.png');
   }
   
   .login-card {
-    padding: 2rem 1.5rem;
+    padding: 2rem 1rem;
+    min-height: 500px;
   }
   
   .login-title {
     font-size: 2rem;
+    margin-top: 1rem;
   }
-  
+
+  .login-form-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .form-input-login {
+    width: 100%;
+  }
+
   .login-button {
-    padding: 1rem 2rem;
+    min-width: 120px;
+    height: 45px;
     font-size: 1rem;
+  }
+
+  .player-stats {
+    margin: 1.5rem 1.5rem;
+    padding: 1.25rem;
+  }
+
+  .player-name {
+    font-size: 1.5rem;
+  }
+
+  .welcome-back {
+    font-size: 1.25rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+  }
+
+  .welcome-subtitle {
+    margin: 1rem 1rem 1.5rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .game-info {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .info-text {
+    font-size: 0.8rem;
   }
 }
 
@@ -349,4 +468,28 @@ background-image: url('/src/assets/images/bg-dashboard.png');
     height: 55vh;
     max-height: 500px;
   }
+
+  .login-card {
+    min-height: 700px;
+  }
+}
+
+/* Animation for stats appearance */
+@keyframes slideInStats {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.player-stats {
+  animation: slideInStats 0.6s ease;
+}
+
+.stat-item {
+  animation: slideInStats 0.6s ease;
 }

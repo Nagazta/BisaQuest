@@ -14,7 +14,7 @@ import Notification from "../../components/Notification";
 import ParticleEffects from "../../components/ParticleEffects";
 
 const StudentDashboard = () => {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth(); // Get user from new auth system
   const navigate = useNavigate();
 
   const [showQuestModal, setShowQuestModal] = React.useState(false);
@@ -24,66 +24,32 @@ const StudentDashboard = () => {
   const [notification, setNotification] = React.useState(null);
   const [moduleProgress, setModuleProgress] = React.useState({});
 
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      sessionStorage.setItem("isRefreshing", "true");
-    };
-
-    const handleUnload = () => {
-      if (sessionStorage.getItem("isRefreshing") !== "true") {
-        localStorage.removeItem("user");
-        localStorage.removeItem("session");
-      }
-    };
-    sessionStorage.removeItem("isRefreshing");
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    window.addEventListener("unload", handleUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("unload", handleUnload);
-    };
-  }, []);
+  // REMOVED: Old cleanup code that was interfering with new auth
+  // The new auth system handles everything automatically
 
   // Fetch module progress on mount
   useEffect(() => {
-    fetchModuleProgress();
-  }, []);
+    if (user && user.student_id) {
+      fetchModuleProgress();
+    }
+  }, [user]);
 
   // Function to fetch module completion progress
   const fetchModuleProgress = async () => {
     try {
-      const sessionData = JSON.parse(localStorage.getItem("session"));
-      const token = localStorage.getItem("token");
-      
-      if (!sessionData?.user?.id || !token) return;
+      if (!user || !user.student_id) {
+        console.log('⚠️ No user or student_id available');
+        return;
+      }
 
-      // Get student_id first
-      const studentResponse = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/student/by-user/${sessionData.user.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!studentResponse.ok) return;
-
-      const studentData = await studentResponse.json();
-      const studentId = studentData.data.student_id;
+      console.log('📊 Fetching progress for student:', user.student_id);
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/completion/student/${studentId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        `${import.meta.env.VITE_API_URL}/api/completion/student/${user.student_id}`
       );
 
       if (!response.ok) {
+        console.log('⚠️ Progress fetch failed');
         return;
       }
 
@@ -95,8 +61,10 @@ const StudentDashboard = () => {
           progressMap[completion.module_id] = completion.completion_percentage;
         });
         setModuleProgress(progressMap);
+        console.log('✅ Progress loaded:', progressMap);
       }
     } catch (error) {
+      console.error('❌ Error fetching progress:', error);
     }
   };
 
@@ -116,8 +84,9 @@ const StudentDashboard = () => {
   }, [location.state, navigate, location.pathname]);
 
   const handleLogout = async () => {
+    console.log('🚪 Logout button clicked');
     await logout();
-    navigate("/login");
+    navigate("/");
   };
 
   const quests = [
@@ -174,33 +143,21 @@ const StudentDashboard = () => {
   };
 
   const checkForSavedProgress = async () => {
-    try {      
-      const sessionData = JSON.parse(localStorage.getItem("session"));
-      
-      if (!sessionData?.user?.id) {
+    try {
+      if (!user || !user.student_id) {
+        console.log('⚠️ No student_id available');
+        setShowQuestModal(true);
         return;
       }
 
-      const studentResponse = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/student/by-user/${sessionData.user.id}`
-      );
-
-
-      if (!studentResponse.ok) {
-        console.log("❌ Student response not OK");
-        return;
-      }
-
-      const studentData = await studentResponse.json();
-      
-      // FIXED: Use student_id instead of user_id
-      const student_id = studentData.data.student_id;
+      console.log('🔍 Checking for saved progress:', user.student_id);
 
       const progressResponse = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/progress/${student_id}/1`
+        `${import.meta.env.VITE_API_URL}/api/progress/${user.student_id}/1`
       );
 
       if (!progressResponse.ok) {
+        console.log('ℹ️ No saved progress found');
         setShowQuestModal(true);
         return;
       }
@@ -208,12 +165,14 @@ const StudentDashboard = () => {
       const progressData = await progressResponse.json();
 
       if (progressData.hasProgress && progressData.data) {
+        console.log('✅ Found saved progress');
         setSavedProgress(progressData.data);
         setShowSaveModal(true);
       } else {
         setShowQuestModal(true);
       }
     } catch (err) {
+      console.error('❌ Error checking progress:', err);
       setShowQuestModal(true);
     }
   };
@@ -229,13 +188,12 @@ const StudentDashboard = () => {
 
   const handleNewGame = async () => {
     try {
-      const sessionData = JSON.parse(localStorage.getItem("session"));
-      const studentResponse = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/student/by-user/${sessionData.user.id}`
-      );
-      const studentData = await studentResponse.json();
-      // FIXED: Use student_id consistently
-      const student_id = studentData.data.student_id;
+      if (!user || !user.student_id) {
+        console.error('❌ No student_id available');
+        return;
+      }
+
+      console.log('🔄 Resetting progress for:', user.student_id);
 
       const deleteProgressResponse = await fetch(
         `${import.meta.env.VITE_API_URL}/api/progress/reset-all`,
@@ -243,7 +201,7 @@ const StudentDashboard = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            student_id: student_id,
+            student_id: user.student_id,
           }),
         }
       );
@@ -252,12 +210,15 @@ const StudentDashboard = () => {
         throw new Error("Failed to reset progress");
       }
 
+      console.log('✅ Progress reset successfully');
+
       setSavedProgress(null);
       setShowSaveModal(false);
       setShowQuestModal(true);
       
       fetchModuleProgress();
     } catch (err) {
+      console.error('❌ Error resetting progress:', err);
       setShowSaveModal(false);
       setShowQuestModal(true);
     }
@@ -267,6 +228,14 @@ const StudentDashboard = () => {
     setShowQuestModal(false);
     navigate("/student/characterSelection");
   };
+
+  // Redirect if no user
+  useEffect(() => {
+    if (!user) {
+      console.log('⚠️ No user found, redirecting to login');
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   return (
     <div className="dashboard-container">
