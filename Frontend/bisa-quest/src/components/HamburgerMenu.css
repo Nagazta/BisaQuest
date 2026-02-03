@@ -1,0 +1,295 @@
+/* Hamburger Button - Fixed Top Left */
+.hamburger-button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1001;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  border: 4px solid #78350f;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.hamburger-button:hover {
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  transform: scale(1.05);
+}
+
+.hamburger-button:active {
+  transform: scale(0.95);
+}
+
+/* Hamburger Icon Animation */
+.hamburger-icon {
+  width: 30px;
+  height: 24px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hamburger-icon span {
+  display: block;
+  height: 4px;
+  width: 100%;
+  background: #78350f;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* Animated X when open */
+.hamburger-icon.open span:nth-child(1) {
+  transform: rotate(45deg) translate(8px, 8px);
+}
+
+.hamburger-icon.open span:nth-child(2) {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.hamburger-icon.open span:nth-child(3) {
+  transform: rotate(-45deg) translate(8px, -8px);
+}
+
+/* Overlay - Dark background */
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Slide-out Menu */
+.slide-menu {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 256px;
+  height: 100vh;
+  background: linear-gradient(to bottom, #fde68a, #fef3c7);
+  border-right: 4px solid #78350f;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transition: left 0.3s ease;
+  overflow-y: auto;
+}
+
+.slide-menu.open {
+  left: 0;
+}
+
+/* Menu Header */
+.menu-header {
+  padding: 24px;
+  border-bottom: 4px solid #78350f;
+  margin-top: 60px; /* Space for hamburger button */
+}
+
+.app-title {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 35px;
+  font-weight: bold;
+  color: #78350f;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Student Profile Section */
+.student-profile {
+  padding: 16px 24px;
+  border-bottom: 4px solid #78350f;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.student-profile:hover {
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+}
+
+.student-profile.active {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  border-left: 4px solid #78350f;
+}
+
+.student-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.student-name {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: #78350f;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.student-role {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #92400e;
+  margin: 2px 0 0 0;
+}
+
+/* Navigation */
+.menu-nav {
+  flex: 1;
+  padding: 24px 0;
+}
+
+.nav-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  background: none;
+  border: none;
+  border-left: 4px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #92400e;
+  font-size: 18px;
+}
+
+.nav-item:hover {
+  background-color: #fde68a;
+}
+
+.nav-item.active {
+  background-color: #fcd34d;
+  border-left-color: #78350f;
+  color: #78350f;
+  font-weight: bold;
+}
+
+.nav-icon {
+  font-size: 24px;
+}
+
+.nav-label {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* Menu Footer */
+.menu-footer {
+  padding: 24px;
+  border-top: 4px solid #78350f;
+}
+
+.logout-btn {
+  width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .slide-menu {
+    width: 80vw;
+    max-width: 300px;
+    left: -100%;
+  }
+  
+  .hamburger-button {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .hamburger-icon {
+    width: 25px;
+    height: 20px;
+  }
+  
+  .hamburger-icon span {
+    height: 3px;
+  }
+}
+
+@media (max-width: 480px) {
+  .slide-menu {
+    width: 85vw;
+  }
+  
+  .hamburger-button {
+    top: 15px;
+    left: 15px;
+  }
+  
+  .app-title {
+    font-size: 28px;
+  }
+  
+  .student-name {
+    font-size: 16px;
+  }
+  
+  .nav-label {
+    font-size: 16px;
+  }
+}
+
+/* Accessibility - Focus states */
+.hamburger-button:focus,
+.nav-item:focus,
+.student-profile:focus {
+  outline: 3px solid #78350f;
+  outline-offset: 2px;
+}
+
+/* Smooth scrolling for menu */
+.slide-menu {
+  scrollbar-width: thin;
+  scrollbar-color: #fbbf24 #fef3c7;
+}
+
+.slide-menu::-webkit-scrollbar {
+  width: 8px;
+}
+
+.slide-menu::-webkit-scrollbar-track {
+  background: #fef3c7;
+}
+
+.slide-menu::-webkit-scrollbar-thumb {
+  background: #fbbf24;
+  border-radius: 4px;
+}
+
+.slide-menu::-webkit-scrollbar-thumb:hover {
+  background: #f59e0b;
+}

@@ -1,0 +1,247 @@
+.interactive-map-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: transparent;
+}
+
+.map-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  background: #2a5c2a; /* Dark green to blend with map edges */
+}
+
+.map-wrapper.grab {
+  cursor: grab;
+}
+
+.map-wrapper.grabbing {
+  cursor: grabbing;
+}
+
+.map-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  will-change: transform;
+  transform-origin: center center;
+}
+
+.map-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  background: transparent;
+}
+
+.map-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Map areas - clickable regions */
+.map-area {
+  pointer-events: all;
+  transition: all 0.3s ease;
+}
+
+.map-area.unlocked:hover {
+  animation: subtle-pulse 1.5s infinite;
+}
+
+.map-area.locked {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@keyframes subtle-pulse {
+  0%, 100% {
+    fill-opacity: 0.15;
+  }
+  50% {
+    fill-opacity: 0.25;
+  }
+}
+
+/* Tooltip */
+.map-tooltip {
+  animation: tooltip-appear 0.2s ease;
+  z-index: 1000;
+}
+
+.tooltip-content {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  padding: 16px 20px;
+  border-radius: 16px;
+  border: 3px solid #FFD700;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  min-width: 250px;
+  max-width: 300px;
+}
+
+.tooltip-content h3 {
+  font-family: 'Pixelify Sans', sans-serif;
+  color: #FFD700;
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.tooltip-subtitle {
+  color: #94a3b8;
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-style: italic;
+}
+
+.tooltip-progress {
+  margin-top: 12px;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+.progress-text {
+  color: #10b981;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.tooltip-locked {
+  color: #f87171;
+  margin: 8px 0 0 0;
+  font-size: 12px;
+  font-style: italic;
+}
+
+@keyframes tooltip-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Zoom Controls */
+.map-controls {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 100;
+}
+
+.control-button {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  border: 3px solid #78350f;
+  border-radius: 12px;
+  color: #78350f;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Pixelify Sans', sans-serif;
+}
+
+.control-button:hover {
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  transform: scale(1.1);
+}
+
+.control-button:active {
+  transform: scale(0.95);
+}
+
+.control-button.reset-view {
+  font-size: 28px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .map-controls {
+    bottom: 20px;
+    right: 20px;
+    gap: 8px;
+  }
+  
+  .control-button {
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+  }
+  
+  .control-button.reset-view {
+    font-size: 24px;
+  }
+  
+  .tooltip-content {
+    min-width: 200px;
+    padding: 12px 16px;
+  }
+  
+  .tooltip-content h3 {
+    font-size: 16px;
+  }
+}
+
+/* Animation for when map first loads */
+@keyframes map-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.map-wrapper {
+  animation: map-fade-in 0.6s ease;
+}
