@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import SidebarNavigation from "../../components/SidebarNavigation";
-import QuestCard from "../../components/QuestCard";
+import HamburgerMenu from "../../components/HamburgerMenu";
+import InteractiveMap from "../../components/InteractiveMap";
 import Village from "../../assets/images/cardsImage/village.png";
 import Forest from "../../assets/images/cardsImage/forest.png";
 import Kingdom from "../../assets/images/cardsImage/kingdom.png";
@@ -14,7 +14,7 @@ import Notification from "../../components/Notification";
 import ParticleEffects from "../../components/ParticleEffects";
 
 const StudentDashboard = () => {
-  const { user, logout } = useAuth(); // Get user from new auth system
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const [showQuestModal, setShowQuestModal] = React.useState(false);
@@ -23,9 +23,6 @@ const StudentDashboard = () => {
   const [selectedQuest, setSelectedQuest] = React.useState(null);
   const [notification, setNotification] = React.useState(null);
   const [moduleProgress, setModuleProgress] = React.useState({});
-
-  // REMOVED: Old cleanup code that was interfering with new auth
-  // The new auth system handles everything automatically
 
   // Fetch module progress on mount
   useEffect(() => {
@@ -241,24 +238,20 @@ const StudentDashboard = () => {
     <div className="dashboard-container">
       <ParticleEffects enableMouseTrail={false} />
 
-      <SidebarNavigation onLogout={handleLogout} />
+      {/* Hamburger Menu */}
+      <HamburgerMenu onLogout={handleLogout} />
 
-      <div className="main-content">
-        <div className="quests-grid">
-          {quests.map((quest) => (
-            <QuestCard
-              key={quest.id}
-              quest={quest}
-              onStartQuest={handleStartQuest}
-            />
-          ))}
-        </div>
+      {/* Fullscreen Interactive Map */}
+      <InteractiveMap 
+        quests={quests}
+        onQuestClick={handleStartQuest}
+        moduleProgress={moduleProgress}
+      />
 
-        <div className="decorative-clouds">
-          <div className="cloud cloud-1"></div>
-          <div className="cloud cloud-2"></div>
-          <div className="cloud cloud-3"></div>
-        </div>
+      <div className="decorative-clouds">
+        <div className="cloud cloud-1"></div>
+        <div className="cloud cloud-2"></div>
+        <div className="cloud cloud-3"></div>
       </div>
 
       <QuestStartModal
