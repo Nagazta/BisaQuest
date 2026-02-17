@@ -24,26 +24,15 @@ export const useCharacterPreference = (questId = 1) => {
                     return;
                 }
 
-                // If not in localStorage, fetch from API
-                const sessionData = JSON.parse(localStorage.getItem("session"));
-                if (!sessionData?.user?.id) {
+                // If not in localStorage, fetch from API using bisaquest_student_id
+                const student_id = localStorage.getItem('bisaquest_student_id');
+                if (!student_id) {
                     setCharacter('male');
                     setLoading(false);
                     return;
                 }
 
-                const studentResponse = await fetch(
-                    `${import.meta.env.VITE_API_URL}/api/student/by-user/${sessionData.user.id}`
-                );
-
-                if (!studentResponse.ok) {
-                    throw new Error("Failed to fetch student data");
-                }
-
-                const studentData = await studentResponse.json();
-                const student_id = studentData.data.student_id;
-
-                // Fetch character preference
+                // Fetch character preference directly using student_id
                 const response = await fetch(
                     `${import.meta.env.VITE_API_URL}/api/preferences?student_id=${student_id}&quest_id=${questId}`
                 );
@@ -74,21 +63,10 @@ export const useCharacterPreference = (questId = 1) => {
     // Function to update character preference
     const updateCharacter = async (newCharacter) => {
         try {
-            const sessionData = JSON.parse(localStorage.getItem("session"));
-            if (!sessionData?.user?.id) {
-                throw new Error("Student not logged in");
+            const student_id = localStorage.getItem('bisaquest_student_id');
+            if (!student_id) {
+                throw new Error("No student ID found. Please restart the app.");
             }
-
-            const studentResponse = await fetch(
-                `${import.meta.env.VITE_API_URL}/api/student/by-user/${sessionData.user.id}`
-            );
-
-            if (!studentResponse.ok) {
-                throw new Error("Failed to fetch student data");
-            }
-
-            const studentData = await studentResponse.json();
-            const student_id = studentData.data.student_id;
 
             // Update in database
             const response = await fetch(

@@ -15,7 +15,6 @@ export const useGameSession = (npcId, gameData, challengeType, language = 'en') 
     const startGame = useCallback(() => {
         if (!gameData) return;
 
-        // Pass language to getRandomGameSet
         const selectedSet = getRandomGameSet(npcId, language);
 
         if (selectedSet) {
@@ -27,7 +26,7 @@ export const useGameSession = (npcId, gameData, challengeType, language = 'en') 
                 setShowReplayConfirm(false);
             }
         }
-    }, [npcId, gameData, language]); // Add language to dependencies
+    }, [npcId, gameData, language]);
 
     useEffect(() => {
         if (!gameData || hasCheckedAttempt.current) return;
@@ -36,17 +35,16 @@ export const useGameSession = (npcId, gameData, challengeType, language = 'en') 
 
         const checkPreviousAttempt = async () => {
             try {
-                const token = localStorage.getItem('token');
+                // ✅ Use bisaquest_student_id — no token needed
+                const studentId = localStorage.getItem('bisaquest_student_id');
 
                 const response = await fetch(`${import.meta.env.VITE_API_URL}/api/npc/start`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         npcId,
-                        challengeType
+                        challengeType,
+                        studentId, // ✅ backend reads from req.body via flexAuth
                     })
                 });
 
@@ -61,8 +59,13 @@ export const useGameSession = (npcId, gameData, challengeType, language = 'en') 
                     } else {
                         startGame();
                     }
+                } else {
+                    // API responded but not success — still start game
+                    startGame();
                 }
             } catch (error) {
+                // Network error — still start game so player isn't blocked
+                console.error('Error checking previous attempt:', error);
                 startGame();
             }
         };
@@ -84,4 +87,4 @@ export const useGameSession = (npcId, gameData, challengeType, language = 'en') 
         startGame,
         handleCancelReplay
     };
-}; ``
+};

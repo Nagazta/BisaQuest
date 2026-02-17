@@ -25,10 +25,10 @@ const VillagePage = () => {
   const questId = location.state?.questId || 1;
   const audioRef = useRef(null);
 
-  // Load language preference
-  const { language, loading: langLoading } = useLanguagePreference(questId);
+  // ✅ Always use bisaquest_student_id
+  const studentId = localStorage.getItem("bisaquest_student_id");
 
-  // Load character preference
+  const { language, loading: langLoading } = useLanguagePreference(questId);
   const { character, loading: charLoading } = useCharacterPreference(questId);
 
   const [villageNPCs, setVillageNPCs] = useState([]);
@@ -40,49 +40,43 @@ const VillagePage = () => {
   const [showSummaryButton, setShowSummaryButton] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
 
-  // Get the appropriate player character image
   const PlayerCharacter = character === "female" ? GirlCharacter : BoyCharacter;
 
-  // Background music effect - auto play on any interaction
+  // Background music
   useEffect(() => {
     const playMusic = () => {
       if (audioRef.current) {
         audioRef.current.volume = 0.3;
-        audioRef.current.play().catch(error => {
-          console.log('Waiting for user interaction to play music');
+        audioRef.current.play().catch(() => {
+          console.log("Waiting for user interaction to play music");
         });
       }
     };
 
-    // Try to play immediately
     playMusic();
 
-    // Add listeners for user interactions
     const handleInteraction = () => {
       playMusic();
-      // Remove listeners after first successful play
-      document.removeEventListener('click', handleInteraction);
-      document.removeEventListener('keydown', handleInteraction);
-      document.removeEventListener('touchstart', handleInteraction);
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("keydown", handleInteraction);
+      document.removeEventListener("touchstart", handleInteraction);
     };
 
-    document.addEventListener('click', handleInteraction);
-    document.addEventListener('keydown', handleInteraction);
-    document.addEventListener('touchstart', handleInteraction);
+    document.addEventListener("click", handleInteraction);
+    document.addEventListener("keydown", handleInteraction);
+    document.addEventListener("touchstart", handleInteraction);
 
-    // Cleanup: stop music when component unmounts
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
       }
-      document.removeEventListener('click', handleInteraction);
-      document.removeEventListener('keydown', handleInteraction);
-      document.removeEventListener('touchstart', handleInteraction);
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("keydown", handleInteraction);
+      document.removeEventListener("touchstart", handleInteraction);
     };
   }, []);
 
-  // Toggle mute function
   const toggleMute = () => {
     if (audioRef.current) {
       audioRef.current.muted = !isMuted;
@@ -90,11 +84,9 @@ const VillagePage = () => {
     }
   };
 
-  // Refresh progress when returning from a completed game
   useEffect(() => {
     if (location.state?.completed) {
       setRefreshKey((prev) => prev + 1);
-      // Clear the state
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location.state, navigate, location.pathname]);
@@ -104,11 +96,11 @@ const VillagePage = () => {
   }, [refreshKey]);
 
   const initializeVillage = async () => {
-    const studentId = localStorage.getItem("studentId");
     if (!studentId) {
+      console.warn("No bisaquest_student_id found in localStorage");
       return;
     }
-    // Frontend-defined NPCs with showName property and quest types
+
     const npcs = [
       {
         npcId: "nando",
@@ -140,68 +132,45 @@ const VillagePage = () => {
     ];
     setVillageNPCs(npcs);
 
-    // Initialize environment in backend
     try {
-      const response = await environmentApi.initializeEnvironment(
-        "village",
-        studentId
-      );
-      if (!response.success) {
-        // Error already logged in service
-      }
-
-      // Check environment progress
+      // ✅ studentId passed directly, no token needed
+      await environmentApi.initializeEnvironment("village", studentId);
       await checkEnvironmentProgress();
     } catch (err) {
-      // Error handled
+      console.error("Error initializing village:", err);
     }
   };
 
-  // Function to check environment progress
   const checkEnvironmentProgress = async () => {
+    if (!studentId) return;
+
     try {
-      const token = localStorage.getItem("token");
+      // ✅ Pass studentId as query param instead of Bearer token
       const response = await fetch(
-        `${
-          import.meta.env.VITE_API_URL
-        }/api/npc/environment-progress?environmentType=village`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        `${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=village&studentId=${studentId}`
       );
 
       const result = await response.json();
 
       if (result.success) {
-        const progress =
-          result.data.progress ?? result.data.progress_percentage ?? 0;
+        const progress = result.data.progress ?? result.data.progress_percentage ?? 0;
         setEnvironmentProgress(progress);
 
-        // Show summary button if progress >= 75%
         if (progress >= 75) {
           setShowSummaryButton(true);
         }
       }
     } catch (error) {
-      // Error handled
+      console.error("Error checking environment progress:", error);
     }
   };
 
-  // Handle view summary
   const handleViewSummary = async () => {
+    if (!studentId) return;
+
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch(
-        `${
-          import.meta.env.VITE_API_URL
-        }/api/npc/environment-progress?environmentType=village`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        `${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=village&studentId=${studentId}`
       );
 
       const result = await response.json();
@@ -218,33 +187,23 @@ const VillagePage = () => {
         });
       }
     } catch (error) {
-      // Error handled
+      console.error("Error fetching summary:", error);
     }
   };
 
   const checkAndShowSummary = async () => {
-    try {
-      const token = localStorage.getItem("token");
+    if (!studentId) return;
 
-      // Check environment progress
-      const progressResponse = await fetch(
-        `${
-          import.meta.env.VITE_API_URL
-        }/api/npc/environment-progress?environmentType=village`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=village&studentId=${studentId}`
       );
 
-      const result = await progressResponse.json();
+      const result = await response.json();
 
       if (result.success) {
-        const progress =
-          result.data.progress ?? result.data.progress_percentage ?? 0;
+        const progress = result.data.progress ?? result.data.progress_percentage ?? 0;
 
-        // If 100% complete, automatically navigate to completion page
         if (progress >= 100) {
           navigate("/student/viewCompletion", {
             state: {
@@ -258,19 +217,14 @@ const VillagePage = () => {
         }
       }
     } catch (error) {
-      // Error handled
+      console.error("Error checking summary:", error);
     }
   };
 
-  // Update the useEffect that handles completed state
   useEffect(() => {
     if (location.state?.completed) {
       setRefreshKey((prev) => prev + 1);
-
-      // Check if module is complete
       checkAndShowSummary();
-
-      // Clear the state
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location.state, navigate, location.pathname]);
@@ -281,12 +235,10 @@ const VillagePage = () => {
   };
 
   const handleStartQuest = async () => {
-    if (!selectedNPC) return;
-
-    const studentId = localStorage.getItem("studentId");
-    if (!studentId) return;
+    if (!selectedNPC || !studentId) return;
 
     try {
+      // ✅ studentId passed in body, no token needed
       await environmentApi.logNPCInteraction({
         studentId,
         npcName: selectedNPC.name,
@@ -294,12 +246,12 @@ const VillagePage = () => {
       await environmentApi.startNPCInteraction({
         npcId: selectedNPC.npcId,
         challengeType: selectedNPC.quest,
+        studentId,
       });
     } catch (err) {
-      // Error handled
+      console.error("Error starting quest:", err);
     }
 
-    // Navigate based on quest type
     if (selectedNPC.quest === "word_matching") {
       navigate("/student/wordMatching", {
         state: {
@@ -336,12 +288,10 @@ const VillagePage = () => {
   };
 
   const handleBackClick = () => setShowExitConfirm(true);
-
   const handleConfirmExit = () => {
     setShowExitConfirm(false);
     navigate("/dashboard");
   };
-
   const handleCancelExit = () => setShowExitConfirm(false);
 
   if (langLoading || charLoading) {
@@ -355,14 +305,12 @@ const VillagePage = () => {
 
   return (
     <div className="village-page-wrapper">
-      {/* Background Music */}
       <audio ref={audioRef} loop>
         <source src={bgMusic} type="audio/mpeg" />
       </audio>
 
       <ParticleEffects enableMouseTrail={false} />
 
-      {/* Mute/Unmute Button */}
       <button
         className="music-toggle-button"
         onClick={toggleMute}
@@ -379,7 +327,6 @@ const VillagePage = () => {
         ← {language === "ceb" ? "Balik" : "Back"}
       </Button>
 
-      {/* View Summary Button */}
       {showSummaryButton && (
         <Button
           variant="primary"
@@ -398,6 +345,7 @@ const VillagePage = () => {
         onNPCClick={handleNPCClick}
         playerCharacter={PlayerCharacter}
         debugMode={true}
+        studentId={studentId}
       />
 
       <div className="decorative-clouds">

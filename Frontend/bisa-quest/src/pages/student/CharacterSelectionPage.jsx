@@ -28,12 +28,9 @@ const CharacterSelectionPage = () => {
 
   const handleProceed = async (characterId) => {
     try {
-      const sessionData = JSON.parse(localStorage.getItem("session"));
-      const studentResponse = await fetch(
-        `http://localhost:5000/api/student/by-user/${sessionData.user.id}`
-      );
-      const studentData = await studentResponse.json();
-      const student_id = studentData.data.student_id;
+      const student_id = localStorage.getItem("bisaquest_student_id");
+
+      if (!student_id) throw new Error("No student ID found. Please restart the app.");
 
       const response = await fetch(
         "http://localhost:5000/api/preferences/character",
@@ -52,9 +49,7 @@ const CharacterSelectionPage = () => {
         throw new Error("Failed to save character preference");
       }
 
-      // ADD THIS LINE - Update the cache
-      localStorage.setItem('quest_1_character', characterId);
-
+      localStorage.setItem("quest_1_character", characterId);
       navigate("/student/languageSelection");
     } catch (err) {
       console.error("Error saving character:", err);

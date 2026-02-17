@@ -18,7 +18,6 @@ const WordMatchingPage = () => {
   const npcId = location.state?.npcId || "nando";
   const questId = location.state?.questId || 1;
 
-  // Load language preference
   const { language, loading: langLoading } = useLanguagePreference(questId);
 
   const [selectedWord, setSelectedWord] = useState(null);
@@ -52,7 +51,6 @@ const WordMatchingPage = () => {
     handleCancelReplay,
   } = useGameSession(npcId, gameData, "word_matching", language);
 
-  // Shuffle function using Fisher-Yates algorithm
   const shuffleArray = (array) => {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -62,7 +60,6 @@ const WordMatchingPage = () => {
     return shuffled;
   };
 
-  // Shuffled definitions - memoized to prevent reshuffling on every render
   const shuffledDefinitions = useMemo(() => {
     return shuffleArray(wordMatchingData);
   }, [wordMatchingData]);
@@ -130,23 +127,20 @@ const WordMatchingPage = () => {
   };
 
   const handleBack = () => {
-    navigate("/student/village", {
-      state: { questId },
-    });
+    navigate("/student/village", { state: { questId } });
   };
 
   const handleComplete = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+    // ✅ Use bisaquest_student_id — no token needed
+    const studentId = localStorage.getItem("bisaquest_student_id");
+    const timeSpent = Math.floor((Date.now() - startTime) / 1000);
 
+    try {
       await fetch(`${import.meta.env.VITE_API_URL}/api/npc/submit`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          studentId, // ✅ backend reads via flexAuth
           npcId,
           challengeType: "word_matching",
           score: matches.length,
@@ -156,16 +150,9 @@ const WordMatchingPage = () => {
         }),
       });
 
-      // Check environment progress
+      // ✅ Pass studentId as query param
       const progressResponse = await fetch(
-        `${
-          import.meta.env.VITE_API_URL
-        }/api/npc/environment-progress?environmentType=village`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        `${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=village&studentId=${studentId}`
       );
 
       const progressResult = await progressResponse.json();
@@ -194,26 +181,18 @@ const WordMatchingPage = () => {
           });
         } else {
           navigate("/student/village", {
-            state: {
-              completed: true,
-              questId: questId,
-            },
+            state: { completed: true, questId },
           });
         }
       } else {
         navigate("/student/village", {
-          state: {
-            completed: true,
-            questId: questId,
-          },
+          state: { completed: true, questId },
         });
       }
     } catch (error) {
+      console.error("Error completing word matching:", error);
       navigate("/student/village", {
-        state: {
-          completed: true,
-          questId: questId,
-        },
+        state: { completed: true, questId },
       });
     }
   };
@@ -236,7 +215,6 @@ const WordMatchingPage = () => {
     return <div className="loading-message">Loading...</div>;
   }
 
-  // Replay confirmation modal
   if (showReplayConfirm && latestAttempt) {
     return (
       <ReplayConfirmModal
@@ -303,12 +281,8 @@ const WordMatchingPage = () => {
           onClick={isComplete ? handleComplete : handleSubmit}
         >
           {isComplete
-            ? language === "ceb"
-              ? "Kompleto"
-              : "Complete"
-            : language === "ceb"
-            ? "Ipasa"
-            : "Submit"}
+            ? language === "ceb" ? "Kompleto" : "Complete"
+            : language === "ceb" ? "Ipasa" : "Submit"}
         </button>
       </div>
 
