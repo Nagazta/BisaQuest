@@ -10,21 +10,20 @@ const EnvironmentPage = ({
   npcs = [],
   onNPCClick,
   playerCharacter,
-  debugMode = false, // Set to true to enable debug overlay
+  debugMode = false,
+  studentId, // ✅ Received from VillagePage
 }) => {
   const [playerPosition, setPlayerPosition] = useState({ x: 50, y: 50 });
   const [keysPressed, setKeysPressed] = useState({});
   const [environmentProgress, setEnvironmentProgress] = useState(0);
   const [npcCompletionStatus, setNpcCompletionStatus] = useState({});
   const [nearbyNPC, setNearbyNPC] = useState(null);
-  const [interactionRange] = useState(8); // Distance in % to trigger interaction
+  const [interactionRange] = useState(8);
 
-  // Get collision configuration for this environment
   const collisionConfig = useMemo(() => {
     return getCollisionZones(environmentType);
   }, [environmentType]);
 
-  // Calculate distance between player and NPC
   const calculateDistance = useCallback((npc) => {
     const dx = playerPosition.x - npc.x;
     const dy = playerPosition.y - npc.y;
@@ -50,19 +49,17 @@ const EnvironmentPage = ({
   // Handle E key press for interaction
   useEffect(() => {
     const handleInteraction = (e) => {
-      if (e.key.toLowerCase() === 'e' && nearbyNPC) {
+      if (e.key.toLowerCase() === "e" && nearbyNPC) {
         e.preventDefault();
         onNPCClick?.(nearbyNPC);
       }
     };
 
-    window.addEventListener('keydown', handleInteraction);
-    return () => window.removeEventListener('keydown', handleInteraction);
+    window.addEventListener("keydown", handleInteraction);
+    return () => window.removeEventListener("keydown", handleInteraction);
   }, [nearbyNPC, onNPCClick]);
 
-  // Check if position collides
   const checkCollision = (newX, newY) => {
-    // Check static zones from config
     if (checkCollisionWithZones(
       newX,
       newY,
@@ -73,7 +70,6 @@ const EnvironmentPage = ({
       return true;
     }
 
-    // Check NPC collision (can't walk through NPCs)
     const playerSize = collisionConfig.playerSize;
     for (const npc of npcs) {
       const npcSize = 5;
@@ -90,24 +86,19 @@ const EnvironmentPage = ({
     return false;
   };
 
-  // Fetch environment progress
+  // ✅ Fetch environment progress using studentId query param (no token)
   useEffect(() => {
-    fetchEnvironmentProgress();
-  }, [environmentType]);
+    if (studentId) {
+      fetchEnvironmentProgress();
+    }
+  }, [environmentType, studentId]);
 
   const fetchEnvironmentProgress = async () => {
-    try {
-      const token = localStorage.getItem("token");
+    if (!studentId) return;
 
+    try {
       const response = await fetch(
-        `${
-          import.meta.env.VITE_API_URL
-        }/api/npc/environment-progress?environmentType=${environmentType}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        `${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=${environmentType}&studentId=${studentId}`
       );
       const result = await response.json();
 
@@ -116,9 +107,9 @@ const EnvironmentPage = ({
           result.data.progress ?? result.data.progress_percentage ?? 0
         );
 
-        // Create a map of NPC completion status
+        // Build NPC completion status map
         const statusMap = {};
-        result.data.npcProgress.forEach((npc) => {
+        result.data.npcProgress?.forEach((npc) => {
           statusMap[npc.npcId] = {
             completed: npc.completed,
             encounters: npc.encounters,
@@ -128,7 +119,7 @@ const EnvironmentPage = ({
         setNpcCompletionStatus(statusMap);
       }
     } catch (error) {
-      // Error handled
+      console.error("Error fetching environment progress:", error);
     }
   };
 
@@ -163,28 +154,18 @@ const EnvironmentPage = ({
       setPlayerPosition((prev) => {
         let newX = prev.x;
         let newY = prev.y;
-        
-        // Calculate new position
+
         if (keysPressed["w"]) newY = prev.y - moveSpeed;
         if (keysPressed["s"]) newY = prev.y + moveSpeed;
         if (keysPressed["a"]) newX = prev.x - moveSpeed;
         if (keysPressed["d"]) newX = prev.x + moveSpeed;
-        
-        // Check collision before moving
+
         if (checkCollision(newX, newY)) {
-          // If collision, try moving only on one axis
-          if (checkCollision(newX, prev.y)) {
-            newX = prev.x; // Can't move horizontally
-          }
-          if (checkCollision(prev.x, newY)) {
-            newY = prev.y; // Can't move vertically
-          }
-          // If still colliding, don't move at all
-          if (checkCollision(newX, newY)) {
-            return prev;
-          }
+          if (checkCollision(newX, prev.y)) newX = prev.x;
+          if (checkCollision(prev.x, newY)) newY = prev.y;
+          if (checkCollision(newX, newY)) return prev;
         }
-        
+
         return { x: newX, y: newY };
       });
       animationFrameId = requestAnimationFrame(updatePosition);
@@ -197,7 +178,6 @@ const EnvironmentPage = ({
     return () => cancelAnimationFrame(animationFrameId);
   }, [keysPressed, npcs, collisionConfig]);
 
-  // Handle NPC click - only if in range
   const handleNPCClick = (npc) => {
     const distance = calculateDistance(npc);
     if (distance < interactionRange) {
@@ -207,13 +187,11 @@ const EnvironmentPage = ({
 
   return (
     <div className={`environment-page ${environmentType}`}>
-      {/* Background */}
       <div
         className="environment-background"
         style={{ backgroundImage: `url(${backgroundImage})` }}
       />
 
-      {/* NPCs */}
       {npcs &&
         npcs.map((npc, index) => {
           const status = npcCompletionStatus[npc.npcId];
@@ -239,17 +217,13 @@ const EnvironmentPage = ({
                   {status.encounters}/3
                 </div>
               )}
-              {/* Interaction indicator when nearby */}
               {isNearby && (
-                <div className="interaction-prompt">
-                  Press E to interact
-                </div>
+                <div className="interaction-prompt">Press E to interact</div>
               )}
             </div>
           );
         })}
 
-      {/* Player */}
       <div
         className="player-character"
         style={{ left: `${playerPosition.x}%`, top: `${playerPosition.y}%` }}
@@ -261,14 +235,12 @@ const EnvironmentPage = ({
         )}
       </div>
 
-      {/* Progress Bar */}
       <ProgressBar
         progress={environmentProgress}
         variant="environment"
         showLabel={true}
       />
 
-      {/* Progress Details */}
       <div className="environment-progress-info">
         <span>
           {Object.values(npcCompletionStatus).filter((s) => s.completed).length}
@@ -276,12 +248,10 @@ const EnvironmentPage = ({
         </span>
       </div>
 
-      {/* Controls Hint */}
       <div className="controls-hint">
         Use W, A, S, D to move • Press E to interact with NPCs
       </div>
 
-      {/* Debug Overlay */}
       {debugMode && (
         <CollisionDebugger
           collisionZones={collisionConfig.zones}
