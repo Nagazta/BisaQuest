@@ -17,13 +17,13 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showAccountModal, setShowAccountModal] = useState(false);
+  const [isNewUser, setIsNewUser] = useState(false);
 
-  // Check for existing account on mount - but skip if we just chose to continue
+  // Check for existing account on mount
   useEffect(() => {
     const justChoseContinue = sessionStorage.getItem('bisaquest_continue_clicked');
     
     if (justChoseContinue) {
-      // User just clicked continue - don't show modal again, let AuthContext load
       console.log('🔄 User chose continue, waiting for AuthContext to load user...');
       sessionStorage.removeItem('bisaquest_continue_clicked');
       return;
@@ -37,7 +37,6 @@ const Login = () => {
         console.log('🔍 Existing account detected in localStorage');
         setShowAccountModal(true);
         
-        // Try to load stats
         try {
           const result = await getStats();
           if (result.success) {
@@ -73,33 +72,13 @@ const Login = () => {
     loadStats();
   }, [user, getStats]);
 
-  // Auto-navigate to dashboard when user loads
+  // Auto-navigate for returning users only (not new users)
   useEffect(() => {
-    if (user && !showAccountModal) {
-      console.log('✅ User loaded, navigating to dashboard');
+    if (user && !showAccountModal && !isNewUser) {
+      console.log('✅ Returning user loaded, navigating to dashboard');
       navigate("/dashboard");
     }
-  }, [user, showAccountModal, navigate]);
-
-  const handleContinueExisting = () => {
-    console.log('✅ User chose to continue with existing account');
-    // Mark that user chose to continue
-    sessionStorage.setItem('bisaquest_continue_clicked', 'true');
-    // Reload to let AuthContext load the user
-    window.location.reload();
-  };
-
-  const handleCreateNewFromModal = async () => {
-    console.log('🆕 User chose to create new account from modal');
-    await hardLogout();
-    setShowAccountModal(false);
-    setStats(null);
-  };
-
-  const handleCloseModal = () => {
-    // Don't allow closing - user must choose
-    console.log('ℹ️ Modal close blocked - user must choose an option');
-  };
+  }, [user, showAccountModal, isNewUser, navigate]);
 
   const handlePlayNow = async (e) => {
     e.preventDefault();
@@ -113,6 +92,7 @@ const Login = () => {
     setLoading(true);
     
     try {
+      setIsNewUser(true); // Prevent auto-navigate useEffect from firing
       console.log('🎮 Starting game with nickname:', nickname.trim());
       
       const result = await createNewUser(nickname.trim());
@@ -120,17 +100,36 @@ const Login = () => {
       if (!result.success) {
         setError(result.error || 'Failed to create user. Please try again!');
         console.error('❌ Failed to create user:', result.error);
+        setIsNewUser(false);
         return;
       }
       
-      console.log('✅ User created successfully, navigating to dashboard...');
-      navigate("/dashboard");
+      console.log('✅ User created successfully, navigating to character selection...');
+      navigate("/student/characterSelection");
     } catch (error) {
       console.error("❌ Error starting game:", error);
       setError("Something went wrong. Please try again!");
+      setIsNewUser(false);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleContinueExisting = () => {
+    console.log('✅ User chose to continue with existing account');
+    sessionStorage.setItem('bisaquest_continue_clicked', 'true');
+    window.location.reload();
+  };
+
+  const handleCreateNewFromModal = async () => {
+    console.log('🆕 User chose to create new account from modal');
+    await hardLogout();
+    setShowAccountModal(false);
+    setStats(null);
+  };
+
+  const handleCloseModal = () => {
+    console.log('ℹ️ Modal close blocked - user must choose an option');
   };
 
   // If modal is showing, only render background and modal

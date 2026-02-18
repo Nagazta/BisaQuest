@@ -50,7 +50,7 @@ const CharacterSelectionPage = () => {
       }
 
       localStorage.setItem("quest_1_character", characterId);
-      navigate("/student/languageSelection");
+      navigate("/dashboard");
     } catch (err) {
       console.error("Error saving character:", err);
       alert("Failed to save character. Please try again.");
