@@ -6,7 +6,6 @@ import InteractiveMap from "../../components/InteractiveMap";
 import Village from "../../assets/images/cardsImage/village.png";
 import Forest from "../../assets/images/cardsImage/forest.png";
 import Kingdom from "../../assets/images/cardsImage/kingdom.png";
-import Throne from "../../assets/images/cardsImage/throne.png";
 import "./StudentDashboard.css";
 import QuestStartModal from "../../components/QuestStartModal";
 import SaveProgressModal from "../../components/progress/SaveProgressModal";
@@ -110,15 +109,7 @@ const StudentDashboard = () => {
       description: "Master word Building in the Castle",
       progress: moduleProgress[3] || 0,
       image: Kingdom,
-    },
-    {
-      id: 4,
-      title: "Narrative Problem Solving Quest",
-      subtitle: "Kingdom Theme",
-      description: "Apply your skills in the Kingdom",
-      progress: moduleProgress[4] || 0,
-      image: Throne,
-    },
+    }
   ];
 
   const handleStartQuest = async (questId) => {
@@ -223,7 +214,7 @@ const StudentDashboard = () => {
 
   const handleConfirmQuest = () => {
     setShowQuestModal(false);
-    navigate("/student/characterSelection");
+    navigate("/student/village");
   };
 
   // Redirect if no user

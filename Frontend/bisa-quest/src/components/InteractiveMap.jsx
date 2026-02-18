@@ -28,10 +28,10 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress }) => {
       title: "Vocabulary Quest",
       // Village area (bottom-left cluster of red houses)
       polygon: [
-        { x: 23, y: 55 },
-        { x: 40, y: 55 },
-        { x: 40, y: 95 },
-        { x: 23, y: 95 }
+        { x: 36, y: 55 },
+        { x: 65, y: 55 },
+        { x: 65, y: 85 },
+        { x: 36, y: 85 }
       ],
       center: { x: 27.5, y: 85 } // For tooltip positioning
     },
@@ -41,10 +41,10 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress }) => {
       title: "Synonyms & Antonyms Quest",
       // Forest area (right side dense trees)
       polygon: [
-        { x: 50, y: 50 },
-        { x: 80, y: 50 },
-        { x: 80, y: 100 },
-        { x: 50, y: 100 }
+        { x: 70, y: 29 },
+        { x: 70, y: 50 },
+        { x: 45, y: 50 },
+        { x: 45, y: 29 }
       ],
       center: { x: 77.5, y: 72.5 }
     },
@@ -54,10 +54,10 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress }) => {
       title: "Compound Quest",
       // Castle area (top-left with moat)
       polygon: [
-        { x: 60, y:  0 },
-        { x: 40, y:  0 },
-        { x: 40, y: 25 },
-        { x: 60, y: 25 }
+        { x: 38, y:  7 },
+        { x: 38, y: 29 },
+        { x: 20, y: 29 },
+        { x: 20, y:  7 }
       ],
       center: { x: 25, y: 25 }
     },
