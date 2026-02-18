@@ -102,33 +102,17 @@ const VillagePage = () => {
     }
 
     const npcs = [
-      {
-        npcId: "nando",
-        name: "Nando",
-        x: 50,
-        y: 35,
-        character: NandoCharacter,
-        showName: true,
-        quest: "word_matching",
-      },
+
       {
         npcId: "ligaya",
         name: "Ligaya",
-        x: 70,
-        y: 45,
+        x: 40,
+        y: 41,
         character: LigayaCharacter,
         showName: true,
         quest: "word_association",
       },
-      {
-        npcId: "vicente",
-        name: "Vicente",
-        x: 20,
-        y: 60,
-        character: VicenteCharacter,
-        showName: true,
-        quest: "sentence_completion",
-      },
+
     ];
     setVillageNPCs(npcs);
 
@@ -271,7 +255,7 @@ const VillagePage = () => {
         },
       });
     } else if (selectedNPC.quest === "word_association") {
-      navigate("/student/pictureAssociation", {
+      navigate("/house", {
         state: {
           npcId: selectedNPC.npcId,
           npcName: selectedNPC.name,

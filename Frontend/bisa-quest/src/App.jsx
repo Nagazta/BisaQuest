@@ -10,7 +10,7 @@ import VillagePage from "./pages/vocabulary/VillagePage";
 
 //Vocabulary Game
 import WordMatchingPage from "./pages/vocabulary/WordMatchingPage";
-import PictureAssociationPage from "./pages/vocabulary/PictureAssociationPage";
+import HousePage from "./pages/vocabulary/HousePage";
 import SentenceCompletionPage from "./pages/vocabulary/SentenceCompletionPage";
 
 import TeacherDashboard from "./pages/Teacher/TeacherDashboard";
@@ -43,8 +43,8 @@ function App() {
 
       <Route path="/student/wordMatching" element={<WordMatchingPage />} />
       <Route
-        path="/student/pictureAssociation"
-        element={<PictureAssociationPage />}
+        path="/house"
+        element={<HousePage />}
       />
       <Route
         path="/student/sentenceCompletion"
