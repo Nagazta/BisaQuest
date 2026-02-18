@@ -7,7 +7,6 @@ import NPCCharacter from "../../components/NPCCharacter";
 import FeedbackNotification from "../../components/FeedbackNotification";
 import Button from "../../components/Button";
 import GuideDialogueBox from "../../components/GuideDialogueBox";
-import SentenceCompletionBg from "../../assets/images/environments/Vocabulary/well-bg.png";
 import "./SentenceCompletionPage.css";
 import ReplayConfirmModal from "../../components/ReplayConfirmModal";
 import { useGameSession } from "../../hooks/useGameSession";
