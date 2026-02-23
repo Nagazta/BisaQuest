@@ -7,73 +7,49 @@ import CharacterSelection from "./pages/student/CharacterSelectionPage";
 import LanguageSelectionPage from "./pages/student/LanguageSelectionPage";
 import InstructionsPage from "./pages/student/InstructionsPage";
 import VillagePage from "./pages/vocabulary/VillagePage";
-
-//Vocabulary Game
 import WordMatchingPage from "./pages/vocabulary/WordMatchingPage";
 import HousePage from "./pages/vocabulary/HousePage";
 import SentenceCompletionPage from "./pages/vocabulary/SentenceCompletionPage";
-
-import TeacherDashboard from "./pages/Teacher/TeacherDashboard";
+import ViewCompletionPage from "./pages/student/ViewCompletionPage";
 import { useAuth } from "./context/AuthContext";
 import "./App.css";
-import ViewCompletionPage from "./pages/student/ViewCompletionPage";
 
 function App() {
-  const { user, loading } = useAuth();
+    const { player, loading } = useAuth(); // ← was 'user', now 'player'
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
-  return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route
-        path="/student/characterSelection"
-        element={<CharacterSelection />}
-      />
-      <Route
-        path="/student/languageSelection"
-        element={<LanguageSelectionPage />}
-      />
-      <Route path="/student/instructions" element={<InstructionsPage />} />
-      <Route path="/student/village" element={<VillagePage />} />
+    return (
+        <Routes>
+            <Route path="/"        element={<HomePage />} />
+            <Route path="/login"   element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-      <Route path="/student/wordMatching" element={<WordMatchingPage />} />
-      <Route
-        path="/house"
-        element={<HousePage />}
-      />
-      <Route
-        path="/student/sentenceCompletion"
-        element={<SentenceCompletionPage />}
-      />
-      <Route path="/student/summary" element={<ViewCompletionPage />} />
+            {/* Public student flow routes — no auth needed */}
+            <Route path="/student/characterSelection" element={<CharacterSelection />} />
+            <Route path="/student/languageSelection"  element={<LanguageSelectionPage />} />
+            <Route path="/student/instructions"       element={<InstructionsPage />} />
+            <Route path="/student/village"            element={<VillagePage />} />
+            <Route path="/student/wordMatching"       element={<WordMatchingPage />} />
+            <Route path="/student/sentenceCompletion" element={<SentenceCompletionPage />} />
+            <Route path="/student/summary"            element={<ViewCompletionPage />} />
+            <Route path="/house"                      element={<HousePage />} />
 
-      <Route
-        path="/dashboard"
-        element={
-          user?.role === "student" ? (
-            <StudentDashboard />
-          ) : (
-            <Navigate to="/login" />
-          )
-        }
-      />
-      <Route
-        path="/teacher-dashboard"
-        element={
-          user?.role === "teacher" ? (
-            <TeacherDashboard />
-          ) : (
-            <Navigate to="/login" />
-          )
-        }
-      />
-    </Routes>
-  );
+            {/* Dashboard — requires player in context */}
+            <Route
+                path="/dashboard"
+                element={
+                    player
+                        ? <StudentDashboard />
+                        : <Navigate to="/login" replace />
+                }
+            />
+
+          
+        </Routes>
+    );
 }
 
 export default App;

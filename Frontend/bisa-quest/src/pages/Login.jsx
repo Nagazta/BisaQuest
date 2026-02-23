@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./Login.css";
 import "./GlobalEffects.css";
 import boy from "../assets/images/characters/Boy.png";
@@ -7,210 +7,165 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import ParticleEffects from "../components/ParticleEffects";
 import SaveProgressModal from "../components/progress/SaveProgressModal";
+import { hasExistingPlayer, getSavedPlayer } from "../utils/playerStorage";
 
 const Login = () => {
-  const navigate = useNavigate();
-  const { user, createNewUser, hardLogout, getStats } = useAuth();
-  
-  const [nickname, setNickname] = useState("");
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [showAccountModal, setShowAccountModal] = useState(false);
-  const [isNewUser, setIsNewUser] = useState(false);
+    const navigate = useNavigate();
+    const { player, createNewPlayer, startNewGame } = useAuth();
 
-  // Check for existing account on mount
-  useEffect(() => {
-    const justChoseContinue = sessionStorage.getItem('bisaquest_continue_clicked');
-    
-    if (justChoseContinue) {
-      console.log('🔄 User chose continue, waiting for AuthContext to load user...');
-      sessionStorage.removeItem('bisaquest_continue_clicked');
-      return;
-    }
-    
-    const checkForAccount = async () => {
-      const userId = localStorage.getItem('bisaquest_user_id');
-      const studentId = localStorage.getItem('bisaquest_student_id');
-      
-      if (userId && studentId && !user) {
-        console.log('🔍 Existing account detected in localStorage');
-        setShowAccountModal(true);
-        
-        try {
-          const result = await getStats();
-          if (result.success) {
-            setStats(result.data);
-            console.log('📊 Stats loaded for modal:', result.data);
-          }
-        } catch (error) {
-          console.error('Failed to load stats:', error);
+    const [nickname,         setNickname]         = useState("");
+    const [loading,          setLoading]           = useState(false);
+    const [error,            setError]             = useState("");
+    const [showAccountModal, setShowAccountModal]  = useState(false);
+    const [savedPlayer,      setSavedPlayer]       = useState(null);
+
+    // Track whether this component initiated a new player creation
+    // so the auto-navigate effect doesn't fire mid-flow
+    const isCreatingPlayer = useRef(false);
+
+    // ── UC-1.2: Check localStorage once on mount only ─────────────────────────
+    useEffect(() => {
+        if (hasExistingPlayer()) {
+            const saved = getSavedPlayer();
+            setSavedPlayer(saved);
+            setShowAccountModal(true);
+            console.log('🔍 Existing player found:', saved.nickname);
         }
-      }
-    };
-    
-    checkForAccount();
-  }, [user, getStats]);
+    }, []); // ← empty dep array: runs once, never again
 
-  // Load stats for returning players with active session
-  useEffect(() => {
-    const loadStats = async () => {
-      if (user && user.id) {
-        console.log('📊 Loading stats for user:', user.nickname);
-        try {
-          const result = await getStats();
-          if (result.success) {
-            setStats(result.data);
-            console.log('✅ Stats loaded:', result.data);
-          }
-        } catch (error) {
-          console.error('❌ Error loading stats:', error);
+    // ── Auto-navigate ONLY for returning players (not mid-creation flow) ──────
+    useEffect(() => {
+        if (player && !showAccountModal && !isCreatingPlayer.current) {
+            console.log('✅ Player loaded, navigating to dashboard');
+            navigate("/dashboard");
         }
-      }
+    }, [player, showAccountModal, navigate]);
+
+    // ── UC-1.1: Create new player ─────────────────────────────────────────────
+    const handlePlayNow = async (e) => {
+        e.preventDefault();
+        setError("");
+
+        if (!nickname.trim()) {
+            setError('Please enter your name to start playing!');
+            return;
+        }
+
+        setLoading(true);
+        isCreatingPlayer.current = true; // block auto-navigate
+
+        try {
+            const result = await createNewPlayer(nickname.trim());
+
+            if (!result.success) {
+                setError(result.error || 'Failed to create player. Please try again!');
+                isCreatingPlayer.current = false;
+                return;
+            }
+
+            console.log('✅ Player created, navigating to character selection...');
+            navigate("/student/characterSelection");
+
+        } catch (err) {
+            console.error("❌ Error starting game:", err);
+            setError("Something went wrong. Please try again!");
+            isCreatingPlayer.current = false;
+        } finally {
+            setLoading(false);
+        }
     };
-    
-    loadStats();
-  }, [user, getStats]);
 
-  // Auto-navigate for returning users only (not new users)
-  useEffect(() => {
-    if (user && !showAccountModal && !isNewUser) {
-      console.log('✅ Returning user loaded, navigating to dashboard');
-      navigate("/dashboard");
+    // ── UC-1.2: Continue — just close modal and go to dashboard ───────────────
+    const handleContinueExisting = () => {
+        console.log('✅ Continuing as:', savedPlayer?.nickname);
+        setShowAccountModal(false);
+        navigate("/dashboard");
+    };
+
+    // ── UC-1.2: New Game — wipe everything, show nickname form ────────────────
+    const handleNewGame = () => {
+        console.log('🆕 New game — clearing player data');
+        startNewGame();
+        setShowAccountModal(false);
+        setSavedPlayer(null);
+    };
+
+    // ── Save Progress Modal (UC-1.2) ──────────────────────────────────────────
+    if (showAccountModal) {
+        return (
+            <div className="login-page">
+                <div className="login-background"></div>
+                <ParticleEffects enableMouseTrail={true} />
+                <SaveProgressModal
+                    isOpen={showAccountModal}
+                    onContinue={handleContinueExisting}
+                    onNewGame={handleNewGame}
+                    onClose={() => {}}
+                />
+            </div>
+        );
     }
-  }, [user, showAccountModal, isNewUser, navigate]);
 
-  const handlePlayNow = async (e) => {
-    e.preventDefault();
-    setError("");
-    
-    if (!nickname.trim()) {
-      setError('Please enter your name to start playing!');
-      return;
-    }
-    
-    setLoading(true);
-    
-    try {
-      setIsNewUser(true); // Prevent auto-navigate useEffect from firing
-      console.log('🎮 Starting game with nickname:', nickname.trim());
-      
-      const result = await createNewUser(nickname.trim());
-      
-      if (!result.success) {
-        setError(result.error || 'Failed to create user. Please try again!');
-        console.error('❌ Failed to create user:', result.error);
-        setIsNewUser(false);
-        return;
-      }
-      
-      console.log('✅ User created successfully, navigating to character selection...');
-      navigate("/student/characterSelection");
-    } catch (error) {
-      console.error("❌ Error starting game:", error);
-      setError("Something went wrong. Please try again!");
-      setIsNewUser(false);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleContinueExisting = () => {
-    console.log('✅ User chose to continue with existing account');
-    sessionStorage.setItem('bisaquest_continue_clicked', 'true');
-    window.location.reload();
-  };
-
-  const handleCreateNewFromModal = async () => {
-    console.log('🆕 User chose to create new account from modal');
-    await hardLogout();
-    setShowAccountModal(false);
-    setStats(null);
-  };
-
-  const handleCloseModal = () => {
-    console.log('ℹ️ Modal close blocked - user must choose an option');
-  };
-
-  // If modal is showing, only render background and modal
-  if (showAccountModal) {
+    // ── UC-1.1: Enter Name screen ─────────────────────────────────────────────
     return (
-      <div className="login-page">
-        <div className="login-background"></div>
-        <ParticleEffects enableMouseTrail={true} />
-        
-        <SaveProgressModal
-          isOpen={showAccountModal}
-          onContinue={handleContinueExisting}
-          onNewGame={handleCreateNewFromModal}
-          onClose={handleCloseModal}
-        />
-      </div>
-    );
-  }
+        <div className="login-page">
+            <div className="login-background"></div>
+            <ParticleEffects enableMouseTrail={true} />
 
-  return (
-    <div className="login-page">
-      <div className="login-background"></div>
-      <ParticleEffects enableMouseTrail={true} />
-
-      <div className="character-container">
-        <img src={boy} alt="Boy Character" className="character boy-character" />
-        <img src={girl} alt="Girl Character" className="character girl-character" />
-      </div>
-
-      <div className="login-card-wrapper">
-        <div className="login-card">
-          <h1 className="login-title">BisaQuest</h1>
-          
-          {error && (
-            <div className="error-message-box">
-              {error}
-            </div>
-          )}
-          
-          <p className="welcome-subtitle">
-            Start your Cebuano learning adventure!
-          </p>
-
-          <form onSubmit={handlePlayNow} className="login-form-container">
-            <div className="form-group">
-              <label htmlFor="nickname" className="form-label">
-                Enter Your Name
-              </label>
-              <input
-                type="text"
-                id="nickname"
-                name="nickname"
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
-                className="form-input-login"
-                placeholder="Your name here"
-                maxLength={50}
-                required
-                autoFocus
-                disabled={loading}
-              />
+            <div className="character-container">
+                <img src={boy}  alt="Boy Character"  className="character boy-character" />
+                <img src={girl} alt="Girl Character" className="character girl-character" />
             </div>
 
-            <button 
-              type="submit"
-              className="login-button"
-              disabled={loading || !nickname.trim()}
-            >
-              {loading ? "Creating..." : "Play Now"}
-            </button>
-          </form>
+            <div className="login-card-wrapper">
+                <div className="login-card">
+                    <h1 className="login-title">BisaQuest</h1>
 
-          <div className="game-info">
-            <p className="info-text">
-              Your progress will be saved automatically
-            </p>
-          </div>
+                    {error && (
+                        <div className="error-message-box">{error}</div>
+                    )}
+
+                    <p className="welcome-subtitle">
+                        Start your Cebuano learning adventure!
+                    </p>
+
+                    <form onSubmit={handlePlayNow} className="login-form-container">
+                        <div className="form-group">
+                            <label htmlFor="nickname" className="form-label">
+                                Enter Your Name
+                            </label>
+                            <input
+                                type="text"
+                                id="nickname"
+                                name="nickname"
+                                value={nickname}
+                                onChange={(e) => setNickname(e.target.value)}
+                                className="form-input-login"
+                                placeholder="Your name here"
+                                maxLength={50}
+                                autoFocus
+                                disabled={loading}
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            className="login-button"
+                            disabled={loading || !nickname.trim()}
+                        >
+                            {loading ? "Creating..." : "Play Now"}
+                        </button>
+                    </form>
+
+                    <div className="game-info">
+                        <p className="info-text">
+                            Your progress will be saved automatically
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default Login;

@@ -1,4 +1,7 @@
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { updateCharacter } from "../../services/playerServices";
+import { getPlayerId, saveCharacter } from "../../utils/playerStorage";
 import Button from "../../components/Button";
 import CharacterCard from "../../components/CharacterCard";
 import ParticleEffects from "../../components/ParticleEffects";
@@ -7,89 +10,71 @@ import Girl from "../../assets/images/characters/Girl.png";
 import "../../pages/Student/CharacterSelectionPage.css";
 
 const CharacterSelectionPage = () => {
-  const navigate = useNavigate();
+    const navigate  = useNavigate();
+    const { setCharacter } = useAuth(); // updates AuthContext state
 
-  const characters = [
-    {
-      id: "male",
-      gender: "Roberto",
-      image: Boy,
-    },
-    {
-      id: "female",
-      gender: "Roberta",
-      image: Girl,
-    },
-  ];
+    const characters = [
+        { id: "roberto", gender: "Roberto", image: Boy  },
+        { id: "roberta", gender: "Roberta", image: Girl }
+    ];
 
-  const handleBack = () => {
-    navigate("/dashboard");
-  };
+    const handleBack = () => {
+        navigate("/dashboard");
+    };
 
-  const handleProceed = async (characterId) => {
-    try {
-      const student_id = localStorage.getItem("bisaquest_student_id");
+    const handleProceed = async (characterId) => {
+        try {
+            const playerId = getPlayerId();
+            if (!playerId) throw new Error("No player ID found. Please restart the app.");
 
-      if (!student_id) throw new Error("No student ID found. Please restart the app.");
+            // Save to DB
+            await updateCharacter(playerId, characterId);
 
-      const response = await fetch(
-        "http://localhost:5000/api/preferences/character",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            student_id: student_id,
-            quest_id: 1,
-            character_gender: characterId,
-          }),
+            // Cache in localStorage + update context
+            saveCharacter(characterId);
+            setCharacter(characterId);
+
+            navigate("/dashboard");
+
+        } catch (err) {
+            console.error("Error saving character:", err);
+            alert("Failed to save character. Please try again.");
         }
-      );
+    };
 
-      if (!response.ok) {
-        throw new Error("Failed to save character preference");
-      }
+    return (
+        <div className="character-selection-container">
+            <ParticleEffects enableMouseTrail={false} />
 
-      localStorage.setItem("quest_1_character", characterId);
-      navigate("/dashboard");
-    } catch (err) {
-      console.error("Error saving character:", err);
-      alert("Failed to save character. Please try again.");
-    }
-  };
+            <div className="decorative-clouds">
+                <div className="cloud cloud-1"></div>
+                <div className="cloud cloud-2"></div>
+                <div className="cloud cloud-3"></div>
+            </div>
 
-  return (
-    <div className="character-selection-container">
-      <ParticleEffects enableMouseTrail={false} />
+            <div className="main-content">
+                <Button variant="back" className="back-button" onClick={handleBack}>
+                    ← Back
+                </Button>
 
-      <div className="decorative-clouds">
-        <div className="cloud cloud-1"></div>
-        <div className="cloud cloud-2"></div>
-        <div className="cloud cloud-3"></div>
-      </div>
+                <div className="selection-content">
+                    <h2 className="selection-prompt">Please Choose a Character</h2>
 
-      <div className="main-content">
-        <Button variant="back" className="back-button" onClick={handleBack}>
-          ← Back
-        </Button>
-
-        <div className="selection-content">
-          <h2 className="selection-prompt">Please Choose a character</h2>
-
-          <div className="characters-container">
-            {characters.map((character) => (
-              <div key={character.id} className="character-option">
-                <CharacterCard
-                  character={character}
-                  onClick={() => handleProceed(character.id)}
-                />
-                <div className="character-name">{character.gender}</div>
-              </div>
-            ))}
-          </div>
+                    <div className="characters-container">
+                        {characters.map((character) => (
+                            <div key={character.id} className="character-option">
+                                <CharacterCard
+                                    character={character}
+                                    onClick={() => handleProceed(character.id)}
+                                />
+                                <div className="character-name">{character.gender}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default CharacterSelectionPage;
