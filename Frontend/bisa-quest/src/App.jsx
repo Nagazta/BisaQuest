@@ -2,24 +2,21 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "./components/HeroSection";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import StudentDashboard from "./pages/student/StudentDashboard";
+import StudentDashboard from "./pages/student/PlayerLobby";
 import CharacterSelection from "./pages/student/CharacterSelectionPage";
 import LanguageSelectionPage from "./pages/student/LanguageSelectionPage";
 import InstructionsPage from "./pages/student/InstructionsPage";
-import VillagePage from "./pages/vocabulary/VillagePage";
-import WordMatchingPage from "./pages/vocabulary/WordMatchingPage";
-import HousePage from "./pages/vocabulary/HousePage";
-import SentenceCompletionPage from "./pages/vocabulary/SentenceCompletionPage";
-import ViewCompletionPage from "./pages/student/ViewCompletionPage";
+import VillagePage from "./pages/Village/VillagePage";
+import ForestPage from "./pages/Forest/ForestPage";
+import CastlePage from "./pages/Castle/CastlePage";
+import HousePage from "./pages/Village/HousePage";
 import { useAuth } from "./context/AuthContext";
 import "./App.css";
 
 function App() {
-    const { player, loading } = useAuth(); // ← was 'user', now 'player'
+    const { player, loading } = useAuth();
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
+    if (loading) return <div>Loading...</div>;
 
     return (
         <Routes>
@@ -27,27 +24,27 @@ function App() {
             <Route path="/login"   element={<Login />} />
             <Route path="/register" element={<Register />} />
 
-            {/* Public student flow routes — no auth needed */}
+            {/* ── Player setup flow (public) ─────────────────────────────── */}
             <Route path="/student/characterSelection" element={<CharacterSelection />} />
             <Route path="/student/languageSelection"  element={<LanguageSelectionPage />} />
             <Route path="/student/instructions"       element={<InstructionsPage />} />
-            <Route path="/student/village"            element={<VillagePage />} />
-            <Route path="/student/wordMatching"       element={<WordMatchingPage />} />
-            <Route path="/student/sentenceCompletion" element={<SentenceCompletionPage />} />
-            <Route path="/student/summary"            element={<ViewCompletionPage />} />
+
+            {/* ── Environment pages (public — player_id from localStorage) ─ */}
+            <Route path="/student/village" element={<VillagePage />} />
+            <Route path="/student/forest"  element={<ForestPage />} />
+            <Route path="/student/castle"  element={<CastlePage />} />
+
+            {/* ── Game / challenge pages ─────────────────────────────────── */}
+          
             <Route path="/house"                      element={<HousePage />} />
 
-            {/* Dashboard — requires player in context */}
+            {/* ── Dashboard — requires player in context ─────────────────── */}
             <Route
                 path="/dashboard"
-                element={
-                    player
-                        ? <StudentDashboard />
-                        : <Navigate to="/login" replace />
-                }
+                element={player ? <StudentDashboard /> : <Navigate to="/login" replace />}
             />
 
-          
+           
         </Routes>
     );
 }
