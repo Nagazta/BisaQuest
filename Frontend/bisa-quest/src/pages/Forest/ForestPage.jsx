@@ -1,50 +1,22 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useCharacterPreference } from "../../hooks/useCharacterPreference.js";
-import EnvironmentPage from "../../components/EnvironmentPage.jsx";
-import Button from "../../components/Button.jsx";
-import ParticleEffects from "../../components/ParticleEffects.jsx";
+import { useCharacterPreference } from "../../hooks/useCharacterPreference";
+import EnvironmentPage from "../../components/EnvironmentPage";
+import Button from "../../components/Button";
+import ParticleEffects from "../../components/ParticleEffects";
 import { environmentApi } from "../../services/environmentServices.js";
-import { getPlayerId } from "../../utils/playerStorage.js";
-// Images — replace with actual forest NPC images when available
+import { getPlayerId } from "../../utils/playerStorage";
 import ForestBackground from "../../assets/images/environments/forest.png";
 import BoyCharacter from "../../assets/images/characters/Boy.png";
 import GirlCharacter from "../../assets/images/characters/Girl.png";
 import bgMusic from "../../assets/music/bg-music.mp3";
-import QuestStartModal from "../../components/QuestStartModal.jsx";
+import QuestStartModal from "../../components/QuestStartModal";
 import "./ForestPage.css";
 
-// ── Forest NPCs (UC-2.3) ──────────────────────────────────────────────────────
-// NPCs auto-approach the player in the Forest quest
-// Replace npcImage imports with actual forest NPC images
 const FOREST_NPCS = [
-    {
-        npcId:    "forest_npc_1",
-        name:     "Kumo",
-        x:        25,
-        y:        35,
-        character: BoyCharacter,   // swap with actual NPC image
-        showName: true,
-        quest:    "synonym_antonym",
-    },
-    {
-        npcId:    "forest_npc_2",
-        name:     "Mang Kanor",
-        x:        65,
-        y:        45,
-        character: BoyCharacter,   // swap with actual NPC image
-        showName: true,
-        quest:    "synonym_antonym",
-    },
-    {
-        npcId:    "forest_npc_3",
-        name:     "Diwata",
-        x:        50,
-        y:        70,
-        character: GirlCharacter,  // swap with actual NPC image
-        showName: true,
-        quest:    "synonym_antonym",
-    },
+    { npcId: "forest_npc_1", name: "Kumo",       x: 25, y: 35, character: BoyCharacter,  showName: true, quest: "synonym_antonym" },
+    { npcId: "forest_npc_2", name: "Mang Kanor",  x: 65, y: 45, character: BoyCharacter,  showName: true, quest: "synonym_antonym" },
+    { npcId: "forest_npc_3", name: "Diwata",      x: 50, y: 70, character: GirlCharacter, showName: true, quest: "synonym_antonym" },
 ];
 
 const ForestPage = () => {
@@ -84,7 +56,7 @@ const ForestPage = () => {
     useEffect(() => { initializeForest(); }, [refreshKey]);
 
     const initializeForest = async () => {
-        if (!playerId) { console.warn("No player_id found"); return; }
+        if (!playerId) return;
         setForestNPCs(FOREST_NPCS);
         try {
             await environmentApi.initializeEnvironment("forest", playerId);
@@ -107,9 +79,7 @@ const ForestPage = () => {
             const res    = await fetch(`${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=forest&playerId=${playerId}`);
             const result = await res.json();
             if (result.success && (result.data.progress ?? 0) >= 100) {
-                navigate("/student/viewCompletion", {
-                    state: { showSummary: true, environmentProgress: result.data.progress, summaryData: result.data, returnTo: "/student/forest", questId }
-                });
+                navigate("/student/viewCompletion", { state: { showSummary: true, environmentProgress: result.data.progress, summaryData: result.data, returnTo: "/student/forest", questId } });
             }
         } catch (e) { console.error(e); }
     };
@@ -122,7 +92,6 @@ const ForestPage = () => {
         }
     }, [location.state]);
 
-    // ── Handlers ──────────────────────────────────────────────────────────────
     const handleNPCClick    = (npc) => { setSelectedNPC(npc); setShowModal(true); };
     const handleCloseModal  = ()    => { setShowModal(false); setSelectedNPC(null); };
     const handleBackClick   = ()    => setShowExitConfirm(true);
@@ -144,11 +113,7 @@ const ForestPage = () => {
             await environmentApi.logNPCInteraction({ playerId, npcName: selectedNPC.name });
             await environmentApi.startNPCInteraction({ npcId: selectedNPC.npcId, challengeType: selectedNPC.quest, playerId });
         } catch (err) { console.error(err); }
-
-        // Navigate to synonym/antonym challenge page (create when ready)
-        navigate("/student/synonymAntonym", {
-            state: { npcId: selectedNPC.npcId, npcName: selectedNPC.name, questId, returnTo: "/student/forest" }
-        });
+        navigate("/student/synonymAntonym", { state: { npcId: selectedNPC.npcId, npcName: selectedNPC.name, questId, returnTo: "/student/forest" } });
     };
 
     if (charLoading) return <div className="forest-page-wrapper"><div className="loading-message">Loading...</div></div>;
@@ -159,14 +124,8 @@ const ForestPage = () => {
             <ParticleEffects enableMouseTrail={false} />
             <button className="music-toggle-button" onClick={toggleMute}>{isMuted ? "🔇" : "🔊"}</button>
 
-            <Button variant="back" className="back-button-forest-overlay" onClick={handleBackClick}>
-                ← Back
-            </Button>
-            {showSummaryButton && (
-                <Button variant="primary" className="view-summary-button" onClick={handleViewSummary}>
-                    View Summary
-                </Button>
-            )}
+            <Button variant="back" className="back-button-forest-overlay" onClick={handleBackClick}>← Back</Button>
+            {showSummaryButton && <Button variant="primary" className="view-summary-button" onClick={handleViewSummary}>View Summary</Button>}
 
             <EnvironmentPage
                 key={refreshKey}
@@ -178,10 +137,6 @@ const ForestPage = () => {
                 debugMode={false}
                 playerId={playerId}
             />
-
-            <div className="environment-hint-box">
-                NPCs will approach you for help! Complete all tasks to master synonym and antonym
-            </div>
 
             <div className="decorative-clouds">
                 <div className="cloud cloud-1"></div><div className="cloud cloud-2"></div><div className="cloud cloud-3"></div>
