@@ -1,49 +1,24 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useCharacterPreference } from "../../hooks/useCharacterPreference.js";
-import EnvironmentPage from "../../components/EnvironmentPage.jsx";
-import Button from "../../components/Button.jsx";
-import ParticleEffects from "../../components/ParticleEffects.jsx";
+import { useCharacterPreference } from "../../hooks/useCharacterPreference";
+import EnvironmentPage from "../../components/EnvironmentPage";
+import Button from "../../components/Button";
+import ParticleEffects from "../../components/ParticleEffects";
 import { environmentApi } from "../../services/environmentServices.js";
-import { getPlayerId } from "../../utils/playerStorage.js";
-// Images — replace with actual castle NPC images when available
+import { getPlayerId } from "../../utils/playerStorage";
 import CastleBackground from "../../assets/images/environments/castle.png";
 import BoyCharacter from "../../assets/images/characters/Boy.png";
 import GirlCharacter from "../../assets/images/characters/Girl.png";
 import bgMusic from "../../assets/music/bg-music.mp3";
-import QuestStartModal from "../../components/QuestStartModal.jsx";
+import QuestStartModal from "../../components/QuestStartModal";
 import "./CastlePage.css";
 
-// ── Castle NPCs (UC-2.4) ──────────────────────────────────────────────────────
-// NPCs are stationed inside the castle — player must approach them
+const CASTLE_HINT = "Enter the Castle! Complete all tasks to master compound words";
+
 const CASTLE_NPCS = [
-    {
-        npcId:    "castle_npc_1",
-        name:     "Sir Reynaldo",
-        x:        45,
-        y:        40,
-        character: BoyCharacter,   // swap with actual NPC image
-        showName: true,
-        quest:    "compound_words",
-    },
-    {
-        npcId:    "castle_npc_2",
-        name:     "Lady Mira",
-        x:        60,
-        y:        55,
-        character: GirlCharacter,  // swap with actual NPC image
-        showName: true,
-        quest:    "compound_words",
-    },
-    {
-        npcId:    "castle_npc_3",
-        name:     "The Archivist",
-        x:        30,
-        y:        50,
-        character: BoyCharacter,   // swap with actual NPC image
-        showName: true,
-        quest:    "compound_words",
-    },
+    { npcId: "castle_npc_1", name: "Sir Reynaldo", x: 45, y: 40, character: BoyCharacter,  showName: true, quest: "compound_words" },
+    { npcId: "castle_npc_2", name: "Lady Mira",    x: 60, y: 55, character: GirlCharacter, showName: true, quest: "compound_words" },
+    { npcId: "castle_npc_3", name: "The Archivist",x: 30, y: 50, character: BoyCharacter,  showName: true, quest: "compound_words" },
 ];
 
 const CastlePage = () => {
@@ -83,7 +58,7 @@ const CastlePage = () => {
     useEffect(() => { initializeCastle(); }, [refreshKey]);
 
     const initializeCastle = async () => {
-        if (!playerId) { console.warn("No player_id found"); return; }
+        if (!playerId) return;
         setCastleNPCs(CASTLE_NPCS);
         try {
             await environmentApi.initializeEnvironment("castle", playerId);
@@ -106,9 +81,7 @@ const CastlePage = () => {
             const res    = await fetch(`${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=castle&playerId=${playerId}`);
             const result = await res.json();
             if (result.success && (result.data.progress ?? 0) >= 100) {
-                navigate("/student/viewCompletion", {
-                    state: { showSummary: true, environmentProgress: result.data.progress, summaryData: result.data, returnTo: "/student/castle", questId }
-                });
+                navigate("/student/viewCompletion", { state: { showSummary: true, environmentProgress: result.data.progress, summaryData: result.data, returnTo: "/student/castle", questId } });
             }
         } catch (e) { console.error(e); }
     };
@@ -121,7 +94,6 @@ const CastlePage = () => {
         }
     }, [location.state]);
 
-    // ── Handlers ──────────────────────────────────────────────────────────────
     const handleNPCClick    = (npc) => { setSelectedNPC(npc); setShowModal(true); };
     const handleCloseModal  = ()    => { setShowModal(false); setSelectedNPC(null); };
     const handleBackClick   = ()    => setShowExitConfirm(true);
@@ -143,11 +115,7 @@ const CastlePage = () => {
             await environmentApi.logNPCInteraction({ playerId, npcName: selectedNPC.name });
             await environmentApi.startNPCInteraction({ npcId: selectedNPC.npcId, challengeType: selectedNPC.quest, playerId });
         } catch (err) { console.error(err); }
-
-        // Navigate to compound words challenge page (create when ready)
-        navigate("/student/compoundWords", {
-            state: { npcId: selectedNPC.npcId, npcName: selectedNPC.name, questId, returnTo: "/student/castle" }
-        });
+        navigate("/student/compoundWords", { state: { npcId: selectedNPC.npcId, npcName: selectedNPC.name, questId, returnTo: "/student/castle" } });
     };
 
     if (charLoading) return <div className="castle-page-wrapper"><div className="loading-message">Loading...</div></div>;
@@ -158,14 +126,8 @@ const CastlePage = () => {
             <ParticleEffects enableMouseTrail={false} />
             <button className="music-toggle-button" onClick={toggleMute}>{isMuted ? "🔇" : "🔊"}</button>
 
-            <Button variant="back" className="back-button-castle-overlay" onClick={handleBackClick}>
-                ← Back
-            </Button>
-            {showSummaryButton && (
-                <Button variant="primary" className="view-summary-button" onClick={handleViewSummary}>
-                    View Summary
-                </Button>
-            )}
+            <Button variant="back" className="back-button-castle-overlay" onClick={handleBackClick}>← Back</Button>
+            {showSummaryButton && <Button variant="primary" className="view-summary-button" onClick={handleViewSummary}>View Summary</Button>}
 
             <EnvironmentPage
                 key={refreshKey}
@@ -176,11 +138,8 @@ const CastlePage = () => {
                 playerCharacter={PlayerCharacter}
                 debugMode={false}
                 playerId={playerId}
+                hintMessage={CASTLE_HINT}
             />
-
-            <div className="environment-hint-box">
-                Approach the Castle Gate! Complete all tasks to master compound words
-            </div>
 
             <div className="decorative-clouds">
                 <div className="cloud cloud-1"></div><div className="cloud cloud-2"></div><div className="cloud cloud-3"></div>
