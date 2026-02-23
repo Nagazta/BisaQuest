@@ -1,22 +1,25 @@
+// hooks/useGameSession.js
+// Updated to use bisaquest_player_id instead of bisaquest_student_id
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getRandomGameSet } from '../data/moduleOneGames';
+import { getPlayerId } from '../utils/playerStorage';
 
 export const useGameSession = (npcId, gameData, challengeType, language = 'en') => {
     const navigate = useNavigate();
     const [encountersRemaining, setEncountersRemaining] = useState(3);
-    const [latestAttempt, setLatestAttempt] = useState(null);
-    const [showReplayConfirm, setShowReplayConfirm] = useState(false);
-    const [gameStarted, setGameStarted] = useState(false);
-    const [gameContent, setGameContent] = useState([]);
-    const [startTime, setStartTime] = useState(null);
+    const [latestAttempt, setLatestAttempt]             = useState(null);
+    const [showReplayConfirm, setShowReplayConfirm]     = useState(false);
+    const [gameStarted, setGameStarted]                 = useState(false);
+    const [gameContent, setGameContent]                 = useState([]);
+    const [startTime, setStartTime]                     = useState(null);
     const hasCheckedAttempt = useRef(false);
 
     const startGame = useCallback(() => {
         if (!gameData) return;
 
         const selectedSet = getRandomGameSet(npcId, language);
-
         if (selectedSet) {
             const content = selectedSet.words || selectedSet.items || selectedSet.sentences;
             if (content) {
@@ -30,13 +33,11 @@ export const useGameSession = (npcId, gameData, challengeType, language = 'en') 
 
     useEffect(() => {
         if (!gameData || hasCheckedAttempt.current) return;
-
         hasCheckedAttempt.current = true;
 
         const checkPreviousAttempt = async () => {
             try {
-                // ✅ Use bisaquest_student_id — no token needed
-                const studentId = localStorage.getItem('bisaquest_student_id');
+                const playerId = getPlayerId(); // reads bisaquest_player_id
 
                 const response = await fetch(`${import.meta.env.VITE_API_URL}/api/npc/start`, {
                     method: 'POST',
@@ -44,7 +45,7 @@ export const useGameSession = (npcId, gameData, challengeType, language = 'en') 
                     body: JSON.stringify({
                         npcId,
                         challengeType,
-                        studentId, // ✅ backend reads from req.body via flexAuth
+                        playerId // backend should read from req.body
                     })
                 });
 
@@ -60,13 +61,11 @@ export const useGameSession = (npcId, gameData, challengeType, language = 'en') 
                         startGame();
                     }
                 } else {
-                    // API responded but not success — still start game
                     startGame();
                 }
             } catch (error) {
-                // Network error — still start game so player isn't blocked
                 console.error('Error checking previous attempt:', error);
-                startGame();
+                startGame(); // never block the player
             }
         };
 

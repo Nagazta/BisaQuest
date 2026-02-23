@@ -2,16 +2,14 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes.js';
-import studentRoutes from './routes/studentRoutes.js';
-import teacherRoutes from './routes/teacherRoutes.js';
 import preferenceRoutes from './routes/preferenceRoutes.js';
 import progressRoutes from './routes/progressRoutes.js';
-import environmentRoutes from "./routes/environmentRoutes.js";
+import environmentRoutes from './routes/environmentRoutes.js';
 import npcInteractionRoutes from './routes/npcInteractionRoutes.js';
 import completionRoutes from './routes/completionRoutes.js';
 import debugRoutes from './routes/debugRoutes.js';
 import languagePreferenceRoutes from './routes/languagePreferenceRoutes.js';
-import autoUserRoutes from './routes/userRoutes.js'; 
+import playerRoutes from './routes/playerRoutes.js'; // ← replaces userRoutes + studentRoutes
 
 dotenv.config();
 
@@ -33,20 +31,18 @@ app.use(express.urlencoded({ extended: true }));
 // PUBLIC ROUTES (NO AUTHENTICATION REQUIRED)
 // ============================================
 
-// ⚠️ IMPORTANT: Auto-user routes MUST be public - no auth middleware!
-app.use('/api/auto-user', autoUserRoutes);
+// ⚠️ IMPORTANT: Player routes MUST be public - no auth middleware!
+app.use('/api/player', playerRoutes);
 
 // ============================================
 // PROTECTED ROUTES (MAY HAVE AUTH MIDDLEWARE)
 // ============================================
 
 app.use('/api/auth', authRoutes);
-app.use('/api/student', studentRoutes);
-app.use('/api/teacher', teacherRoutes);
 app.use('/api/preferences', preferenceRoutes);
 app.use('/api/language-preferences', languagePreferenceRoutes);
 app.use('/api/progress', progressRoutes);
-app.use("/api", environmentRoutes);
+app.use('/api', environmentRoutes);
 app.use('/api', npcInteractionRoutes);
 app.use('/api/completion', completionRoutes);
 app.use('/api/debug', debugRoutes);
@@ -63,12 +59,12 @@ app.get('/api/health', (req, res) => {
 // Root endpoint
 app.get('/', (req, res) => {
     res.json({
-        message: 'Adventure Quest API',
+        message: 'BisaQuest API',
         version: '1.0.0',
         endpoints: {
             health: '/api/health',
             auth: '/api/auth',
-            autoUser: '/api/auto-user', // ← ADD THIS
+            player: '/api/player',
             teacher: '/api/teacher',
             preferences: '/api/preferences',
             progress: '/api/progress',
@@ -96,11 +92,10 @@ app.use((req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`🚀 Backend server running on http://localhost:${PORT}`);
+    console.log(`🚀 BisaQuest backend running on http://localhost:${PORT}`);
     console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
-    console.log(`🎮 Auto-User API: http://localhost:${PORT}/api/auto-user`); // ← ADD THIS
-    console.log(`🔐 Auth API: http://localhost:${PORT}/api/auth`);
-    console.log(`👨‍🏫 Teacher API: http://localhost:${PORT}/api/teacher`);
-    console.log(`⚙️ Preferences API: http://localhost:${PORT}/api/preferences`);
+    console.log(`🎮 Player API:   http://localhost:${PORT}/api/player`);
+    console.log(`🔐 Auth API:     http://localhost:${PORT}/api/auth`);
+    console.log(`⚙️  Preferences:  http://localhost:${PORT}/api/preferences`);
     console.log(`📊 Progress API: http://localhost:${PORT}/api/progress`);
 });

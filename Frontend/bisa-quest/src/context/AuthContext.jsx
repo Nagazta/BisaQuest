@@ -1,219 +1,142 @@
 // context/AuthContext.jsx
-// Soft logout - navigates to login but keeps localStorage
 
 import { createContext, useContext, useState, useEffect } from 'react';
-import { autoUserService } from '../services/userServices';
+import { createPlayer, fetchPlayer, updateProgress, resetProgress as resetPlayerProgress } from '../services/playerServices'
+import { savePlayer, getSavedPlayer, hasExistingPlayer, clearPlayerData, getPlayerId } from '../utils/playerStorage';
 import LoadingScreen from '../components/LoadingScreen';
 
 const AuthContext = createContext();
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth must be used within AuthProvider');
-    }
+    if (!context) throw new Error('useAuth must be used within AuthProvider');
     return context;
 };
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [player, setPlayer] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        checkExistingUser();
+        checkExistingPlayer();
     }, []);
 
-    const checkExistingUser = async () => {
-        console.log('🔍 Checking for existing user...');
-        
+    // ── UC-1.2: Check for returning player ───────────────────────────────────
+    const checkExistingPlayer = async () => {
+        console.log('🔍 Checking for existing player...');
+
         try {
-            const userId = localStorage.getItem('bisaquest_user_id');
-            const studentId = localStorage.getItem('bisaquest_student_id');
+            if (hasExistingPlayer()) {
+                const saved = getSavedPlayer();
+                console.log('✅ Found player in localStorage, verifying with DB...');
 
-            console.log('📦 localStorage values:', { userId, studentId });
+                const result = await fetchPlayer(saved.player_id);
 
-            if (userId && studentId) {
-                console.log('✅ Found user in localStorage, fetching from Supabase...');
-                
-                const result = await autoUserService.getUser(userId);
-                
-                if (result.success) {
-                    const userData = {
-                        id: result.data.user.user_id,
-                        student_id: result.data.student.student_id,
-                        username: result.data.user.username,
-                        nickname: result.data.user.fullname,
-                        role: 'student',
-                        isAutoUser: true
-                    };
-                    
-                    setUser(userData);
-                    console.log('✅ User loaded:', userData.nickname);
-                } else {
-                    console.log('⚠️ User not found in database, clearing localStorage');
-                    localStorage.removeItem('bisaquest_user_id');
-                    localStorage.removeItem('bisaquest_student_id');
-                    setUser(null);
-                }
+                const playerData = {
+                    player_id:  result.player_id,
+                    nickname:   result.nickname,
+                    character:  result.character,
+                    progress:   result.progress_data || {}
+                };
+
+                setPlayer(playerData);
+                console.log('✅ Player loaded:', playerData.nickname);
             } else {
-                console.log('ℹ️ No existing user found in localStorage');
-                setUser(null);
+                console.log('ℹ️ No existing player found');
+                setPlayer(null);
             }
         } catch (error) {
-            console.error('❌ Check user error:', error);
-            setUser(null);
+            console.error('❌ Player check failed — clearing localStorage:', error);
+            clearPlayerData();
+            setPlayer(null);
         } finally {
             setLoading(false);
         }
     };
 
-    const createNewUser = async (nickname = 'Guest Player') => {
-        console.log('=== CREATE NEW USER START ===');
-        console.log('📝 Nickname:', nickname);
-        
+    // ── UC-1.1: Create new player ─────────────────────────────────────────────
+    const createNewPlayer = async (nickname = 'Guest Player') => {
+        console.log('=== CREATE PLAYER START ===');
+
         try {
-            console.log('📡 Calling API...');
-            const result = await autoUserService.createUser(nickname);
-            console.log('📦 API Response:', result);
-            
-            if (result.success) {
-                const { user_id, student_id, username } = result.data;
-                
-                console.log('✅ User created in database!');
-                console.log('   user_id:', user_id);
-                console.log('   student_id:', student_id);
-                
-                console.log('💾 Saving to localStorage...');
-                
-                try {
-                    localStorage.setItem('bisaquest_user_id', user_id);
-                    console.log('   ✓ Saved bisaquest_user_id');
-                    
-                    localStorage.setItem('bisaquest_student_id', student_id);
-                    console.log('   ✓ Saved bisaquest_student_id');
-                    
-                    const verify_user = localStorage.getItem('bisaquest_user_id');
-                    const verify_student = localStorage.getItem('bisaquest_student_id');
-                    
-                    console.log('🔍 Verification:');
-                    console.log('   user_id saved:', verify_user === user_id ? '✅' : '❌', verify_user);
-                    console.log('   student_id saved:', verify_student === student_id ? '✅' : '❌', verify_student);
-                    
-                    if (verify_user !== user_id || verify_student !== student_id) {
-                        console.error('❌ LOCALSTORAGE SAVE FAILED!');
-                        return { 
-                            success: false, 
-                            error: 'Failed to save to localStorage' 
-                        };
-                    }
-                    
-                } catch (storageError) {
-                    console.error('❌ localStorage.setItem failed:', storageError);
-                    return { 
-                        success: false, 
-                        error: 'Cannot save data' 
-                    };
-                }
-                
-                const userData = {
-                    id: user_id,
-                    student_id: student_id,
-                    username: username,
-                    nickname: nickname,
-                    role: 'student',
-                    isAutoUser: true
-                };
-                
-                console.log('🔧 Setting user state:', userData);
-                setUser(userData);
-                
-                console.log('✅ CREATE NEW USER COMPLETE');
-                console.log('=== END ===');
-                
-                return { success: true, data: { user_id, student_id } };
-            } else {
-                console.error('❌ API returned error:', result.error);
-                return { success: false, error: result.error };
-            }
+            const data = await createPlayer(nickname);
+
+            savePlayer({ player_id: data.player_id, nickname: data.nickname });
+
+            const playerData = {
+                player_id: data.player_id,
+                nickname:  data.nickname,
+                character: data.character,
+                progress:  data.progress_data || {}
+            };
+
+            setPlayer(playerData);
+            console.log('✅ Player created:', playerData.nickname);
+            return { success: true, data };
+
         } catch (error) {
-            console.error('❌ Create user exception:', error);
+            console.error('❌ Create player error:', error);
             return { success: false, error: error.message };
         }
     };
 
-    const updateNickname = async (newNickname) => {
-        if (!user?.id) return { success: false, error: 'No user logged in' };
+    // ── UC-1.3: Set character on player state after selection ─────────────────
+    const setCharacter = (character) => {
+        setPlayer(prev => ({ ...prev, character }));
+    };
 
-        const result = await autoUserService.updateNickname(user.id, newNickname);
-        
-        if (result.success) {
-            setUser(prev => ({ ...prev, nickname: newNickname }));
+    // ── Progress ──────────────────────────────────────────────────────────────
+    const saveProgress = async (progress_data) => {
+        if (!player?.player_id) return { success: false, error: 'No player loaded' };
+
+        try {
+            const data = await updateProgress(player.player_id, progress_data);
+            setPlayer(prev => ({ ...prev, progress: data.progress_data }));
+            return { success: true, data };
+        } catch (error) {
+            return { success: false, error: error.message };
         }
-        
-        return result;
-    };
-
-    const getProgress = async () => {
-        if (!user?.id) return { success: false, error: 'No user logged in' };
-        return await autoUserService.getProgress(user.id);
-    };
-
-    const updateProgress = async (updates) => {
-        if (!user?.id) return { success: false, error: 'No user logged in' };
-        return await autoUserService.updateProgress(user.id, updates);
-    };
-
-    const getStats = async () => {
-        if (!user?.id) return { success: false, error: 'No user logged in' };
-        return await autoUserService.getStats(user.id);
     };
 
     const resetProgress = async () => {
-        if (!user?.id) return { success: false, error: 'No user logged in' };
-        
-        const confirmReset = window.confirm(
-            'Are you sure you want to reset all your progress? This cannot be undone!'
+        if (!player?.player_id) return { success: false, error: 'No player loaded' };
+
+        const confirmed = window.confirm(
+            'Are you sure you want to reset all progress? This cannot be undone!'
         );
-        
-        if (confirmReset) {
-            const result = await autoUserService.resetProgress(user.id);
-            if (result.success) {
-                setUser(prev => ({ ...prev, overall_progress: 0 }));
-            }
-            return result;
+        if (!confirmed) return { success: false, message: 'Reset cancelled' };
+
+        try {
+            const data = await resetPlayerProgress(player.player_id);
+            setPlayer(prev => ({ ...prev, progress: {} }));
+            return { success: true, data };
+        } catch (error) {
+            return { success: false, error: error.message };
         }
-        
-        return { success: false, message: 'Reset cancelled' };
     };
 
-    // SOFT LOGOUT - Only clears user state, keeps localStorage
-    const logout = async () => {
-        console.log('👋 Soft logout - keeping localStorage for later');
-        // Don't clear localStorage - just set user to null
-        setUser(null);
-        console.log('✅ User state cleared (localStorage preserved)');
+    // ── UC-1.2: New Game — hard clear ─────────────────────────────────────────
+    const startNewGame = () => {
+        console.log('🗑️ New Game — clearing all player data');
+        clearPlayerData();
+        setPlayer(null);
     };
 
-    // HARD LOGOUT - Clears everything (for "New Game" button)
-    const hardLogout = async () => {
-        console.log('🗑️ Hard logout - clearing everything');
-        localStorage.removeItem('bisaquest_user_id');
-        localStorage.removeItem('bisaquest_student_id');
-        setUser(null);
-        console.log('✅ Everything cleared');
+    // ── Soft logout — keeps localStorage ─────────────────────────────────────
+    const logout = () => {
+        console.log('👋 Soft logout — localStorage preserved');
+        setPlayer(null);
     };
 
     const value = {
-        user,
+        player,
         loading,
-        createNewUser,
-        updateNickname,
-        getProgress,
-        updateProgress,
-        getStats,
+        createNewPlayer,
+        setCharacter,
+        saveProgress,
         resetProgress,
-        logout,        // Soft logout (keeps localStorage)
-        hardLogout,    // Hard logout (clears everything)
+        startNewGame,
+        logout
     };
 
     if (loading) {
