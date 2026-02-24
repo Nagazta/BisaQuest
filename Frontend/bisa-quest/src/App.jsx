@@ -11,6 +11,8 @@ import ForestPage from "./pages/Forest/ForestPage";
 import CastlePage from "./pages/Castle/CastlePage";
 import HousePage from "./pages/Village/HousePage";
 import { useAuth } from "./context/AuthContext";
+import DragAndDrop from "./game/DragAndDrop";
+
 import "./App.css";
 
 function App() {
@@ -37,6 +39,7 @@ function App() {
             {/* ── Game / challenge pages ─────────────────────────────────── */}
           
             <Route path="/house"                      element={<HousePage />} />
+            <Route path="/student/dragAndDrop" element={<DragAndDrop />} />
 
             {/* ── Dashboard — requires player in context ─────────────────── */}
             <Route
