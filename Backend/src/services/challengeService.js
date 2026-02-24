@@ -1,19 +1,18 @@
 import { supabase } from '../config/supabaseClient.js';
 
+// How many items to show per round (randomly picked from the full pool)
+const ITEMS_PER_ROUND = 4;
+
 class ChallengeService {
 
   // ── GET quests by NPC ─────────────────────────────────────────────────────
-  // Returns all quests for an NPC ordered by quest_id.
-  // VillagePage uses this to resolve the real quest_id before navigating
-  // to HousePage → DragAndDrop.
+  // Returns all quests that have dialogue rows (inner join filters empties).
+  // VillagePage shuffles this list and picks a random quest each time.
   async getQuestsByNpc(npcId) {
-    // return only quests that actually have dialogue steps, otherwise the
-    // front‑end will receive an ID it can’t render (it fetches dialogues when
-    // you click an NPC).  we use an inner join on npc_dialogues to filter.
     const { data, error } = await supabase
       .from('quests')
       .select(
-        'quest_id, title, content_type, game_mechanic, instructions,' +
+        'quest_id, title, content_type, game_mechanic, scene_type, instructions,' +
         'npc_dialogues!inner(dialogue_id)'
       )
       .eq('npc_id', npcId)
@@ -24,12 +23,12 @@ class ChallengeService {
   }
 
   // ── GET quest meta ────────────────────────────────────────────────────────
-  // Returns title, instructions, content_type, game_mechanic for one quest.
-  // Used by DragAndDrop.jsx to get the instructions text shown in DialogueBox.
+  // Returns title, instructions, scene_type, game_mechanic for one quest.
+  // Used by DragAndDrop.jsx to get the background + instruction text.
   async getQuestMeta(questId) {
     const { data, error } = await supabase
       .from('quests')
-      .select('quest_id, npc_id, title, content_type, game_mechanic, instructions')
+      .select('quest_id, npc_id, title, content_type, game_mechanic, scene_type, instructions')
       .eq('quest_id', questId)
       .single();
 
@@ -37,27 +36,74 @@ class ChallengeService {
     return data;
   }
 
-  // ── GET challenge_items ───────────────────────────────────────────────────
-  // Fetches all items for a quest, ordered by display_order.
-  // Works for all 4 game mode combinations since challenge_items is universal.
+  // ── GET challenge_items (random pick from pool) ───────────────────────────
+  // Each quest has 12 items in the DB.
+  // This method randomly picks ITEMS_PER_ROUND (4) of them every call,
+  // guaranteeing at least 1 item per zone so the game is always solvable.
   //
-  //  drag_drop        → uses label + correct_zone
-  //  item_association → uses label + is_correct
-  //  synonym_antonym  → uses word_left + word_right + is_correct
-  //  compound_words   → uses word_left + word_right + is_correct
+  // Two levels of randomness:
+  //   ① 1 item randomly picked from EACH zone (guarantees solvability)
+  //   ② Remaining slots filled randomly from the leftover pool
+  //   ③ Final selection shuffled so screen positions vary each round
+  //
+  // Works universally for all game mechanics:
+  //   drag_drop        → label + correct_zone
+  //   item_association → label + is_correct
+  //   synonym_antonym  → word_left + word_right + is_correct
+  //   compound_words   → word_left + word_right + is_correct
   async getChallengeItems(questId) {
     const { data, error } = await supabase
       .from('challenge_items')
-      .select('item_id, quest_id, label, image_key, word_left, word_right, correct_zone, is_correct, display_order')
+      .select(
+        'item_id, quest_id, label, image_key, word_left, word_right,' +
+        'correct_zone, is_correct, display_order'
+      )
       .eq('quest_id', questId)
       .order('display_order');
 
     if (error) throw error;
-    return data;
+    if (!data || data.length === 0) return [];
+
+    // If pool is smaller than or equal to items per round, return all shuffled
+    if (data.length <= ITEMS_PER_ROUND) {
+      return data.sort(() => Math.random() - 0.5);
+    }
+
+    // ① Group items by zone
+    const byZone  = {};
+    for (const item of data) {
+      const z = item.correct_zone;
+      if (!byZone[z]) byZone[z] = [];
+      byZone[z].push(item);
+    }
+
+    const selected = [];
+    const usedIds  = new Set();
+
+    // ② Pick 1 random item from each zone (guarantees every zone has an answer)
+    for (const zone of Object.keys(byZone)) {
+      const pool = byZone[zone];
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      selected.push(pick);
+      usedIds.add(pick.item_id);
+      // Stop early if we've already hit the round limit
+      if (selected.length >= ITEMS_PER_ROUND) break;
+    }
+
+    // ③ Fill remaining slots from the rest of the pool (random order)
+    const remaining = data
+      .filter(item => !usedIds.has(item.item_id))
+      .sort(() => Math.random() - 0.5);
+
+    const needed = ITEMS_PER_ROUND - selected.length;
+    selected.push(...remaining.slice(0, needed));
+
+    // ④ Final shuffle so items appear in random positions on screen
+    return selected.sort(() => Math.random() - 0.5);
   }
 
   // ── GET npc_dialogues ─────────────────────────────────────────────────────
-  // Fetches ordered dialogue steps for the NPC dialogue screen (UC-3.1).
+  // Fetches ordered dialogue steps for the NPC intro screen (UC-3.1).
   async getDialogues(questId) {
     const { data, error } = await supabase
       .from('npc_dialogues')
@@ -70,9 +116,9 @@ class ChallengeService {
   }
 
   // ── POST submit challenge ─────────────────────────────────────────────────
-  // Called on challenge completion. Writes to:
-  //   1. player_npc_progress  — upsert (best score, encounters, completion flag)
-  //   2. player_quest_attempts — insert (immutable attempt log)
+  // Called when player clicks Complete. Writes to:
+  //   1. player_npc_progress  — upsert (best score, encounters, completion)
+  //   2. player_quest_attempts — insert (immutable log)
   //   3. player_environment_progress — recalculated automatically
   async submitChallenge({ playerId, questId, npcId, score, maxScore, passed }) {
     const now = new Date().toISOString();
@@ -116,7 +162,7 @@ class ChallengeService {
       if (insertError) throw insertError;
     }
 
-    // 2. Insert attempt log (always — never update)
+    // 2. Insert attempt log (always — never update existing)
     const { data: attempt, error: attemptError } = await supabase
       .from('player_quest_attempts')
       .insert({
@@ -148,7 +194,6 @@ class ChallengeService {
       .eq('npc_id', npcId)
       .single();
 
-    // PGRST116 = row not found — fine, just means no attempts yet
     if (error && error.code !== 'PGRST116') throw error;
     return data || null;
   }
@@ -182,12 +227,11 @@ class ChallengeService {
     return data;
   }
 
-  // ── INTERNAL: recalculate environment completion % ────────────────────────
-  // Called automatically after every submitChallenge.
-  // Counts completed NPCs in the environment and updates player_environment_progress.
-  // Flips is_unlocked on the next environment when completion reaches 100%.
+  // ── INTERNAL: recalculate environment completion % ───────────────────────
+  // Called after every submitChallenge. Counts completed NPCs in the
+  // environment, updates player_environment_progress, and unlocks the
+  // next environment at 100%.
   async recalculateEnvironmentProgress(playerId, npcId) {
-    // Get the environment this NPC belongs to
     const { data: npc, error: npcError } = await supabase
       .from('npcs')
       .select('environment_name')
@@ -197,16 +241,14 @@ class ChallengeService {
     if (npcError) throw npcError;
     const environmentName = npc.environment_name;
 
-    // Get all NPC IDs in this environment
     const { data: envNPCs } = await supabase
       .from('npcs')
       .select('npc_id')
       .eq('environment_name', environmentName);
 
-    const totalNPCs   = envNPCs?.length || 1;
-    const envNpcIds   = envNPCs?.map(n => n.npc_id) || [];
+    const totalNPCs  = envNPCs?.length || 1;
+    const envNpcIds  = envNPCs?.map(n => n.npc_id) || [];
 
-    // Count how many the player has completed
     const { data: completedNPCs } = await supabase
       .from('player_npc_progress')
       .select('npc_id')
@@ -219,7 +261,6 @@ class ChallengeService {
     const isCompleted    = percentage === 100;
     const now            = new Date().toISOString();
 
-    // Upsert player_environment_progress
     const { error: upsertError } = await supabase
       .from('player_environment_progress')
       .upsert({
@@ -232,7 +273,6 @@ class ChallengeService {
 
     if (upsertError) throw upsertError;
 
-    // If just completed, unlock the next environment
     if (isCompleted) {
       const UNLOCK_ORDER = { village: 'forest', forest: 'castle' };
       const nextEnv      = UNLOCK_ORDER[environmentName];
