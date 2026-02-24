@@ -7,9 +7,15 @@ class ChallengeService {
   // VillagePage uses this to resolve the real quest_id before navigating
   // to HousePage → DragAndDrop.
   async getQuestsByNpc(npcId) {
+    // return only quests that actually have dialogue steps, otherwise the
+    // front‑end will receive an ID it can’t render (it fetches dialogues when
+    // you click an NPC).  we use an inner join on npc_dialogues to filter.
     const { data, error } = await supabase
       .from('quests')
-      .select('quest_id, title, content_type, game_mechanic, instructions')
+      .select(
+        'quest_id, title, content_type, game_mechanic, instructions,' +
+        'npc_dialogues!inner(dialogue_id)'
+      )
       .eq('npc_id', npcId)
       .order('quest_id');
 

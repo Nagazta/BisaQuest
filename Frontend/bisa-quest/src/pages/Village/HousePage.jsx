@@ -9,7 +9,7 @@ import "./HousePage.css";
 
 // Fallback dialogue used only when API is unavailable
 const FALLBACK_STEPS = [
-  "Hi! I was supposed to clean the living room before my mom comes home. Can you help me clean up?",
+  "Hi....! I was supposed to clean the living room before my mom comes home. Can you help me clean up?",
   "I'm using a broom and dustpan to sweep the floor, a mop to make it shiny, and rags to wipe the cabinet!",
   "Each tool has a name in Cebuano! I will show you pictures and you have to guess what each cleaning tool is called.",
   "Did you understand the task? Are you ready to start?",
@@ -30,7 +30,10 @@ const HousePage = () => {
   const [steps,   setSteps]   = useState([]);
   const [loading, setLoading] = useState(true);
   const [step,    setStep]    = useState(0);
-console.log("RENDER — loading:", loading, "steps:", steps, "step:", step, "current:", steps[step]);
+
+  // debug helpers
+  console.log("HousePage questId", questId, "API", API);
+  console.log("RENDER — loading:", loading, "steps:", steps, "step:", step, "current:", steps[step]);
 
   useEffect(() => {
     if (!questId) {
@@ -46,8 +49,49 @@ console.log("RENDER — loading:", loading, "steps:", steps, "step:", step, "cur
         const res = await fetch(`${API}/api/challenge/quest/${questId}/dialogues`);
         if (!res.ok) throw new Error(`Dialogue fetch failed: ${res.status}`);
         const { data } = await res.json();
-        // data is ordered by step_order from the DB
-        setSteps(data.map(row => row.dialogue_text));
+
+        // if the returned array is empty, attempt to find another quest with
+        // actual dialogues and switch to it rather than leaving the user staring
+        // at a blank dialogue box.
+        if (Array.isArray(data) && data.length === 0) {
+          console.warn(`[HousePage] no dialogues for quest ${questId}`);
+          // fetch all quests for this NPC, then probe each one until we find
+          // one that has at least one dialogue step.  we deliberately do this
+          // AFTER loading so we can still show the fallback text briefly.
+          try {
+            const listRes = await fetch(`${API}/api/challenge/npc/${npcId}/quest`);
+            if (listRes.ok) {
+              let { data: quests } = await listRes.json();
+              // randomize the order so we don’t always head to the same next quest
+              if (Array.isArray(quests) && quests.length > 1) {
+                for (let i = quests.length - 1; i > 0; i--) {
+                  const j = Math.floor(Math.random() * (i + 1));
+                  [quests[i], quests[j]] = [quests[j], quests[i]];
+                }
+              }
+              for (let q of quests) {
+                if (q.quest_id === questId) continue;
+                const chk = await fetch(`${API}/api/challenge/quest/${q.quest_id}/dialogues`);
+                if (!chk.ok) continue;
+                const { data: chkData } = await chk.json();
+                if (Array.isArray(chkData) && chkData.length > 0) {
+                  console.log(`[HousePage] redirecting to quest ${q.quest_id} with content`);
+                  navigate('/house', {
+                    state: { ...location.state, questId: q.quest_id }
+                  });
+                  return; // leave early - navigation will reload page
+                }
+              }
+            }
+          } catch (err2) {
+            console.error('[HousePage] error while searching for alternate quest', err2);
+          }
+          // we didn't find any other quest; fallback steps will be used below
+          setSteps(FALLBACK_STEPS);
+        } else {
+          // data is ordered by step_order from the DB
+          setSteps(data.map(row => row.dialogue_text));
+        }
       } catch (err) {
         console.error("[HousePage] Dialogue load error:", err);
         // Silently fall back — player still gets a dialogue
@@ -92,6 +136,13 @@ console.log("RENDER — loading:", loading, "steps:", steps, "step:", step, "cur
         <div className="house-dialogue">
           {loading ? (
             <DialogueBox title={npcName} text="..." showNextButton={false} />
+          ) : steps.length === 0 ? (
+            // nothing returned from the API
+            <DialogueBox
+              title={npcName}
+              text="(No dialogue available – check questId or database)"
+              showNextButton={false}
+            />
           ) : (
             <DialogueBox
               title={npcName}

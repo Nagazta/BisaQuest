@@ -157,10 +157,45 @@ const VillagePage = () => {
         try {
             const res = await fetch(`${API}/api/challenge/npc/${dbNpcId}/quest`);
             if (res.ok) {
-                const { data } = await res.json();
-                // data is an array of quests for this NPC — pick the first incomplete one,
-                // or just the first one if all are done (replay mode)
-                resolvedQuestId = data?.[0]?.quest_id ?? null;
+                const body = await res.json();
+                console.log("[VillagePage] quest list response", body);
+                let { data } = body;
+
+                // shuffle the quest list so each click starts with a random entry.
+                // Fisher–Yates shuffle in-place.
+                if (Array.isArray(data) && data.length > 1) {
+                    for (let i = data.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [data[i], data[j]] = [data[j], data[i]];
+                    }
+                }
+
+                // find the first quest that actually has dialogue rows (otherwise the
+                // game will show an empty screen).  this is a defensive measure so
+                // the Village UI doesn’t hand the user a blank page when the DB is
+                // missing content.
+                if (Array.isArray(data) && data.length) {
+                    for (let q of data) {
+                        // only check the first few quests to avoid long delays
+                        const check = await fetch(`${API}/api/challenge/quest/${q.quest_id}/dialogues`);
+                        if (check.ok) {
+                            const json = await check.json();
+                            if (Array.isArray(json.data) && json.data.length > 0) {
+                                resolvedQuestId = q.quest_id;
+                                break;
+                            }
+                        }
+                    }
+
+                    // if we still didn’t find any, fall back to the first entry and
+                    // warn the developer so they can seed the database.
+                    if (!resolvedQuestId) {
+                        resolvedQuestId = data[0].quest_id;
+                        console.warn('[VillagePage] no quests with dialogues; using', resolvedQuestId);
+                    }
+                }
+            } else {
+                console.warn("[VillagePage] quest fetch failed", res.status);
             }
         } catch (err) {
             console.error("[VillagePage] Could not fetch questId:", err);

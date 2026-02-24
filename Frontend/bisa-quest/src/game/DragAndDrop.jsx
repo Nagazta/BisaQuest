@@ -49,6 +49,9 @@ const DragAndDrop = () => {
   const playerId  = getPlayerId();
   const API       = import.meta.env.VITE_API_URL || "";
 
+  // debug
+  console.log("DragAndDrop: questId", questId, "API", API);
+
   // ── Fetched data ──────────────────────────────────────────────────────────
   const [items,        setItems]        = useState([]);
   const [dropZones,    setDropZones]    = useState([]);
@@ -238,6 +241,20 @@ const DragAndDrop = () => {
       <div className="dad-container">
         <img src={houseBackground} alt="House" className="dad-bg" draggable={false} />
         <div className="dad-loading"><span>Gi-load ang dula...</span></div>
+      </div>
+    </div>
+  );
+
+  // show placeholder message if we loaded but received no items
+  if (!loading && items.length === 0 && !fetchError) return (
+    <div className="dad-wrapper">
+      <div className="dad-container">
+        <img src={houseBackground} alt="House" className="dad-bg" draggable={false} />
+        <div className="dad-error">
+          <p>Walay items nga nakuha sa dula. Siguroa nga ang questId sakto ug
+             adunay datos sa backend.</p>
+          <Button variant="back" onClick={handleBack}>← Balik</Button>
+        </div>
       </div>
     </div>
   );
