@@ -2,9 +2,6 @@ import challengeService from '../services/challengeService.js';
 
 class ChallengeController {
 
-  // ── GET /npc/:npcId/quest ─────────────────────────────────────────────────
-  // Returns all quests for an NPC ordered by quest_id.
-  // VillagePage calls this to resolve the real quest_id before navigating.
   async getQuestsByNpc(req, res) {
     try {
       const { npcId } = req.params;
@@ -15,9 +12,6 @@ class ChallengeController {
     }
   }
 
-  // ── GET /quest/:questId ───────────────────────────────────────────────────
-  // Returns quest meta — title, instructions, content_type, game_mechanic.
-  // Used by DragAndDrop.jsx on load to get the instructions text.
   async getQuestMeta(req, res) {
     try {
       const { questId } = req.params;
@@ -29,8 +23,9 @@ class ChallengeController {
   }
 
   // ── GET /quest/:questId/items ─────────────────────────────────────────────
-  // Returns all challenge_items for the quest ordered by display_order.
-  // Used by DragAndDrop.jsx and ItemAssociation.jsx on page load.
+  // Optional query param: ?randomize=false
+  //   drag_drop        → omit param (default true)  → picks 4 random from pool
+  //   item_association → pass ?randomize=false       → returns ALL items with round_number
   async getChallengeItems(req, res) {
     try {
       const { questId } = req.params;
@@ -39,16 +34,16 @@ class ChallengeController {
         return res.status(400).json({ success: false, message: 'questId is required' });
       }
 
-      const data = await challengeService.getChallengeItems(questId);
+      // Default true; ItemAssociation.jsx passes ?randomize=false
+      const randomize = req.query.randomize !== 'false';
+
+      const data = await challengeService.getChallengeItems(questId, randomize);
       res.json({ success: true, data });
     } catch (error) {
       res.status(500).json({ success: false, message: 'Failed to fetch challenge items', error: error.message });
     }
   }
 
-  // ── GET /quest/:questId/dialogues ─────────────────────────────────────────
-  // Returns ordered dialogue steps for the NPC dialogue screen (UC-3.1).
-  // Used by HousePage on load.
   async getDialogues(req, res) {
     try {
       const { questId } = req.params;
@@ -64,10 +59,6 @@ class ChallengeController {
     }
   }
 
-  // ── POST /quest/submit ────────────────────────────────────────────────────
-  // Called when player clicks Complete after finishing a challenge.
-  // Writes to player_npc_progress, player_quest_attempts, and recalculates
-  // player_environment_progress.
   async submitChallenge(req, res) {
     try {
       const { playerId, questId, npcId, score, maxScore, passed } = req.body;
@@ -94,12 +85,10 @@ class ChallengeController {
     }
   }
 
-  // ── GET /progress/npc/:npcId ──────────────────────────────────────────────
-  // Returns player_npc_progress for one NPC.
   async getNPCProgress(req, res) {
     try {
-      const { npcId }   = req.params;
-      const playerId    = req.user?.player_id || req.query.playerId;
+      const { npcId } = req.params;
+      const playerId  = req.user?.player_id || req.query.playerId;
 
       const data = await challengeService.getNPCProgress(playerId, npcId);
       res.json({ success: true, data });
@@ -108,8 +97,6 @@ class ChallengeController {
     }
   }
 
-  // ── GET /progress/environment/:environmentName ────────────────────────────
-  // Returns player_environment_progress for one environment.
   async getEnvironmentProgress(req, res) {
     try {
       const { environmentName } = req.params;
@@ -122,8 +109,6 @@ class ChallengeController {
     }
   }
 
-  // ── GET /progress/history ─────────────────────────────────────────────────
-  // Returns player_quest_attempts rows for the player (most recent first).
   async getAttemptHistory(req, res) {
     try {
       const playerId              = req.user?.player_id || req.query.playerId;

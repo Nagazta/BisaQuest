@@ -14,9 +14,6 @@ import bgMusic from "../../assets/music/bg-music.mp3";
 import QuestStartModal from "../../components/QuestStartModal";
 import "./VillagePage.css";
 
-// Maps the NPC's npc_id (as stored in the DB) to their DB identifier.
-// This is what gets sent to GET /api/challenge/npc/:npcId/quest
-// to look up which quest_id belongs to this NPC.
 const NPC_DB_ID = {
     ligaya: "village_npc_2",
 };
@@ -69,7 +66,7 @@ const VillagePage = () => {
         setVillageNPCs([
             {
                 npcId:     "ligaya",
-                dbNpcId:   "village_npc_2",   // ← matches npcs.npc_id in Supabase
+                dbNpcId:   "village_npc_2",
                 name:      "Ligaya",
                 x:         40,
                 y:         41,
@@ -144,58 +141,66 @@ const VillagePage = () => {
         } catch (e) { console.error(e); }
     };
 
-    // ── Start quest — fetches real questId from DB before navigating ──────────
+    // ── Start quest ───────────────────────────────────────────────────────────
+    // Fetches ALL quests for the NPC, splits them by game_mechanic, then picks
+    // a random matching pair (drag_drop index N ↔ item_association index N).
+    // Both IDs are passed to DragAndDrop so it can hand iaQuestId to
+    // ItemAssociation after the player completes Step 1.
     const handleStartQuest = async () => {
         if (!selectedNPC || !playerId) return;
 
         setQuestLoading(true);
 
-        // Use the DB npc_id to fetch the real quest_id for this NPC
         const dbNpcId = selectedNPC.dbNpcId || NPC_DB_ID[selectedNPC.npcId] || selectedNPC.npcId;
 
-        let resolvedQuestId = null;
+        let resolvedQuestId   = null;   // drag_drop quest ID   (Step 1)
+        let resolvedIaQuestId = null;   // item_association ID  (Step 2)
+
         try {
             const res = await fetch(`${API}/api/challenge/npc/${dbNpcId}/quest`);
             if (res.ok) {
-                const body = await res.json();
-                console.log("[VillagePage] quest list response", body);
-                let { data } = body;
+                const body       = await res.json();
+                const { data }   = body;
 
-                // shuffle the quest list so each click starts with a random entry.
-                // Fisher–Yates shuffle in-place.
-                if (Array.isArray(data) && data.length > 1) {
-                    for (let i = data.length - 1; i > 0; i--) {
-                        const j = Math.floor(Math.random() * (i + 1));
-                        [data[i], data[j]] = [data[j], data[i]];
-                    }
-                }
-
-                // find the first quest that actually has dialogue rows (otherwise the
-                // game will show an empty screen).  this is a defensive measure so
-                // the Village UI doesn’t hand the user a blank page when the DB is
-                // missing content.
                 if (Array.isArray(data) && data.length) {
-                    for (let q of data) {
-                        // only check the first few quests to avoid long delays
-                        const check = await fetch(`${API}/api/challenge/quest/${q.quest_id}/dialogues`);
+
+                    // ── Split by mechanic ─────────────────────────────────────
+                    const ddQuests = data.filter(q => q.game_mechanic === "drag_drop");
+                    const iaQuests = data.filter(q => q.game_mechanic === "item_association");
+
+                    // ── Pick a random index that has dialogue rows ─────────────
+                    // Shuffle the drag_drop list first, then find the first entry
+                    // that has dialogue (defensive check against empty DB rows).
+                    const shuffled = [...ddQuests].sort(() => Math.random() - 0.5);
+
+                    for (const ddQuest of shuffled) {
+                        const check = await fetch(`${API}/api/challenge/quest/${ddQuest.quest_id}/dialogues`);
                         if (check.ok) {
                             const json = await check.json();
                             if (Array.isArray(json.data) && json.data.length > 0) {
-                                resolvedQuestId = q.quest_id;
+                                resolvedQuestId = ddQuest.quest_id;
+
+                                // Find the matching IA quest at the same position
+                                // (both lists are ordered by quest_id so index aligns theme)
+                                const ddIndex = ddQuests.indexOf(ddQuest);
+                                resolvedIaQuestId = iaQuests[ddIndex]?.quest_id ?? iaQuests[0]?.quest_id ?? null;
                                 break;
                             }
                         }
                     }
 
-                    // if we still didn’t find any, fall back to the first entry and
-                    // warn the developer so they can seed the database.
+                    // Fallback — no dialogue found, just use first of each
                     if (!resolvedQuestId) {
-                        resolvedQuestId = data[0].quest_id;
-                        console.warn('[VillagePage] no quests with dialogues; using', resolvedQuestId);
+                        resolvedQuestId   = ddQuests[0]?.quest_id ?? data[0].quest_id;
+                        resolvedIaQuestId = iaQuests[0]?.quest_id ?? null;
+                        console.warn("[VillagePage] No quests with dialogues found. Using first available.");
                     }
+
+                    console.log("[VillagePage] drag_drop quest →", resolvedQuestId);
+                    console.log("[VillagePage] item_association quest →", resolvedIaQuestId);
                 }
             } else {
-                console.warn("[VillagePage] quest fetch failed", res.status);
+                console.warn("[VillagePage] Quest fetch failed:", res.status);
             }
         } catch (err) {
             console.error("[VillagePage] Could not fetch questId:", err);
@@ -204,15 +209,17 @@ const VillagePage = () => {
         setQuestLoading(false);
 
         const state = {
-            questId:  resolvedQuestId,   // ← real DB quest_id, not hardcoded 1
-            npcId:    dbNpcId,           // ← "village_npc_2", matches DB
-            npcName:  selectedNPC.name,
-            returnTo: "/student/village",
+            questId:   resolvedQuestId,    // drag_drop quest   → used by DragAndDrop
+            iaQuestId: resolvedIaQuestId,  // item_assoc quest  → passed through to ItemAssociation
+            npcId:     dbNpcId,
+            npcName:   selectedNPC.name,
+            returnTo:  "/student/village",
         };
 
         if      (selectedNPC.quest === "word_matching")       navigate("/student/wordMatching",       { state });
         else if (selectedNPC.quest === "sentence_completion") navigate("/student/sentenceCompletion", { state });
-        else if (selectedNPC.quest === "word_association")    navigate("/house",                      { state });
+        else if (selectedNPC.quest === "word_association")    navigate("/student/dragAndDrop",        { state });
+        //                                                              ↑ was "/house" — updated to match App.jsx route
     };
 
     if (langLoading || charLoading) return (

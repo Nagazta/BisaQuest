@@ -1,22 +1,22 @@
 // ─────────────────────────────────────────────────────────────────────────────
-//  DragAndDrop.jsx  —  Main drag-and-drop game screen
+//  DragAndDrop.jsx  —  Step 1 of 2
+//  On complete → navigates to ItemAssociation passing iaQuestId (the paired
+//  item_association quest for the same theme).
 //
-//  Key design decision — ALL scene zones are always rendered as drop targets:
-//    • Players can drop items on any zone at any time
-//    • Only the correct zone for that item marks it as correct
-//    • This prevents 50/50 guessing when only 2 zones are active
-//    • The full set of zones per scene is driven by SCENE_ZONES in constants
+//  The caller (VillagePage) must pass BOTH:
+//    questId    — the drag_drop quest ID
+//    iaQuestId  — the paired item_association quest ID
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-import Button      from "../components/Button";
-import DialogueBox from "../components/instructions/DialogueBox";
-import DraggableItem from "./components/DraggableItem";
-import DropZone      from "./components/DropZone";
+import Button           from "../components/Button";
+import DialogueBox      from "../components/instructions/DialogueBox";
+import DraggableItem    from "./components/DraggableItem";
+import DropZone         from "./components/DropZone";
 import ZoneDebugOverlay from "./components/ZoneDebugOverlay";
-import LigayaCharacter from "../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
+import LigayaCharacter  from "../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
 
 import { getPlayerId, saveNPCProgress } from "../utils/playerStorage";
 import {
@@ -25,7 +25,7 @@ import {
   ZONE_REGISTRY,
   DEFAULT_BACKGROUND,
   START_POSITIONS,
-  FALLBACK_ITEMS, 
+  FALLBACK_ITEMS,
 } from "./dragDropConstants";
 import { buildAllDropZones, getDialogueText, mapRawItems } from "./dragDropUtils";
 import "./DragAndDrop.css";
@@ -36,21 +36,22 @@ const DragAndDrop = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const questId  = location.state?.questId  || null;
-  const npcId    = location.state?.npcId    || "village_npc_2";
-  const npcName  = location.state?.npcName  || "Ligaya";
-  const returnTo = location.state?.returnTo || "/student/village";
-  const playerId = getPlayerId();
-  const API      = import.meta.env.VITE_API_URL || "";
+  const questId   = location.state?.questId   || null;
+  const iaQuestId = location.state?.iaQuestId || null;  // paired IA quest
+  const npcId     = location.state?.npcId     || "village_npc_2";
+  const npcName   = location.state?.npcName   || "Ligaya";
+  const returnTo  = location.state?.returnTo  || "/student/village";
+  const API       = import.meta.env.VITE_API_URL || "";
 
   // ── UI state ──────────────────────────────────────────────────────────────
   const [debugMode, setDebugMode] = useState(false);
 
   // ── Quest / game data ─────────────────────────────────────────────────────
   const [items,        setItems]        = useState([]);
-  const [dropZones,    setDropZones]    = useState([]);  // ALL scene zones, always
+  const [dropZones,    setDropZones]    = useState([]);
   const [background,   setBackground]   = useState(DEFAULT_BACKGROUND);
   const [instructions, setInstructions] = useState(null);
+  const [sceneType,    setSceneType]    = useState("living_room");
   const [loading,      setLoading]      = useState(true);
   const [fetchError,   setFetchError]   = useState(null);
 
@@ -58,7 +59,7 @@ const DragAndDrop = () => {
   const [placements, setPlacements] = useState({});
   const [dragging,   setDragging]   = useState(null);
   const [dragPos,    setDragPos]    = useState({ x: 0, y: 0 });
-  const [activeZone, setActiveZone] = useState(null);   // zone cursor is over
+  const [activeZone, setActiveZone] = useState(null);
   const [feedback,   setFeedback]   = useState(null);
   const [shakeItem,  setShakeItem]  = useState(null);
   const [completed,  setCompleted]  = useState(false);
@@ -66,21 +67,18 @@ const DragAndDrop = () => {
   const feedbackTimer = useRef(null);
   const containerRef  = useRef(null);
 
-  const allCorrect = items.length > 0 &&
+  const allCorrect     = items.length > 0 &&
     items.every(item => placements[item.id]?.correct === true);
-
-  // ── Derive which zone ids are "correct" for this quest (debug colouring) ──
   const correctZoneIds = [...new Set(items.map(i => i.zone))];
 
   // ── Load quest data ───────────────────────────────────────────────────────
   useEffect(() => {
     if (!questId) {
-      // Dev fallback — Quest 1: Cleaning Tools (mirrors bisaquest_seed_v3.sql)
       console.warn("[DragAndDrop] No questId — using fallback data.");
       setItems(FALLBACK_ITEMS);
-      // Always show ALL living_room zones even in fallback
       setDropZones(buildAllDropZones("living_room", SCENE_ZONES, ZONE_REGISTRY));
       setBackground(SCENE_BACKGROUNDS.living_room);
+      setSceneType("living_room");
       setLoading(false);
       return;
     }
@@ -91,32 +89,21 @@ const DragAndDrop = () => {
           fetch(`${API}/api/challenge/quest/${questId}`),
           fetch(`${API}/api/challenge/quest/${questId}/items`),
         ]);
-
         if (!questRes.ok) throw new Error(`Quest fetch failed: ${questRes.status}`);
         if (!itemsRes.ok) throw new Error(`Items fetch failed: ${itemsRes.status}`);
 
         const { data: questMeta } = await questRes.json();
         const { data: rawItems }  = await itemsRes.json();
 
-        const sceneType = questMeta?.scene_type || "living_room";
-
-        // Background
-        const sceneBg = SCENE_BACKGROUNDS[sceneType] || DEFAULT_BACKGROUND;
-        if (!SCENE_BACKGROUNDS[sceneType]) {
-          console.warn(`[DragAndDrop] No background for scene_type="${sceneType}". Using default.`);
-        }
-        setBackground(sceneBg);
-
-        // Instructions
+        const scene = questMeta?.scene_type || "living_room";
+        setSceneType(scene);
+        setBackground(SCENE_BACKGROUNDS[scene] || DEFAULT_BACKGROUND);
         setInstructions(questMeta?.instructions || null);
 
-        // Items
-        setItems(mapRawItems(rawItems, START_POSITIONS));
-
-        // ── KEY CHANGE: ALL zones for the scene, not just the quest's zones ──
-        // Players see every zone and must figure out the correct one — no guessing
-        setDropZones(buildAllDropZones(sceneType, SCENE_ZONES, ZONE_REGISTRY));
-
+        // DragAndDrop only uses correct items (is_correct = true)
+        const correctOnly = rawItems.filter(r => r.is_correct !== false);
+        setItems(mapRawItems(correctOnly, START_POSITIONS));
+        setDropZones(buildAllDropZones(scene, SCENE_ZONES, ZONE_REGISTRY));
         setLoading(false);
       } catch (err) {
         console.error("[DragAndDrop] Load error:", err);
@@ -128,7 +115,6 @@ const DragAndDrop = () => {
     load();
   }, [questId, API]);
 
-  // Reset placements whenever items change (new quest loaded)
   useEffect(() => {
     if (!items.length) return;
     setPlacements(
@@ -136,9 +122,9 @@ const DragAndDrop = () => {
     );
   }, [items]);
 
-  // ── Pointer event handlers ────────────────────────────────────────────────
+  // ── Pointer handlers ──────────────────────────────────────────────────────
   const handleDragStart = useCallback((itemId, e) => {
-    if (placements[itemId]?.correct === true) return;  // locked in, can't re-drag
+    if (placements[itemId]?.correct === true) return;
     e.preventDefault();
     setDragging(itemId);
     setDragPos({ x: e.clientX, y: e.clientY });
@@ -147,54 +133,39 @@ const DragAndDrop = () => {
   const handlePointerMove = useCallback((e) => {
     if (!dragging) return;
     setDragPos({ x: e.clientX, y: e.clientY });
-
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
-
     const px = ((e.clientX - rect.left) / rect.width)  * 100;
     const py = ((e.clientY - rect.top)  / rect.height) * 100;
     const hovered = dropZones.find(z =>
-      px >= z.x && px <= z.x + z.w &&
-      py >= z.y && py <= z.y + z.h
+      px >= z.x && px <= z.x + z.w && py >= z.y && py <= z.y + z.h
     );
     setActiveZone(hovered?.id || null);
   }, [dragging, dropZones]);
 
   const handlePointerUp = useCallback((e) => {
     if (!dragging) return;
-
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) { setDragging(null); return; }
-
     const px = ((e.clientX - rect.left) / rect.width)  * 100;
     const py = ((e.clientY - rect.top)  / rect.height) * 100;
     const targetZone = dropZones.find(z =>
-      px >= z.x && px <= z.x + z.w &&
-      py >= z.y && py <= z.y + z.h
+      px >= z.x && px <= z.x + z.w && py >= z.y && py <= z.y + z.h
     );
 
     if (targetZone) {
       const item    = items.find(i => i.id === dragging);
       const correct = item?.zone === targetZone.id;
-
       if (correct) {
-        setPlacements(prev => ({
-          ...prev,
-          [dragging]: { placedZone: targetZone.id, correct: true },
-        }));
+        setPlacements(prev => ({ ...prev, [dragging]: { placedZone: targetZone.id, correct: true } }));
         triggerFeedback("correct", item.label);
       } else {
-        // Wrong zone — shake and return to starting position
         setShakeItem(dragging);
         setTimeout(() => setShakeItem(null), 600);
-        setPlacements(prev => ({
-          ...prev,
-          [dragging]: { placedZone: null, correct: false },
-        }));
+        setPlacements(prev => ({ ...prev, [dragging]: { placedZone: null, correct: false } }));
         triggerFeedback("wrong", item?.label);
       }
     }
-
     setDragging(null);
     setActiveZone(null);
   }, [dragging, dropZones, items]);
@@ -215,69 +186,51 @@ const DragAndDrop = () => {
     feedbackTimer.current = setTimeout(() => setFeedback(null), 2000);
   };
 
-  // ── Complete handler ──────────────────────────────────────────────────────
+  // ── Complete — navigate to paired ItemAssociation quest ───────────────────
   const handleComplete = () => {
     if (!allCorrect) return;
-
-    // ① Save locally — instant
-    saveNPCProgress("village", npcId, items.length, true);
-
-    // ② Sync to Supabase — background, non-blocking
-    if (playerId) {
-      fetch(`${API}/api/challenge/quest/submit`, {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({
-          playerId,
-          questId,
-          npcId,
-          score:    items.length,
-          maxScore: items.length,
-          passed:   true,
-        }),
-      }).catch(err => console.warn("[BisaQuest] Sync failed:", err));
-    }
-
     setCompleted(true);
-    setTimeout(() => navigate(returnTo, { state: { completedQuestId: questId } }), 1800);
+    setTimeout(() => {
+      navigate("/student/item-association", {
+        state: {
+          questId:   iaQuestId,   // ← the IA quest, NOT the drag_drop quest
+          npcId,
+          npcName,
+          returnTo,
+          sceneType,
+        },
+      });
+    }, 1800);
   };
 
   const handleBack = () => navigate(returnTo);
 
   // ── Loading / error screens ───────────────────────────────────────────────
   if (loading) return (
-    <div className="dad-wrapper">
-      <div className="dad-container">
-        <img src={DEFAULT_BACKGROUND} alt="Loading" className="dad-bg" draggable={false} />
-        <div className="dad-loading">
-          <span>Loading game... / Gi-load ang dula...</span>
-        </div>
-      </div>
-    </div>
+    <div className="dad-wrapper"><div className="dad-container">
+      <img src={DEFAULT_BACKGROUND} alt="Loading" className="dad-bg" draggable={false} />
+      <div className="dad-loading"><span>Loading game... / Gi-load ang dula...</span></div>
+    </div></div>
   );
 
   if (fetchError) return (
-    <div className="dad-wrapper">
-      <div className="dad-container">
-        <img src={DEFAULT_BACKGROUND} alt="Error" className="dad-bg" draggable={false} />
-        <div className="dad-error">
-          <p>Could not load the game. Please try again! / Dili ma-load ang dula. Sulayi pag-usab!</p>
-          <Button variant="back" onClick={handleBack}>← Back</Button>
-        </div>
+    <div className="dad-wrapper"><div className="dad-container">
+      <img src={DEFAULT_BACKGROUND} alt="Error" className="dad-bg" draggable={false} />
+      <div className="dad-error">
+        <p>Could not load the game. / Dili ma-load ang dula.</p>
+        <Button variant="back" onClick={handleBack}>← Back</Button>
       </div>
-    </div>
+    </div></div>
   );
 
   if (!loading && items.length === 0) return (
-    <div className="dad-wrapper">
-      <div className="dad-container">
-        <img src={DEFAULT_BACKGROUND} alt="Empty" className="dad-bg" draggable={false} />
-        <div className="dad-error">
-          <p>No items found. Make sure the questId is correct. / Walay items nga nakuha.</p>
-          <Button variant="back" onClick={handleBack}>← Back</Button>
-        </div>
+    <div className="dad-wrapper"><div className="dad-container">
+      <img src={DEFAULT_BACKGROUND} alt="Empty" className="dad-bg" draggable={false} />
+      <div className="dad-error">
+        <p>No items found. / Walay items nga nakuha.</p>
+        <Button variant="back" onClick={handleBack}>← Back</Button>
       </div>
-    </div>
+    </div></div>
   );
 
   // ── Game render ───────────────────────────────────────────────────────────
@@ -285,59 +238,46 @@ const DragAndDrop = () => {
     <div className="dad-wrapper">
       <div className="dad-container" ref={containerRef} style={{ userSelect: "none" }}>
 
-        {/* Scene background */}
         <img src={background} alt="Scene" className="dad-bg" draggable={false} />
 
-        {/* Back button */}
-        <Button variant="back" className="dad-back-btn" onClick={handleBack}>
-          ← Back
-        </Button>
+        <Button variant="back" className="dad-back-btn" onClick={handleBack}>← Back</Button>
+
+        {/* Step badge */}
+        <div style={{
+          position:"absolute", top:10, left:"50%", transform:"translateX(-50%)",
+          background:"rgba(0,0,0,0.6)", color:"#fff", fontSize:"12px", fontWeight:"bold",
+          padding:"4px 14px", borderRadius:20, border:"1px solid rgba(255,255,255,0.2)",
+          zIndex:30, whiteSpace:"nowrap",
+        }}>
+          Step 1 of 2 — Drag &amp; Drop
+        </div>
 
         {/* Debug toggle */}
-        <button
-          onClick={() => setDebugMode(prev => !prev)}
-          style={{
-            position: "absolute", top: 8, right: 8, zIndex: 200,
-            background: debugMode ? "#ff9900" : "rgba(0,0,0,0.55)",
-            color: "#fff", border: "1px solid rgba(255,255,255,0.3)",
-            borderRadius: 5, padding: "4px 10px",
-            fontSize: "11px", fontWeight: "bold", cursor: "pointer",
-          }}
-        >
+        <button onClick={() => setDebugMode(p => !p)} style={{
+          position:"absolute", top:8, right:8, zIndex:200,
+          background: debugMode ? "#ff9900" : "rgba(0,0,0,0.55)",
+          color:"#fff", border:"1px solid rgba(255,255,255,0.3)",
+          borderRadius:5, padding:"4px 10px", fontSize:"11px", fontWeight:"bold", cursor:"pointer",
+        }}>
           {debugMode ? "🐛 DEBUG ON" : "🐛 Debug"}
         </button>
 
-        {/* Zone debug overlay (dev only) */}
-        {debugMode && (
-          <ZoneDebugOverlay
-            activeZoneIds={correctZoneIds}
-            containerRef={containerRef}
-          />
-        )}
+        {debugMode && <ZoneDebugOverlay activeZoneIds={correctZoneIds} containerRef={containerRef} />}
 
-        {/* ── Drop zones — ALL zones for the scene are always rendered ──────
-             Items dropped on a non-matching zone are rejected (shake + return).
-             This prevents players from guessing based on zone count. */}
         {dropZones.map(zone => (
           <DropZone
-            key={zone.id}
-            zone={zone}
+            key={zone.id} zone={zone}
             isActive={activeZone === zone.id}
-            // Green fill only when ALL items that belong here are correctly placed
             hasCorrectItem={
-              items
-                .filter(i => i.zone === zone.id)
-                .every(i => placements[i.id]?.correct === true) &&
+              items.filter(i => i.zone === zone.id).every(i => placements[i.id]?.correct === true) &&
               items.some(i => i.zone === zone.id)
             }
           />
         ))}
 
-        {/* Draggable items */}
         {items.map(item => (
           <DraggableItem
-            key={item.id}
-            item={item}
+            key={item.id} item={item}
             placement={placements[item.id] || { placedZone: null, correct: null }}
             isDragging={dragging === item.id}
             dragPos={dragPos}
@@ -346,7 +286,6 @@ const DragAndDrop = () => {
           />
         ))}
 
-        {/* NPC section */}
         <div className="dad-npc-section">
           <img src={LigayaCharacter} alt={npcName} className="dad-npc-img" draggable={false} />
           <DialogueBox
@@ -356,18 +295,16 @@ const DragAndDrop = () => {
           />
         </div>
 
-        {/* Completion overlay */}
         {completed && (
           <div className="dad-completion-overlay">
             <div className="dad-completion-card">
               <div className="dad-completion-stars">⭐⭐⭐</div>
               <h2>Great job! / Maayo kaayo!</h2>
-              <p>You placed everything correctly! / Nahuman nimo ang tanan!</p>
+              <p>Moving to next challenge... / Padayon sa sunod nga hamon...</p>
             </div>
           </div>
         )}
 
-        {/* Complete button — enabled only when all items are placed correctly */}
         <button
           className={`dad-complete-btn ${allCorrect ? "dad-complete-btn--active" : "dad-complete-btn--disabled"}`}
           onClick={handleComplete}

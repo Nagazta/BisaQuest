@@ -6,6 +6,7 @@ import StudentDashboard from "./pages/student/PlayerLobby";
 import CharacterSelection from "./pages/student/CharacterSelectionPage";
 import LanguageSelectionPage from "./pages/student/LanguageSelectionPage";
 import InstructionsPage from "./pages/student/InstructionsPage";
+import ItemAssociation from "./game/ItemAssociation";
 import VillagePage from "./pages/Village/VillagePage";
 import ForestPage from "./pages/Forest/ForestPage";
 import CastlePage from "./pages/Castle/CastlePage";
@@ -37,10 +38,10 @@ function App() {
             <Route path="/student/castle"  element={<CastlePage />} />
 
             {/* ── Game / challenge pages ─────────────────────────────────── */}
-          
-            <Route path="/house"                      element={<HousePage />} />
-            <Route path="/student/dragAndDrop" element={<DragAndDrop />} />
-
+            <Route path="/house"                     element={<HousePage />} />
+            <Route path="/student/dragAndDrop"       element={<DragAndDrop />} />
+            <Route path="/student/item-association"  element={<ItemAssociation />} />
+            
             {/* ── Dashboard — requires player in context ─────────────────── */}
             <Route
                 path="/dashboard"

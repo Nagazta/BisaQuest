@@ -1,11 +1,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
 //  dragDropConstants.js
-//  Shared constants for the Drag & Drop game.
-//
-//  HOW TO ADD A NEW SCENE:
-//    1. Import the background asset below
-//    2. Add it to SCENE_BACKGROUNDS with the matching scene_type key from the DB
-//    3. Add its zones to ZONE_REGISTRY with % coordinates
+//  Shared constants for both DragAndDrop and ItemAssociation games.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import houseBackground from "../assets/images/environments/scenario/house.jpg";
@@ -14,7 +9,6 @@ import houseBackground from "../assets/images/environments/scenario/house.jpg";
 // import bathroomBackground from "../assets/images/environments/scenario/bathroom.jpg";
 
 // ── Scene backgrounds ─────────────────────────────────────────────────────────
-// Key must match the scene_type column in the quests table.
 export const SCENE_BACKGROUNDS = {
   living_room: houseBackground,
   // kitchen:  kitchenBackground,
@@ -24,7 +18,7 @@ export const SCENE_BACKGROUNDS = {
 
 export const DEFAULT_BACKGROUND = houseBackground;
 
-// ── Zone registry ─────────────────────────────────────────────────────────────
+// ── Zone registry (DragAndDrop) ───────────────────────────────────────────────
 // ALL zones across ALL scenes live here.
 // Every zone is ALWAYS rendered as a valid drop target — items dropped in
 // the wrong zone simply won't be marked correct. This prevents players from
@@ -56,16 +50,13 @@ export const ZONE_REGISTRY = {
 };
 
 // ── Scene → its zones mapping ─────────────────────────────────────────────────
-// Defines which zones belong to which scene so ALL of them are shown
-// as drop targets regardless of which quest is active.
 export const SCENE_ZONES = {
   living_room: ["bookshelf", "sofa", "aparador", "lamesa", "sulok", "planggana"],
   // kitchen:  ["kitchen_counter", "ref", "sink", "dining_table"],
   // bedroom:  ["bed", "wardrobe", "study_desk"],
 };
 
-// ── Item starting positions (by index, 0-based) ───────────────────────────────
-// Spread across the lower half of the scene so items don't overlap zones.
+// ── DragAndDrop item starting positions (by index, 0-based) ──────────────────
 export const START_POSITIONS = [
   { x: 48, y: 42 },
   { x: 82, y: 76 },
@@ -73,6 +64,22 @@ export const START_POSITIONS = [
   { x: 62, y: 68 },
   { x: 20, y: 60 },
   { x: 35, y: 75 },
+];
+
+// ── ItemAssociation scatter positions (by index, 0-based) ────────────────────
+// 10 positions spread naturally across the scene (supports up to 10 items).
+// Avoids the NPC section (bottom-left) and the complete button (bottom-right).
+export const IA_ITEM_POSITIONS = [
+  { x: 72, y: 12 },   // 0 — bookshelf area top
+  { x: 55, y: 30 },   // 1 — center-upper
+  { x: 82, y: 42 },   // 2 — right mid
+  { x: 72, y: 68 },   // 3 — right lower
+  { x: 55, y: 76 },   // 4 — center lower
+  { x: 42, y: 58 },   // 5 — coffee table area
+  { x: 30, y: 72 },   // 6 — lower center-left
+  { x: 14, y: 52 },   // 7 — left corner
+  { x: 25, y: 35 },   // 8 — left-upper
+  { x: 45, y: 22 },   // 9 — center-upper left
 ];
 
 // ── Dev fallback items (used when no questId is passed) ───────────────────────

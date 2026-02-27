@@ -1,13 +1,9 @@
 import { supabase } from '../config/supabaseClient.js';
 
-// How many items to show per round (randomly picked from the full pool)
 const ITEMS_PER_ROUND = 4;
 
 class ChallengeService {
 
-  // ── GET quests by NPC ─────────────────────────────────────────────────────
-  // Returns all quests that have dialogue rows (inner join filters empties).
-  // VillagePage shuffles this list and picks a random quest each time.
   async getQuestsByNpc(npcId) {
     const { data, error } = await supabase
       .from('quests')
@@ -22,9 +18,6 @@ class ChallengeService {
     return data;
   }
 
-  // ── GET quest meta ────────────────────────────────────────────────────────
-  // Returns title, instructions, scene_type, game_mechanic for one quest.
-  // Used by DragAndDrop.jsx to get the background + instruction text.
   async getQuestMeta(questId) {
     const { data, error } = await supabase
       .from('quests')
@@ -36,40 +29,37 @@ class ChallengeService {
     return data;
   }
 
-  // ── GET challenge_items (random pick from pool) ───────────────────────────
-  // Each quest has 12 items in the DB.
-  // This method randomly picks ITEMS_PER_ROUND (4) of them every call,
-  // guaranteeing at least 1 item per zone so the game is always solvable.
+  // ── GET challenge_items ───────────────────────────────────────────────────
+  // randomize=true  (default) → drag_drop: randomly picks 4 from the pool of 12.
+  //                             Guarantees 1 item per zone so game is solvable.
+  // randomize=false           → item_association: returns ALL items ordered by
+  //                             round_number so frontend can group by round.
   //
-  // Two levels of randomness:
-  //   ① 1 item randomly picked from EACH zone (guarantees solvability)
-  //   ② Remaining slots filled randomly from the leftover pool
-  //   ③ Final selection shuffled so screen positions vary each round
-  //
-  // Works universally for all game mechanics:
-  //   drag_drop        → label + correct_zone
-  //   item_association → label + is_correct
-  //   synonym_antonym  → word_left + word_right + is_correct
-  //   compound_words   → word_left + word_right + is_correct
-  async getChallengeItems(questId) {
+  // The select now includes round_number, round_prompt, round_reprompt, hint
+  // so item_association has everything it needs in one call.
+  async getChallengeItems(questId, randomize = true) {
     const { data, error } = await supabase
       .from('challenge_items')
       .select(
         'item_id, quest_id, label, image_key, word_left, word_right,' +
-        'correct_zone, is_correct, display_order'
+        'correct_zone, is_correct, display_order,' +
+        'round_number, round_prompt, round_reprompt, hint'   // ← added
       )
       .eq('quest_id', questId)
+      .order('round_number')      // ← sort by round first so grouping works
       .order('display_order');
 
     if (error) throw error;
     if (!data || data.length === 0) return [];
 
-    // If pool is smaller than or equal to items per round, return all shuffled
+    // ── item_association: return all rows, round_number order preserved ──────
+    if (!randomize) return data;
+
+    // ── drag_drop: randomly pick ITEMS_PER_ROUND from the pool ───────────────
     if (data.length <= ITEMS_PER_ROUND) {
       return data.sort(() => Math.random() - 0.5);
     }
 
-    // ① Group items by zone
     const byZone  = {};
     for (const item of data) {
       const z = item.correct_zone;
@@ -80,17 +70,14 @@ class ChallengeService {
     const selected = [];
     const usedIds  = new Set();
 
-    // ② Pick 1 random item from each zone (guarantees every zone has an answer)
     for (const zone of Object.keys(byZone)) {
       const pool = byZone[zone];
       const pick = pool[Math.floor(Math.random() * pool.length)];
       selected.push(pick);
       usedIds.add(pick.item_id);
-      // Stop early if we've already hit the round limit
       if (selected.length >= ITEMS_PER_ROUND) break;
     }
 
-    // ③ Fill remaining slots from the rest of the pool (random order)
     const remaining = data
       .filter(item => !usedIds.has(item.item_id))
       .sort(() => Math.random() - 0.5);
@@ -98,12 +85,9 @@ class ChallengeService {
     const needed = ITEMS_PER_ROUND - selected.length;
     selected.push(...remaining.slice(0, needed));
 
-    // ④ Final shuffle so items appear in random positions on screen
     return selected.sort(() => Math.random() - 0.5);
   }
 
-  // ── GET npc_dialogues ─────────────────────────────────────────────────────
-  // Fetches ordered dialogue steps for the NPC intro screen (UC-3.1).
   async getDialogues(questId) {
     const { data, error } = await supabase
       .from('npc_dialogues')
@@ -115,15 +99,9 @@ class ChallengeService {
     return data;
   }
 
-  // ── POST submit challenge ─────────────────────────────────────────────────
-  // Called when player clicks Complete. Writes to:
-  //   1. player_npc_progress  — upsert (best score, encounters, completion)
-  //   2. player_quest_attempts — insert (immutable log)
-  //   3. player_environment_progress — recalculated automatically
   async submitChallenge({ playerId, questId, npcId, score, maxScore, passed }) {
     const now = new Date().toISOString();
 
-    // 1. Upsert player_npc_progress
     const { data: existing } = await supabase
       .from('player_npc_progress')
       .select('*')
@@ -162,7 +140,6 @@ class ChallengeService {
       if (insertError) throw insertError;
     }
 
-    // 2. Insert attempt log (always — never update existing)
     const { data: attempt, error: attemptError } = await supabase
       .from('player_quest_attempts')
       .insert({
@@ -179,13 +156,11 @@ class ChallengeService {
 
     if (attemptError) throw attemptError;
 
-    // 3. Recalculate environment progress
     await this.recalculateEnvironmentProgress(playerId, npcId);
 
     return { attempt, passed, score, maxScore };
   }
 
-  // ── GET player_npc_progress (single NPC) ─────────────────────────────────
   async getNPCProgress(playerId, npcId) {
     const { data, error } = await supabase
       .from('player_npc_progress')
@@ -198,7 +173,6 @@ class ChallengeService {
     return data || null;
   }
 
-  // ── GET player_environment_progress ──────────────────────────────────────
   async getEnvironmentProgress(playerId, environmentName) {
     const { data, error } = await supabase
       .from('player_environment_progress')
@@ -211,7 +185,6 @@ class ChallengeService {
     return data || null;
   }
 
-  // ── GET player_quest_attempts (history) ───────────────────────────────────
   async getAttemptHistory(playerId, npcId, limit = 10) {
     let query = supabase
       .from('player_quest_attempts')
@@ -227,10 +200,6 @@ class ChallengeService {
     return data;
   }
 
-  // ── INTERNAL: recalculate environment completion % ───────────────────────
-  // Called after every submitChallenge. Counts completed NPCs in the
-  // environment, updates player_environment_progress, and unlocks the
-  // next environment at 100%.
   async recalculateEnvironmentProgress(playerId, npcId) {
     const { data: npc, error: npcError } = await supabase
       .from('npcs')
