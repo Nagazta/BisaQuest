@@ -1,6 +1,7 @@
 import challengeService from '../services/challengeService.js';
 
 class ChallengeController {
+
   async getQuestsByNpc(req, res) {
     try {
       const { npcId } = req.params;
@@ -20,12 +21,22 @@ class ChallengeController {
     }
   }
 
-  // Random sample — for drag-to-zone games (DragAndDrop.jsx)
+  // ── GET /quest/:questId/items ─────────────────────────────────────────────
+  // Optional query param: ?randomize=false
+  //   drag_drop        → omit param (default true)  → picks 4 random from pool
+  //   item_association → pass ?randomize=false       → returns ALL items with round_number
   async getChallengeItems(req, res) {
     try {
       const { questId } = req.params;
-      if (!questId) return res.status(400).json({ success: false, message: 'questId is required' });
-      const data = await challengeService.getChallengeItems(questId);
+
+      if (!questId) {
+        return res.status(400).json({ success: false, message: 'questId is required' });
+      }
+
+      // Default true; ItemAssociation.jsx passes ?randomize=false
+      const randomize = req.query.randomize !== 'false';
+
+      const data = await challengeService.getChallengeItems(questId, randomize);
       res.json({ success: true, data });
     } catch (error) {
       res.status(500).json({ success: false, message: 'Failed to fetch challenge items', error: error.message });
@@ -69,8 +80,10 @@ class ChallengeController {
 
   async getNPCProgress(req, res) {
     try {
-      const playerId = req.user?.player_id || req.query.playerId;
-      const data = await challengeService.getNPCProgress(playerId, req.params.npcId);
+      const { npcId } = req.params;
+      const playerId  = req.user?.player_id || req.query.playerId;
+
+      const data = await challengeService.getNPCProgress(playerId, npcId);
       res.json({ success: true, data });
     } catch (error) {
       res.status(500).json({ success: false, message: 'Failed to fetch NPC progress', error: error.message });

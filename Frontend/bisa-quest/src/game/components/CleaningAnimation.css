@@ -1,0 +1,54 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   CleaningAnimation.css
+   Sparkle burst that plays over a correctly clicked item.
+───────────────────────────────────────────────────────────────────────────── */
+
+/* Root is centered absolutely over the parent ClickableItem */
+.ca-root {
+  position:       absolute;
+  inset:          0;
+  display:        flex;
+  align-items:    center;
+  justify-content: center;
+  pointer-events: none;
+  z-index:        20;
+}
+
+/* Central star burst */
+.ca-star {
+  position:   absolute;
+  font-size:  28px;
+  color:      #ffe066;
+  animation:  ca-star-pop 0.55s ease-out forwards;
+  text-shadow: 0 0 8px #ffe066, 0 0 16px #ffb347;
+}
+
+@keyframes ca-star-pop {
+  0%   { transform: scale(0) rotate(0deg);   opacity: 1; }
+  60%  { transform: scale(1.4) rotate(30deg); opacity: 1; }
+  100% { transform: scale(0.8) rotate(45deg); opacity: 0; }
+}
+
+/* Individual sparkle particles */
+.ca-particle {
+  position:      absolute;
+  border-radius: 50%;
+  animation:     ca-particle-fly 0.6s ease-out forwards;
+  animation-delay: var(--delay, 0ms);
+  opacity:       0;
+}
+
+@keyframes ca-particle-fly {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity:   1;
+  }
+  100% {
+    /* Move outward along the particle's angle */
+    transform: translate(
+      calc(cos(var(--angle)) * var(--dist)),
+      calc(sin(var(--angle)) * var(--dist))
+    ) scale(0);
+    opacity: 0;
+  }
+}
