@@ -285,7 +285,7 @@ const DragAndDrop = () => {
             onDragStart={handleDragStart}
           />
         ))}
-
+        
         <div className="dad-npc-section">
           <img src={LigayaCharacter} alt={npcName} className="dad-npc-img" draggable={false} />
           <DialogueBox

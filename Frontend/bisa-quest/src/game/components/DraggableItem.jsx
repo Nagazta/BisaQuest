@@ -16,7 +16,7 @@ const DraggableItem = ({
         position:      "fixed",
         left:          dragPos.x,
         top:           dragPos.y,
-        transform:     "translate(-50%, -50%) scale(1.12) rotate(-3deg)",
+        transform:     "translate(-50%, -50%) scale(1.15) rotate(-3deg)",
         zIndex:        999,
         pointerEvents: "none",
       }
@@ -41,16 +41,12 @@ const DraggableItem = ({
       style={style}
       onPointerDown={isCorrect ? undefined : (e) => onDragStart(item.id, e)}
     >
-      <div className="d-item__card">
-        <div className="d-item__image-placeholder">
-          <span className="d-item__emoji">{item.emoji || "📦"}</span>
-        </div>
-        <span className="d-item__label">{item.label}</span>
-      </div>
+      {item.image
+        ? <img src={item.image} alt={item.label} className="d-item__img" draggable={false} />
+        : <span className="d-item__emoji">{item.emoji || "📦"}</span>
+      }
 
-      {isCorrect && (
-        <div className="d-item__badge">✓</div>
-      )}
+      {isCorrect && <div className="d-item__badge">✓</div>}
     </div>
   );
 };
