@@ -1,6 +1,5 @@
 /* ─── DragAndDrop.css ────────────────────────────────────────────────────────
    Main game screen — house background, NPC section, complete button.
-   Designed to match the HousePage layout exactly.
    ─────────────────────────────────────────────────────────────────────────── */
 
 /* ── Wrapper: full screen ───────────────────────────────────── */
@@ -16,94 +15,120 @@
 
 /* ── Container: 16:9 game canvas ───────────────────────────── */
 .dad-container {
-  position:   relative;
-  width:      100%;
-  max-width:  1280px;
-  /* maintain 16:9 inside the viewport */
+  position:     relative;
+  width:        100%;
+  max-width:    1280px;
   aspect-ratio: 16 / 9;
-  max-height: 100vh;
-  overflow:   hidden;
+  max-height:   100vh;
+  overflow:     hidden;
   border-radius: 8px;
-  box-shadow: 0 0 60px rgba(0,0,0,0.6);
+  box-shadow:   0 0 60px rgba(0,0,0,0.6);
+  touch-action: none;
+  user-select:  none;
 }
 
 /* ── Background image ───────────────────────────────────────── */
 .dad-bg {
-  position:   absolute;
-  inset:      0;
-  width:      100%;
-  height:     100%;
-  object-fit: cover;
+  position:        absolute;
+  inset:           0;
+  width:           100%;
+  height:          100%;
+  object-fit:      cover;
   object-position: center;
-  user-select: none;
+  user-select:     none;
 }
 
 /* ── Back button ────────────────────────────────────────────── */
 .dad-back-btn {
-  position:  absolute;
-  top:       16px;
-  left:      16px;
-  z-index:   50;
+  position: absolute;
+  top:      16px;
+  left:     16px;
+  z-index:  50;
 }
 
 /* ── NPC + DialogueBox section — bottom left ────────────────── */
 .dad-npc-section {
-  position:    absolute;
-  bottom:      0;
-  left:        0;
-  display:     flex;
-  align-items: flex-end;
-  gap:         12px;
-  padding:     0 16px 16px;
-  z-index:     40;
-  /* fade in on mount */
-  animation:   npc-enter 0.5s ease both;
+  position: absolute;
+  bottom:   16px;
+  left:     16px;
+  width:    270px;
+  z-index:  40;
+  animation: npc-enter 0.5s ease both;
 }
 
+/* Make NPC bigger */
 .dad-npc-img {
-  width:         120px;
-  height:        auto;
-  object-fit:    contain;
-  flex-shrink:   0;
-  /* slight upward bob */
-  animation:     npc-bob 3s ease-in-out infinite;
-  filter:        drop-shadow(0 4px 10px rgba(0,0,0,0.4));
+  width:      360px;   /* increase this — was 110px */
+  height:     auto;
+  object-fit: contain;
+  position:   absolute;
+  bottom:     calc(100% - 80px); /* increase this too so more of her hides behind box */
+  left:       1px;
+  z-index:    -39;
+  animation:  npc-bob 3s ease-in-out infinite;
+  filter:     drop-shadow(0 4px 10px rgba(0,0,0,0.4));
+}
+
+
+/* ── Override DialogueBox absolute positioning ── */
+.dad-npc-section .dialogue-box {
+  position:   relative;
+  bottom:     auto;
+  left:       auto;
+  transform:  none;
+  width:      100%;
+  max-width:  100%;
+  min-height: 150px;  /* ← set minimum height */
+  height:     180px;  /* ← set fixed height, or remove for auto */
+}
+
+.dad-npc-section .dialogue-content {
+  padding: 12px 16px 18px 16px;
+}
+
+.dad-npc-section .dialogue-text {
+  font-size:   13px !important;
+  line-height: 1.5;
+}
+
+.dad-npc-section .dialogue-title {
+  font-size: 20px !important;
 }
 
 /* ── Complete button — bottom right ─────────────────────────── */
 .dad-complete-btn {
-  position:      absolute;
-  bottom:        20px;
-  right:         20px;
-  z-index:       50;
-  font-family:   'Fredoka One', 'Nunito', cursive;
-  font-size:     16px;
-  font-weight:   700;
+  position:       absolute;
+  bottom:         20px;
+  right:          20px;
+  z-index:        50;
+  font-family:    'Fredoka One', 'Nunito', cursive;
+  font-size:      16px;
+  font-weight:    700;
   letter-spacing: 0.5px;
-  padding:       12px 28px;
-  border-radius: 14px;
-  border:        3px solid #2d2d2d;
-  cursor:        pointer;
+  padding:        12px 28px;
+  border-radius:  14px;
+  border:         3px solid #2d2d2d;
+  cursor:         pointer;
   transition:
-    background  0.2s ease,
-    box-shadow  0.2s ease,
-    transform   0.15s ease,
-    opacity     0.2s ease;
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform  0.15s ease,
+    opacity    0.2s ease;
 }
 
 .dad-complete-btn--disabled {
-  background:  #d1d5db;
-  color:       #9ca3af;
-  box-shadow:  0 4px 0 #9ca3af;
-  cursor:      not-allowed;
-  opacity:     0.6;
+  background: #d1d5db;
+  color:      #9ca3af;
+  box-shadow: 0 4px 0 #9ca3af;
+  cursor:     not-allowed;
+  opacity:    0.6;
 }
 
 .dad-complete-btn--active {
-  background:  #22c55e;
-  color:       #fff;
-  box-shadow:  0 5px 0 #15803d;
-  animation:   btn-pulse 1.6s ease-in-out infinite;
+  background: #22c55e;
+  color:      #fff;
+  box-shadow: 0 5px 0 #15803d;
+  animation:  btn-pulse 1.6s ease-in-out infinite;
 }
 
 .dad-complete-btn--active:hover {
@@ -149,21 +174,21 @@
 }
 
 .dad-completion-card h2 {
-  font-family:   'Fredoka One', cursive;
-  font-size:     32px;
-  color:         #15803d;
-  margin:        0 0 8px;
+  font-family:    'Fredoka One', cursive;
+  font-size:      32px;
+  color:          #15803d;
+  margin:         0 0 8px;
   letter-spacing: 0.5px;
 }
 
 .dad-completion-card p {
-  font-family:  'Nunito', cursive;
-  font-size:    16px;
-  color:        #4b5563;
-  margin:       0;
+  font-family: 'Nunito', cursive;
+  font-size:   16px;
+  color:       #4b5563;
+  margin:      0;
 }
 
-/* ── Loading state ──────────────────────────────────────────── */
+/* ── Loading / Error state ──────────────────────────────────── */
 .dad-loading,
 .dad-error {
   position:        absolute;
@@ -177,245 +202,18 @@
 }
 
 .dad-loading span {
-  font-family:  'Fredoka One', cursive;
-  font-size:    22px;
-  color:        #fff;
-  text-shadow:  0 2px 8px rgba(0,0,0,0.5);
-  animation:    loading-pulse 1.2s ease-in-out infinite;
-}
-
-.dad-error p {
-  font-family:  'Fredoka One', cursive;
-  font-size:    20px;
-  color:        #fff;
-  text-shadow:  0 2px 8px rgba(0,0,0,0.5);
-}
-
-/* ── Keyframes ──────────────────────────────────────────────── */
-@keyframes npc-enter {
-  from { opacity: 0; transform: translateY(30px); }
-  to   { opacity: 1; transform: translateY(0);    }
-}
-
-@keyframes npc-bob {
-  0%,  100% { transform: translateY(0);   }
-  50%        { transform: translateY(-6px); }
-}
-
-@keyframes btn-pulse {
-  0%,  100% { box-shadow: 0 5px 0 #15803d, 0 0 0   0   rgba(34,197,94,0.4); }
-  50%        { box-shadow: 0 5px 0 #15803d, 0 0 0  10px rgba(34,197,94,0);   }
-}
-
-@keyframes overlay-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-@keyframes card-pop {
-  from { transform: scale(0.6) rotate(-4deg); opacity: 0; }
-  to   { transform: scale(1)   rotate(0deg);  opacity: 1; }
-}
-
-@keyframes stars-spin {
-  from { transform: rotate(-30deg) scale(0.5); opacity: 0; }
-  to   { transform: rotate(0deg)   scale(1);   opacity: 1; }
-}
-
-@keyframes loading-pulse {
-  0%,  100% { opacity: 1;   }
-  50%        { opacity: 0.4; }
-}/* ─── DragAndDrop.css ────────────────────────────────────────────────────────
-   Main game screen — house background, NPC section, complete button.
-   Designed to match the HousePage layout exactly.
-   ─────────────────────────────────────────────────────────────────────────── */
-
-/* ── Wrapper: full screen ───────────────────────────────────── */
-.dad-wrapper {
-  width:      100vw;
-  height:     100vh;
-  display:    flex;
-  align-items:     center;
-  justify-content: center;
-  background: #1a1008;
-  overflow:   hidden;
-}
-
-/* ── Container: 16:9 game canvas ───────────────────────────── */
-.dad-container {
-  position:   relative;
-  width:      100%;
-  max-width:  1280px;
-  /* maintain 16:9 inside the viewport */
-  aspect-ratio: 16 / 9;
-  max-height: 100vh;
-  overflow:   hidden;
-  border-radius: 8px;
-  box-shadow: 0 0 60px rgba(0,0,0,0.6);
-}
-
-/* ── Background image ───────────────────────────────────────── */
-.dad-bg {
-  position:   absolute;
-  inset:      0;
-  width:      100%;
-  height:     100%;
-  object-fit: cover;
-  object-position: center;
-  user-select: none;
-}
-
-/* ── Back button ────────────────────────────────────────────── */
-.dad-back-btn {
-  position:  absolute;
-  top:       16px;
-  left:      16px;
-  z-index:   50;
-}
-
-/* ── NPC + DialogueBox section — bottom left ────────────────── */
-.dad-npc-section {
-  position:    absolute;
-  bottom:      0;
-  left:        0;
-  display:     flex;
-  align-items: flex-end;
-  gap:         12px;
-  padding:     0 16px 16px;
-  z-index:     40;
-  /* fade in on mount */
-  animation:   npc-enter 0.5s ease both;
-}
-
-.dad-npc-img {
-  width:         120px;
-  height:        auto;
-  object-fit:    contain;
-  flex-shrink:   0;
-  /* slight upward bob */
-  animation:     npc-bob 3s ease-in-out infinite;
-  filter:        drop-shadow(0 4px 10px rgba(0,0,0,0.4));
-}
-
-/* ── Complete button — bottom right ─────────────────────────── */
-.dad-complete-btn {
-  position:      absolute;
-  bottom:        20px;
-  right:         20px;
-  z-index:       50;
-  font-family:   'Fredoka One', 'Nunito', cursive;
-  font-size:     16px;
-  font-weight:   700;
-  letter-spacing: 0.5px;
-  padding:       12px 28px;
-  border-radius: 14px;
-  border:        3px solid #2d2d2d;
-  cursor:        pointer;
-  transition:
-    background  0.2s ease,
-    box-shadow  0.2s ease,
-    transform   0.15s ease,
-    opacity     0.2s ease;
-}
-
-.dad-complete-btn--disabled {
-  background:  #d1d5db;
-  color:       #9ca3af;
-  box-shadow:  0 4px 0 #9ca3af;
-  cursor:      not-allowed;
-  opacity:     0.6;
-}
-
-.dad-complete-btn--active {
-  background:  #22c55e;
+  font-family: 'Fredoka One', cursive;
+  font-size:   22px;
   color:       #fff;
-  box-shadow:  0 5px 0 #15803d;
-  animation:   btn-pulse 1.6s ease-in-out infinite;
-}
-
-.dad-complete-btn--active:hover {
-  background: #16a34a;
-  transform:  translateY(-2px);
-  box-shadow: 0 7px 0 #15803d;
-  animation:  none;
-}
-
-.dad-complete-btn--active:active {
-  transform:  translateY(2px);
-  box-shadow: 0 2px 0 #15803d;
-}
-
-/* ── Completion overlay ─────────────────────────────────────── */
-.dad-completion-overlay {
-  position:        absolute;
-  inset:           0;
-  background:      rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(3px);
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  z-index:         100;
-  animation:       overlay-in 0.3s ease both;
-}
-
-.dad-completion-card {
-  background:    #fffef5;
-  border:        4px solid #2d2d2d;
-  border-radius: 24px;
-  padding:       40px 56px;
-  text-align:    center;
-  box-shadow:    0 8px 0 #2d2d2d, 0 20px 60px rgba(0,0,0,0.4);
-  animation:     card-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-
-.dad-completion-stars {
-  font-size:     48px;
-  line-height:   1;
-  margin-bottom: 12px;
-  animation:     stars-spin 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
-}
-
-.dad-completion-card h2 {
-  font-family:   'Fredoka One', cursive;
-  font-size:     32px;
-  color:         #15803d;
-  margin:        0 0 8px;
-  letter-spacing: 0.5px;
-}
-
-.dad-completion-card p {
-  font-family:  'Nunito', cursive;
-  font-size:    16px;
-  color:        #4b5563;
-  margin:       0;
-}
-
-/* ── Loading state ──────────────────────────────────────────── */
-.dad-loading,
-.dad-error {
-  position:        absolute;
-  inset:           0;
-  display:         flex;
-  flex-direction:  column;
-  align-items:     center;
-  justify-content: center;
-  gap:             16px;
-  z-index:         10;
-}
-
-.dad-loading span {
-  font-family:  'Fredoka One', cursive;
-  font-size:    22px;
-  color:        #fff;
-  text-shadow:  0 2px 8px rgba(0,0,0,0.5);
-  animation:    loading-pulse 1.2s ease-in-out infinite;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  animation:   loading-pulse 1.2s ease-in-out infinite;
 }
 
 .dad-error p {
-  font-family:  'Fredoka One', cursive;
-  font-size:    20px;
-  color:        #fff;
-  text-shadow:  0 2px 8px rgba(0,0,0,0.5);
+  font-family: 'Fredoka One', cursive;
+  font-size:   20px;
+  color:       #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
 }
 
 /* ── Keyframes ──────────────────────────────────────────────── */
@@ -425,13 +223,13 @@
 }
 
 @keyframes npc-bob {
-  0%,  100% { transform: translateY(0);   }
+  0%,  100% { transform: translateY(0);    }
   50%        { transform: translateY(-6px); }
 }
 
 @keyframes btn-pulse {
-  0%,  100% { box-shadow: 0 5px 0 #15803d, 0 0 0   0   rgba(34,197,94,0.4); }
-  50%        { box-shadow: 0 5px 0 #15803d, 0 0 0  10px rgba(34,197,94,0);   }
+  0%,  100% { box-shadow: 0 5px 0 #15803d, 0 0 0  0   rgba(34,197,94,0.4); }
+  50%        { box-shadow: 0 5px 0 #15803d, 0 0 0 10px rgba(34,197,94,0);   }
 }
 
 @keyframes overlay-in {
