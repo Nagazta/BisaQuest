@@ -1,0 +1,71 @@
+.backpack-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #3a2008;
+  border-top: 4px solid #FCD765;
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.4);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  padding: 14px 32px;
+  gap: 24px;
+  min-height: 90px;
+}
+
+.backpack-label {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  color: #FCD765;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border-right: 3px solid #FCD765;
+  padding-right: 24px;
+  min-width: 120px;
+}
+
+.backpack-items {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.backpack-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: grab;
+  background: #6B3E1D;
+  border: 3px solid #FCD765;
+  border-radius: 14px;
+  padding: 10px 16px;
+  min-width: 90px;
+  box-shadow: 0 4px 0 #3a2008;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+}
+
+.backpack-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 0 #3a2008;
+}
+
+.backpack-item:active { cursor: grabbing; }
+
+.backpack-item-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.backpack-item-label {
+  font-family: 'Grandstander', cursive;
+  font-size: 12px;
+  font-weight: 700;
+  color: #FFF9E6;
+  text-align: center;
+  white-space: nowrap;
+}

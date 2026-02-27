@@ -7,13 +7,9 @@ class ChallengeService {
   async getQuestsByNpc(npcId) {
     const { data, error } = await supabase
       .from('quests')
-      .select(
-        'quest_id, title, content_type, game_mechanic, scene_type, instructions,' +
-        'npc_dialogues!inner(dialogue_id)'
-      )
+      .select('quest_id, npc_id, title, content_type, game_mechanic, scene_type, instructions')
       .eq('npc_id', npcId)
       .order('quest_id');
-
     if (error) throw error;
     return data;
   }
@@ -24,7 +20,6 @@ class ChallengeService {
       .select('quest_id, npc_id, title, content_type, game_mechanic, scene_type, instructions')
       .eq('quest_id', questId)
       .single();
-
     if (error) throw error;
     return data;
   }
@@ -48,25 +43,21 @@ class ChallengeService {
       .eq('quest_id', questId)
       .order('round_number')      // ← sort by round first so grouping works
       .order('display_order');
-
     if (error) throw error;
     if (!data || data.length === 0) return [];
 
-    // ── item_association: return all rows, round_number order preserved ──────
-    if (!randomize) return data;
-
-    // ── drag_drop: randomly pick ITEMS_PER_ROUND from the pool ───────────────
+    // If pool is smaller than or equal to items per round, return all shuffled
     if (data.length <= ITEMS_PER_ROUND) {
       return data.sort(() => Math.random() - 0.5);
     }
 
+    // ① Group items by zone
     const byZone  = {};
     for (const item of data) {
       const z = item.correct_zone;
       if (!byZone[z]) byZone[z] = [];
       byZone[z].push(item);
     }
-
     const selected = [];
     const usedIds  = new Set();
 
@@ -91,10 +82,9 @@ class ChallengeService {
   async getDialogues(questId) {
     const { data, error } = await supabase
       .from('npc_dialogues')
-      .select('dialogue_id, quest_id, step_order, speaker, dialogue_text, language')
+      .select('dialogue_id, quest_id, step_order, speaker, dialogue_text, language, flow_type')
       .eq('quest_id', questId)
       .order('step_order');
-
     if (error) throw error;
     return data;
   }
@@ -102,42 +92,26 @@ class ChallengeService {
   async submitChallenge({ playerId, questId, npcId, score, maxScore, passed }) {
     const now = new Date().toISOString();
 
+    // 1. Upsert player_npc_progress
     const { data: existing } = await supabase
       .from('player_npc_progress')
-      .select('*')
-      .eq('player_id', playerId)
-      .eq('npc_id', npcId)
-      .single();
+      .select('*').eq('player_id', playerId).eq('npc_id', npcId).single();
 
     if (existing) {
-      const { error: updateError } = await supabase
-        .from('player_npc_progress')
-        .update({
-          encounters:     existing.encounters + 1,
-          best_score:     Math.max(score, existing.best_score),
-          is_completed:   passed || existing.is_completed,
-          completed_at:   passed && !existing.is_completed ? now : existing.completed_at,
-          last_attempted: now,
-        })
-        .eq('player_id', playerId)
-        .eq('npc_id', npcId);
-
-      if (updateError) throw updateError;
+      const { error } = await supabase.from('player_npc_progress').update({
+        encounters: existing.encounters + 1,
+        best_score: Math.max(score, existing.best_score),
+        is_completed: passed || existing.is_completed,
+        completed_at: passed && !existing.is_completed ? now : existing.completed_at,
+        last_attempted: now,
+      }).eq('player_id', playerId).eq('npc_id', npcId);
+      if (error) throw error;
     } else {
-      const { error: insertError } = await supabase
-        .from('player_npc_progress')
-        .insert({
-          player_id:      playerId,
-          npc_id:         npcId,
-          quest_id:       questId,
-          encounters:     1,
-          best_score:     score,
-          is_completed:   passed,
-          completed_at:   passed ? now : null,
-          last_attempted: now,
-        });
-
-      if (insertError) throw insertError;
+      const { error } = await supabase.from('player_npc_progress').insert({
+        player_id: playerId, npc_id: npcId, quest_id: questId, encounters: 1,
+        best_score: score, is_completed: passed, completed_at: passed ? now : null, last_attempted: now,
+      });
+      if (error) throw error;
     }
 
     const { data: attempt, error: attemptError } = await supabase
@@ -157,106 +131,69 @@ class ChallengeService {
     if (attemptError) throw attemptError;
 
     await this.recalculateEnvironmentProgress(playerId, npcId);
-
     return { attempt, passed, score, maxScore };
   }
 
+  // ── GET player_npc_progress (single NPC) ─────────────────────────────────
   async getNPCProgress(playerId, npcId) {
-    const { data, error } = await supabase
-      .from('player_npc_progress')
-      .select('*')
-      .eq('player_id', playerId)
-      .eq('npc_id', npcId)
-      .single();
-
+    const { data, error } = await supabase.from('player_npc_progress')
+      .select('*').eq('player_id', playerId).eq('npc_id', npcId).single();
     if (error && error.code !== 'PGRST116') throw error;
     return data || null;
   }
 
+  // ── GET player_environment_progress ──────────────────────────────────────
   async getEnvironmentProgress(playerId, environmentName) {
-    const { data, error } = await supabase
-      .from('player_environment_progress')
-      .select('*')
-      .eq('player_id', playerId)
-      .eq('environment_name', environmentName)
-      .single();
-
+    const { data, error } = await supabase.from('player_environment_progress')
+      .select('*').eq('player_id', playerId).eq('environment_name', environmentName).single();
     if (error && error.code !== 'PGRST116') throw error;
     return data || null;
   }
 
+  // ── GET player_quest_attempts (history) ───────────────────────────────────
   async getAttemptHistory(playerId, npcId, limit = 10) {
-    let query = supabase
-      .from('player_quest_attempts')
-      .select('*')
-      .eq('player_id', playerId)
-      .order('attempted_at', { ascending: false })
-      .limit(limit);
-
+    let query = supabase.from('player_quest_attempts')
+      .select('*').eq('player_id', playerId)
+      .order('attempted_at', { ascending: false }).limit(limit);
     if (npcId) query = query.eq('npc_id', npcId);
-
     const { data, error } = await query;
     if (error) throw error;
     return data;
   }
 
+  // ── INTERNAL: recalculate environment completion % ───────────────────────
+  // Called after every submitChallenge. Counts completed NPCs in the
+  // environment, updates player_environment_progress, and unlocks the
+  // next environment at 100%.
   async recalculateEnvironmentProgress(playerId, npcId) {
-    const { data: npc, error: npcError } = await supabase
-      .from('npcs')
-      .select('environment_name')
-      .eq('npc_id', npcId)
-      .single();
-
-    if (npcError) throw npcError;
+    const { data: npc, error: npcErr } = await supabase.from('npcs').select('environment_name').eq('npc_id', npcId).single();
+    if (npcErr) throw npcErr;
     const environmentName = npc.environment_name;
 
-    const { data: envNPCs } = await supabase
-      .from('npcs')
-      .select('npc_id')
-      .eq('environment_name', environmentName);
+    const { data: envNPCs } = await supabase.from('npcs').select('npc_id').eq('environment_name', environmentName);
+    const totalNPCs = envNPCs?.length || 1;
+    const envNpcIds = envNPCs?.map(n => n.npc_id) || [];
 
-    const totalNPCs  = envNPCs?.length || 1;
-    const envNpcIds  = envNPCs?.map(n => n.npc_id) || [];
+    const { data: doneNPCs } = await supabase.from('player_npc_progress')
+      .select('npc_id').eq('player_id', playerId).eq('is_completed', true).in('npc_id', envNpcIds);
+    const percentage = Math.round(((doneNPCs?.length || 0) / totalNPCs) * 100);
+    const isCompleted = percentage === 100;
+    const now = new Date().toISOString();
 
-    const { data: completedNPCs } = await supabase
-      .from('player_npc_progress')
-      .select('npc_id')
-      .eq('player_id', playerId)
-      .eq('is_completed', true)
-      .in('npc_id', envNpcIds);
-
-    const completedCount = completedNPCs?.length || 0;
-    const percentage     = Math.round((completedCount / totalNPCs) * 100);
-    const isCompleted    = percentage === 100;
-    const now            = new Date().toISOString();
-
-    const { error: upsertError } = await supabase
-      .from('player_environment_progress')
-      .upsert({
-        player_id:             playerId,
-        environment_name:      environmentName,
-        completion_percentage: percentage,
-        is_completed:          isCompleted,
-        last_updated:          now,
-      }, { onConflict: 'player_id,environment_name' });
-
-    if (upsertError) throw upsertError;
+    const { error: upsertErr } = await supabase.from('player_environment_progress').upsert(
+      { player_id: playerId, environment_name: environmentName, completion_percentage: percentage, is_completed: isCompleted, last_updated: now },
+      { onConflict: 'player_id,environment_name' }
+    );
+    if (upsertErr) throw upsertErr;
 
     if (isCompleted) {
-      const UNLOCK_ORDER = { village: 'forest', forest: 'castle' };
-      const nextEnv      = UNLOCK_ORDER[environmentName];
-
-      if (nextEnv) {
-        await supabase
-          .from('player_environment_progress')
-          .upsert({
-            player_id:             playerId,
-            environment_name:      nextEnv,
-            completion_percentage: 0,
-            is_completed:          false,
-            is_unlocked:           true,
-            last_updated:          now,
-          }, { onConflict: 'player_id,environment_name' });
+      const NEXT = { village: 'forest', forest: 'castle' };
+      const next = NEXT[environmentName];
+      if (next) {
+        await supabase.from('player_environment_progress').upsert(
+          { player_id: playerId, environment_name: next, completion_percentage: 0, is_completed: false, is_unlocked: true, last_updated: now },
+          { onConflict: 'player_id,environment_name' }
+        );
       }
     }
   }
