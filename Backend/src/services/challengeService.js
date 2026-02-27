@@ -4,6 +4,7 @@ const ITEMS_PER_ROUND = 4;
 
 class ChallengeService {
 
+  // Returns ALL quests where npc_id matches — simple query, no joins that could silently fail
   async getQuestsByNpc(npcId) {
     const { data, error } = await supabase
       .from('quests')
@@ -77,6 +78,17 @@ class ChallengeService {
     selected.push(...remaining.slice(0, needed));
 
     return selected.sort(() => Math.random() - 0.5);
+  }
+
+  // ALL items in order — used by ForestScenePage backpack (scenario game)
+  async getAllChallengeItems(questId) {
+    const { data, error } = await supabase
+      .from('challenge_items')
+      .select('item_id, quest_id, label, image_key, word_left, word_right, correct_zone, is_correct, display_order')
+      .eq('quest_id', questId)
+      .order('display_order');
+    if (error) throw error;
+    return data || [];
   }
 
   async getDialogues(questId) {
