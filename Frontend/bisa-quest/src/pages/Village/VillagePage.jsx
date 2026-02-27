@@ -142,10 +142,11 @@ const VillagePage = () => {
     };
 
     // ── Start quest ───────────────────────────────────────────────────────────
-    // Fetches ALL quests for the NPC, splits them by game_mechanic, then picks
-    // a random matching pair (drag_drop index N ↔ item_association index N).
-    // Both IDs are passed to DragAndDrop so it can hand iaQuestId to
-    // ItemAssociation after the player completes Step 1.
+    // Fetches ALL quests for the NPC and identifies:
+    //   - livingRoomQuestId  : drag_drop,        scene_type = living_room  (Step 1a)
+    //   - kitchenQuestId     : drag_drop,        scene_type = kitchen      (Step 1b)
+    //   - iaQuestId          : item_association, any scene                 (Step 2)
+    // All three are passed through so DragAndDrop can chain the scenes.
     const handleStartQuest = async () => {
         if (!selectedNPC || !playerId) return;
 
@@ -153,51 +154,35 @@ const VillagePage = () => {
 
         const dbNpcId = selectedNPC.dbNpcId || NPC_DB_ID[selectedNPC.npcId] || selectedNPC.npcId;
 
-        let resolvedQuestId   = null;   // drag_drop quest ID   (Step 1)
-        let resolvedIaQuestId = null;   // item_association ID  (Step 2)
+        let resolvedQuestId        = null;   // living_room drag_drop quest ID
+        let resolvedKitchenQuestId = null;   // kitchen     drag_drop quest ID
+        let resolvedIaQuestId      = null;   // item_association quest ID
 
         try {
             const res = await fetch(`${API}/api/challenge/npc/${dbNpcId}/quest`);
             if (res.ok) {
-                const body       = await res.json();
-                const { data }   = body;
+                const { data } = await res.json();
 
                 if (Array.isArray(data) && data.length) {
 
-                    // ── Split by mechanic ─────────────────────────────────────
-                    const ddQuests = data.filter(q => q.game_mechanic === "drag_drop");
-                    const iaQuests = data.filter(q => q.game_mechanic === "item_association");
+                    // ── Split by mechanic + scene ─────────────────────────────
+                    const livingRoomDD = data.find(q =>
+                        q.game_mechanic === "drag_drop" && q.scene_type === "living_room"
+                    );
+                    const kitchenDD = data.find(q =>
+                        q.game_mechanic === "drag_drop" && q.scene_type === "kitchen"
+                    );
+                    const iaQuest = data.find(q =>
+                        q.game_mechanic === "item_association"
+                    );
 
-                    // ── Pick a random index that has dialogue rows ─────────────
-                    // Shuffle the drag_drop list first, then find the first entry
-                    // that has dialogue (defensive check against empty DB rows).
-                    const shuffled = [...ddQuests].sort(() => Math.random() - 0.5);
+                    resolvedQuestId        = livingRoomDD?.quest_id ?? null;
+                    resolvedKitchenQuestId = kitchenDD?.quest_id    ?? null;
+                    resolvedIaQuestId      = iaQuest?.quest_id      ?? null;
 
-                    for (const ddQuest of shuffled) {
-                        const check = await fetch(`${API}/api/challenge/quest/${ddQuest.quest_id}/dialogues`);
-                        if (check.ok) {
-                            const json = await check.json();
-                            if (Array.isArray(json.data) && json.data.length > 0) {
-                                resolvedQuestId = ddQuest.quest_id;
-
-                                // Find the matching IA quest at the same position
-                                // (both lists are ordered by quest_id so index aligns theme)
-                                const ddIndex = ddQuests.indexOf(ddQuest);
-                                resolvedIaQuestId = iaQuests[ddIndex]?.quest_id ?? iaQuests[0]?.quest_id ?? null;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Fallback — no dialogue found, just use first of each
-                    if (!resolvedQuestId) {
-                        resolvedQuestId   = ddQuests[0]?.quest_id ?? data[0].quest_id;
-                        resolvedIaQuestId = iaQuests[0]?.quest_id ?? null;
-                        console.warn("[VillagePage] No quests with dialogues found. Using first available.");
-                    }
-
-                    console.log("[VillagePage] drag_drop quest →", resolvedQuestId);
-                    console.log("[VillagePage] item_association quest →", resolvedIaQuestId);
+                    console.log("[VillagePage] drag_drop (living_room) quest →", resolvedQuestId);
+                    console.log("[VillagePage] drag_drop (kitchen) quest     →", resolvedKitchenQuestId);
+                    console.log("[VillagePage] item_association quest         →", resolvedIaQuestId);
                 }
             } else {
                 console.warn("[VillagePage] Quest fetch failed:", res.status);
@@ -209,17 +194,18 @@ const VillagePage = () => {
         setQuestLoading(false);
 
         const state = {
-            questId:   resolvedQuestId,    // drag_drop quest   → used by DragAndDrop
-            iaQuestId: resolvedIaQuestId,  // item_assoc quest  → passed through to ItemAssociation
-            npcId:     dbNpcId,
-            npcName:   selectedNPC.name,
-            returnTo:  "/student/village",
+            questId:        resolvedQuestId,         // living room drag_drop
+            kitchenQuestId: resolvedKitchenQuestId,  // kitchen drag_drop
+            iaQuestId:      resolvedIaQuestId,        // item_association (final)
+            npcId:          dbNpcId,
+            npcName:        selectedNPC.name,
+            returnTo:       "/student/village",
+            sceneType:      "living_room",            // always start from living room
         };
 
         if      (selectedNPC.quest === "word_matching")       navigate("/student/wordMatching",       { state });
         else if (selectedNPC.quest === "sentence_completion") navigate("/student/sentenceCompletion", { state });
-        else if (selectedNPC.quest === "word_association")    navigate("/student/dragAndDrop",        { state });
-        //                                                              ↑ was "/house" — updated to match App.jsx route
+        else if (selectedNPC.quest === "word_association")    navigate("/student/house",              { state });
     };
 
     if (langLoading || charLoading) return (

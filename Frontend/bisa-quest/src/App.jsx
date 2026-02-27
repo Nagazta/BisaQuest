@@ -39,7 +39,7 @@ function App() {
             <Route path="/student/castle" element={<CastlePage />} />
 
             {/* ── Game / challenge pages ─────────────────────────────────── */}
-            <Route path="/house" element={<HousePage />} />
+            <Route path="/student/house" element={<HousePage />} />
             <Route path="/forest/scene" element={<ForestScenePage />} />
             <Route path="/student/dragAndDrop"       element={<DragAndDrop />} />
             <Route path="/student/item-association"  element={<ItemAssociation />} />
