@@ -6,6 +6,13 @@ import DialogueBox     from "../components/instructions/DialogueBox";
 import ClickableItem   from "./components/ClickableItem";
 import LigayaCharacter from "../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
 import Arrow           from "../assets/images/signs/arrow.png";
+import Trash1 from "../assets/items/trash 1.png";
+import FoodWrappers from "../assets/items/foodWrappers.png";
+import FoodWrappers2 from "../assets/items/foodWrappers2.png"; 
+import BroomImage from "../assets/items/broom.png";
+import SpilledWater from "../assets/items/spilledWater.png";
+import Water from "../assets/items/water.png";
+
 
 import { getPlayerId, saveNPCProgress } from "../utils/playerStorage";
 import { DEFAULT_BACKGROUND, SCENE_BACKGROUNDS, IA_ITEM_POSITIONS } from "./dragDropConstants";
@@ -59,6 +66,8 @@ const ItemAssociation = () => {
   const [itemHint,     setItemHint]     = useState(null);
   const [lockedId,     setLockedId]     = useState(null);
   const [completed,    setCompleted]    = useState(false);
+
+  const [isSweeping, setIsSweeping] = useState(false); // broom animation
 
   const phaseTimer = useRef(null);
 
@@ -157,9 +166,18 @@ const ItemAssociation = () => {
 
     if (isCorrect) {
       setLockedId(item.id);
+
+      // Start sweep animation only for Round 1
+      if (currentRound === 0) {
+        setIsSweeping(true);
+      }
+
       setPhase(Phase.CORRECT);
 
       phaseTimer.current = setTimeout(() => {
+
+        setIsSweeping(false)
+
         const next = currentRound + 1;
         if (next >= TOTAL_ROUNDS) {
           setPhase(Phase.COMPLETE);
@@ -173,7 +191,7 @@ const ItemAssociation = () => {
           setPhase(Phase.SCENARIO);
           setRoundKey(k => k + 1); // ← force ClickableItem remount
         }
-      }, 1800);
+      }, 900);
     } else {
       setPhase(Phase.WRONG);
       phaseTimer.current = setTimeout(() => {
@@ -240,6 +258,27 @@ const ItemAssociation = () => {
               }`} />
             ))}
           </div>
+        )}
+
+        {/* Scene images (all rounds) */}
+        {phase !== Phase.INTRO && correctItem?.sceneImages?.map((img, index) => (
+          <img
+            key={index}
+            src={img}
+            alt="Scene element"
+            className={`ia-scene ia-scene-${currentRound}-${index}`}
+            draggable={false}
+          />
+        ))}
+
+        {/* Broom sweep animation */}
+        {isSweeping && currentRound === 0 && (
+          <img
+            src={BroomImage}
+            alt="Broom sweeping"
+            className="ia-broom-sweep"
+            draggable={false}
+          />
         )}
 
         {/* Items — key includes roundKey so cards fully remount each round */}
@@ -313,7 +352,9 @@ const buildFallbackRounds = () => {
       { id:"r1c",  label:"Broom / Walis",     isCorrect:true,
         roundPrompt:"Floor is full of trash! Which tool sweeps it?",
         roundReprompt:"Not quite! Which sweeps?",
-        hint:"Yes! A broom sweeps the floor!" },
+        hint:"Yes! A broom sweeps the floor!",
+        sceneImages: [Trash1, FoodWrappers, FoodWrappers2]  // show dirty floor
+      },
       { id:"r1w1", label:"Bucket / Timba",    isCorrect:false, roundPrompt:null, roundReprompt:null, hint:"Bucket holds water!" },
       { id:"r1w2", label:"Pillow / Almohada", isCorrect:false, roundPrompt:null, roundReprompt:null, hint:"Pillow is for sleeping!" },
       { id:"r1w3", label:"Book / Libro",      isCorrect:false, roundPrompt:null, roundReprompt:null, hint:"Book is for reading!" },
@@ -322,7 +363,8 @@ const buildFallbackRounds = () => {
       { id:"r2c",  label:"Wet Rag / Trapo",   isCorrect:true,
         roundPrompt:"Table is wet! Which tool wipes it?",
         roundReprompt:"Not that one! Which wipes?",
-        hint:"Correct! Wet rag wipes surfaces!" },
+        hint:"Correct! Wet rag wipes surfaces!",
+        sceneImages: [SpilledWater, Water] },
       { id:"r2w1", label:"Broom / Walis",     isCorrect:false, roundPrompt:null, roundReprompt:null, hint:"Broom sweeps dry floors!" },
       { id:"r2w2", label:"Fork / Tinidor",    isCorrect:false, roundPrompt:null, roundReprompt:null, hint:"Fork is for eating!" },
       { id:"r2w3", label:"Blanket / Habol",   isCorrect:false, roundPrompt:null, roundReprompt:null, hint:"Blanket keeps you warm!" },
