@@ -10,10 +10,7 @@ import broomImage from "../../assets/items/broom.png";
 import coconutHuskImage from "../../assets/items/coconuthusk.png";
 import spilledWaterImage from "../../assets/items/spilledWater.png";
 import rag2Image from "../../assets/items/rag2.png";
-import stuffedToyImage from "../../assets/items/stuffedToy.png";
-import booksImage from "../../assets/items/books.png";
-import foodWrappersImage from "../../assets/items/foodWrappers.png";
-import "./HousePage.css";
+import "./ItemAssociationFlow.css";
 
 const FALLBACK_STEPS = [
   "Hi....! I was supposed to clean the living room before my mom comes home. Can you help me clean up?",
@@ -95,15 +92,14 @@ const HousePage = () => {
       <div className="scene-wrapper">
         <img src={houseBackground} alt="House" className="house-background" />
 
-        <img src={trashImage} alt="Trash" className="trash-image" />
-        <img src={broomImage} alt="Broom" className="broom-image" />
-        <img src={coconutHuskImage} alt="Coconut Husk" className="coconuthusk-image" />
-        <img src={spilledWaterImage} alt="Spilled Water" className="spilledwater-image" />
-        <img src={rag2Image} alt="Rag" className="rag2-image" />
-        <img src={stuffedToyImage} alt="Stuffed Toy" className="stuffedtoy-image" />
-        <img src={booksImage} alt="Books" className="books" />
-        <img src={foodWrappersImage} alt="Food Wrappers" className="foodWrappers"/>
+        <img src={trashImage} alt="Trash" className="game-item trash-image" />
+        <img src={broomImage} alt="Broom" className="game-item broom-image" />
+        <img src={coconutHuskImage} alt="Coconut Husk" className="game-item coconuthusk-image" />
+        <img src={spilledWaterImage} alt="Spilled Water" className="game-item spilledwater-image" />
+        <img src={rag2Image} alt="Rag" className="game-item rag2-image" />
 
+        
+        
       </div>
 
       <Button variant="back" onClick={handleBack}>← Back</Button>

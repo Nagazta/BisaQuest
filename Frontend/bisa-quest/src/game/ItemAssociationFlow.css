@@ -96,7 +96,7 @@
   position: absolute;
   bottom: 103px;
   right: 750px;
-  width: 57px;
+  width: 52px;
 }
 
 .rag2-image {
@@ -104,25 +104,15 @@
   bottom: 250px;
   left: 495px;
   width: 30px;
+  cursor: pointer;
 }
 
-.stuffedtoy-image {
-  position: absolute;
-  bottom: 145px;
-  right: 495px;
-  width: 95px;
+.game-item {
+  transition: filter 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
 }
 
-.books { 
-  position: absolute;
-  bottom: 110px;
-  right: 650px;
-  width: 110px; 
-}
-
-.foodWrappers { 
-  position: absolute;
-  bottom: 25px;   
-  right: 650px;   
-  width: 130px; 
+.game-item:hover {
+  filter: drop-shadow(0 0 12px #ffd700);
+  transform: scale(1.05);
 }
