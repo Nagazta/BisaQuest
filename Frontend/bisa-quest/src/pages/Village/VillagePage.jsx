@@ -149,10 +149,12 @@ const VillagePage = () => {
 
         const dbNpcId = selectedNPC.dbNpcId || NPC_DB_ID[selectedNPC.npcId] || selectedNPC.npcId;
 
-        let resolvedQuestId        = null;   // living_room drag_drop
-        let resolvedKitchenQuestId = null;   // kitchen     drag_drop
-        let resolvedBedroomQuestId = null;   // bedroom     drag_drop  ← NEW
-        let resolvedIaQuestId      = null;   // item_association
+        let resolvedQuestId          = null;  // drag_drop    living_room
+        let resolvedKitchenQuestId   = null;  // drag_drop    kitchen
+        let resolvedBedroomQuestId   = null;  // drag_drop    bedroom
+        let resolvedIaLivingQuestId  = null;  // item_association living_room
+        let resolvedIaKitchenQuestId = null;  // item_association kitchen
+        let resolvedIaBedroomQuestId = null;  // item_association bedroom
 
         try {
             const res = await fetch(`${API}/api/challenge/npc/${dbNpcId}/quest`);
@@ -160,30 +162,41 @@ const VillagePage = () => {
                 const { data } = await res.json();
 
                 if (Array.isArray(data) && data.length) {
-
-                    // Split by mechanic + scene
+                    // ── drag_drop ──────────────────────────────────────────
                     const livingRoomDD = data.find(q =>
                         q.game_mechanic === "drag_drop" && q.scene_type === "living_room"
                     );
                     const kitchenDD = data.find(q =>
                         q.game_mechanic === "drag_drop" && q.scene_type === "kitchen"
                     );
-                    const bedroomDD = data.find(q =>           // ← NEW
+                    const bedroomDD = data.find(q =>
                         q.game_mechanic === "drag_drop" && q.scene_type === "bedroom"
                     );
-                    const iaQuest = data.find(q =>
-                        q.game_mechanic === "item_association"
+
+                    // ── item_association — one per scene ───────────────────
+                    const iaLiving = data.find(q =>
+                        q.game_mechanic === "item_association" && q.scene_type === "living_room"
+                    );
+                    const iaKitchen = data.find(q =>
+                        q.game_mechanic === "item_association" && q.scene_type === "kitchen"
+                    );
+                    const iaBedroom = data.find(q =>
+                        q.game_mechanic === "item_association" && q.scene_type === "bedroom"
                     );
 
-                    resolvedQuestId        = livingRoomDD?.quest_id ?? null;
-                    resolvedKitchenQuestId = kitchenDD?.quest_id    ?? null;
-                    resolvedBedroomQuestId = bedroomDD?.quest_id    ?? null;   // ← NEW
-                    resolvedIaQuestId      = iaQuest?.quest_id      ?? null;
+                    resolvedQuestId          = livingRoomDD?.quest_id ?? null;
+                    resolvedKitchenQuestId   = kitchenDD?.quest_id    ?? null;
+                    resolvedBedroomQuestId   = bedroomDD?.quest_id    ?? null;
+                    resolvedIaLivingQuestId  = iaLiving?.quest_id     ?? null;
+                    resolvedIaKitchenQuestId = iaKitchen?.quest_id    ?? null;
+                    resolvedIaBedroomQuestId = iaBedroom?.quest_id    ?? null;
 
-                    console.log("[VillagePage] drag_drop (living_room) →", resolvedQuestId);
-                    console.log("[VillagePage] drag_drop (kitchen)     →", resolvedKitchenQuestId);
-                    console.log("[VillagePage] drag_drop (bedroom)     →", resolvedBedroomQuestId);
-                    console.log("[VillagePage] item_association        →", resolvedIaQuestId);
+                    console.log("[VillagePage] drag_drop    living_room →", resolvedQuestId);
+                    console.log("[VillagePage] drag_drop    kitchen     →", resolvedKitchenQuestId);
+                    console.log("[VillagePage] drag_drop    bedroom     →", resolvedBedroomQuestId);
+                    console.log("[VillagePage] item_assoc   living_room →", resolvedIaLivingQuestId);
+                    console.log("[VillagePage] item_assoc   kitchen     →", resolvedIaKitchenQuestId);
+                    console.log("[VillagePage] item_assoc   bedroom     →", resolvedIaBedroomQuestId);
                 }
             } else {
                 console.warn("[VillagePage] Quest fetch failed:", res.status);
@@ -192,17 +205,29 @@ const VillagePage = () => {
             console.error("[VillagePage] Could not fetch questId:", err);
         }
 
-        setQuestLoading(false);
+        // ── Strict alternating sequence: DD → IA → DD → IA → DD → IA ────────
+        const questSequence = [
+            { type: "drag_drop",        sceneType: "living_room", questId: resolvedQuestId           },
+            { type: "item_association", sceneType: "living_room", questId: resolvedIaLivingQuestId   },
+            { type: "drag_drop",        sceneType: "kitchen",     questId: resolvedKitchenQuestId     },
+            { type: "item_association", sceneType: "kitchen",     questId: resolvedIaKitchenQuestId   },
+            { type: "drag_drop",        sceneType: "bedroom",     questId: resolvedBedroomQuestId     },
+            { type: "item_association", sceneType: "bedroom",     questId: resolvedIaBedroomQuestId   },
+        ];
 
         const state = {
-            questId:           resolvedQuestId,
-            kitchenQuestId:    resolvedKitchenQuestId,
-            bedroomQuestId:    resolvedBedroomQuestId,   // ← NEW
-            iaQuestId:         resolvedIaQuestId,
-            npcId:             dbNpcId,
-            npcName:           selectedNPC.name,
-            returnTo:          "/student/village",
-            sceneType:         "living_room",
+            questId:               resolvedQuestId,
+            kitchenQuestId:        resolvedKitchenQuestId,
+            bedroomQuestId:        resolvedBedroomQuestId,
+            iaQuestId:             resolvedIaLivingQuestId,   // legacy fallback
+            iaKitchenQuestId:      resolvedIaKitchenQuestId,
+            iaBedroomQuestId:      resolvedIaBedroomQuestId,
+            npcId:                 dbNpcId,
+            npcName:               selectedNPC.name,
+            returnTo:              "/student/village",
+            sceneType:             "living_room",
+            questSequence,
+            sequenceIndex:         0,
         };
 
         if      (selectedNPC.quest === "word_matching")       navigate("/student/wordMatching",       { state });

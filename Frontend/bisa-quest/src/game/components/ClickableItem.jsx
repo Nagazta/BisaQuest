@@ -6,7 +6,6 @@ const ClickableItem = ({ item, onClick, locked }) => {
   const [state,    setState]    = useState("idle");
   const [showAnim, setShowAnim] = useState(false);
 
-  // When parent locks this item (correct pick), force correct state + animation
   useEffect(() => {
     if (locked) {
       setState("correct");
@@ -31,7 +30,6 @@ const ClickableItem = ({ item, onClick, locked }) => {
   return (
     <div
       className={`ci-card ci-card--${state}`}
-      style={{ left: `${item.x}%`, top: `${item.y}%` }}
       onClick={handleClick}
       role="button"
       tabIndex={state === "correct" ? -1 : 0}

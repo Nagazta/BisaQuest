@@ -20,11 +20,13 @@ const HousePage = () => {
 
   const questId        = location.state?.questId        || null;
   const kitchenQuestId = location.state?.kitchenQuestId || null;
-  const bedroomQuestId = location.state?.bedroomQuestId || null;  // ← NEW
+  const bedroomQuestId = location.state?.bedroomQuestId || null;
   const iaQuestId      = location.state?.iaQuestId      || null;
   const npcId          = location.state?.npcId          || "village_npc_2";
   const npcName        = location.state?.npcName        || "Ligaya";
   const sceneType      = location.state?.sceneType      || "living_room";
+  const questSequence  = location.state?.questSequence  || [];
+  const sequenceIndex  = location.state?.sequenceIndex  ?? 0;
 
   const API = import.meta.env.VITE_API_URL || "";
 
@@ -70,12 +72,14 @@ const HousePage = () => {
       state: {
         questId,
         kitchenQuestId,
-        bedroomQuestId,   // ← carry through
+        bedroomQuestId,
         iaQuestId,
         npcId,
         npcName,
-        returnTo:  "/student/village",
-        sceneType, // "living_room" | "kitchen" | "bedroom"
+        returnTo:      "/student/village",
+        sceneType,
+        questSequence,
+        sequenceIndex,
       },
     });
   };

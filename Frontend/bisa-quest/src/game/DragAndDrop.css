@@ -1,8 +1,3 @@
-/* ─── DragAndDrop.css ────────────────────────────────────────────────────────
-   Main game screen — house background, NPC section, complete button.
-   ─────────────────────────────────────────────────────────────────────────── */
-
-/* ── Wrapper: full screen ───────────────────────────────────── */
 .dad-wrapper {
   width:      100vw;
   height:     100vh;
@@ -13,7 +8,6 @@
   overflow:   hidden;
 }
 
-/* ── Container: 16:9 game canvas ───────────────────────────── */
 .dad-container {
   position:     relative;
   width:        100%;
@@ -27,7 +21,6 @@
   user-select:  none;
 }
 
-/* ── Background image ───────────────────────────────────────── */
 .dad-bg {
   position:        absolute;
   inset:           0;
@@ -38,7 +31,6 @@
   user-select:     none;
 }
 
-/* ── Back button ────────────────────────────────────────────── */
 .dad-back-btn {
   position: absolute;
   top:      16px;
@@ -46,7 +38,6 @@
   z-index:  50;
 }
 
-/* ── NPC + DialogueBox section — bottom left ────────────────── */
 .dad-npc-section {
   position: absolute;
   bottom:   16px;
@@ -56,13 +47,12 @@
   animation: npc-enter 0.5s ease both;
 }
 
-/* Make NPC bigger */
 .dad-npc-img {
-  width:      360px;   /* increase this — was 110px */
+  width:      360px;   
   height:     auto;
   object-fit: contain;
   position:   absolute;
-  bottom:     calc(100% - 80px); /* increase this too so more of her hides behind box */
+  bottom:     calc(100% - 80px); 
   left:       1px;
   z-index:    -39;
   animation:  npc-bob 3s ease-in-out infinite;
@@ -70,7 +60,6 @@
 }
 
 
-/* ── Override DialogueBox absolute positioning ── */
 .dad-npc-section .dialogue-box {
   position:   relative;
   bottom:     auto;
@@ -78,8 +67,8 @@
   transform:  none;
   width:      100%;
   max-width:  100%;
-  min-height: 150px;  /* ← set minimum height */
-  height:     180px;  /* ← set fixed height, or remove for auto */
+  min-height: 150px;  
+  height:     180px; 
 }
 
 .dad-npc-section .dialogue-content {
