@@ -265,7 +265,7 @@ const DragAndDrop = () => {
   if (loading) return (
     <div className="dad-wrapper"><div className="dad-container">
       <img src={DEFAULT_BACKGROUND} alt="Loading" className="dad-bg" draggable={false} />
-      <div className="dad-loading"><span>Loading game... / Gi-load ang dula...</span></div>
+      <div className="dad-loading"><span>Gi-load ang dula...</span></div>
     </div></div>
   );
 
@@ -273,7 +273,7 @@ const DragAndDrop = () => {
     <div className="dad-wrapper"><div className="dad-container">
       <img src={DEFAULT_BACKGROUND} alt="Error" className="dad-bg" draggable={false} />
       <div className="dad-error">
-        <p>Could not load the game. / Dili ma-load ang dula.</p>
+        <p>Dili ma-load ang dula.</p>
         <Button variant="back" onClick={handleBack}>← Back</Button>
       </div>
     </div></div>
@@ -283,7 +283,7 @@ const DragAndDrop = () => {
     <div className="dad-wrapper"><div className="dad-container">
       <img src={DEFAULT_BACKGROUND} alt="Empty" className="dad-bg" draggable={false} />
       <div className="dad-error">
-        <p>No items found. / Walay items nga nakuha.</p>
+        <p>Walay items nga nakuha.</p>
         <Button variant="back" onClick={handleBack}>← Back</Button>
       </div>
     </div></div>
@@ -358,18 +358,18 @@ const DragAndDrop = () => {
               <div className="dad-completion-stars">⭐⭐⭐</div>
               {sceneType === "bedroom" ? (
                 <>
-                  <h2>All scenes done! / Natapos na ang tanan! 🎉</h2>
-                  <p>Moving to final challenge... / Padayon sa katapusang hamon...</p>
+                  <h2>Natapos na ang tanan!</h2>
+                  <p>Padayon sa final challenge...</p>
                 </>
               ) : sceneType === "living_room" ? (
                 <>
-                  <h2>Living room done! / Natapos na ang sala!</h2>
-                  <p>Next: Kitchen / Sunod: Kusina 🍳</p>
+                  <h2>Natapos na ang sala!</h2>
+                  <p>Sunod: Kusina </p>
                 </>
               ) : (
                 <>
-                  <h2>Kitchen done! / Natapos na ang kusina!</h2>
-                  <p>Next: Bedroom / Sunod: Kwarto 🛏️</p>
+                  <h2>Natapos na ang kusina!</h2>
+                  <p>Sunod: Kwarto </p>
                 </>
               )}
             </div>
@@ -381,7 +381,7 @@ const DragAndDrop = () => {
           onClick={handleComplete}
           disabled={!allCorrect}
         >
-          ✓ Done! / Completo na!
+          Completo na!
         </button>
 
       </div>
