@@ -27,28 +27,30 @@
   height: 320px;
   object-fit: contain;
   position: relative;
-  z-index: 1;
-  margin-bottom: -100px;
+  z-index: -12;           /* above dialogue */
+  margin-bottom: -130px; /* overlap into dialogue */
   margin-left: 20px;
+  pointer-events: none;
 }
 
 .house-dialogue {
-  width: 380px;  /* reduce from 1000px to fit the screen properly */
-  margin-bottom: 50px;
+  width: 240px;
+  margin-bottom: 30px;
+  min-height: 240px;
   position: relative;
-  z-index: 10;
+  z-index: 11;           /* below NPC image */
 }
 
-/* Next Arrow Button */
+/* Arrow button — now rendered inside .house-dialogue, positioned inside the box */
 .dialogue-next-btn {
   position: absolute;
-  bottom: -20px;
-  margin-left: 320px;
+  bottom: 16px;
+  right: 0px;
   background: none;
   border: none;
   cursor: pointer;
   padding: 0;
-  z-index: 12;
+  z-index: 15;
   transition: transform 0.2s ease;
 }
 
@@ -57,16 +59,16 @@
 }
 
 .dialogue-arrow-img {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   object-fit: contain;
 }
-
 
 /* Yes / No Choices */
 .dialogue-choices {
   gap: 10px;
-  margin-top: 40px;
+  margin-top: 12px;
   display: flex;
   justify-content: flex-start;
+  padding: 0 16px 16px;
 }
