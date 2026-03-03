@@ -2,33 +2,52 @@
 //  dragDropUtils.js
 //  Pure helper functions for the Drag & Drop game.
 // ─────────────────────────────────────────────────────────────────────────────
-
 import { ITEM_IMAGE_MAP } from "./dragDropConstants";
 
 /**
  * Resolves the image for an item by checking if its label (lowercased)
- * contains any key from ITEM_IMAGE_MAP.
+ * contains any key from ITEM_IMAGE_MAP — matched as whole words only
+ * to prevent collisions like "pants" matching "pan".
  *
- * @param {string} label  - e.g. "Broom / Walis"
+ * @param {string} label  - e.g. "Pants / Sinina"
  * @returns {string|null} - imported image URL or null
  */
 export const resolveItemImage = (label = "") => {
   const lower = label.toLowerCase();
-  const matchedKey = Object.keys(ITEM_IMAGE_MAP).find(key => lower.includes(key));
+  const matchedKey = Object.keys(ITEM_IMAGE_MAP).find(
+    key => new RegExp(`\\b${key}\\b`).test(lower)
+  );
   return matchedKey ? ITEM_IMAGE_MAP[matchedKey] : null;
 };
 
 /**
- * Returns the NPC dialogue box text based on current game state.
+ * Returns NPC dialogue text based on current game state.
+ *
+ * Wrong feedback tells the player WHERE the item belongs
+ * using the zone label from ZONE_REGISTRY, e.g.:
+ *   "Pants / Sinina belongs to Wardrobe / Aparador! Try again!"
+ *
+ * @param {{ type: "correct"|"wrong", label: string, correctZone?: string } | null} feedback
+ * @param {boolean} allCorrect
+ * @param {string}  instructions
+ * @param {Record<string, { label: string }>} zoneRegistry  - pass ZONE_REGISTRY in
+ * @returns {string}
  */
-export const getDialogueText = (feedback, allCorrect, instructions) => {
+export const getDialogueText = (feedback, allCorrect, instructions, zoneRegistry = {}) => {
   if (allCorrect)
-    return "Great job! You got them all! / Maayo kaayo! Nahuman na nimo ang tanan! 🎉";
+    return "Ayos kaayo! You got them all! Nahuman na nimo! 🎉";
   if (feedback?.type === "correct")
-    return `Correct! "${feedback.label}" — Right place! / Husto! Tama ang lugar! ✓`;
-  if (feedback?.type === "wrong")
-    return "Wrong place! Try again! / Sayop ang lugar! Sulayi pag-usab! ✗";
-  return instructions || "Drag each item to the correct place! / I-drag ang bawat bagay sa tamang lugar!";
+    return `Correct! "${feedback.label}" — Tama ang lugar! ✓`;
+  if (feedback?.type === "wrong") {
+    const zoneLabel = feedback.correctZone
+      ? zoneRegistry[feedback.correctZone]?.label
+      : null;
+    if (zoneLabel) {
+      return `Sayop! Ang "${feedback.label}" belongs sa ${zoneLabel}! Try again! ✗`;
+    }
+    return `Sayop ang lugar! Try again! ✗`;
+  }
+  return instructions || "Drag each item to its correct place! I-drag ang bawat bagay sa tamang lugar!";
 };
 
 /**

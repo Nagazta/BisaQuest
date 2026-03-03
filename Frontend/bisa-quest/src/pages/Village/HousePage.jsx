@@ -18,12 +18,13 @@ const HousePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // VillagePage must pass questId (living room drag_drop) AND kitchenQuestId + iaQuestId
   const questId        = location.state?.questId        || null;
   const kitchenQuestId = location.state?.kitchenQuestId || null;
+  const bedroomQuestId = location.state?.bedroomQuestId || null;  // ← NEW
   const iaQuestId      = location.state?.iaQuestId      || null;
   const npcId          = location.state?.npcId          || "village_npc_2";
   const npcName        = location.state?.npcName        || "Ligaya";
+  const sceneType      = location.state?.sceneType      || "living_room";
 
   const API = import.meta.env.VITE_API_URL || "";
 
@@ -33,7 +34,6 @@ const HousePage = () => {
 
   useEffect(() => {
     if (!questId) {
-      console.warn("[HousePage] No questId — using fallback dialogue.");
       setSteps(FALLBACK_STEPS);
       setLoading(false);
       return;
@@ -44,13 +44,7 @@ const HousePage = () => {
         const res = await fetch(`${API}/api/challenge/quest/${questId}/dialogues`);
         if (!res.ok) throw new Error(`Dialogue fetch failed: ${res.status}`);
         const { data } = await res.json();
-
-        if (Array.isArray(data) && data.length === 0) {
-          console.warn(`[HousePage] no dialogues for quest ${questId}`);
-          setSteps(FALLBACK_STEPS);
-        } else {
-          setSteps(data.map(row => row.dialogue_text));
-        }
+        setSteps(Array.isArray(data) && data.length ? data.map(r => r.dialogue_text) : FALLBACK_STEPS);
       } catch (err) {
         console.error("[HousePage] Dialogue load error:", err);
         setSteps(FALLBACK_STEPS);
@@ -62,6 +56,9 @@ const HousePage = () => {
     loadDialogues();
   }, [questId, API]);
 
+  // Reset step when questId changes (kitchen/bedroom reuse this page)
+  useEffect(() => { setStep(0); }, [questId]);
+
   const isLastStep = steps.length > 0 && step === steps.length - 1;
 
   const handleBack = () => navigate("/student/village", { state: { questId } });
@@ -71,13 +68,14 @@ const HousePage = () => {
   const handleYes = () => {
     navigate("/student/dragAndDrop", {
       state: {
-        questId,           // living room drag_drop quest
-        kitchenQuestId,    // kitchen drag_drop quest
-        iaQuestId,         // final item_association quest
+        questId,
+        kitchenQuestId,
+        bedroomQuestId,   // ← carry through
+        iaQuestId,
         npcId,
         npcName,
         returnTo:  "/student/village",
-        sceneType: "living_room",  // always start at living room
+        sceneType, // "living_room" | "kitchen" | "bedroom"
       },
     });
   };
@@ -85,27 +83,17 @@ const HousePage = () => {
   return (
     <div className="house-container">
       <img src={houseBackground} alt="House" className="house-background" />
-
       <Button variant="back" onClick={handleBack}>← Back</Button>
 
       <div className="house-npc-section">
         <img src={LigayaCharacter} alt={npcName} className="house-npc-image" />
-
         <div className="house-dialogue">
           {loading ? (
             <DialogueBox title={npcName} text="..." showNextButton={false} />
           ) : steps.length === 0 ? (
-            <DialogueBox
-              title={npcName}
-              text="(No dialogue available – check questId or database)"
-              showNextButton={false}
-            />
+            <DialogueBox title={npcName} text="(No dialogue available)" showNextButton={false} />
           ) : (
-            <DialogueBox
-              title={npcName}
-              text={steps[step] || ""}
-              showNextButton={false}
-            />
+            <DialogueBox title={npcName} text={steps[step] || ""} showNextButton={false} />
           )}
 
           {!loading && !isLastStep && (
