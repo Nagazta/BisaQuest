@@ -1,74 +1,282 @@
+/* HousePage.css — supports all three phases:
+   intro → drag_drop → item_association
+   Dialogue bar comes from DialogueBox.css automatically. */
+
+/* ── Wrapper ─────────────────────────────────────────────────── */
 .house-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset:    0;
+  overflow: hidden;
 }
 
 .house-background {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  position:        absolute;
+  inset:           0;
+  width:           100%;
+  height:          100%;
+  object-fit:      cover;
+  object-position: center;
+  user-select:     none;
 }
 
-.house-npc-section {
-  position: fixed;
-  bottom: 0;
-  left: 40px;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 420px;
+/* ── Back button ─────────────────────────────────────────────── */
+.house-back {
+  position: absolute;
+  top:      16px;
+  left:     16px;
+  z-index:  50;
+}
+
+/* ── Scene label pill ────────────────────────────────────────── */
+.house-scene-label {
+  position:      absolute;
+  top:           10px;
+  left:          50%;
+  transform:     translateX(-50%);
+  background:    rgba(0,0,0,0.6);
+  color:         #fff;
+  font-size:     12px;
+  font-weight:   bold;
+  font-family:   'Pixelify Sans', sans-serif;
+  padding:       4px 14px;
+  border-radius: 20px;
+  border:        1px solid rgba(255,255,255,0.2);
+  z-index:       30;
+  white-space:   nowrap;
+}
+
+/* ── Debug button ────────────────────────────────────────────── */
+.house-debug-btn {
+  position:      absolute;
+  top:           8px;
+  right:         8px;
+  z-index:       200;
+  background:    rgba(0,0,0,0.55);
+  color:         #fff;
+  border:        1px solid rgba(255,255,255,0.3);
+  border-radius: 5px;
+  padding:       4px 10px;
+  font-size:     11px;
+  font-weight:   bold;
+  cursor:        pointer;
+}
+
+/* ── NPC — floats above the 90px dialogue bar ───────────────── */
+.house-npc-wrap {
+  position:       absolute;
+  left:           60px;
+  bottom:         90px;
+  z-index:        20;
+  pointer-events: none;
+  animation:      house-npc-bob 3s ease-in-out infinite;
 }
 
 .house-npc-image {
-  height: 320px;
+  height:     300px;
   object-fit: contain;
-  position: relative;
-  z-index: -12;           /* above dialogue */
-  margin-bottom: -130px; /* overlap into dialogue */
-  margin-left: 20px;
-  pointer-events: none;
+  filter:     drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
 }
 
-.house-dialogue {
-  width: 240px;
-  margin-bottom: 30px;
-  min-height: 240px;
-  position: relative;
-  z-index: 11;           /* below NPC image */
+@keyframes house-npc-bob {
+  0%, 100% { transform: translateY(0);    }
+  50%       { transform: translateY(-8px); }
 }
 
-/* Arrow button — now rendered inside .house-dialogue, positioned inside the box */
-.dialogue-next-btn {
+/* ── Drag & Drop layer — fills container ─────────────────────── */
+/* containerRef is attached here for % coordinate maths */
+.house-dd-layer {
   position: absolute;
-  bottom: 16px;
-  right: 0px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  z-index: 15;
-  transition: transform 0.2s ease;
+  inset:    0;
+  z-index:  110;
 }
 
-.dialogue-next-btn:hover {
-  transform: scale(1.15);
+/* ── Complete button — above the dialogue bar ────────────────── */
+.house-complete-btn {
+  position:       absolute;
+  bottom:         50px;
+  right:          20px;
+  z-index:        250;
+  font-family:    'Fredoka One', 'Nunito', cursive;
+  font-size:      16px;
+  font-weight:    700;
+  letter-spacing: 0.5px;
+  padding:        12px 28px;
+  border-radius:  14px;
+  border:         3px solid #2d2d2d;
+  cursor:         pointer;
+  transition:     background 0.2s ease, box-shadow 0.2s ease,
+                  transform 0.15s ease, opacity 0.2s ease;
 }
 
-.dialogue-arrow-img {
-  width: 44px;
-  height: 44px;
-  object-fit: contain;
+.house-complete-btn--disabled {
+  background: #d1d5db;
+  color:      #9ca3af;
+  box-shadow: 0 4px 0 #9ca3af;
+  cursor:     not-allowed;
+  opacity:    0.6;
 }
 
-/* Yes / No Choices */
-.dialogue-choices {
-  gap: 10px;
-  margin-top: 12px;
-  display: flex;
-  justify-content: flex-start;
-  padding: 0 16px 16px;
+.house-complete-btn--active {
+  background: #22c55e;
+  color:      #fff;
+  box-shadow: 0 5px 0 #15803d;
+  animation:  house-btn-pulse 1.6s ease-in-out infinite;
+}
+
+.house-complete-btn--active:hover {
+  background: #16a34a;
+  transform:  translateY(-2px);
+  box-shadow: 0 7px 0 #15803d;
+  animation:  none;
+}
+
+.house-complete-btn--active:active {
+  transform:  translateY(2px);
+  box-shadow: 0 2px 0 #15803d;
+}
+
+/* ── IA arrow next button (rightSlot mid-intro) ──────────────── */
+.house-next-btn {
+  width:         60px;
+  height:        60px;
+  background:    #FCD765;
+  border:        3px solid #3a2008;
+  border-radius: 50%;
+  font-size:     20px;
+  cursor:        pointer;
+  display:       flex;
+  align-items:   center;
+  justify-content: center;
+  transition:    transform 0.15s ease, background 0.15s ease;
+  box-shadow:    0 4px 0 #3a2008;
+}
+
+.house-next-btn:hover  { background: #ffe082; transform: translateY(-2px); }
+.house-next-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #3a2008; }
+
+/* ── Item Association 2×2 choices grid ──────────────────────── */
+.house-ia-grid {
+  position:              absolute;
+  top:                   8%;
+  right:                 2%;
+  width:                 36%;
+  display:               grid;
+  grid-template-columns: 1fr 1fr;
+  gap:                   10px;
+  padding:               8px;
+  z-index:               20;
+}
+
+/* ── IA scene images ─────────────────────────────────────────── */
+.house-ia-scene {
+  position:       absolute;
+  pointer-events: none;
+  z-index:        5;
+}
+
+/* Round 1 — trash positions */
+.house-ia-scene-0-0 { bottom: 2%;    left: 30%;   width: 11%; }
+.house-ia-scene-0-1 { bottom: 8%;    right: 38%;  width: 10%; }
+.house-ia-scene-0-2 { bottom: 15%;   left: 35%;   width: 13%; }
+
+/* Round 2 — water positions */
+.house-ia-scene-1-0 { bottom: 22.5%; left: 53.5%; width: 3.5%; }
+.house-ia-scene-1-1 { bottom: 23%;   left: 51%;   width: 4%;   }
+
+/* ── Broom sweep ─────────────────────────────────────────────── */
+.house-ia-broom {
+  position:       absolute;
+  bottom:         4%;
+  left:           -25%;
+  width:          200px;
+  z-index:        10;
+  pointer-events: none;
+  animation:      house-sweep 0.8s ease forwards;
+}
+
+/* ── Completion / transition overlay ────────────────────────── */
+/* Shared by DD done card and IA done card */
+.house-overlay {
+  position:        absolute;
+  inset:           0;
+  background:      rgba(0,0,0,0.55);
+  backdrop-filter: blur(3px);
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  z-index:         100;
+  animation:       house-overlay-in 0.3s ease both;
+}
+
+.house-card {
+  background:    #fffef5;
+  border:        4px solid #2d2d2d;
+  border-radius: 24px;
+  padding:       40px 56px;
+  text-align:    center;
+  box-shadow:    0 8px 0 #2d2d2d, 0 20px 60px rgba(0,0,0,0.4);
+  animation:     house-card-pop 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+.house-card-stars {
+  font-size:     48px;
+  line-height:   1;
+  margin-bottom: 12px;
+  animation:     house-stars-spin 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
+}
+
+.house-card h2 {
+  font-family:    'Fredoka One', cursive;
+  font-size:      32px;
+  color:          #15803d;
+  margin:         0 0 8px;
+  letter-spacing: 0.5px;
+}
+
+.house-card p {
+  font-family: 'Nunito', cursive;
+  font-size:   16px;
+  color:       #4b5563;
+  margin:      0;
+}
+
+/* ── Loading / Error ─────────────────────────────────────────── */
+.house-loading {
+  position:        absolute;
+  inset:           0;
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  gap:             16px;
+  z-index:         10;
+  font-family:     'Fredoka One', cursive;
+  font-size:       20px;
+  color:           #fff;
+  text-shadow:     0 2px 8px rgba(0,0,0,0.5);
+}
+
+/* ── Keyframes ───────────────────────────────────────────────── */
+@keyframes house-btn-pulse {
+  0%,  100% { box-shadow: 0 5px 0 #15803d, 0 0 0  0   rgba(34,197,94,0.4); }
+  50%        { box-shadow: 0 5px 0 #15803d, 0 0 0 10px rgba(34,197,94,0);   }
+}
+
+@keyframes house-sweep {
+  0%   { left: -25%; transform: rotate(-8deg); }
+  100% { left: 110%; transform: rotate(0deg);  }
+}
+
+@keyframes house-overlay-in {
+  from { opacity: 0; } to { opacity: 1; }
+}
+
+@keyframes house-card-pop {
+  from { transform: scale(0.6) rotate(-4deg); opacity: 0; }
+  to   { transform: scale(1)   rotate(0deg);  opacity: 1; }
+}
+
+@keyframes house-stars-spin {
+  from { transform: rotate(-30deg) scale(0.5); opacity: 0; }
+  to   { transform: rotate(0deg)   scale(1);   opacity: 1; }
 }

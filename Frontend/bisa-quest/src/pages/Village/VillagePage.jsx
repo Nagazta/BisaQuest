@@ -209,10 +209,6 @@ const VillagePage = () => {
         const questSequence = [
             { type: "drag_drop",        sceneType: "living_room", questId: resolvedQuestId           },
             { type: "item_association", sceneType: "living_room", questId: resolvedIaLivingQuestId   },
-            { type: "drag_drop",        sceneType: "kitchen",     questId: resolvedKitchenQuestId     },
-            { type: "item_association", sceneType: "kitchen",     questId: resolvedIaKitchenQuestId   },
-            { type: "drag_drop",        sceneType: "bedroom",     questId: resolvedBedroomQuestId     },
-            { type: "item_association", sceneType: "bedroom",     questId: resolvedIaBedroomQuestId   },
         ];
 
         const state = {
