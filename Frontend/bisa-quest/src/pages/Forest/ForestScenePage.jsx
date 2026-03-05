@@ -246,7 +246,6 @@ const ForestScenePage = () => {
     const showIAItems = isIAMechanic(gameMechanic) && phase === "ia_scene";
     const showBackpack = !isIAMechanic(gameMechanic) && phase === "backpack";
     const deerIsDropTarget = !isIAMechanic(gameMechanic) && phase === "backpack";
-    
 
     return (
         <div className="fsp-wrapper">
