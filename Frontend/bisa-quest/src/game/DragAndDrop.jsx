@@ -1,6 +1,14 @@
 // ─────────────────────────────────────────────────────────────────────────────
-//  DragAndDrop.jsx  —  living_room → kitchen → bedroom → item_association
-//  Bedroom now loads from DB via bedroomQuestId (no more hardcoded fallback)
+//  DragAndDrop.jsx — generic drag-and-drop game component
+//  Used by: ForestScenePage (and any future scene)
+//  NOT used by Village — HousePage handles that inline.
+//
+//  Props via location.state:
+//    questId       — quest to load items from
+//    npcId / npcName
+//    returnTo      — where Back button goes
+//    sceneType     — "forest-scene" | "forked-path" | etc.
+//    onComplete    — optional callback; falls back to navigate(returnTo)
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -11,7 +19,6 @@ import DialogueBox      from "../components/instructions/DialogueBox";
 import DraggableItem    from "./components/DraggableItem";
 import DropZone         from "./components/DropZone";
 import ZoneDebugOverlay from "./components/ZoneDebugOverlay";
-import LigayaCharacter  from "../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
 
 import {
   SCENE_BACKGROUNDS,
@@ -21,32 +28,19 @@ import {
   DEFAULT_BACKGROUND,
   START_POSITIONS,
   FALLBACK_ITEMS,
-  FALLBACK_ITEMS_KITCHEN,
-  FALLBACK_ITEMS_BEDROOM,
 } from "./dragDropConstants";
 import { buildAllDropZones, getDialogueText, mapRawItems } from "./dragDropUtils";
 import "./DragAndDrop.css";
-
-const SCENE_ORDER = ["living_room", "kitchen", "bedroom"];
-
-const SCENE_STEP_LABEL = {
-  living_room: "Scene 1 of 3 — Living Room / Sala",
-  kitchen:     "Scene 2 of 3 — Kitchen / Kusina",
-  bedroom:     "Scene 3 of 3 — Bedroom / Kwarto",
-};
 
 const DragAndDrop = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const questId        = location.state?.questId        || null;
-  const kitchenQuestId = location.state?.kitchenQuestId || null;
-  const bedroomQuestId = location.state?.bedroomQuestId || null;  // ← NEW
-  const iaQuestId      = location.state?.iaQuestId      || null;
-  const npcId          = location.state?.npcId          || "village_npc_2";
-  const npcName        = location.state?.npcName        || "Ligaya";
-  const returnTo       = location.state?.returnTo       || "/student/village";
-  const currentScene   = location.state?.sceneType      || "living_room";
+  const questId    = location.state?.questId   || null;
+  const npcId      = location.state?.npcId     || "forest_npc_4";
+  const npcName    = location.state?.npcName   || "Deer";
+  const returnTo   = location.state?.returnTo  || "/student/forest";
+  const sceneParam = location.state?.sceneType || "forest-scene";
 
   const API = import.meta.env.VITE_API_URL || "";
 
@@ -55,7 +49,7 @@ const DragAndDrop = () => {
   const [dropZones,    setDropZones]    = useState([]);
   const [background,   setBackground]   = useState(DEFAULT_BACKGROUND);
   const [instructions, setInstructions] = useState(null);
-  const [sceneType,    setSceneType]    = useState(currentScene);
+  const [sceneType,    setSceneType]    = useState(sceneParam);
   const [loading,      setLoading]      = useState(true);
   const [fetchError,   setFetchError]   = useState(null);
   const [placements,   setPlacements]   = useState({});
@@ -72,7 +66,7 @@ const DragAndDrop = () => {
   const allCorrect     = items.length > 0 && items.every(i => placements[i.id]?.correct === true);
   const correctZoneIds = [...new Set(items.map(i => i.zone))];
 
-  // ── Load scene ────────────────────────────────────────────────────────────
+  // ── Load quest data ────────────────────────────────────────────────────────
   useEffect(() => {
     setItems([]);
     setPlacements({});
@@ -82,34 +76,21 @@ const DragAndDrop = () => {
     setCompleted(false);
     setFetchError(null);
     setLoading(true);
-    setSceneType(currentScene);
 
-    // Pick which questId to use for this scene
-    const activeQuestId =
-      currentScene === "kitchen" ? kitchenQuestId :
-      currentScene === "bedroom" ? bedroomQuestId :
-      questId;
-
-    // Fallback per scene if no questId
-    if (!activeQuestId) {
-      console.warn(`[DragAndDrop] No questId for scene "${currentScene}" — using fallback.`);
-      const fallbackItems = currentScene === "kitchen" ? FALLBACK_ITEMS_KITCHEN
-                          : currentScene === "bedroom" ? FALLBACK_ITEMS_BEDROOM
-                          : FALLBACK_ITEMS;
-      setItems(fallbackItems);
-      setDropZones(buildAllDropZones(currentScene, SCENE_ZONES, { ...ZONE_REGISTRY, ...(SCENE_ZONE_OVERRIDES[currentScene] || {}) }));
-      setBackground(SCENE_BACKGROUNDS[currentScene] || DEFAULT_BACKGROUND);
+    if (!questId) {
+      setItems(FALLBACK_ITEMS);
+      setDropZones(buildAllDropZones(sceneParam, SCENE_ZONES, { ...ZONE_REGISTRY, ...(SCENE_ZONE_OVERRIDES[sceneParam] || {}) }));
+      setBackground(SCENE_BACKGROUNDS[sceneParam] || DEFAULT_BACKGROUND);
       setInstructions(null);
       setLoading(false);
       return;
     }
 
-    // Load from DB
     const load = async () => {
       try {
         const [questRes, itemsRes] = await Promise.all([
-          fetch(`${API}/api/challenge/quest/${activeQuestId}`),
-          fetch(`${API}/api/challenge/quest/${activeQuestId}/items`),
+          fetch(`${API}/api/challenge/quest/${questId}`),
+          fetch(`${API}/api/challenge/quest/${questId}/items`),
         ]);
         if (!questRes.ok) throw new Error(`Quest fetch failed: ${questRes.status}`);
         if (!itemsRes.ok) throw new Error(`Items fetch failed: ${itemsRes.status}`);
@@ -117,7 +98,7 @@ const DragAndDrop = () => {
         const { data: questMeta } = await questRes.json();
         const { data: rawItems }  = await itemsRes.json();
 
-        const scene = questMeta?.scene_type || currentScene;
+        const scene = questMeta?.scene_type || sceneParam;
         setSceneType(scene);
         setBackground(SCENE_BACKGROUNDS[scene] || DEFAULT_BACKGROUND);
         setInstructions(questMeta?.instructions || null);
@@ -134,16 +115,14 @@ const DragAndDrop = () => {
     };
 
     load();
-  }, [currentScene, questId, kitchenQuestId, bedroomQuestId, API]);
+  }, [questId, sceneParam, API]);
 
   useEffect(() => {
     if (!items.length) return;
-    setPlacements(
-      Object.fromEntries(items.map(item => [item.id, { placedZone: null, correct: null }]))
-    );
+    setPlacements(Object.fromEntries(items.map(i => [i.id, { placedZone: null, correct: null }])));
   }, [items]);
 
-  // ── Pointer handlers ──────────────────────────────────────────────────────
+  // ── Pointer events ─────────────────────────────────────────────────────────
   const handleDragStart = useCallback((itemId, e) => {
     if (placements[itemId]?.correct === true) return;
     e.preventDefault();
@@ -206,62 +185,16 @@ const DragAndDrop = () => {
     feedbackTimer.current = setTimeout(() => setFeedback(null), 2000);
   };
 
-  // ── Complete ──────────────────────────────────────────────────────────────
+  // ── Complete — just navigate back; parent scene handles sequencing ─────────
   const handleComplete = () => {
     if (!allCorrect) return;
     setCompleted(true);
-
-    const sharedState = {
-      questId,
-      kitchenQuestId,
-      bedroomQuestId,   // ← carry through every transition
-      iaQuestId,
-      npcId,
-      npcName,
-      returnTo,
-    };
-
-    setTimeout(() => {
-      const currentIdx = SCENE_ORDER.indexOf(sceneType);
-      const nextScene  = SCENE_ORDER[currentIdx + 1];
-
-      // All scenes done → Item Association
-      if (!nextScene) {
-        navigate("/student/item-association", {
-          state: { ...sharedState, questId: iaQuestId, sceneType },
-        });
-        return;
-      }
-
-      // Next is KITCHEN → /house first for NPC dialogue
-      if (nextScene === "kitchen") {
-        navigate("/student/house", {
-          state: {
-            ...sharedState,
-            questId:   kitchenQuestId,
-            sceneType: "kitchen",
-          },
-        });
-        return;
-      }
-
-      // Next is BEDROOM → /house first for NPC dialogue (now has a real quest)
-      if (nextScene === "bedroom") {
-        navigate("/student/house", {
-          state: {
-            ...sharedState,
-            questId:   bedroomQuestId,
-            sceneType: "bedroom",
-          },
-        });
-        return;
-      }
-    }, 1800);
+    setTimeout(() => navigate(returnTo, { state: { completed: true } }), 1800);
   };
 
   const handleBack = () => navigate(returnTo);
 
-  // ── Loading / error ───────────────────────────────────────────────────────
+  // ── Loading / error states ─────────────────────────────────────────────────
   if (loading) return (
     <div className="dad-wrapper"><div className="dad-container">
       <img src={DEFAULT_BACKGROUND} alt="Loading" className="dad-bg" draggable={false} />
@@ -279,7 +212,7 @@ const DragAndDrop = () => {
     </div></div>
   );
 
-  if (!loading && items.length === 0) return (
+  if (!items.length) return (
     <div className="dad-wrapper"><div className="dad-container">
       <img src={DEFAULT_BACKGROUND} alt="Empty" className="dad-bg" draggable={false} />
       <div className="dad-error">
@@ -289,7 +222,6 @@ const DragAndDrop = () => {
     </div></div>
   );
 
-  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="dad-wrapper">
       <div className="dad-container" ref={containerRef} style={{ userSelect: "none" }}>
@@ -298,21 +230,7 @@ const DragAndDrop = () => {
 
         <Button variant="back" className="dad-back-btn" onClick={handleBack}>← Back</Button>
 
-        <div style={{
-          position:"absolute", top:10, left:"50%", transform:"translateX(-50%)",
-          background:"rgba(0,0,0,0.6)", color:"#fff", fontSize:"12px", fontWeight:"bold",
-          padding:"4px 14px", borderRadius:20, border:"1px solid rgba(255,255,255,0.2)",
-          zIndex:30, whiteSpace:"nowrap",
-        }}>
-          {SCENE_STEP_LABEL[sceneType] || "Drag & Drop"}
-        </div>
-
-        <button onClick={() => setDebugMode(p => !p)} style={{
-          position:"absolute", top:8, right:8, zIndex:200,
-          background: debugMode ? "#ff9900" : "rgba(0,0,0,0.55)",
-          color:"#fff", border:"1px solid rgba(255,255,255,0.3)",
-          borderRadius:5, padding:"4px 10px", fontSize:"11px", fontWeight:"bold", cursor:"pointer",
-        }}>
+        <button className="dad-debug-btn" onClick={() => setDebugMode(p => !p)}>
           {debugMode ? "🐛 DEBUG ON" : "🐛 Debug"}
         </button>
 
@@ -340,30 +258,12 @@ const DragAndDrop = () => {
           />
         ))}
 
-        <div className="dad-npc-section">
-          <img src={LigayaCharacter} alt={npcName} className="dad-npc-img" draggable={false} />
-          <DialogueBox
-            title={npcName}
-            text={getDialogueText(feedback, allCorrect, instructions, { ...ZONE_REGISTRY, ...(SCENE_ZONE_OVERRIDES[sceneType] || {}) })}
-            showNextButton={false}
-          />
+        {/* NPC */}
+        <div className="dad-npc-wrap">
+          <img src={null} alt={npcName} className="dad-npc-img" draggable={false} />
         </div>
 
-        {completed && (
-          <div className="dad-completion-overlay">
-            <div className="dad-completion-card">
-              <div className="dad-completion-stars">⭐⭐⭐</div>
-              {sceneType === "bedroom" ? (
-                <><h2>Natapos na ang tanan!</h2><p>Padayon sa final challenge... 🎯</p></>
-              ) : sceneType === "living_room" ? (
-                <><h2>Natapos na ang sala!</h2><p>Sunod: Kusina — paminawa si Ligaya! 🍳</p></>
-              ) : (
-                <><h2>Natapos na ang kusina!</h2><p>Sunod: Kwarto — ayusgon nato! 🛏️</p></>
-              )}
-            </div>
-          </div>
-        )}
-
+        {/* Complete button */}
         <button
           className={`dad-complete-btn ${allCorrect ? "dad-complete-btn--active" : "dad-complete-btn--disabled"}`}
           onClick={handleComplete}
@@ -371,6 +271,26 @@ const DragAndDrop = () => {
         >
           Completo na!
         </button>
+
+        {/* DialogueBox */}
+        <DialogueBox
+          title={npcName}
+          text={getDialogueText(feedback, allCorrect, instructions, {
+            ...ZONE_REGISTRY, ...(SCENE_ZONE_OVERRIDES[sceneType] || {}),
+          })}
+          showNextButton={false}
+        />
+
+        {/* Completion overlay */}
+        {completed && (
+          <div className="dad-completion-overlay">
+            <div className="dad-completion-card">
+              <div className="dad-completion-stars">⭐⭐⭐</div>
+              <h2>Natapos na!</h2>
+              <p>Padayon! 🎯</p>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

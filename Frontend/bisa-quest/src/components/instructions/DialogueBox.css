@@ -1,55 +1,96 @@
+/* ── Full-width bottom dialogue bar ─────────────────────────────
+   Single source of truth for all scene pages.
+   HousePage, DragAndDrop, ForestScenePage — all just import this.
+──────────────────────────────────────────────────────────────── */
+
 .dialogue-box {
-  position: relative;
-  width: 100%;
-  background: #6B3E1D;
-  border: 4px solid #FCD765;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-  z-index: 10;
-  padding: 0;
-  padding-top: 60px; /* reduced from 80px */
+  position:    fixed;
+  bottom:      0;
+  left:        0;
+  width:       100%;
+  min-height:  90px;
+  background:  #6B3E1D;
+  border-top:  4px solid #FCD765;
+  border-radius: 0;
+  box-shadow:  0 -6px 24px rgba(0, 0, 0, 0.4);
+  z-index:     30;
+  display:     flex;
+  align-items: center;
+  padding:     0;
 }
 
+/* ── Left panel — speaker name ───────────────────────────────── */
 .dialogue-header {
-  background: #6B3E1D;
-  padding: 8px 16px; /* reduced */
-  border-bottom: 3px solid #FCD765;
-  border-radius: 12px 12px 0 0;
+  display:      flex;
+  align-items:  center;
+  align-self:   stretch;
+  flex-shrink:  0;
+  min-width:    160px;
+  padding:      0 28px;
+  background:   #4e2c12;
+  border-right: 3px solid #FCD765;
+  border-bottom: none;
+  border-radius: 0;
 }
 
 .dialogue-title {
-  margin: 0;
+  margin:      0;
   font-family: 'Pixelify Sans', sans-serif !important;
-  font-size: 20px !important; /* reduced from 26px */
+  font-size:   20px !important;
   font-weight: bold;
-  color: #FFF9E6;
+  color:       #FFF9E6;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
 }
 
+/* ── Center — dialogue text ──────────────────────────────────── */
 .dialogue-content {
-  padding: 14px 16px 52px 16px; /* tighter padding, keep bottom for arrow */
+  flex:     1;
+  padding:  18px 28px;
   position: relative;
 }
 
 .dialogue-text {
   font-family: 'Grandstander', cursive !important;
-  font-size: 14px !important; /* reduced from 18px */
+  font-size:   18px !important;
   line-height: 1.6;
-  color: #F5E6D3;
-  margin: 0;
-  text-align: left;
+  color:       #F5E6D3;
+  margin:      0;
+  text-align:  left;
 }
 
+/* ── Right — next arrow button ───────────────────────────────── */
 .next-arrow-btn {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
-  z-index: 10;
+  position:      static;
+  flex-shrink:   0;
+  margin-right:  40px;
+  width:         60px !important;
+  height:        60px !important;
+  background:    #FCD765 !important;
+  border:        3px solid #3a2008 !important;
+  border-radius: 50% !important;
+  display:       flex !important;
+  align-items:   center;
+  justify-content: center;
+  cursor:        pointer;
+  transition:    transform 0.15s ease, background 0.15s ease;
+  box-shadow:    0 4px 0 #3a2008;
+  padding:       0 !important;
+}
+
+.next-arrow-btn:hover  {
+  background:  #ffe082 !important;
+  transform:   translateY(-2px);
+}
+
+.next-arrow-btn:active {
+  transform:   translateY(2px);
+  box-shadow:  0 1px 0 #3a2008;
 }
 
 .next-arrow-btn .arrow-icon {
-  width: 36px;
-  height: 36px;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  width:   28px;
+  height:  28px;
   display: block;
+  filter:  drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
