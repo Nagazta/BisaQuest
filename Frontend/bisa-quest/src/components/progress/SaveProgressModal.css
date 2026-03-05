@@ -16,6 +16,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -33,6 +34,7 @@
     transform: scale(0.9);
     opacity: 0;
   }
+
   to {
     transform: scale(1);
     opacity: 1;
@@ -113,14 +115,14 @@
   border-radius: 10px;
   cursor: pointer;
   letter-spacing: 1px;
-  text-shadow: 0 0 5px rgba(0,0,0,0.4);
-  box-shadow: 0 4px 0 #78350f, 0 6px 12px rgba(0,0,0,0.3);
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 0 #78350f, 0 6px 12px rgba(0, 0, 0, 0.3);
   transition: all 0.15s ease-in-out;
 }
 
 .new-game-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 0 #78350f, 0 10px 16px rgba(0,0,0,0.4);
+  box-shadow: 0 6px 0 #78350f, 0 10px 16px rgba(0, 0, 0, 0.4);
   background: linear-gradient(180deg, #ff4f4f, #d10000);
 }
 
@@ -153,4 +155,30 @@
 
 .modal-btn {
   font-family: 'Pixelify Sans', sans-serif;
+}
+
+/* Character image (replaces NPCCharacter component) */
+.modal-character-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 130px;
+  height: 200px;
+  margin: 10px 0;
+}
+
+.modal-character-image {
+  margin-top: 40px;
+  width: 450%;
+  height: 120%;
+  margin-left: 160%;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+  image-rendering: pixelated;
+}
+
+@media (max-width: 768px) {
+  .modal-character-container {
+    width: 100px;
+    height: 100px;
+  }
 }

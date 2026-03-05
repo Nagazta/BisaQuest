@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useLanguagePreference } from "../../hooks/useLanguagePreference";
 import { useCharacterPreference } from "../../hooks/useCharacterPreference";
 import EnvironmentPage from "../../components/EnvironmentPage";
 import Button from "../../components/Button";
@@ -26,7 +25,7 @@ const VillagePage = () => {
 
     const API = import.meta.env.VITE_API_URL || "";
 
-    const { language, loading: langLoading } = useLanguagePreference();
+    const language = "en";
     const { character, loading: charLoading } = useCharacterPreference();
 
     const [villageNPCs,       setVillageNPCs]       = useState([]);
@@ -231,7 +230,7 @@ const VillagePage = () => {
         else if (selectedNPC.quest === "word_association")    navigate("/student/house",              { state });
     };
 
-    if (langLoading || charLoading) return (
+    if (charLoading) return (
         <div className="village-page-wrapper">
             <div className="loading-message">Loading...</div>
         </div>
