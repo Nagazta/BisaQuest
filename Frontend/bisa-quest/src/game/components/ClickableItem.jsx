@@ -2,7 +2,11 @@ import { useState, useCallback, useEffect } from "react";
 import CleaningAnimation from "./CleaningAnimation";
 import "./ClickableItem.css";
 
-const ClickableItem = ({ item, onClick, locked }) => {
+/**
+ * mode="absolute"  — positioned via left/top % on a background (ForestScenePage)
+ * mode="grid"      — sits inside a CSS grid, no absolute positioning (HousePage IA)
+ */
+const ClickableItem = ({ item, onClick, locked, mode = "absolute" }) => {
   const [state,    setState]    = useState("idle");
   const [showAnim, setShowAnim] = useState(false);
 
@@ -27,9 +31,14 @@ const ClickableItem = ({ item, onClick, locked }) => {
     }
   }, [state, locked, item, onClick]);
 
+  const style = mode === "absolute"
+    ? { left: `${item.x}%`, top: `${item.y}%` }
+    : {}; // grid mode — let CSS grid handle layout
+
   return (
     <div
-      className={`ci-card ci-card--${state}`}
+      className={`ci-card ci-card--${state}${mode === "grid" ? " ci-card--grid" : ""}`}
+      style={style}
       onClick={handleClick}
       role="button"
       tabIndex={state === "correct" ? -1 : 0}
