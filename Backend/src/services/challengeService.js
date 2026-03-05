@@ -1,9 +1,6 @@
 import { supabase } from '../config/supabaseClient.js';
-
 const ITEMS_PER_ROUND = 4;
-
 class ChallengeService {
-
   async getQuestsByNpc(npcId) {
     const { data, error } = await supabase
       .from('quests')
@@ -13,7 +10,6 @@ class ChallengeService {
     if (error) throw error;
     return data;
   }
-
   async getQuestMeta(questId) {
     const { data, error } = await supabase
       .from('quests')
@@ -23,7 +19,6 @@ class ChallengeService {
     if (error) throw error;
     return data;
   }
-
   async getChallengeItems(questId, randomize = true) {
     const { data, error } = await supabase
       .from('challenge_items')
@@ -31,7 +26,7 @@ class ChallengeService {
         'item_id, quest_id, label, image_key, word_left, word_right,' +
         'correct_zone, is_correct, display_order,' +
         'round_number, round_prompt, round_reprompt, hint,' +
-        'position_x, position_y'
+        'position_x, position_y, belongs_to'   // ← added belongs_to
       )
       .eq('quest_id', questId)
       .order('round_number')
@@ -39,10 +34,12 @@ class ChallengeService {
     if (error) throw error;
     if (!data || data.length === 0) return [];
 
+    // randomize=false → return ALL items in order (used by HousePage)
+    if (!randomize) return data;
+
     if (data.length <= ITEMS_PER_ROUND) {
       return data.sort(() => Math.random() - 0.5);
     }
-
     const byZone = {};
     for (const item of data) {
       const z = item.correct_zone;
@@ -51,7 +48,6 @@ class ChallengeService {
     }
     const selected = [];
     const usedIds = new Set();
-
     for (const zone of Object.keys(byZone)) {
       const pool = byZone[zone];
       const pick = pool[Math.floor(Math.random() * pool.length)];
@@ -59,17 +55,13 @@ class ChallengeService {
       usedIds.add(pick.item_id);
       if (selected.length >= ITEMS_PER_ROUND) break;
     }
-
     const remaining = data
       .filter(item => !usedIds.has(item.item_id))
       .sort(() => Math.random() - 0.5);
-
     const needed = ITEMS_PER_ROUND - selected.length;
     selected.push(...remaining.slice(0, needed));
-
     return selected.sort(() => Math.random() - 0.5);
   }
-
   // ALL items in order — used by ForestScenePage (both drag_drop and item_association)
   async getAllChallengeItems(questId) {
     const { data, error } = await supabase
@@ -78,14 +70,13 @@ class ChallengeService {
         'item_id, quest_id, label, image_key, word_left, word_right,' +
         'correct_zone, is_correct, display_order,' +
         'hint, round_number, round_prompt, round_reprompt,' +
-        'position_x, position_y'   // ← required for item_association placement
+        'position_x, position_y, belongs_to'   // ← added belongs_to
       )
       .eq('quest_id', questId)
       .order('display_order');
     if (error) throw error;
     return data || [];
   }
-
   async getDialogues(questId) {
     const { data, error } = await supabase
       .from('npc_dialogues')
@@ -95,14 +86,11 @@ class ChallengeService {
     if (error) throw error;
     return data;
   }
-
   async submitChallenge({ playerId, questId, npcId, score, maxScore, passed }) {
     const now = new Date().toISOString();
-
     const { data: existing } = await supabase
       .from('player_npc_progress')
       .select('*').eq('player_id', playerId).eq('npc_id', npcId).single();
-
     if (existing) {
       const { error } = await supabase.from('player_npc_progress').update({
         encounters: existing.encounters + 1,
@@ -119,7 +107,6 @@ class ChallengeService {
       });
       if (error) throw error;
     }
-
     const { data: attempt, error: attemptError } = await supabase
       .from('player_quest_attempts')
       .insert({
@@ -133,27 +120,22 @@ class ChallengeService {
       })
       .select()
       .single();
-
     if (attemptError) throw attemptError;
-
     await this.recalculateEnvironmentProgress(playerId, npcId);
     return { attempt, passed, score, maxScore };
   }
-
   async getNPCProgress(playerId, npcId) {
     const { data, error } = await supabase.from('player_npc_progress')
       .select('*').eq('player_id', playerId).eq('npc_id', npcId).single();
     if (error && error.code !== 'PGRST116') throw error;
     return data || null;
   }
-
   async getEnvironmentProgress(playerId, environmentName) {
     const { data, error } = await supabase.from('player_environment_progress')
       .select('*').eq('player_id', playerId).eq('environment_name', environmentName).single();
     if (error && error.code !== 'PGRST116') throw error;
     return data || null;
   }
-
   async getAttemptHistory(playerId, npcId, limit = 10) {
     let query = supabase.from('player_quest_attempts')
       .select('*').eq('player_id', playerId)
@@ -163,28 +145,23 @@ class ChallengeService {
     if (error) throw error;
     return data;
   }
-
   async recalculateEnvironmentProgress(playerId, npcId) {
     const { data: npc, error: npcErr } = await supabase.from('npcs').select('environment_name').eq('npc_id', npcId).single();
     if (npcErr) throw npcErr;
     const environmentName = npc.environment_name;
-
     const { data: envNPCs } = await supabase.from('npcs').select('npc_id').eq('environment_name', environmentName);
     const totalNPCs = envNPCs?.length || 1;
     const envNpcIds = envNPCs?.map(n => n.npc_id) || [];
-
     const { data: doneNPCs } = await supabase.from('player_npc_progress')
       .select('npc_id').eq('player_id', playerId).eq('is_completed', true).in('npc_id', envNpcIds);
     const percentage = Math.round(((doneNPCs?.length || 0) / totalNPCs) * 100);
     const isCompleted = percentage === 100;
     const now = new Date().toISOString();
-
     const { error: upsertErr } = await supabase.from('player_environment_progress').upsert(
       { player_id: playerId, environment_name: environmentName, completion_percentage: percentage, is_completed: isCompleted, last_updated: now },
       { onConflict: 'player_id,environment_name' }
     );
     if (upsertErr) throw upsertErr;
-
     if (isCompleted) {
       const NEXT = { village: 'forest', forest: 'castle' };
       const next = NEXT[environmentName];
@@ -197,5 +174,4 @@ class ChallengeService {
     }
   }
 }
-
 export default new ChallengeService();

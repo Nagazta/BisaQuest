@@ -518,3 +518,87 @@
 }
 
 .house-dd-chip--correct { background: #2ecc71; color: #fff; }
+
+/* ── Dialogue bar: equip slot + complete button wrapper ──────── */
+.house-dd-bar-slot-wrap {
+  display:     flex;
+  align-items: center;
+  gap:         12px;
+  flex-shrink: 0;
+}
+
+/* Equip slot — drag target inside the dialogue bar */
+.house-dd-equip-slot {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  width:           160px;
+  height:          62px;
+  border:          3px dashed #FCD765;
+  border-radius:   14px;
+  background:      rgba(252,215,101,0.1);
+  padding:         0 12px;
+  transition:      background 0.2s, border-color 0.2s, box-shadow 0.2s;
+  cursor:          copy;
+  box-shadow:      inset 0 0 0 1px rgba(252,215,101,0.2);
+}
+
+.house-dd-equip-slot--hover {
+  background:   rgba(252,215,101,0.25);
+  border-color: #FCD765;
+  border-style: solid;
+  box-shadow:   inset 0 0 0 1px #FCD765, 0 0 12px rgba(252,215,101,0.4);
+}
+
+.house-dd-equip-slot--complete {
+  background:   rgba(34,197,94,0.2);
+  border-color: #22c55e;
+  border-style: solid;
+  box-shadow:   inset 0 0 0 1px #22c55e, 0 0 12px rgba(34,197,94,0.4);
+}
+
+.house-dd-equip-hint {
+  font-family: 'Fredoka One', cursive;
+  font-size:   14px;
+  color:       rgba(252,215,101,0.7);
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+}
+
+.house-dd-equip-chips {
+  display:         flex;
+  gap:             6px;
+  flex-wrap:       wrap;
+  justify-content: center;
+  align-items:     center;
+}
+
+/* ── DD card with image ───────────────────────────────────────── */
+.house-dd-card {
+  flex-direction: column;
+  align-items:    center;
+  gap:            6px;
+}
+
+.house-dd-card-img {
+  width:      64px;
+  height:     64px;
+  object-fit: contain;
+  display:    block;
+  filter:     drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.house-dd-card-emoji {
+  font-size:   40px;
+  line-height: 1;
+  display:     block;
+}
+
+.house-dd-card-label {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size:   13px;
+  font-weight: bold;
+  color:       inherit;
+  text-align:  center;
+  white-space: nowrap;
+}
