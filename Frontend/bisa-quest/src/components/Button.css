@@ -1,45 +1,45 @@
 /* Button.css */
 .btn {
-    border: none;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.3s ease;
 }
 
 /* Menu Button */
 .btn-menu {
-    background-color: #fbbf24;
-    border: 3px solid #78350f;
-    border-radius: 15px;
-    padding: 12px 30px;
-    font-size: 24px;
-    font-weight: bold;
-    color: #78350f;
+  background-color: #fbbf24;
+  border: 3px solid #78350f;
+  border-radius: 15px;
+  padding: 12px 30px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #78350f;
 }
 
 .btn-menu:hover {
-    background-color: #fbbf24;
-    transform: scale(1.05);
+  background-color: #fbbf24;
+  transform: scale(1.05);
 }
 
 /* Profile Button */
 .btn-profile {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    border: 3px solid #fbbf24;
-    overflow: hidden;
-    background-color: #78350f;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 3px solid #fbbf24;
+  overflow: hidden;
+  background-color: #78350f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
 }
 
 .btn-profile img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* Primary/Quest Start Button */
@@ -69,69 +69,83 @@
 
 /* Character Select Button */
 .btn-character-select {
-    margin-top: -20px;
-    background-color: #fbbf24;
-    border: 3px solid #78350f;
-    border-radius: 20px;
-    padding: 15px 50px;
-    font-size: 32px;
-    font-weight: bold;
-    color: #78350f;
-    min-width: 200px;
-    font-family: 'Pixelify Sans', sans-serif;
+  margin-top: -20px;
+  background-color: #fbbf24;
+  border: 3px solid #78350f;
+  border-radius: 20px;
+  padding: 15px 50px;
+  font-size: 32px;
+  font-weight: bold;
+  color: #78350f;
+  min-width: 200px;
+  font-family: 'Pixelify Sans', sans-serif;
 }
 
 .btn-character-select:hover {
-    background-color: #f59e0b;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  background-color: #f59e0b;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .btn-character-select:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Character Card Button */
 .btn-character-card {
-    position: relative;
-    width: 380px;
-    height: 450px;
-    background: transparent;
-    border: none;
-    padding: 0;
+  position: relative;
+  width: 380px;
+  height: 450px;
+  background: transparent;
+  border: none;
+  padding: 0;
 }
 
 .btn-character-card:hover {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
 
 .btn-character-card.selected {
-    transform: scale(1.1);
+  transform: scale(1.1);
 }
 
 /* Back Button */
 .btn-back {
-    position: absolute;
-    top: 20px;
-    left: 40px;
-    background-color: #fbbf24;
-    border: 3px solid #78350f;
-    border-radius: 15px;
-    padding: 12px 24px;
-    font-size: 20px;
-    font-weight: bold;
-    color: #78350f;
-    z-index: 100;
+  position: absolute;
+  top: 20px;
+  left: 40px;
+  background: linear-gradient(180deg, #8b5e34 0%, #6b3e1d 50%, #4a2a12 100%);
+  border: 3px solid #4a2a12;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #FCD765;
+  font-family: 'Pixelify Sans', sans-serif;
+  z-index: 100;
+  box-shadow:
+    inset 0 2px 0 rgba(252, 215, 101, 0.2),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.3),
+    0 4px 8px rgba(0, 0, 0, 0.4);
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
 }
 
 .btn-back:hover {
-    background-color: #f59e0b;
-    transform: scale(1.05);
+  background: linear-gradient(180deg, #a06b3a 0%, #8b5e34 50%, #6b3e1d 100%);
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 2px 0 rgba(252, 215, 101, 0.3),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.3),
+    0 6px 12px rgba(0, 0, 0, 0.5);
 }
 
 .btn-back:active {
-    transform: scale(0.98);
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 2px 0 rgba(252, 215, 101, 0.1),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 /* Arrow Button Variant */
@@ -203,4 +217,3 @@
   transform: translateY(2px);
   box-shadow: 0px 2px 0px #7f1d1d;
 }
-  
