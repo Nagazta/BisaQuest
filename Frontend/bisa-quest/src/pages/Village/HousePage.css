@@ -1,8 +1,6 @@
-/* HousePage.css — supports all three phases:
-   intro → drag_drop → item_association
+/* HousePage.css — scenario-driven: story → comprehension → DD → feedback
    Dialogue bar comes from DialogueBox.css automatically. */
 
-/* ── Wrapper ─────────────────────────────────────────────────── */
 .house-container {
   position: fixed;
   inset:    0;
@@ -27,7 +25,7 @@
   z-index:  50;
 }
 
-/* ── Scene label pill ────────────────────────────────────────── */
+/* ── Phase badge ─────────────────────────────────────────────── */
 .house-scene-label {
   position:      absolute;
   top:           10px;
@@ -45,22 +43,6 @@
   white-space:   nowrap;
 }
 
-/* ── Debug button ────────────────────────────────────────────── */
-.house-debug-btn {
-  position:      absolute;
-  top:           8px;
-  right:         8px;
-  z-index:       200;
-  background:    rgba(0,0,0,0.55);
-  color:         #fff;
-  border:        1px solid rgba(255,255,255,0.3);
-  border-radius: 5px;
-  padding:       4px 10px;
-  font-size:     11px;
-  font-weight:   bold;
-  cursor:        pointer;
-}
-
 /* ── NPC — floats above the 90px dialogue bar ───────────────── */
 .house-npc-wrap {
   position:       absolute;
@@ -74,7 +56,7 @@
 .house-npc-image {
   height:     300px;
   object-fit: contain;
-  filter:     drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
+  filter:     drop-shadow(0 8px 16px rgba(0,0,0,0.5));
 }
 
 @keyframes house-npc-bob {
@@ -82,30 +64,139 @@
   50%       { transform: translateY(-8px); }
 }
 
-/* ── Drag & Drop layer — fills container ─────────────────────── */
-/* containerRef is attached here for % coordinate maths */
-.house-dd-layer {
-  position: absolute;
-  inset:    0;
-  z-index:  110;
+/* ── Phase 2: Comprehension items — absolutely placed via DB x/y ─ */
+.house-comp-item {
+  position:   absolute;
+  z-index:    20;
+  transform:  translate(-50%, -50%);
 }
 
-/* ── Complete button — above the dialogue bar ────────────────── */
+/* ── Phase 3: Drag & Drop scene ──────────────────────────────── */
+.house-dd-scene {
+  position: absolute;
+  top:      0;
+  left:     0;
+  right:    0;
+  bottom:   90px;   /* stop at dialogue bar */
+  z-index:  10;
+}
+
+/* Drop zone — positioned via inline style from DB, centered on coordinate */
+.house-dd-dropzone {
+  position:        absolute;
+  transform:       translate(-50%, -50%);
+  width:           240px;
+  min-height:      160px;
+  background:      rgba(255,255,240,0.15);
+  border:          3px dashed rgba(252,215,101,0.6);
+  border-radius:   20px;
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  gap:             10px;
+  transition:      background 0.2s, border-color 0.2s;
+  z-index:         15;
+}
+
+.house-dd-dropzone--hover {
+  background:   rgba(252,215,101,0.2);
+  border-color: #FCD765;
+  border-style: solid;
+}
+
+.house-dd-dropzone--complete {
+  background:   rgba(34,197,94,0.15);
+  border-color: #22c55e;
+  border-style: solid;
+}
+
+.house-dd-dropzone-label {
+  font-family: 'Fredoka One', cursive;
+  font-size:   18px;
+  color:       #FFF9E6;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+  text-align:  center;
+  padding:     0 12px;
+}
+
+/* Placed word chips inside drop zone */
+.house-dd-placed-chips {
+  display:  flex;
+  gap:      8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding:  4px;
+}
+
+.house-dd-chip {
+  font-family:   'Pixelify Sans', sans-serif;
+  font-size:     15px;
+  font-weight:   bold;
+  padding:       6px 16px;
+  border-radius: 50px;
+  border:        2px solid;
+}
+
+.house-dd-chip--correct {
+  background:   #dcfce7;
+  color:        #15803d;
+  border-color: #15803d;
+}
+
+/* Word cards — absolutely positioned on the scene from DB x/y */
+.house-dd-card {
+  position: absolute;
+  font-family:   'Pixelify Sans', sans-serif;
+  font-size:     17px;
+  font-weight:   bold;
+  color:         #3a2008;
+  background:    #FFF9E6;
+  border:        3px solid #3a2008;
+  border-radius: 12px;
+  padding:       10px 22px;
+  cursor:        grab;
+  box-shadow:    0 4px 0 #3a2008;
+  transition:    transform 0.15s, opacity 0.15s, box-shadow 0.15s;
+  user-select:   none;
+}
+
+.house-dd-card:hover:not(.house-dd-card--placed) {
+  transform:  translateY(-3px);
+  box-shadow: 0 7px 0 #3a2008;
+}
+
+.house-dd-card--dragging {
+  opacity:   0.5;
+  transform: scale(0.95);
+  cursor:    grabbing;
+}
+
+.house-dd-card--placed {
+  background:  #d1fae5;
+  border-color: #15803d;
+  color:        #15803d;
+  box-shadow:   0 4px 0 #15803d;
+  cursor:       default;
+  opacity:      0.7;
+}
+
+.house-dd-card--shake {
+  animation: house-shake 0.5s ease;
+}
+
+/* Complete button — inside rightSlot of DialogueBox */
 .house-complete-btn {
-  position:       absolute;
-  bottom:         50px;
-  right:          20px;
-  z-index:        250;
-  font-family:    'Fredoka One', 'Nunito', cursive;
-  font-size:      16px;
-  font-weight:    700;
-  letter-spacing: 0.5px;
-  padding:        12px 28px;
-  border-radius:  14px;
-  border:         3px solid #2d2d2d;
-  cursor:         pointer;
-  transition:     background 0.2s ease, box-shadow 0.2s ease,
-                  transform 0.15s ease, opacity 0.2s ease;
+  flex-shrink:   0;
+  font-family:   'Fredoka One', 'Nunito', cursive;
+  font-size:     15px;
+  font-weight:   700;
+  padding:       10px 24px;
+  border-radius: 14px;
+  border:        3px solid #2d2d2d;
+  cursor:        pointer;
+  transition:    background 0.2s ease, box-shadow 0.2s ease,
+                 transform 0.15s ease, opacity 0.2s ease;
 }
 
 .house-complete-btn--disabled {
@@ -135,67 +226,7 @@
   box-shadow: 0 2px 0 #15803d;
 }
 
-/* ── IA arrow next button (rightSlot mid-intro) ──────────────── */
-.house-next-btn {
-  width:         60px;
-  height:        60px;
-  background:    #FCD765;
-  border:        3px solid #3a2008;
-  border-radius: 50%;
-  font-size:     20px;
-  cursor:        pointer;
-  display:       flex;
-  align-items:   center;
-  justify-content: center;
-  transition:    transform 0.15s ease, background 0.15s ease;
-  box-shadow:    0 4px 0 #3a2008;
-}
-
-.house-next-btn:hover  { background: #ffe082; transform: translateY(-2px); }
-.house-next-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #3a2008; }
-
-/* ── Item Association 2×2 choices grid ──────────────────────── */
-.house-ia-grid {
-  position:              absolute;
-  top:                   8%;
-  right:                 2%;
-  width:                 36%;
-  display:               grid;
-  grid-template-columns: 1fr 1fr;
-  gap:                   10px;
-  padding:               8px;
-  z-index:               20;
-}
-
-/* ── IA scene images ─────────────────────────────────────────── */
-.house-ia-scene {
-  position:       absolute;
-  pointer-events: none;
-  z-index:        5;
-}
-
-/* Round 1 — trash positions */
-.house-ia-scene-0-0 { bottom: 2%;    left: 30%;   width: 11%; }
-.house-ia-scene-0-1 { bottom: 8%;    right: 38%;  width: 10%; }
-.house-ia-scene-0-2 { bottom: 15%;   left: 35%;   width: 13%; }
-
-/* Round 2 — water positions */
-.house-ia-scene-1-0 { bottom: 22.5%; left: 53.5%; width: 3.5%; }
-.house-ia-scene-1-1 { bottom: 23%;   left: 51%;   width: 4%;   }
-
-/* ── Broom sweep ─────────────────────────────────────────────── */
-.house-ia-broom {
-  position:       absolute;
-  bottom:         4%;
-  left:           -25%;
-  width:          200px;
-  z-index:        10;
-  pointer-events: none;
-  animation:      house-sweep 0.8s ease forwards;
-}
-
-/* ── Completion / transition overlay ────────────────────────── */
-/* Shared by DD done card and IA done card */
+/* ── Done / transition overlay ───────────────────────────────── */
 .house-overlay {
   position:        absolute;
   inset:           0;
@@ -240,7 +271,7 @@
   margin:      0;
 }
 
-/* ── Loading / Error ─────────────────────────────────────────── */
+/* ── Loading state ───────────────────────────────────────────── */
 .house-loading {
   position:        absolute;
   inset:           0;
@@ -250,21 +281,25 @@
   justify-content: center;
   gap:             16px;
   z-index:         10;
-  font-family:     'Fredoka One', cursive;
-  font-size:       20px;
-  color:           #fff;
-  text-shadow:     0 2px 8px rgba(0,0,0,0.5);
+}
+
+.house-loading span {
+  font-family: 'Fredoka One', cursive;
+  font-size:   22px;
+  color:       #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  animation:   house-loading-pulse 1.2s ease-in-out infinite;
 }
 
 /* ── Keyframes ───────────────────────────────────────────────── */
+@keyframes house-npc-bob {
+  0%, 100% { transform: translateY(0);    }
+  50%       { transform: translateY(-8px); }
+}
+
 @keyframes house-btn-pulse {
   0%,  100% { box-shadow: 0 5px 0 #15803d, 0 0 0  0   rgba(34,197,94,0.4); }
   50%        { box-shadow: 0 5px 0 #15803d, 0 0 0 10px rgba(34,197,94,0);   }
-}
-
-@keyframes house-sweep {
-  0%   { left: -25%; transform: rotate(-8deg); }
-  100% { left: 110%; transform: rotate(0deg);  }
 }
 
 @keyframes house-overlay-in {
@@ -280,3 +315,206 @@
   from { transform: rotate(-30deg) scale(0.5); opacity: 0; }
   to   { transform: rotate(0deg)   scale(1);   opacity: 1; }
 }
+
+@keyframes house-loading-pulse {
+  0%,  100% { opacity: 1;   }
+  50%        { opacity: 0.4; }
+}
+
+@keyframes house-shake {
+  0%, 100% { transform: translateX(0);    }
+  20%       { transform: translateX(-8px); }
+  40%       { transform: translateX(8px);  }
+  60%       { transform: translateX(-6px); }
+  80%       { transform: translateX(6px);  }
+}
+
+/* ── Dev grid overlay ────────────────────────────────────────── */
+.house-grid-btn {
+  position:      absolute;
+  top:           16px;
+  right:         16px;
+  z-index:       200;
+  font-family:   'Pixelify Sans', sans-serif;
+  font-size:     13px;
+  font-weight:   bold;
+  padding:       6px 14px;
+  border-radius: 10px;
+  border:        2px solid #3a2008;
+  background:    #fffef5;
+  color:         #3a2008;
+  cursor:        pointer;
+  box-shadow:    0 3px 0 #3a2008;
+  transition:    background 0.15s, transform 0.1s;
+}
+.house-grid-btn--on {
+  background: #fcd765;
+  color:      #3a2008;
+}
+.house-grid-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #3a2008; }
+
+.house-grid-overlay {
+  position: absolute;
+  inset:    0 0 90px 0;   /* stop at dialogue bar */
+  z-index:  90;
+  pointer-events: all;
+  cursor:   crosshair;
+}
+
+/* Grid lines */
+.house-grid-line {
+  position:   absolute;
+  background: rgba(252, 215, 101, 0.35);
+}
+.house-grid-line--v {
+  top: 0; bottom: 0;
+  width: 1px;
+}
+.house-grid-line--h {
+  left: 0; right: 0;
+  height: 1px;
+}
+
+/* Axis labels */
+.house-grid-label {
+  position:    absolute;
+  font-family: 'Pixelify Sans', monospace;
+  font-size:   10px;
+  color:       rgba(255,255,220,0.75);
+  pointer-events: none;
+  transform:   translateX(-50%);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+}
+.house-grid-label--y {
+  transform: translateY(-50%);
+}
+
+/* Live crosshair */
+.house-grid-crosshair {
+  position:   absolute;
+  background: rgba(255, 80, 80, 0.7);
+  pointer-events: none;
+}
+.house-grid-crosshair--v {
+  top: 0; bottom: 0;
+  width: 1px;
+  transform: translateX(-50%);
+}
+.house-grid-crosshair--h {
+  left: 0; right: 0;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
+/* Coordinate tooltip */
+.house-grid-coord {
+  position:      absolute;
+  background:    rgba(0,0,0,0.85);
+  color:         #fcd765;
+  font-family:   'Pixelify Sans', monospace;
+  font-size:     13px;
+  font-weight:   bold;
+  padding:       4px 10px;
+  border-radius: 8px;
+  border:        1px solid #fcd765;
+  pointer-events: none;
+  white-space:   nowrap;
+  z-index:       99;
+}
+/* ── Phase 2: Comprehension grid ──────────────────────────────────────────── */
+.house-comp-grid {
+  position:        absolute;
+  bottom:          110px;          /* sits above the dialogue bar */
+  left:            50%;
+  transform:       translateX(-50%);
+  display:         flex;
+  gap:             20px;
+  z-index:         20;
+}
+
+/* ── Phase 3: DD cards row ────────────────────────────────────────────────── */
+.house-dd-scene {
+  position: absolute;
+  inset:    0;
+  z-index:  15;
+}
+
+.house-dd-cards-row {
+  position:        absolute;
+  bottom:          115px;          /* above dialogue bar */
+  left:            50%;
+  transform:       translateX(-50%);
+  display:         flex;
+  gap:             16px;
+  z-index:         20;
+}
+
+.house-dd-card {
+  padding:         10px 18px;
+  background:      rgba(255,255,255,0.95);
+  border:          2px solid rgba(0,0,0,0.18);
+  border-radius:   10px;
+  font-size:       14px;
+  font-weight:     700;
+  color:           #3a2a10;
+  cursor:          grab;
+  user-select:     none;
+  box-shadow:      0 3px 10px rgba(0,0,0,0.18);
+  transition:      opacity 0.2s, transform 0.15s;
+  white-space:     nowrap;
+}
+
+.house-dd-card:hover             { transform: scale(1.05); border-color: #f0a500; }
+.house-dd-card--dragging         { opacity: 0.5; cursor: grabbing; }
+.house-dd-card--placed           { opacity: 0.35; cursor: default; pointer-events: none; }
+.house-dd-card--shake            { animation: dd-shake 0.55s ease-out; }
+
+@keyframes dd-shake {
+  0%,100% { transform: translateX(0); }
+  15%     { transform: translateX(-7px); }
+  30%     { transform: translateX( 7px); }
+  45%     { transform: translateX(-5px); }
+  60%     { transform: translateX( 5px); }
+  75%     { transform: translateX(-3px); }
+  90%     { transform: translateX( 3px); }
+}
+
+/* ── Drop zone — centered on scene ───────────────────────────────────────── */
+.house-dd-dropzone {
+  position:        absolute;
+  top:             35%;
+  left:            50%;
+  transform:       translate(-50%, -50%);
+  min-width:       160px;
+  min-height:      80px;
+  border:          3px dashed rgba(240,165,0,0.6);
+  border-radius:   16px;
+  background:      rgba(255,255,255,0.25);
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  gap:             8px;
+  z-index:         18;
+  transition:      background 0.2s, border-color 0.2s;
+}
+
+.house-dd-dropzone--hover    { background: rgba(240,165,0,0.2); border-color: #f0a500; }
+.house-dd-dropzone--complete { background: rgba(46,204,113,0.2); border-color: #2ecc71; }
+
+.house-dd-dropzone-label {
+  font-size:   12px;
+  color:       rgba(255,255,255,0.7);
+  font-weight: 600;
+}
+
+.house-dd-placed-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+
+.house-dd-chip {
+  padding:       4px 10px;
+  border-radius: 8px;
+  font-size:     13px;
+  font-weight:   700;
+}
+
+.house-dd-chip--correct { background: #2ecc71; color: #fff; }
