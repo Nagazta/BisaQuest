@@ -1,11 +1,8 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "./components/HeroSection";
 import Login from "./pages/Login";
-import Register from "./pages/Register";
 import StudentDashboard from "./pages/student/PlayerLobby";
 import CharacterSelection from "./pages/student/CharacterSelectionPage";
-import LanguageSelectionPage from "./pages/student/LanguageSelectionPage";
-import InstructionsPage from "./pages/student/InstructionsPage";
 import ItemAssociation from "./game/ItemAssociation";
 import VillagePage from "./pages/Village/VillagePage";
 import ForestPage from "./pages/Forest/ForestPage";
@@ -26,12 +23,9 @@ function App() {
         <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
 
             {/* ── Player setup flow (public) ─────────────────────────────── */}
             <Route path="/student/characterSelection" element={<CharacterSelection />} />
-            <Route path="/student/languageSelection" element={<LanguageSelectionPage />} />
-            <Route path="/student/instructions" element={<InstructionsPage />} />
 
             {/* ── Environment pages (public — player_id from localStorage) ─ */}
             <Route path="/student/village" element={<VillagePage />} />
