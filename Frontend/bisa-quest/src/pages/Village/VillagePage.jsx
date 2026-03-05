@@ -205,7 +205,7 @@ const VillagePage = () => {
             console.error("[VillagePage] Could not fetch questId:", err);
         }
 
-        // ── Strict alternating sequence: DD → IA → DD → IA → DD → IA ────────
+        // Two Sequences: DD -> IA -> Done
         const questSequence = [
             { type: "drag_drop",        sceneType: "living_room", questId: resolvedQuestId           },
             { type: "item_association", sceneType: "living_room", questId: resolvedIaLivingQuestId   },

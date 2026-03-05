@@ -5,40 +5,55 @@ import "./DialogueBox.css";
 /**
  * DialogueBox — reusable full-width bottom bar.
  *
- * Used by HousePage, DragAndDrop, ForestScenePage, and any
- * future scene page. No per-page CSS needed.
- *
  * Props:
- *   title          — speaker name in the left dark panel
+ *   title          — speaker name shown in the left panel
  *   text           — dialogue text in the center
- *   language       — "en" | "ceb" (added as className on text)
- *   onNext         — callback for the arrow button
- *   showNextButton — show the arrow button (default true)
- *   rightSlot      — optional JSX rendered on the right instead
- *                    of the arrow (e.g. Yes / No buttons)
+ *   isNarration    — true → italic narration style, no speaker panel
+ *   isPlayer       — true → player response style (right-aligned, teal panel)
+ *   language       — "en" | "ceb"
+ *   onNext         — arrow button callback
+ *   showNextButton — show the arrow (default true)
+ *   rightSlot      — optional JSX on the right instead of arrow
  */
 const DialogueBox = ({
   title = "The Guide",
   text,
+  isNarration = false,
+  isPlayer = false,
   language = "en",
   onNext,
   showNextButton = true,
   rightSlot = null,
 }) => {
-  return (
-    <div className="dialogue-box">
+  const boxClass = [
+    "dialogue-box",
+    isNarration ? "dialogue-box--narration" : "",
+    isPlayer    ? "dialogue-box--player"    : "",
+  ].filter(Boolean).join(" ");
 
-      {/* Left panel — speaker name */}
-      <div className="dialogue-header">
-        <h3 className="dialogue-title">{title}</h3>
-      </div>
+  return (
+    <div className={boxClass}>
+
+      {/* Left panel — hidden for narration; right-side for player */}
+      {!isNarration && (
+        <div className={`dialogue-header ${isPlayer ? "dialogue-header--player" : ""}`}>
+          <h3 className="dialogue-title">{title}</h3>
+        </div>
+      )}
 
       {/* Center — dialogue text */}
       <div className="dialogue-content">
-        <p className={`dialogue-text ${language}`}>{text}</p>
+        <p className={[
+          "dialogue-text",
+          language,
+          isNarration ? "dialogue-text--narration" : "",
+          isPlayer    ? "dialogue-text--player"    : "",
+        ].filter(Boolean).join(" ")}>
+          {isNarration ? `✦ ${text} ✦` : text}
+        </p>
       </div>
 
-      {/* Right — custom slot OR arrow button */}
+      {/* Right — custom slot OR arrow */}
       {rightSlot ? (
         <div style={{ flexShrink: 0, marginRight: 24 }}>
           {rightSlot}

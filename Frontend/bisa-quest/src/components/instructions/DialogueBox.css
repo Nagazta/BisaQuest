@@ -63,7 +63,7 @@
 .next-arrow-btn {
   position:      static;
   flex-shrink:   0;
-  margin-right:  40px;
+  margin-right:  20px;
   width:         60px !important;
   height:        60px !important;
   background:    #FCD765 !important;
@@ -93,4 +93,47 @@
   height:  28px;
   display: block;
   filter:  drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* ── Narration variant ───────────────────────────────────────── */
+.dialogue-box--narration {
+  background:  #3a2a10;
+  border-top:  4px solid #a07840;
+}
+
+/* No speaker panel for narration — text spans full width */
+.dialogue-box--narration .dialogue-content {
+  padding: 18px 48px;
+}
+
+.dialogue-text--narration {
+  font-family: 'Grandstander', cursive !important;
+  font-size:   16px !important;
+  font-style:  italic;
+  color:       #d4b896 !important;
+  text-align:  center !important;
+  letter-spacing: 0.3px;
+}
+
+/* ── Player variant ──────────────────────────────────────────── */
+/* Flips the layout: speaker panel on the RIGHT, text left-aligned */
+.dialogue-box--player {
+  background:  #1a3a2a;
+  border-top:  4px solid #4ade80;
+  flex-direction: row-reverse;
+}
+
+.dialogue-header--player {
+  background:   #14532d;
+  border-right: none;
+  border-left:  3px solid #4ade80;
+}
+
+.dialogue-box--player .dialogue-title {
+  color: #bbf7d0;
+}
+
+.dialogue-text--player {
+  color:      #d1fae5 !important;
+  text-align: right !important;
 }

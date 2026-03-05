@@ -1,637 +1,442 @@
 // ─────────────────────────────────────────────────────────────────────────────
-//  HousePage.jsx
-//  Village equivalent of ForestScenePage — handles the full sequence:
-//    intro  →  drag_drop  →  item_association
-//  Generic NPC support: works for Ligaya, Vicente, Nando, etc.
+//  HousePage.jsx  —  Scenario-driven Village quest page
+//
+//  One questId = one full scenario:
+//    Phase 1 — Story Introduction  (flow_type: main, step_order 1..N)
+//    Phase 2 — Comprehension       (last main step shows 2 ClickableItems)
+//    Phase 3 — Drag & Drop         (challenge_items: label only, one card per row)
+//    Phase 4 — Feedback            (flow_type: correct / wrong_*)
+//
+//  Speaker field drives DialogueBox style:
+//    "Narration" → italic narration bar
+//    anything else → normal NPC bar
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-import Button        from "../../components/Button";
-import DialogueBox   from "../../components/instructions/DialogueBox";
-import DraggableItem from "../../game/components/DraggableItem";
-import DropZone      from "../../game/components/DropZone";
-import ClickableItem from "../../game/components/ClickableItem";
+import Button           from "../../components/Button";
+import DialogueBox      from "../../components/instructions/DialogueBox";
+import ClickableItem    from "../../game/components/ClickableItem";
 import ZoneDebugOverlay from "../../game/components/ZoneDebugOverlay";
 
-// NPC images — add more here as Vicente / Nando are implemented
 import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
-
-// Scene backgrounds
-import houseBackground   from "../../assets/images/environments/scenario/house.jpg";
-import kitchenBackground from "../../assets/images/environments/scenario/kitchen.jpg";
-import bedroomBackground from "../../assets/images/environments/scenario/bedroom.jpg";
-
-// Item Association scene props
-import Trash1        from "../../assets/items/trash 1.png";
-import FoodWrappers  from "../../assets/items/foodWrappers.png";
-import FoodWrappers2 from "../../assets/items/foodWrappers2.png";
-import BroomImage    from "../../assets/items/broom.png";
-import SpilledWater  from "../../assets/items/spilledWater.png";
-import Water         from "../../assets/items/water.png";
+import houseBackground from "../../assets/images/environments/scenario/house.jpg";
 
 import {
   SCENE_BACKGROUNDS,
-  SCENE_ZONES,
   ZONE_REGISTRY,
   SCENE_ZONE_OVERRIDES,
   DEFAULT_BACKGROUND,
-  START_POSITIONS,
-  FALLBACK_ITEMS,
-  FALLBACK_ITEMS_KITCHEN,
-  FALLBACK_ITEMS_BEDROOM,
 } from "../../game/dragDropConstants";
-import { buildAllDropZones, getDialogueText, mapRawItems } from "../../game/dragDropUtils";
 import { getPlayerId, saveNPCProgress } from "../../utils/playerStorage";
 import "./HousePage.css";
 
-// ── Constants ─────────────────────────────────────────────────────────────────
-
+// ── NPC image map (extend as Vicente / Nando are added) ───────────────────────
 const NPC_IMAGES = {
   village_npc_2: LigayaCharacter,
-  // village_npc_3: VicenteCharacter,  ← add when ready
-  // village_npc_4: NandoCharacter,    ← add when ready
 };
 
-const SCENE_BACKGROUNDS_LOCAL = {
+const SCENE_BG = {
   living_room: houseBackground,
-  kitchen:     kitchenBackground,
-  bedroom:     bedroomBackground,
+  // kitchen: kitchenBackground,   ← add when asset ready
+  // bedroom: bedroomBackground,
 };
 
-const IA_SCENE_IMAGES = {
-  living_room: {
-    0: [Trash1, FoodWrappers, FoodWrappers2],
-    1: [SpilledWater, Water],
-    2: [],
-  },
-  kitchen: { 0: [], 1: [], 2: [] },
-  bedroom: { 0: [], 1: [], 2: [] },
-};
+// ── Speaker classifiers ───────────────────────────────────────────────────────
+const isNarration = (speaker) =>
+  typeof speaker === "string" && speaker.toLowerCase() === "narration";
 
-const SCENE_STEP_LABEL = {
-  living_room: "Scene 1 of 3 — Living Room / Sala",
-  kitchen:     "Scene 2 of 3 — Kitchen / Kusina",
-  bedroom:     "Scene 3 of 3 — Bedroom / Kwarto",
-};
+const isPlayer = (speaker) =>
+  typeof speaker === "string" && speaker.toLowerCase() === "player";
 
-const TOTAL_IA_ROUNDS = 3;
-
-const FALLBACK_INTRO = [
-  "Hi! I was supposed to clean the living room before my mom comes home. Can you help me?",
-  "I'll show you the cleaning tools and you have to guess what each one is called in Cebuano!",
-  "Did you understand the task? Are you ready to start?",
-];
-
-// ── Fallback IA rounds (per scene) ────────────────────────────────────────────
-
-const buildFallbackIARounds = (scene) => {
-  const living_room = [
-    [
-      { id:"lr1c",  label:"Broom / Walis",     isCorrect:true,
-        roundPrompt:"Dirty ang salog! Unsa ang gamiton para mag-silhig?",
-        roundReprompt:"Sulayi pag-usab! Unsa ang para sa pag-silhig?",
-        hint:"Tama! Broom / Walis ang gamiton sa pag-silhig!",
-        sceneImages:[Trash1, FoodWrappers, FoodWrappers2] },
-      { id:"lr1w1", label:"Bucket / Timba",    isCorrect:false, hint:"Bucket / Timba holds water!" },
-      { id:"lr1w2", label:"Pillow / Almohada", isCorrect:false, hint:"Pillow / Almohada is for sleeping!" },
-      { id:"lr1w3", label:"Book / Libro",      isCorrect:false, hint:"Book / Libro is for reading!" },
-    ],
-    [
-      { id:"lr2c",  label:"Wet Rag / Trapo",   isCorrect:true,
-        roundPrompt:"Basa ang lamesa! Unsa ang gamiton para mag-punas?",
-        roundReprompt:"Sayop! Unsa ang para sa pag-punas?",
-        hint:"Tama! Wet Rag / Trapo ang gamiton sa pag-punas!",
-        sceneImages:[SpilledWater, Water] },
-      { id:"lr2w1", label:"Broom / Walis",     isCorrect:false, hint:"Broom / Walis sweeps dry floors!" },
-      { id:"lr2w2", label:"Fork / Tinidor",    isCorrect:false, hint:"Fork / Tinidor is for eating!" },
-      { id:"lr2w3", label:"Blanket / Habol",   isCorrect:false, hint:"Blanket / Habol keeps you warm!" },
-    ],
-    [
-      { id:"lr3c",  label:"Brush / Sipilyo",   isCorrect:true,
-        roundPrompt:"May sapot sa kisame! Unsa ang gamiton para tangtangon?",
-        roundReprompt:"Dili na! Unsa ang para sa sapot sa kisame?",
-        hint:"Husto! Brush / Sipilyo ang gamiton para sa sapot!" },
-      { id:"lr3w1", label:"Mop / Mop",         isCorrect:false, hint:"Mop / Mop cleans the floor!" },
-      { id:"lr3w2", label:"Pencil / Lapis",    isCorrect:false, hint:"Pencil / Lapis is for writing!" },
-      { id:"lr3w3", label:"Spoon / Kutsara",   isCorrect:false, hint:"Spoon / Kutsara is for eating!" },
-    ],
-  ];
-
-  const kitchen = [
-    [
-      { id:"k1c",  label:"Spatula / Espátula", isCorrect:true,
-        roundPrompt:"Nagluto ta! Unsa ang gamiton para mag-flip sa pagkaon?",
-        roundReprompt:"Sulayi pag-usab! Unsa ang para sa pag-flip?",
-        hint:"Tama! Spatula ang gamiton sa pagluto!" },
-      { id:"k1w1", label:"Broom / Walis",      isCorrect:false, hint:"Broom / Walis is for sweeping!" },
-      { id:"k1w2", label:"Pillow / Almohada",  isCorrect:false, hint:"Pillow is for sleeping!" },
-      { id:"k1w3", label:"Book / Libro",       isCorrect:false, hint:"Book is for reading!" },
-    ],
-    [
-      { id:"k2c",  label:"Pot / Kaldero",      isCorrect:true,
-        roundPrompt:"Mag-boil ta ug tubig! Unsa ang gamiton?",
-        roundReprompt:"Sayop! Unsa ang para sa pag-boil?",
-        hint:"Tama! Pot / Kaldero ang gamiton!" },
-      { id:"k2w1", label:"Plate / Plato",      isCorrect:false, hint:"Plate is for serving food!" },
-      { id:"k2w2", label:"Fork / Tinidor",     isCorrect:false, hint:"Fork is for eating!" },
-      { id:"k2w3", label:"Cup / Tasa",         isCorrect:false, hint:"Cup is for drinking!" },
-    ],
-    [
-      { id:"k3c",  label:"Knife / Kutsilyo",   isCorrect:true,
-        roundPrompt:"Mag-chop ta ug gulay! Unsa ang gamiton?",
-        roundReprompt:"Dili na! Unsa ang para sa pag-chop?",
-        hint:"Husto! Knife / Kutsilyo ang gamiton!" },
-      { id:"k3w1", label:"Spoon / Kutsara",    isCorrect:false, hint:"Spoon is for stirring or eating!" },
-      { id:"k3w2", label:"Towel / Tualya",     isCorrect:false, hint:"Towel is for drying!" },
-      { id:"k3w3", label:"Soap / Sabon",       isCorrect:false, hint:"Soap is for washing!" },
-    ],
-  ];
-
-  const bedroom = [
-    [
-      { id:"b1c",  label:"Pillow / Almohada",  isCorrect:true,
-        roundPrompt:"Oras na sa pagtulog! Unsa ang gibutang sa ulo?",
-        roundReprompt:"Sulayi pag-usab! Unsa ang para sa ulo sa pagtulog?",
-        hint:"Tama! Pillow / Almohada ang gamiton!" },
-      { id:"b1w1", label:"Broom / Walis",      isCorrect:false, hint:"Broom is for sweeping!" },
-      { id:"b1w2", label:"Pot / Kaldero",      isCorrect:false, hint:"Pot is for cooking!" },
-      { id:"b1w3", label:"Book / Libro",       isCorrect:false, hint:"Book is for reading!" },
-    ],
-    [
-      { id:"b2c",  label:"Blanket / Habol",    isCorrect:true,
-        roundPrompt:"Bugnaw kaayo! Unsa ang gamiton para mag-init?",
-        roundReprompt:"Sayop! Unsa ang para sa pag-init sa gabii?",
-        hint:"Tama! Blanket / Habol ang gamiton!" },
-      { id:"b2w1", label:"Towel / Tualya",     isCorrect:false, hint:"Towel is for drying!" },
-      { id:"b2w2", label:"Fork / Tinidor",     isCorrect:false, hint:"Fork is for eating!" },
-      { id:"b2w3", label:"Soap / Sabon",       isCorrect:false, hint:"Soap is for washing!" },
-    ],
-    [
-      { id:"b3c",  label:"Alarm Clock / Relo", isCorrect:true,
-        roundPrompt:"Kinahanglan maka-mata ug sayo! Unsa ang gamiton?",
-        roundReprompt:"Dili na! Unsa ang para sa pag-mata ug sayo?",
-        hint:"Husto! Alarm Clock / Relo ang gamiton!" },
-      { id:"b3w1", label:"Pillow / Almohada",  isCorrect:false, hint:"Pillow is for sleeping!" },
-      { id:"b3w2", label:"Broom / Walis",      isCorrect:false, hint:"Broom is for sweeping!" },
-      { id:"b3w3", label:"Cup / Tasa",         isCorrect:false, hint:"Cup is for drinking!" },
-    ],
-  ];
-
-  const rounds = scene === "kitchen" ? kitchen
-               : scene === "bedroom" ? bedroom
-               : living_room;
-
-  return rounds.map(group => [...group].sort(() => Math.random() - 0.5));
-};
-
-const FALLBACK_IA_INTRO = {
-  living_room: [
-    "Karon, among hukman ang mga kagamitan sa paglimpyo! / Now let's identify the cleaning tools!",
-    "Paminaw ug maayo ug i-click ang husto nga sagot! / Listen carefully and click the correct answer!",
-  ],
-  kitchen: [
-    "Karon, among hukman ang mga kagamitan sa kusina! / Now let's identify the kitchen tools!",
-    "Paminaw ug maayo ug i-click ang husto nga sagot! / Listen carefully and click the correct answer!",
-  ],
-  bedroom: [
-    "Karon, among hukman ang mga kagamitan sa kwarto! / Now let's identify the bedroom items!",
-    "Paminaw ug maayo ug i-click ang husto nga sagot! / Listen carefully and click the correct answer!",
-  ],
+const resolveSpeaker = (speaker, fallback) => {
+  if (!speaker) return fallback;
+  if (isNarration(speaker)) return "Narration";
+  if (isPlayer(speaker))    return "Player";
+  return speaker;
 };
 
 // ── Phase enum ────────────────────────────────────────────────────────────────
-
 const Phase = {
-  INTRO:      "intro",
-  DRAG_DROP:  "drag_drop",
-  IA_INTRO:   "ia_intro",
-  IA_SCENE:   "ia_scene",
-  IA_CORRECT: "ia_correct",
-  IA_WRONG:   "ia_wrong",
-  DONE:       "done",
+  STORY:         "story",          // Phase 1 — story intro dialogues
+  COMPREHENSION: "comprehension",  // Phase 2 — 2-choice picture click
+  COMP_BRANCH:   "comp_branch",    // Phase 2 — correct/wrong branch after click
+  DRAG_DROP:     "drag_drop",      // Phase 3 — word card drag & drop
+  FEEDBACK:      "feedback",       // Phase 4 — post-DD feedback dialogues
+  DONE:          "done",           // scenario complete
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-
-const getIANPCText = (phase, introText, { roundPrompt, roundReprompt, itemHint }) => {
-  switch (phase) {
-    case Phase.IA_INTRO:   return introText || "...";
-    case Phase.IA_SCENE:   return roundPrompt   || "Click the correct item!";
-    case Phase.IA_CORRECT: return itemHint      || "Correct! / Husto! ✓";
-    case Phase.IA_WRONG: {
-      const base = roundReprompt || "Sayop! Try again!";
-      return itemHint ? `${base}\n\n${itemHint}` : base;
-    }
-    default: return "...";
+const groupByFlow = (rows) => {
+  const g = {};
+  for (const r of rows) {
+    const key = r.flow_type || "main";
+    if (!g[key]) g[key] = [];
+    g[key].push(r);
   }
+  for (const key of Object.keys(g)) {
+    g[key].sort((a, b) => Number(a.step_order) - Number(b.step_order));
+  }
+  return g;
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
-
 const HousePage = () => {
-  const navigate   = useNavigate();
-  const location   = useLocation();
-  const playerId   = getPlayerId();
-  const API        = import.meta.env.VITE_API_URL || "";
+  const navigate = useNavigate();
+  const location = useLocation();
+  const playerId = getPlayerId();
+  const API      = import.meta.env.VITE_API_URL || "";
 
-  // ── Route state ────────────────────────────────────────────────────────────
-  const questId        = location.state?.questId        || null;
-  const kitchenQuestId = location.state?.kitchenQuestId || null;
-  const bedroomQuestId = location.state?.bedroomQuestId || null;
-  const iaQuestId      = location.state?.iaQuestId      || null;
-  const iaKitchenQuestId = location.state?.iaKitchenQuestId || null;
-  const iaBedroomQuestId = location.state?.iaBedroomQuestId || null;
-  const npcId          = location.state?.npcId          || "village_npc_2";
-  const npcName        = location.state?.npcName        || "Ligaya";
-  const returnTo       = location.state?.returnTo       || "/student/village";
-  const initialScene   = location.state?.sceneType      || "living_room";
-  const questSequence  = location.state?.questSequence  || [];
-  const initialSequenceIndex = location.state?.sequenceIndex ?? 0;
-  const [sequenceIndex, setSequenceIndex] = useState(initialSequenceIndex);
+  // Route state
+  const questId       = location.state?.questId       || null;
+  const npcId         = location.state?.npcId         || "village_npc_2";
+  const npcName       = location.state?.npcName       || "Ligaya";
+  const returnTo      = location.state?.returnTo      || "/student/village";
+  const questSequence = location.state?.questSequence || [];
+  const seqIndex      = location.state?.sequenceIndex ?? 0;
 
-  // ── Shared state ───────────────────────────────────────────────────────────
-  const [loading,    setLoading]    = useState(true);
-  const [fetchError, setFetchError] = useState(null);
-  const [sceneType,  setSceneType]  = useState(initialScene);
-  const [background, setBackground] = useState(
-    SCENE_BACKGROUNDS_LOCAL[initialScene] || houseBackground
-  );
-  const [debugMode,  setDebugMode]  = useState(false);
-  const [phase,      setPhase]      = useState(Phase.INTRO);
+  const NpcImage = NPC_IMAGES[npcId] || LigayaCharacter;
 
-  // ── Intro state ────────────────────────────────────────────────────────────
-  const [introSteps,    setIntroSteps]    = useState([]);
-  const [introStep,     setIntroStep]     = useState(0);
+  // ── Data state ─────────────────────────────────────────────────────────────
+  const [loading,         setLoading]         = useState(true);
+  const [fetchError,      setFetchError]      = useState(null);
+  const [background,      setBackground]      = useState(houseBackground);
+  const [flowGroups,      setFlowGroups]      = useState({});
+  const [compItems,       setCompItems]       = useState([]);
+  const [ddWordCards,     setDdWordCards]     = useState([]);
+  const [ddDropZoneLabel, setDdDropZoneLabel] = useState("");
 
-  // ── Drag & Drop state ──────────────────────────────────────────────────────
-  const [ddItems,      setDdItems]      = useState([]);
-  const [dropZones,    setDropZones]    = useState([]);
-  const [instructions, setInstructions] = useState(null);
-  const [placements,   setPlacements]   = useState({});
-  const [dragging,     setDragging]     = useState(null);
-  const [dragPos,      setDragPos]      = useState({ x: 0, y: 0 });
-  const [activeZone,   setActiveZone]   = useState(null);
-  const [feedback,     setFeedback]     = useState(null);
-  const [shakeItem,    setShakeItem]    = useState(null);
-  const [ddCompleted,  setDdCompleted]  = useState(false);
+  // ── Phase + dialogue cursor state ─────────────────────────────────────────
+  const [phase,       setPhase]       = useState(Phase.STORY);
+  const [storyIdx,    setStoryIdx]    = useState(0);
+  const [branchKey,   setBranchKey]   = useState(null);
+  const [branchIdx,   setBranchIdx]   = useState(0);
+  const [feedbackKey, setFeedbackKey] = useState(null);
+  const [feedbackIdx, setFeedbackIdx] = useState(0);
+  const [compLocked,  setCompLocked]  = useState(null);
 
-  // ── Item Association state ─────────────────────────────────────────────────
-  const [iaIntroSteps,   setIaIntroSteps]   = useState([]);
-  const [iaIntroStep,    setIaIntroStep]     = useState(0);
-  const [iaRounds,       setIaRounds]        = useState([[], [], []]);
-  const [iaCurrentRound, setIaCurrentRound]  = useState(0);
-  const [iaRoundKey,     setIaRoundKey]      = useState(0);
-  const [iaItemHint,     setIaItemHint]      = useState(null);
-  const [iaLockedId,     setIaLockedId]      = useState(null);
-  const [iaSweeping,     setIaSweeping]      = useState(false);
-  const [iaCompleted,    setIaCompleted]     = useState(false);
+  // ── DD state ───────────────────────────────────────────────────────────────
+  const [ddPlaced,      setDdPlaced]      = useState({});
+  const [ddShake,       setDdShake]       = useState(null);
+  const [ddCompleted,   setDdCompleted]   = useState(false);
+  const [draggingWord,  setDraggingWord]  = useState(null);
+  const [dropHover,     setDropHover]     = useState(false);
+  const [ddDropZonePos, setDdDropZonePos] = useState({ x: 50, y: 40 });
+  const [gridMode,      setGridMode]      = useState(false);
+  const [hoverCell,     setHoverCell]     = useState(null);
 
-  const feedbackTimer = useRef(null);
-  const iaPhaseTimer  = useRef(null);
-  const containerRef  = useRef(null);
+  const containerRef = useRef(null);
 
-  const NpcImage      = NPC_IMAGES[npcId] || LigayaCharacter;
-  const allDDCorrect  = ddItems.length > 0 && ddItems.every(i => placements[i.id]?.correct === true);
-  const correctZoneIds = [...new Set(ddItems.map(i => i.zone))];
+  // ── Derived current dialogue row ──────────────────────────────────────────
+  const currentRow = (() => {
+    if (phase === Phase.STORY)       return flowGroups.main?.[storyIdx]          ?? null;
+    if (phase === Phase.COMP_BRANCH) return flowGroups[branchKey]?.[branchIdx]   ?? null;
+    if (phase === Phase.FEEDBACK)    return flowGroups[feedbackKey]?.[feedbackIdx] ?? null;
+    return null;
+  })();
 
-  const iaCurrentItems  = iaRounds[iaCurrentRound] || [];
-  const iaCorrectItem   = iaCurrentItems.find(i => i?.isCorrect);
-  const iaRoundPrompt   = iaCorrectItem?.roundPrompt   || null;
-  const iaRoundReprompt = iaCorrectItem?.roundReprompt || null;
-  const iaIntroText     = iaIntroSteps[iaIntroStep]    || "";
-  const isLastIAIntro   = iaIntroSteps.length > 0 && iaIntroStep === iaIntroSteps.length - 1;
-  const isLastIntro     = introSteps.length > 0 && introStep === introSteps.length - 1;
+  const isLastStoryStep = flowGroups.main
+    ? storyIdx === flowGroups.main.length - 1
+    : false;
 
-  // ── Resolve active quest ID per scene ─────────────────────────────────────
-  const resolveActiveQuestId = useCallback((scene, type = "drag_drop") => {
-    if (type === "item_association") {
-      if (scene === "kitchen") return iaKitchenQuestId;
-      if (scene === "bedroom") return iaBedroomQuestId;
-      return iaQuestId;
-    }
-    if (scene === "kitchen") return kitchenQuestId;
-    if (scene === "bedroom") return bedroomQuestId;
-    return questId;
-  }, [questId, kitchenQuestId, bedroomQuestId, iaQuestId, iaKitchenQuestId, iaBedroomQuestId]);
-
-  // ── Load intro dialogues ───────────────────────────────────────────────────
+  // ── Load quest data ────────────────────────────────────────────────────────
   useEffect(() => {
-    const activeQuestId = resolveActiveQuestId(initialScene, "drag_drop");
-
-    if (!activeQuestId) {
-      setIntroSteps(FALLBACK_INTRO);
+    if (!questId) {
+      setFetchError("No quest selected. Please go back and try again.");
       setLoading(false);
       return;
     }
 
+    let cancelled = false;
     const load = async () => {
       try {
-        const res = await fetch(`${API}/api/challenge/quest/${activeQuestId}/dialogues`);
-        if (!res.ok) throw new Error(`Dialogue fetch failed: ${res.status}`);
-        const { data } = await res.json();
-        setIntroSteps(
-          Array.isArray(data) && data.length
-            ? data.map(r => r.dialogue_text)
-            : FALLBACK_INTRO
+        const [metaRes, dialoguesRes, itemsRes] = await Promise.all([
+          fetch(`${API}/api/challenge/quest/${questId}`),
+          fetch(`${API}/api/challenge/quest/${questId}/dialogues`),
+          fetch(`${API}/api/challenge/quest/${questId}/items`),
+        ]);
+        if (!metaRes.ok)      throw new Error(`Quest meta: ${metaRes.status}`);
+        if (!dialoguesRes.ok) throw new Error(`Dialogues: ${dialoguesRes.status}`);
+        if (!itemsRes.ok)     throw new Error(`Items: ${itemsRes.status}`);
+
+        const { data: meta }      = await metaRes.json();
+        const { data: dialogues } = await dialoguesRes.json();
+        const { data: rawItems }  = await itemsRes.json();
+
+        if (cancelled) return;
+
+        const scene = meta?.scene_type || "living_room";
+        setBackground(SCENE_BG[scene] || houseBackground);
+
+        if (!dialogues?.length) throw new Error("No dialogues found for this quest.");
+        setFlowGroups(groupByFlow(dialogues));
+
+        const sortedItems = [...(rawItems || [])].sort(
+          (a, b) => Number(a.display_order ?? 99) - Number(b.display_order ?? 99)
         );
-      } catch (err) {
-        console.error("[HousePage] intro load error:", err);
-        setIntroSteps(FALLBACK_INTRO);
-      } finally {
+
+        // ── Phase 2: Comprehension (round_number = 0) ────────────────────────
+        // Dynamic x/y preserved. belongsTo added for accurate branch matching.
+        const compRaw = sortedItems.filter(r => Number(r.round_number) === 0);
+        if (compRaw.length === 0)
+          console.warn("[HousePage] No comprehension items (round_number=0) found for quest", questId);
+        setCompItems(compRaw.map(r => ({
+          id:        String(r.item_id),
+          label:     r.label,
+          imageKey:  r.image_key  || null,
+          isCorrect: Boolean(r.is_correct),
+          hint:      r.hint       || null,
+          belongsTo: r.belongs_to || null,   // ← FIX 1: carry belongs_to from DB
+          x:         Number(r.position_x ?? 60),
+          y:         Number(r.position_y ?? 30),
+        })));
+
+        // ── Phase 3: DD (round_number = 1) ───────────────────────────────────
+        // ONE card per DB row using label — dynamic x/y preserved.
+        const ddRaw = sortedItems.filter(r => Number(r.round_number) === 1);
+        if (ddRaw.length === 0)
+          console.warn("[HousePage] No DD items (round_number=1) found for quest", questId);
+
+        const correctDDItem = ddRaw.find(r => Boolean(r.is_correct));
+        setDdDropZoneLabel(correctDDItem?.label || "");
+        setDdDropZonePos({
+          x: Number(correctDDItem?.position_x ?? 50),
+          y: Number(correctDDItem?.position_y ?? 40),
+        });
+
+        // ← FIX 2: one card per row, label only (no word_left / word_right split)
+        const cards = ddRaw.map(r => ({
+          id:        String(r.item_id),
+          label:     r.label,
+          isCorrect: Boolean(r.is_correct),
+          belongsTo: r.belongs_to || null,
+          x:         Number(r.position_x ?? 50),
+          y:         Number(r.position_y ?? 60),
+        }));
+
+        console.log(`[HousePage] quest=${questId} | comp=${compRaw.length} items | dd=${cards.length} cards`);
+        setDdWordCards(cards);
+        setDdPlaced({});
         setLoading(false);
+      } catch (err) {
+        console.error("[HousePage]", err);
+        if (!cancelled) { setFetchError(err.message); setLoading(false); }
       }
     };
+
     load();
-  }, [initialScene, API]);
+    return () => { cancelled = true; };
+  }, [questId, API]);
 
-  // ── Load Drag & Drop data ──────────────────────────────────────────────────
-  const loadDragDrop = useCallback(async (scene) => {
-    const activeQuestId = resolveActiveQuestId(scene, "drag_drop");
-    setBackground(SCENE_BACKGROUNDS_LOCAL[scene] || houseBackground);
-    setSceneType(scene);
-    setDdItems([]);
-    setPlacements({});
-    setFeedback(null);
-    setDragging(null);
-    setActiveZone(null);
-    setDdCompleted(false);
+  // ── Navigation ─────────────────────────────────────────────────────────────
+  const handleNext = useCallback(() => {
 
-    if (!activeQuestId) {
-      console.warn(`[HousePage] No DD questId for scene "${scene}" — using fallback items.`);
-      const fallback = scene === "kitchen" ? FALLBACK_ITEMS_KITCHEN
-                     : scene === "bedroom" ? FALLBACK_ITEMS_BEDROOM
-                     : FALLBACK_ITEMS;
-      setDdItems(fallback);
-      setDropZones(buildAllDropZones(scene, SCENE_ZONES, { ...ZONE_REGISTRY, ...(SCENE_ZONE_OVERRIDES[scene] || {}) }));
-      setInstructions(null);
-      return;
-    }
-
-    try {
-      const [questRes, itemsRes] = await Promise.all([
-        fetch(`${API}/api/challenge/quest/${activeQuestId}`),
-        fetch(`${API}/api/challenge/quest/${activeQuestId}/items`),
-      ]);
-      if (!questRes.ok) throw new Error(`Quest fetch failed: ${questRes.status}`);
-      if (!itemsRes.ok) throw new Error(`Items fetch failed: ${itemsRes.status}`);
-
-      const { data: questMeta } = await questRes.json();
-      const { data: rawItems }  = await itemsRes.json();
-
-      const sc = questMeta?.scene_type || scene;
-      setSceneType(sc);
-      setBackground(SCENE_BACKGROUNDS_LOCAL[sc] || houseBackground);
-      setInstructions(questMeta?.instructions || null);
-
-      const correctOnly = rawItems.filter(r => r.is_correct !== false);
-      setDdItems(mapRawItems(correctOnly, START_POSITIONS));
-      setDropZones(buildAllDropZones(sc, SCENE_ZONES, { ...ZONE_REGISTRY, ...(SCENE_ZONE_OVERRIDES[sc] || {}) }));
-    } catch (err) {
-      console.error("[HousePage] DD load error:", err);
-      setFetchError(err.message);
-    }
-  }, [resolveActiveQuestId, API]);
-
-  // ── Load Item Association data ─────────────────────────────────────────────
-  const loadItemAssociation = useCallback(async (scene) => {
-    setIaIntroStep(0);
-    setIaCurrentRound(0);
-    setIaRoundKey(k => k + 1);   // bump key so ClickableItem states reset
-    setIaLockedId(null);
-    setIaItemHint(null);
-    setIaCompleted(false);
-    setIaSweeping(false);
-
-    // Always use fallback — randomized each call = fresh experience every time
-    console.log(`[HousePage] IA scene "${scene}" — using randomized fallback.`);
-    setIaIntroSteps(FALLBACK_IA_INTRO[scene] || FALLBACK_IA_INTRO.living_room);
-    setIaRounds(buildFallbackIARounds(scene));
-  }, []);
-
-  // ── Drag & Drop pointer events ─────────────────────────────────────────────
-  const handleDragStart = useCallback((itemId, e) => {
-    if (placements[itemId]?.correct === true) return;
-    e.preventDefault();
-    setDragging(itemId);
-    setDragPos({ x: e.clientX, y: e.clientY });
-  }, [placements]);
-
-  const handlePointerMove = useCallback((e) => {
-    if (!dragging) return;
-    setDragPos({ x: e.clientX, y: e.clientY });
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const px = ((e.clientX - rect.left) / rect.width)  * 100;
-    const py = ((e.clientY - rect.top)  / rect.height) * 100;
-    const hovered = dropZones.find(z =>
-      px >= z.x && px <= z.x + z.w && py >= z.y && py <= z.y + z.h
-    );
-    setActiveZone(hovered?.id || null);
-  }, [dragging, dropZones]);
-
-  const handlePointerUp = useCallback((e) => {
-    if (!dragging) return;
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) { setDragging(null); return; }
-    const px = ((e.clientX - rect.left) / rect.width)  * 100;
-    const py = ((e.clientY - rect.top)  / rect.height) * 100;
-    const targetZone = dropZones.find(z =>
-      px >= z.x && px <= z.x + z.w && py >= z.y && py <= z.y + z.h
-    );
-    if (targetZone) {
-      const item    = ddItems.find(i => i.id === dragging);
-      const correct = item?.zone === targetZone.id;
-      if (correct) {
-        setPlacements(prev => ({ ...prev, [dragging]: { placedZone: targetZone.id, correct: true } }));
-        triggerFeedback("correct", item.label, null);
+    if (phase === Phase.STORY) {
+      if (!isLastStoryStep) {
+        setStoryIdx(i => i + 1);
       } else {
-        setShakeItem(dragging);
-        setTimeout(() => setShakeItem(null), 600);
-        setPlacements(prev => ({ ...prev, [dragging]: { placedZone: null, correct: false } }));
-        triggerFeedback("wrong", item?.label, item?.zone);
+        compItems.length > 0 ? setPhase(Phase.COMPREHENSION) : setPhase(Phase.DRAG_DROP);
       }
-    }
-    setDragging(null);
-    setActiveZone(null);
-  }, [dragging, dropZones, ddItems]);
-
-  useEffect(() => {
-    if (!dragging) return;
-    window.addEventListener("pointermove", handlePointerMove);
-    window.addEventListener("pointerup",   handlePointerUp);
-    return () => {
-      window.removeEventListener("pointermove", handlePointerMove);
-      window.removeEventListener("pointerup",   handlePointerUp);
-    };
-  }, [dragging, handlePointerMove, handlePointerUp]);
-
-  useEffect(() => {
-    if (!ddItems.length) return;
-    setPlacements(Object.fromEntries(ddItems.map(i => [i.id, { placedZone: null, correct: null }])));
-  }, [ddItems]);
-
-  const triggerFeedback = (type, label, correctZone = null) => {
-    clearTimeout(feedbackTimer.current);
-    setFeedback({ type, label, correctZone });
-    feedbackTimer.current = setTimeout(() => setFeedback(null), 2000);
-  };
-
-  // ── Navigation helpers ─────────────────────────────────────────────────────
-  const advanceSequence = useCallback(() => {
-    const nextIndex = sequenceIndex + 1;
-    const nextStep  = questSequence[nextIndex];
-
-    // Sequence done — go back to village
-    if (!nextStep) {
-      navigate(returnTo, { state: { completed: true } });
       return;
     }
 
-    setSequenceIndex(nextIndex);
-    const nextScene = nextStep.sceneType || initialScene;
-
-    // Next step is item_association — load IA inline, no navigation
-    if (nextStep.type === "item_association") {
-      loadItemAssociation(nextScene).then(() => setPhase(Phase.IA_INTRO));
+    if (phase === Phase.COMP_BRANCH) {
+      const branchRows = flowGroups[branchKey] || [];
+      if (branchIdx < branchRows.length - 1) {
+        setBranchIdx(i => i + 1);
+      } else if (branchKey === "correct_comp") {   // ← FIX 3: SQL uses "correct_comp"
+        setCompLocked(null);
+        setPhase(Phase.DRAG_DROP);
+      } else {
+        setCompLocked(null);
+        setBranchKey(null);
+        setBranchIdx(0);
+        setPhase(Phase.COMPREHENSION);
+      }
       return;
     }
 
-    // Next step is drag_drop — load DD inline for the new scene
-    if (nextStep.type === "drag_drop") {
-      loadDragDrop(nextScene).then(() => setPhase(Phase.DRAG_DROP));
+    if (phase === Phase.FEEDBACK) {
+      const feedbackRows = flowGroups[feedbackKey] || [];
+      if (feedbackIdx < feedbackRows.length - 1) {
+        setFeedbackIdx(i => i + 1);
+      } else if (feedbackKey === "correct") {
+        submitProgress();
+        advanceSequence();
+      } else {
+        setDdPlaced({});
+        setDdShake(null);
+        setDdCompleted(false);
+        setFeedbackKey(null);
+        setFeedbackIdx(0);
+        setPhase(Phase.DRAG_DROP);
+      }
       return;
     }
+  }, [phase, isLastStoryStep, storyIdx, branchKey, branchIdx,
+      feedbackKey, feedbackIdx, flowGroups, compItems]);
 
-    // Fallback
-    navigate(returnTo, { state: { completed: true } });
-  }, [sequenceIndex, questSequence, navigate, returnTo,
-      loadItemAssociation, loadDragDrop, initialScene]);
-
-  // ── Phase transition handlers ──────────────────────────────────────────────
-
-  const handleIntroNext = () => {
-    if (!isLastIntro) {
-      setIntroStep(s => s + 1);
-    } else {
-      loadDragDrop(initialScene).then(() => setPhase(Phase.DRAG_DROP));
-    }
-  };
-
-  const handleIntroNo = () => setIntroStep(0);
-
-  const handleDDComplete = () => {
-    if (!allDDCorrect) return;
-    setDdCompleted(true);
-    setTimeout(() => {
-      setDdCompleted(false);
-      advanceSequence();
-    }, 1800);
-  };
-
-  const handleIAIntroNext = () => {
-    if (!isLastIAIntro) setIaIntroStep(s => s + 1);
-    else setPhase(Phase.IA_SCENE);
-  };
-
-  const handleIAItemClick = (item, isCorrect) => {
-    if (phase === Phase.IA_CORRECT || phase === Phase.IA_SCENE && iaCompleted) return;
-    clearTimeout(iaPhaseTimer.current);
-    setIaItemHint(item.hint || null);
+  // ── Phase 2: Comprehension click ──────────────────────────────────────────
+  const handleCompClick = useCallback((item, isCorrect) => {
+    if (compLocked) return;
+    setCompLocked(item.id);
 
     if (isCorrect) {
-      setIaLockedId(item.id);
-      if (iaCurrentRound === 0) setIaSweeping(true);
-      setPhase(Phase.IA_CORRECT);
-
-      iaPhaseTimer.current = setTimeout(() => {
-        setIaSweeping(false);
-        const next = iaCurrentRound + 1;
-        if (next >= TOTAL_IA_ROUNDS) {
-          setIaCompleted(true);
-          submitProgress();
-          setTimeout(() => advanceSequence(), 2000);
-        } else {
-          setIaCurrentRound(next);
-          setIaLockedId(null);
-          setIaItemHint(null);
-          setPhase(Phase.IA_SCENE);
-          setIaRoundKey(k => k + 1);
-        }
-      }, 900);
+      // ← FIX 3: SQL flow_type is "correct_comp" for comprehension correct branch
+      const target = flowGroups["correct_comp"] ? "correct_comp" : null;
+      if (!target) { setPhase(Phase.DRAG_DROP); return; }
+      setBranchKey("correct_comp");
+      setBranchIdx(0);
+      setPhase(Phase.COMP_BRANCH);
     } else {
-      setPhase(Phase.IA_WRONG);
-      iaPhaseTimer.current = setTimeout(() => {
-        setPhase(Phase.IA_SCENE);
-        setIaItemHint(null);
-      }, 3000);
+      // ← FIX 1: use belongs_to from DB first, keyword match as fallback
+      const wrongKeys = Object.keys(flowGroups).filter(k => k.startsWith("wrong_"));
+      const target = (item.belongsTo && flowGroups[item.belongsTo])
+        ? item.belongsTo
+        : (() => {
+            const words = item.label.toLowerCase().split(/[\s/,_-]+/);
+            const match = wrongKeys.find(k => words.some(w => w.length > 2 && k.includes(w)));
+            return (match && flowGroups[match]) ? match : wrongKeys[0] || null;
+          })();
+      if (!target) { setCompLocked(null); return; }
+      setBranchKey(target);
+      setBranchIdx(0);
+      setPhase(Phase.COMP_BRANCH);
     }
+  }, [compLocked, flowGroups]);
+
+  // ── Phase 3: DD handlers ───────────────────────────────────────────────────
+  const handleWordDragStart = (card, e) => {
+    if (ddPlaced[card.id] === "correct") return;
+    e.dataTransfer.setData("cardId", card.id);
+    setDraggingWord(card.id);
   };
 
+  const handleDropZoneDragOver  = (e) => { e.preventDefault(); setDropHover(true); };
+  const handleDropZoneDragLeave = () => setDropHover(false);
+
+  const handleDropZoneDrop = useCallback((e) => {
+    e.preventDefault();
+    setDropHover(false);
+    const cardId = e.dataTransfer.getData("cardId");
+    setDraggingWord(null);
+    const card = ddWordCards.find(c => c.id === cardId);
+    if (!card) return;
+
+    if (card.isCorrect) {
+      const newPlaced = { ...ddPlaced, [cardId]: "correct" };
+      setDdPlaced(newPlaced);
+      const allPlaced = ddWordCards
+        .filter(c => c.isCorrect)
+        .every(c => newPlaced[c.id] === "correct");
+      if (allPlaced) setDdCompleted(true);
+    } else {
+      setDdShake(cardId);
+      setTimeout(() => setDdShake(null), 600);
+
+      // ← FIX 1: belongs_to first, keyword fallback on label
+      const wrongKeys = Object.keys(flowGroups).filter(k => k.startsWith("wrong_"));
+      const target = (card.belongsTo && flowGroups[card.belongsTo])
+        ? card.belongsTo
+        : (() => {
+            const words = (card.label || "").toLowerCase().split(/[\s/,_-]+/);
+            const match = wrongKeys.find(k => words.some(w => w.length > 2 && k.includes(w)));
+            return (match && flowGroups[match]) ? match : wrongKeys[0] || null;
+          })();
+
+      if (target) {
+        setFeedbackKey(target);
+        setFeedbackIdx(0);
+        setPhase(Phase.FEEDBACK);
+      }
+    }
+  }, [ddWordCards, ddPlaced, flowGroups]);
+
+  const handleDDComplete = () => {
+    if (!ddCompleted) return;
+    const target = flowGroups["correct"] ? "correct" : null;
+    if (!target) { submitProgress(); advanceSequence(); return; }
+    setFeedbackKey("correct");
+    setFeedbackIdx(0);
+    setPhase(Phase.FEEDBACK);
+  };
+
+  // ── Submit + advance ───────────────────────────────────────────────────────
   const submitProgress = () => {
-    saveNPCProgress("village", npcId, TOTAL_IA_ROUNDS, true);
+    saveNPCProgress("village", npcId, 1, true);
     if (playerId) {
       fetch(`${API}/api/challenge/quest/submit`, {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({
-          playerId,
-          questId: resolveActiveQuestId(sceneType, "item_association"),
-          npcId,
-          score: TOTAL_IA_ROUNDS,
-          maxScore: TOTAL_IA_ROUNDS,
-          passed: true,
-        }),
+        body:    JSON.stringify({ playerId, questId, npcId, score: 1, maxScore: 1, passed: true }),
       }).catch(err => console.warn("[HousePage] submit failed:", err));
     }
   };
 
+  const advanceSequence = useCallback(() => {
+    const nextIndex = seqIndex + 1;
+    const nextStep  = questSequence[nextIndex];
+    if (!nextStep) {
+      navigate(returnTo, { state: { completed: true } });
+      return;
+    }
+    navigate("/student/house", {
+      state: {
+        questId:       nextStep.questId,
+        npcId, npcName, returnTo,
+        questSequence,
+        sequenceIndex: nextIndex,
+        sceneType:     nextStep.sceneType,
+      },
+    });
+  }, [seqIndex, questSequence, navigate, returnTo, npcId, npcName]);
+
   const handleBack = () => navigate(returnTo);
 
-  // ── Dialogue text per phase ────────────────────────────────────────────────
+  // ── Dialogue bar ───────────────────────────────────────────────────────────
+  const currentSpeaker  = currentRow?.speaker || null;
+  const dialogueSpeaker = currentRow
+    ? resolveSpeaker(currentSpeaker, npcName)
+    : npcName;
+
   const dialogueText = (() => {
-    if (phase === Phase.INTRO)
-      return loading ? "..." : introSteps[introStep] || "(No dialogue available)";
-    if (phase === Phase.DRAG_DROP)
-      return getDialogueText(feedback, allDDCorrect, instructions, {
-        ...ZONE_REGISTRY, ...(SCENE_ZONE_OVERRIDES[sceneType] || {}),
-      });
-    if (phase === Phase.IA_INTRO)
-      return iaIntroText || "...";
-    return getIANPCText(phase, iaIntroText, {
-      roundPrompt: iaRoundPrompt,
-      roundReprompt: iaRoundReprompt,
-      itemHint: iaItemHint,
-    });
+    if (loading)    return "...";
+    if (currentRow) return currentRow.dialogue_text || "";
+    if (phase === Phase.COMPREHENSION) return "So, what do you think? Click the correct answer!";
+    if (phase === Phase.DRAG_DROP)     return ddCompleted
+      ? "Tama! Now click Complete to confirm!"
+      : "Drag the correct word card to the picture!";
+    return "";
   })();
 
-  // ── rightSlot per phase ────────────────────────────────────────────────────
-  const rightSlot = (() => {
-    if (phase === Phase.INTRO && isLastIntro && !loading) return (
-      <div style={{ display: "flex", gap: 10 }}>
-        <Button variant="primary" onClick={handleIntroNext}>✓ Yes, I'm ready!</Button>
-        <Button variant="danger"  onClick={handleIntroNo}>✗ Not yet</Button>
-      </div>
-    );
-    if (phase === Phase.IA_INTRO && isLastIAIntro) return (
-      <Button variant="primary" onClick={handleIAIntroNext}>✓ Let's start! / Sugod na!</Button>
-    );
-    if (phase === Phase.IA_INTRO && !isLastIAIntro) return (
-      <button className="house-next-btn" onClick={handleIAIntroNext}>▶</button>
-    );
-    return null;
-  })();
+  const showNextBtn = !!(currentRow) &&
+    phase !== Phase.COMPREHENSION &&
+    phase !== Phase.DRAG_DROP;
 
-  const showNextBtn = (phase === Phase.INTRO && !isLastIntro && !loading);
+  const rightSlot = phase === Phase.DRAG_DROP ? (
+    <button
+      className={`house-complete-btn ${ddCompleted ? "house-complete-btn--active" : "house-complete-btn--disabled"}`}
+      onClick={handleDDComplete}
+      disabled={!ddCompleted}
+    >
+      Completo na!
+    </button>
+  ) : null;
 
   // ── Render ─────────────────────────────────────────────────────────────────
+  if (loading) return (
+    <div className="house-container">
+      <img src={houseBackground} alt="" className="house-background" draggable={false} />
+      <div className="house-loading"><span>Gi-load ang dula...</span></div>
+    </div>
+  );
 
   if (fetchError) return (
     <div className="house-container">
-      <img src={background} alt="" className="house-background" draggable={false} />
+      <img src={houseBackground} alt="" className="house-background" draggable={false} />
       <div className="house-loading">
-        <p>{fetchError}</p>
+        <p style={{ color: "#fff", fontFamily: "'Fredoka One', cursive", fontSize: 18 }}>{fetchError}</p>
         <Button variant="back" onClick={handleBack}>← Back</Button>
       </div>
     </div>
@@ -643,118 +448,160 @@ const HousePage = () => {
 
       <Button variant="back" className="house-back" onClick={handleBack}>← Back</Button>
 
-      {(phase === Phase.DRAG_DROP || phase === Phase.IA_INTRO || phase === Phase.IA_SCENE ||
-        phase === Phase.IA_CORRECT || phase === Phase.IA_WRONG) && (
-        <div className="house-scene-label">
-          {SCENE_STEP_LABEL[sceneType] || sceneType}
-          {phase !== Phase.DRAG_DROP && " — Item Challenge"}
+      <button
+        className={`house-grid-btn ${gridMode ? "house-grid-btn--on" : ""}`}
+        onClick={() => setGridMode(p => !p)}
+      >
+        {gridMode ? "📐 Grid ON" : "📐 Grid"}
+      </button>
+
+      <div className="house-scene-label">
+        {phase === Phase.STORY         && "Story Introduction"}
+        {phase === Phase.COMPREHENSION && "Comprehension Check"}
+        {phase === Phase.COMP_BRANCH   && "Comprehension Check"}
+        {phase === Phase.DRAG_DROP     && "Drag & Drop Activity"}
+        {phase === Phase.FEEDBACK      && "Feedback"}
+      </div>
+
+      {/* ── Phase 2: Comprehension — dynamic x/y from DB ────────────────── */}
+      {phase === Phase.COMPREHENSION && compItems.length > 0 && compItems.map(item => (
+        <div
+          key={item.id}
+          className="house-comp-item"
+          style={{
+            left: `${Math.min(Math.max(item.x, 5), 90)}%`,
+            top:  `${Math.min(Math.max(item.y, 5), 72)}%`,
+          }}
+        >
+          <ClickableItem
+            item={item}
+            onClick={handleCompClick}
+            locked={compLocked === item.id}
+          />
         </div>
-      )}
+      ))}
 
+      {/* ── Phase 3: Drag & Drop ────────────────────────────────────────── */}
       {phase === Phase.DRAG_DROP && (
-        <button className="house-debug-btn" onClick={() => setDebugMode(p => !p)}>
-          {debugMode ? "🐛 DEBUG ON" : "🐛 Debug"}
-        </button>
-      )}
+        <div className="house-dd-scene" ref={containerRef}>
 
-      {/* ── Drag & Drop layer ───────────────────────────────────────────────── */}
-      {phase === Phase.DRAG_DROP && (
-        <div className="house-dd-layer" ref={containerRef}>
-          {debugMode && <ZoneDebugOverlay activeZoneIds={correctZoneIds} containerRef={containerRef} />}
-
-          {dropZones.map(zone => (
-            <DropZone
-              key={zone.id} zone={zone}
-              isActive={activeZone === zone.id}
-              hasCorrectItem={
-                ddItems.filter(i => i.zone === zone.id).every(i => placements[i.id]?.correct === true) &&
-                ddItems.some(i => i.zone === zone.id)
-              }
-            />
-          ))}
-
-          {ddItems.map(item => (
-            <DraggableItem
-              key={item.id} item={item}
-              placement={placements[item.id] || { placedZone: null, correct: null }}
-              isDragging={dragging === item.id}
-              dragPos={dragPos}
-              isShaking={shakeItem === item.id}
-              onDragStart={handleDragStart}
-            />
-          ))}
-
-          <button
-            className={`house-complete-btn ${allDDCorrect ? "house-complete-btn--active" : "house-complete-btn--disabled"}`}
-            onClick={handleDDComplete}
-            disabled={!allDDCorrect}
+          {/* Drop zone — dynamic position from correct item's DB coords */}
+          <div
+            className={`house-dd-dropzone ${dropHover ? "house-dd-dropzone--hover" : ""} ${ddCompleted ? "house-dd-dropzone--complete" : ""}`}
+            style={{
+              left: `${Math.min(Math.max(ddDropZonePos.x, 5), 85)}%`,
+              top:  `${Math.min(Math.max(ddDropZonePos.y, 5), 72)}%`,
+            }}
+            onDragOver={handleDropZoneDragOver}
+            onDragLeave={handleDropZoneDragLeave}
+            onDrop={handleDropZoneDrop}
           >
-            Completo na!
-          </button>
-
-          {ddCompleted && (
-            <div className="house-overlay">
-              <div className="house-card">
-                <div className="house-card-stars">⭐⭐⭐</div>
-                <h2>Natapos na!</h2>
-                <p>Sunod: Item Challenge!</p>
-              </div>
+            <span className="house-dd-dropzone-label">{ddDropZoneLabel}</span>
+            <div className="house-dd-placed-chips">
+              {ddWordCards.filter(c => ddPlaced[c.id] === "correct").map(c => (
+                <span key={c.id} className="house-dd-chip house-dd-chip--correct">
+                  {c.label}                        {/* ← FIX 2: label not c.word */}
+                </span>
+              ))}
             </div>
-          )}
-        </div>
-      )}
-
-      {/* ── Item Association layer ──────────────────────────────────────────── */}
-      {(phase === Phase.IA_SCENE || phase === Phase.IA_CORRECT || phase === Phase.IA_WRONG) && (
-        <>
-          <div className="house-ia-grid">
-            {iaCurrentItems.filter(Boolean).map(item => (
-              <ClickableItem
-                key={`rk${iaRoundKey}-${item.id}`}
-                item={item}
-                onClick={handleIAItemClick}
-                locked={iaLockedId === item.id}
-                mode="grid"
-              />
-            ))}
           </div>
 
-          {iaCorrectItem?.sceneImages?.filter(Boolean)?.map((img, index) => (
-            <img
-              key={index} src={img} alt="Scene element" draggable={false}
-              className={`house-ia-scene house-ia-scene-${iaCurrentRound}-${index}`}
-            />
-          ))}
-
-          {iaSweeping && iaCurrentRound === 0 && (
-            <img src={BroomImage} alt="Broom" className="house-ia-broom" draggable={false} />
-          )}
-
-          {iaCompleted && (
-            <div className="house-overlay">
-              <div className="house-card">
-                <div className="house-card-stars">⭐⭐⭐</div>
-                <h2>Ayos kaayo! Challenge Complete!</h2>
-                <p>Padayon sa sunod na round! 🎯</p>
+          {/* Word cards — dynamic x/y from DB, one per row, label only */}
+          {ddWordCards.map(card => {
+            const placed  = ddPlaced[card.id] === "correct";
+            const shaking = ddShake === card.id;
+            return (
+              <div
+                key={card.id}
+                className={[
+                  "house-dd-card",
+                  placed              ? "house-dd-card--placed"   : "",
+                  shaking             ? "house-dd-card--shake"    : "",
+                  draggingWord === card.id ? "house-dd-card--dragging" : "",
+                ].filter(Boolean).join(" ")}
+                style={{
+                  left:      `${Math.min(Math.max(card.x, 5), 88)}%`,
+                  top:       `${Math.min(Math.max(card.y, 5), 72)}%`,
+                  transform: "translate(-50%, -50%)",
+                }}
+                draggable={!placed}
+                onDragStart={(e) => handleWordDragStart(card, e)}
+                onDragEnd={() => setDraggingWord(null)}
+              >
+                {card.label}                       {/* ← FIX 2: label not card.word */}
               </div>
-            </div>
-          )}
-        </>
+            );
+          })}
+        </div>
       )}
 
-      {/* ── NPC — always floats above dialogue bar ──────────────────────────── */}
+      {/* ── Dev grid overlay ───────────────────────────────────────────── */}
+      {gridMode && (
+        <div className="house-grid-overlay"
+          onMouseMove={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = Math.round(((e.clientX - rect.left) / rect.width)  * 100);
+            const y = Math.round(((e.clientY - rect.top)  / rect.height) * 100);
+            setHoverCell({ x, y });
+          }}
+          onMouseLeave={() => setHoverCell(null)}
+        >
+          {Array.from({ length: 11 }, (_, i) => (
+            <div key={`v${i}`} className="house-grid-line house-grid-line--v" style={{ left: `${i * 10}%` }} />
+          ))}
+          {Array.from({ length: 11 }, (_, i) => (
+            <div key={`h${i}`} className="house-grid-line house-grid-line--h" style={{ top: `${i * 10}%` }} />
+          ))}
+          {Array.from({ length: 10 }, (_, i) => (
+            <span key={`xl${i}`} className="house-grid-label house-grid-label--x"
+              style={{ left: `${i * 10 + 5}%`, top: 2 }}>
+              {i * 10 + 5}
+            </span>
+          ))}
+          {Array.from({ length: 10 }, (_, i) => (
+            <span key={`yl${i}`} className="house-grid-label house-grid-label--y"
+              style={{ top: `${i * 10 + 5}%`, left: 4 }}>
+              {i * 10 + 5}
+            </span>
+          ))}
+          {hoverCell && (
+            <>
+              <div className="house-grid-crosshair house-grid-crosshair--v" style={{ left: `${hoverCell.x}%` }} />
+              <div className="house-grid-crosshair house-grid-crosshair--h" style={{ top:  `${hoverCell.y}%` }} />
+              <div className="house-grid-coord" style={{ left: `${Math.min(hoverCell.x + 1, 72)}%`, top: `${Math.max(hoverCell.y - 6, 2)}%` }}>
+                x: {hoverCell.x}, y: {hoverCell.y}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* ── NPC — floats above dialogue bar ─────────────────────────────── */}
       <div className="house-npc-wrap">
         <img src={NpcImage} alt={npcName} className="house-npc-image" draggable={false} />
       </div>
 
-      {/* ── Shared DialogueBox — bottom bar ─────────────────────────────────── */}
+      {/* ── Shared DialogueBox ───────────────────────────────────────────── */}
       <DialogueBox
-        title={npcName}
+        title={dialogueSpeaker}
         text={dialogueText}
+        isNarration={isNarration(currentSpeaker)}
+        isPlayer={isPlayer(currentSpeaker)}
         showNextButton={showNextBtn}
-        onNext={handleIntroNext}
+        onNext={handleNext}
         rightSlot={rightSlot}
       />
+
+      {/* ── Done overlay ─────────────────────────────────────────────────── */}
+      {phase === Phase.DONE && (
+        <div className="house-overlay">
+          <div className="house-card">
+            <div className="house-card-stars">⭐⭐⭐</div>
+            <h2>Scenario Complete!</h2>
+            <p>Padayon sa sunod! 🎯</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
