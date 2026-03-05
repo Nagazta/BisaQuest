@@ -433,7 +433,7 @@ const HousePage = () => {
     if (phase === Phase.COMPREHENSION) return "So, what do you think? Click the correct answer!";
     if (phase === Phase.DRAG_DROP)     return ddCompleted
       ? "Tama! Now click Complete to confirm!"
-      : "Drag the correct word card to the picture!";
+      : "Drag the item to equip!";
     return "";
   })();
 
