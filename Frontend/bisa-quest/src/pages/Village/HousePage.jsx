@@ -28,6 +28,7 @@ import {
   ZONE_REGISTRY,
   SCENE_ZONE_OVERRIDES,
   DEFAULT_BACKGROUND,
+  ITEM_IMAGE_MAP,
 } from "../../game/dragDropConstants";
 import { getPlayerId, saveNPCProgress } from "../../utils/playerStorage";
 import "./HousePage.css";
@@ -154,7 +155,7 @@ const HousePage = () => {
         const [metaRes, dialoguesRes, itemsRes] = await Promise.all([
           fetch(`${API}/api/challenge/quest/${questId}`),
           fetch(`${API}/api/challenge/quest/${questId}/dialogues`),
-          fetch(`${API}/api/challenge/quest/${questId}/items`),
+          fetch(`${API}/api/challenge/quest/${questId}/items?randomize=false`), // ← get ALL items, no random filtering
         ]);
         if (!metaRes.ok)      throw new Error(`Quest meta: ${metaRes.status}`);
         if (!dialoguesRes.ok) throw new Error(`Dialogues: ${dialoguesRes.status}`);
@@ -200,15 +201,41 @@ const HousePage = () => {
 
         const correctDDItem = ddRaw.find(r => Boolean(r.is_correct));
         setDdDropZoneLabel(correctDDItem?.label || "");
-        setDdDropZonePos({
-          x: Number(correctDDItem?.position_x ?? 50),
-          y: Number(correctDDItem?.position_y ?? 40),
-        });
+
+        // Hardcoded drop zone positions — mirrors ZONE_REGISTRY in dragDropConstants
+        // Set correct_zone in SQL to pick which zone the drop target uses
+        const SCENE_DROP_ZONES = {
+          living_room: {
+            bookshelf: { x: 83, y: 40 },
+            sofa:      { x: 50, y: 48 },
+            aparador:  { x: 73, y: 48 },
+            lamesa:    { x: 53, y: 64 },
+            sulok:     { x: 42, y: 40 },
+            planggana: { x: 35, y: 62 },
+          },
+          kitchen: {
+            stove:     { x: 57, y: 55 },
+            counter:   { x: 20, y: 55 },
+            rack:      { x: 25, y: 28 },
+            dish_rack: { x: 78, y: 20 },
+            ref:       { x: 67, y: 50 },
+            sink:      { x: 45, y: 52 },
+          },
+          bedroom: {
+            higdaanan:   { x: 28, y: 50 },
+            bedAparador: { x: 70, y: 50 },
+            salog:       { x: 30, y: 72 },
+          },
+        };
+        const zoneKey    = correctDDItem?.correct_zone || null;
+        const sceneZones = SCENE_DROP_ZONES[scene] || {};
+        setDdDropZonePos(sceneZones[zoneKey] || sceneZones[Object.keys(sceneZones)[0]] || { x: 50, y: 40 });
 
         // ← FIX 2: one card per row, label only (no word_left / word_right split)
         const cards = ddRaw.map(r => ({
           id:        String(r.item_id),
           label:     r.label,
+          imageKey:  r.image_key  || null,
           isCorrect: Boolean(r.is_correct),
           belongsTo: r.belongs_to || null,
           x:         Number(r.position_x ?? 50),
@@ -415,13 +442,38 @@ const HousePage = () => {
     phase !== Phase.DRAG_DROP;
 
   const rightSlot = phase === Phase.DRAG_DROP ? (
-    <button
-      className={`house-complete-btn ${ddCompleted ? "house-complete-btn--active" : "house-complete-btn--disabled"}`}
-      onClick={handleDDComplete}
-      disabled={!ddCompleted}
-    >
-      Completo na!
-    </button>
+    <div className="house-dd-bar-slot-wrap">
+      {/* Equip slot — player drags word card here */}
+      <div
+        className={[
+          "house-dd-equip-slot",
+          dropHover          ? "house-dd-equip-slot--hover"    : "",
+          ddCompleted        ? "house-dd-equip-slot--complete"  : "",
+        ].filter(Boolean).join(" ")}
+        onDragOver={handleDropZoneDragOver}
+        onDragLeave={handleDropZoneDragLeave}
+        onDrop={handleDropZoneDrop}
+      >
+        {ddWordCards.filter(c => ddPlaced[c.id] === "correct").length > 0 ? (
+          <div className="house-dd-equip-chips">
+            {ddWordCards.filter(c => ddPlaced[c.id] === "correct").map(c => (
+              <span key={c.id} className="house-dd-chip house-dd-chip--correct">{c.label}</span>
+            ))}
+          </div>
+        ) : (
+          <span className="house-dd-equip-hint">Drop here</span>
+        )}
+      </div>
+
+      {/* Complete button */}
+      <button
+        className={`house-complete-btn ${ddCompleted ? "house-complete-btn--active" : "house-complete-btn--disabled"}`}
+        onClick={handleDDComplete}
+        disabled={!ddCompleted}
+      >
+        Completo na!
+      </button>
+    </div>
   ) : null;
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -485,27 +537,6 @@ const HousePage = () => {
       {phase === Phase.DRAG_DROP && (
         <div className="house-dd-scene" ref={containerRef}>
 
-          {/* Drop zone — dynamic position from correct item's DB coords */}
-          <div
-            className={`house-dd-dropzone ${dropHover ? "house-dd-dropzone--hover" : ""} ${ddCompleted ? "house-dd-dropzone--complete" : ""}`}
-            style={{
-              left: `${Math.min(Math.max(ddDropZonePos.x, 5), 85)}%`,
-              top:  `${Math.min(Math.max(ddDropZonePos.y, 5), 72)}%`,
-            }}
-            onDragOver={handleDropZoneDragOver}
-            onDragLeave={handleDropZoneDragLeave}
-            onDrop={handleDropZoneDrop}
-          >
-            <span className="house-dd-dropzone-label">{ddDropZoneLabel}</span>
-            <div className="house-dd-placed-chips">
-              {ddWordCards.filter(c => ddPlaced[c.id] === "correct").map(c => (
-                <span key={c.id} className="house-dd-chip house-dd-chip--correct">
-                  {c.label}                        {/* ← FIX 2: label not c.word */}
-                </span>
-              ))}
-            </div>
-          </div>
-
           {/* Word cards — dynamic x/y from DB, one per row, label only */}
           {ddWordCards.map(card => {
             const placed  = ddPlaced[card.id] === "correct";
@@ -528,7 +559,16 @@ const HousePage = () => {
                 onDragStart={(e) => handleWordDragStart(card, e)}
                 onDragEnd={() => setDraggingWord(null)}
               >
-                {card.label}                       {/* ← FIX 2: label not card.word */}
+                {card.imageKey && ITEM_IMAGE_MAP[card.imageKey]
+                  ? <img
+                      src={ITEM_IMAGE_MAP[card.imageKey]}
+                      alt={card.label}
+                      className="house-dd-card-img"
+                      draggable={false}
+                    />
+                  : <span className="house-dd-card-emoji">🖼️</span>
+                }
+                <span className="house-dd-card-label">{card.label}</span>
               </div>
             );
           })}
