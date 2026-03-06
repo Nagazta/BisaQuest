@@ -28,8 +28,14 @@ import CupImg    from "../assets/items/cup.png";
 // Item images — Bedroom
 import ShirtImg  from "../assets/items/shirts.png";   
 import PantsImg  from "../assets/items/pants.png"; 
-import DressImg   from "../assets/items/dress.jpg";
-import ShoesImg   from "../assets/items/shoes.png";
+import DressImg  from "../assets/items/dress.jpg";
+import ShoesImg  from "../assets/items/shoes.png";
+
+// Item images — Market Stall (fruits)
+import MangoRipeImg    from "../assets/items/mango.jpg";
+import MangoUnripeImg  from "../assets/items/mango_notripe.jpg";
+import BananaRipeImg   from "../assets/items/banana.jpg";
+import BananaUnripeImg from "../assets/items/banana_notripe.jpg";
 
 
 export const ITEM_IMAGE_MAP = {
@@ -72,6 +78,19 @@ export const ITEM_IMAGE_MAP = {
   tuwalya:  TowelImg,
   dress:    DressImg,
   shoes:    ShoesImg,
+  // Market Stall — fruits
+  mangga:          MangoRipeImg,
+  mango:           MangoRipeImg,
+  mangga_ripe:     MangoRipeImg,
+  mangga_unripe:   MangoUnripeImg,
+  mango_notripe:   MangoUnripeImg,
+  fruit_sour:      MangoUnripeImg,   // comprehension wrong choice (sour/unripe)
+  saging:          BananaRipeImg,
+  banana:          BananaRipeImg,
+  saging_ripe:     BananaRipeImg,
+  saging_unripe:   BananaUnripeImg,
+  banana_notripe:  BananaUnripeImg,
+  fruit_round:     BananaUnripeImg,  // comprehension wrong choice (round/unripe)
 };
 
 // Scene backgrounds
@@ -103,7 +122,7 @@ export const ZONE_REGISTRY = {
   sink:      { label: "Sink / Lababo",          x: 45, y: 52, w: 12, h: 22 },
 
   // Bedroom
-  higdaanan: { label: "Bed / Higdaanan",        x: 28, y: 50, w: 27, h: 20 },
+  higdaanan:   { label: "Bed / Higdaanan",      x: 28, y: 50, w: 27, h: 20 },
   bedAparador: { label: "Wardrobe / Aparador",  x: 70, y: 50, w: 10, h: 24 },
   salog:       { label: "Floor / Salog",        x: 30, y: 72, w: 40, h: 10 },
 };
@@ -164,7 +183,7 @@ export const FALLBACK_ITEMS_KITCHEN = [
   { id: "kb_6", label: "Cup / Tasa",       zone: "dish_rack", startX: 44, startY: 62, image: CupImg   },
 ];
 
-// Fallback items — Bedroom (zone IDs match DB)
+// Fallback items — Bedroom
 export const FALLBACK_ITEMS_BEDROOM = [
   { id: "bb_1", label: "Pillow / Almohada",  zone: "higdaanan", startX: 52, startY: 44, image: PillowImg   },
   { id: "bb_2", label: "Blanket / Habol",    zone: "higdaanan", startX: 65, startY: 58, image: HabolImg    },
