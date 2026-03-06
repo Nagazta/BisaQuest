@@ -106,7 +106,8 @@ const HousePage = () => {
   const [flowGroups,      setFlowGroups]      = useState({});
   const [compItems,       setCompItems]       = useState([]);
   const [ddWordCards,     setDdWordCards]     = useState([]);
-  const [ddDropZoneLabel, setDdDropZoneLabel] = useState("");
+  const [ddDropZoneLabel,  setDdDropZoneLabel]  = useState("");
+  const [ddInstruction,    setDdInstruction]    = useState("");
 
   // ── Phase + dialogue cursor state ─────────────────────────────────────────
   const [phase,       setPhase]       = useState(Phase.STORY);
@@ -125,6 +126,7 @@ const HousePage = () => {
   const [draggingWord,  setDraggingWord]  = useState(null);
   const [dropHover,     setDropHover]     = useState(false);
   const [ddDropZonePos, setDdDropZonePos] = useState({ x: 50, y: 40 });
+  const [ddDropMode,    setDdDropMode]    = useState("equip"); // "equip" | "scene"
   const [gridMode,      setGridMode]      = useState(false);
   const [hoverCell,     setHoverCell]     = useState(null);
 
@@ -170,6 +172,7 @@ const HousePage = () => {
 
         const scene = meta?.scene_type || "living_room";
         setBackground(SCENE_BG[scene] || houseBackground);
+        setDdInstruction(meta?.instructions || "");
 
         if (!dialogues?.length) throw new Error("No dialogues found for this quest.");
         setFlowGroups(groupByFlow(dialogues));
@@ -235,7 +238,13 @@ const HousePage = () => {
         };
         const zoneKey    = correctDDItem?.correct_zone || null;
         const sceneZones = SCENE_DROP_ZONES[scene] || {};
-        setDdDropZonePos(sceneZones[zoneKey] || sceneZones[Object.keys(sceneZones)[0]] || { x: 50, y: 40 });
+        const resolvedPos = zoneKey && sceneZones[zoneKey] ? sceneZones[zoneKey] : null;
+
+        // drop_mode: "scene" if correct_zone maps to a known scene zone → floating drop target on scene
+        //            "equip" if correct_zone is "equip", null, or unknown → equip slot in dialogue bar
+        const dropMode = resolvedPos ? "scene" : "equip";
+        setDdDropMode(dropMode);
+        setDdDropZonePos(resolvedPos || { x: 50, y: 40 });
 
         // ← FIX 2: one card per row, label only (no word_left / word_right split)
         const cards = ddRaw.map(r => ({
@@ -439,7 +448,7 @@ const HousePage = () => {
     if (phase === Phase.COMPREHENSION) return "So, what do you think? Click the correct answer!";
     if (phase === Phase.DRAG_DROP)     return ddCompleted
       ? "Tama! Now click Complete to confirm!"
-      : "Drag the correct word card to the picture!";
+      : (ddInstruction || "Drag the correct word card to the picture!");
     return "";
   })();
 
@@ -449,29 +458,31 @@ const HousePage = () => {
 
   const rightSlot = phase === Phase.DRAG_DROP ? (
     <div className="house-dd-bar-slot-wrap">
-      {/* Equip slot — player drags word card here */}
-      <div
-        className={[
-          "house-dd-equip-slot",
-          dropHover          ? "house-dd-equip-slot--hover"    : "",
-          ddCompleted        ? "house-dd-equip-slot--complete"  : "",
-        ].filter(Boolean).join(" ")}
-        onDragOver={handleDropZoneDragOver}
-        onDragLeave={handleDropZoneDragLeave}
-        onDrop={handleDropZoneDrop}
-      >
-        {ddWordCards.filter(c => ddPlaced[c.id] === "correct").length > 0 ? (
-          <div className="house-dd-equip-chips">
-            {ddWordCards.filter(c => ddPlaced[c.id] === "correct").map(c => (
-              <span key={c.id} className="house-dd-chip house-dd-chip--correct">{c.word}</span>
-            ))}
-          </div>
-        ) : (
-          <span className="house-dd-equip-hint">Drop here</span>
-        )}
-      </div>
+      {/* Equip slot — only shown when ddDropMode === "equip" */}
+      {ddDropMode === "equip" && (
+        <div
+          className={[
+            "house-dd-equip-slot",
+            dropHover   ? "house-dd-equip-slot--hover"   : "",
+            ddCompleted ? "house-dd-equip-slot--complete" : "",
+          ].filter(Boolean).join(" ")}
+          onDragOver={handleDropZoneDragOver}
+          onDragLeave={handleDropZoneDragLeave}
+          onDrop={handleDropZoneDrop}
+        >
+          {ddWordCards.filter(c => ddPlaced[c.id] === "correct").length > 0 ? (
+            <div className="house-dd-equip-chips">
+              {ddWordCards.filter(c => ddPlaced[c.id] === "correct").map(c => (
+                <span key={c.id} className="house-dd-chip house-dd-chip--correct">{c.label}</span>
+              ))}
+            </div>
+          ) : (
+            <span className="house-dd-equip-hint">Drop here</span>
+          )}
+        </div>
+      )}
 
-      {/* Complete button */}
+      {/* Complete button — always shown */}
       <button
         className={`house-complete-btn ${ddCompleted ? "house-complete-btn--active" : "house-complete-btn--disabled"}`}
         onClick={handleDDComplete}
@@ -542,6 +553,31 @@ const HousePage = () => {
       {/* ── Phase 3: Drag & Drop ────────────────────────────────────────── */}
       {phase === Phase.DRAG_DROP && (
         <div className="house-dd-scene" ref={containerRef}>
+
+          {/* Scene drop zone — only shown when ddDropMode === "scene" */}
+          {ddDropMode === "scene" && (
+            <div
+              className={[
+                "house-dd-dropzone",
+                dropHover   ? "house-dd-dropzone--hover"    : "",
+                ddCompleted ? "house-dd-dropzone--complete"  : "",
+              ].filter(Boolean).join(" ")}
+              style={{
+                left: `${Math.min(Math.max(ddDropZonePos.x, 5), 85)}%`,
+                top:  `${Math.min(Math.max(ddDropZonePos.y, 5), 72)}%`,
+              }}
+              onDragOver={handleDropZoneDragOver}
+              onDragLeave={handleDropZoneDragLeave}
+              onDrop={handleDropZoneDrop}
+            >
+              <span className="house-dd-dropzone-label">{ddDropZoneLabel}</span>
+              <div className="house-dd-placed-chips">
+                {ddWordCards.filter(c => ddPlaced[c.id] === "correct").map(c => (
+                  <span key={c.id} className="house-dd-chip house-dd-chip--correct">{c.label}</span>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Word cards — dynamic x/y from DB, one per row, label only */}
           {ddWordCards.map(card => {
