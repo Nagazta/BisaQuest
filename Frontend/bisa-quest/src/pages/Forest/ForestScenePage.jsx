@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Button from "../../components/Button";
+import DialogueBox from "../../components/instructions/DialogueBox";
 import BackpackItems from "../../components/BackpackItems";
 import ClickableItem from "../../game/components/ClickableItem";
 import DeerCharacter from "../../assets/images/characters/deer.png";
@@ -19,6 +20,20 @@ const DEFAULT_BG = forestSceneImg;
 
 // Matches both "item_association" and "item_association1" (or any variant)
 const isIAMechanic = (m) => typeof m === "string" && m.startsWith("item_association");
+
+// ── Speaker classifiers (same pattern as HousePage) ───────────────────────────
+const isNarration = (speaker) =>
+  typeof speaker === "string" && speaker.toLowerCase() === "narration";
+
+const isPlayer = (speaker) =>
+  typeof speaker === "string" && speaker.toLowerCase() === "player";
+
+const resolveSpeaker = (speaker, fallback) => {
+  if (!speaker) return fallback;
+  if (isNarration(speaker)) return "Narration";
+  if (isPlayer(speaker))    return "Player";
+  return speaker;
+};
 
 const groupByFlow = (rows) => {
     const groups = {};
@@ -247,6 +262,13 @@ const ForestScenePage = () => {
     const showBackpack = !isIAMechanic(gameMechanic) && phase === "backpack";
     const deerIsDropTarget = !isIAMechanic(gameMechanic) && phase === "backpack";
 
+    // ── Derived dialogue values (same pattern as HousePage) ───────────────────
+    const currentSpeaker = currentRow?.speaker || null;
+    const dialogueSpeaker = currentRow
+        ? resolveSpeaker(currentSpeaker, npcName)
+        : npcName;
+    const dialogueText = currentRow?.dialogue_text || "";
+
     return (
         <div className="fsp-wrapper">
             <img src={background} alt="Forest Scene" className="fsp-bg" draggable={false} />
@@ -296,13 +318,16 @@ const ForestScenePage = () => {
                 </>
             )}
 
-            {/* Dialogue bar */}
+            {/* Dialogue bar — shared DialogueBox with full speaker support */}
             {showDialogueBar && (
-                <div className="fsp-dialogue-bar">
-                    <div className="fsp-dialogue-speaker">{currentRow.speaker || npcName}</div>
-                    <div className="fsp-dialogue-text">{currentRow.dialogue_text}</div>
-                    <button className="fsp-next-btn" onClick={handleNext}>▶</button>
-                </div>
+                <DialogueBox
+                    title={dialogueSpeaker}
+                    text={dialogueText}
+                    isNarration={isNarration(currentSpeaker)}
+                    isPlayer={isPlayer(currentSpeaker)}
+                    showNextButton={true}
+                    onNext={handleNext}
+                />
             )}
 
             {/* Drag & Drop backpack */}
