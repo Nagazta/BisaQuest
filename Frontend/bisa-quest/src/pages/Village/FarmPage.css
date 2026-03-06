@@ -1,0 +1,461 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   FarmPage.css  —  Nando's Farm scenario page
+   Prefix: fp-   (mirrors ms- from MarketStallPage)
+───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Layout ────────────────────────────────────────────────────────────────── */
+.fp-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Grandstander', cursive;
+  background: #1a3a1a;
+}
+
+.fp-background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Loading / error ───────────────────────────────────────────────────────── */
+.fp-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 20;
+  background: rgba(0,0,0,0.45);
+  color: #fff;
+  font-family: 'Fredoka One', cursive;
+  font-size: 22px;
+}
+
+/* ── Back button ───────────────────────────────────────────────────────────── */
+.fp-back {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 10;
+}
+
+/* ── Grid toggle button ────────────────────────────────────────────────────── */
+.fp-grid-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 10;
+  padding: 6px 12px;
+  background: rgba(255,255,255,0.85);
+  border: 2px solid #3a2008;
+  border-radius: 8px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.fp-grid-btn--on { background: #fde68a; }
+
+/* ── Phase label badge ─────────────────────────────────────────────────────── */
+.fp-scene-label {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  font-family: 'Fredoka One', cursive;
+  font-size: 13px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ── NPC ───────────────────────────────────────────────────────────────────── */
+.fp-npc-wrap {
+  position: absolute;
+  bottom: 90px;
+  left: 32px;
+  z-index: 5;
+  pointer-events: none;
+}
+.fp-npc-image {
+  height: 220px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.4));
+}
+
+/* ── Phase 2: Comprehension ────────────────────────────────────────────────── */
+.fp-comp-wrap {
+  position: absolute;
+  inset: 0;
+  bottom: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+  pointer-events: none;
+}
+.fp-comp-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  pointer-events: all;
+  padding: 16px;
+}
+
+/* ── Comprehension card — base ───────────────────────────────────────────── */
+.fp-comp-card {
+  position: relative;
+  background: #fffde7;
+  border: 3px solid #a0522d;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+  user-select: none;
+}
+.fp-comp-card:hover:not(.fp-comp-card--locked) {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+  border-color: #FCD765;
+}
+.fp-comp-card--locked { cursor: default; }
+.fp-comp-card--correct { border-color: #22c55e; background: #f0fdf4; }
+.fp-comp-card--wrong   { border-color: #ef4444; background: #fef2f2; }
+
+/* With image — fixed square */
+.fp-comp-card--has-img {
+  width: 130px;
+  padding: 10px 8px 8px;
+}
+
+/* Text-only — wider, taller, centered label */
+.fp-comp-card--text-only {
+  width: 160px;
+  min-height: 90px;
+  padding: 18px 16px;
+}
+
+.fp-comp-card-img {
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+/* Label shown below image */
+.fp-comp-card-label {
+  font-family: 'Fredoka One', cursive;
+  font-size: 13px;
+  color: #3a2008;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Large centered text when there's no image */
+.fp-comp-card-text {
+  font-family: 'Fredoka One', cursive;
+  font-size: 18px;
+  color: #3a2008;
+  text-align: center;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.fp-comp-card-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+  border: 2px solid #fff;
+}
+.fp-comp-card-badge--correct { background: #22c55e; }
+.fp-comp-card-badge--wrong   { background: #ef4444; }
+
+/* ── Phase 3: Drag & Drop scene ────────────────────────────────────────────── */
+.fp-dd-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Drop zones — positioned absolutely on the scene */
+.fp-dd-dropzone {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height:300px;
+  border: 3px dashed #a0522d;
+  border-radius: 12px;
+  background: rgba(255, 248, 220, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+.fp-dd-dropzone--hover {
+  background: rgba(250, 215, 100, 0.55);
+  border-color: #FCD765;
+  transform: translate(-50%, -50%) scale(1.06);
+}
+.fp-dd-dropzone--complete {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.2);
+}
+
+.fp-dd-placed-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  align-items: center;
+  padding: 2px;
+}
+
+.fp-dd-chip {
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 12px;
+  pointer-events: none;
+}
+.fp-dd-chip--correct {
+  background: #22c55e;
+  color: #fff;
+  border: 2px solid #16a34a;
+}
+
+/* Word / image drag cards */
+.fp-dd-card {
+  position: absolute;
+  background: #fffde7;
+  border: 3px solid #a0522d;
+  border-radius: 12px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: grab;
+  user-select: none;
+  pointer-events: all;
+  min-width: 80px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+  transition: transform 0.15s, opacity 0.2s, box-shadow 0.15s;
+  z-index: 6;
+}
+.fp-dd-card:hover:not(.fp-dd-card--placed) {
+  transform: translate(-50%, -50%) scale(1.06);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+}
+.fp-dd-card--placed {
+  opacity: 0.45;
+  cursor: default;
+  pointer-events: none;
+}
+.fp-dd-card--dragging {
+  opacity: 0.6;
+  cursor: grabbing;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.4);
+}
+.fp-dd-card--shake {
+  animation: fp-shake 0.5s ease;
+}
+@keyframes fp-shake {
+  0%,100% { transform: translate(-50%, -50%) translateX(0); }
+  20%     { transform: translate(-50%, -50%) translateX(-8px); }
+  40%     { transform: translate(-50%, -50%) translateX(8px); }
+  60%     { transform: translate(-50%, -50%) translateX(-6px); }
+  80%     { transform: translate(-50%, -50%) translateX(6px); }
+}
+
+.fp-dd-card-img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: 6px;
+  pointer-events: none;
+}
+.fp-dd-card-emoji {
+  font-size: 36px;
+  line-height: 1;
+}
+.fp-dd-card-label {
+  font-family: 'Fredoka One', cursive;
+  font-size: 12px;
+  color: #3a2008;
+  text-align: center;
+  line-height: 1.2;
+  pointer-events: none;
+}
+
+/* ── Equip slot (dialogue bar fallback drop zone) ──────────────────────────── */
+.fp-dd-bar-slot-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.fp-dd-equip-slot {
+  min-width: 100px;
+  min-height: 44px;
+  border: 2px dashed #a0522d;
+  border-radius: 10px;
+  background: rgba(255, 248, 220, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  transition: background 0.2s, border-color 0.2s;
+}
+.fp-dd-equip-slot--hover {
+  background: rgba(250, 215, 100, 0.55);
+  border-color: #FCD765;
+}
+.fp-dd-equip-slot--complete {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.15);
+}
+.fp-dd-equip-hint {
+  font-family: 'Grandstander', cursive;
+  font-size: 12px;
+  color: #a0522d;
+  opacity: 0.7;
+}
+.fp-dd-equip-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* ── Complete button ───────────────────────────────────────────────────────── */
+.fp-complete-btn {
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: none;
+  font-family: 'Fredoka One', cursive;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, opacity 0.2s;
+  white-space: nowrap;
+}
+.fp-complete-btn--active {
+  background: #22c55e;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.45);
+}
+.fp-complete-btn--active:hover { transform: scale(1.05); }
+.fp-complete-btn--disabled {
+  background: rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.5);
+  cursor: not-allowed;
+}
+
+/* ── Done overlay ──────────────────────────────────────────────────────────── */
+.fp-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+}
+.fp-card {
+  background: #fffde7;
+  border: 4px solid #FCD765;
+  border-radius: 20px;
+  padding: 36px 48px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+}
+.fp-card-stars { font-size: 32px; margin-bottom: 10px; }
+.fp-card h2 {
+  font-family: 'Fredoka One', cursive;
+  font-size: 28px;
+  color: #3a2008;
+  margin: 0 0 8px;
+}
+.fp-card p {
+  font-family: 'Grandstander', cursive;
+  font-size: 16px;
+  color: #5a3a1a;
+  margin: 0;
+}
+
+/* ── Dev grid overlay ──────────────────────────────────────────────────────── */
+.fp-grid-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 99;
+  pointer-events: all;
+  cursor: crosshair;
+}
+.fp-grid-line {
+  position: absolute;
+  background: rgba(255, 215, 0, 0.3);
+}
+.fp-grid-line--v { top: 0; bottom: 0; width: 1px; }
+.fp-grid-line--h { left: 0; right: 0; height: 1px; }
+.fp-grid-label {
+  position: absolute;
+  font-size: 10px;
+  font-family: monospace;
+  color: rgba(255,255,255,0.75);
+  background: rgba(0,0,0,0.35);
+  padding: 1px 3px;
+  border-radius: 3px;
+  pointer-events: none;
+}
+.fp-grid-label--x { transform: translateX(-50%); }
+.fp-grid-label--y { transform: translateY(-50%); }
+.fp-grid-crosshair {
+  position: absolute;
+  background: rgba(255, 80, 80, 0.7);
+  pointer-events: none;
+}
+.fp-grid-crosshair--v { top: 0; bottom: 0; width: 1px; }
+.fp-grid-crosshair--h { left: 0; right: 0; height: 1px; }
+.fp-grid-coord {
+  position: absolute;
+  background: rgba(0,0,0,0.75);
+  color: #fff;
+  font-size: 11px;
+  font-family: monospace;
+  padding: 2px 6px;
+  border-radius: 4px;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 100;
+}
