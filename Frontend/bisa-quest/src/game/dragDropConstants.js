@@ -1,15 +1,9 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  dragDropConstants.js
-//  Shared constants for DragAndDrop and ItemAssociation games.
-// ─────────────────────────────────────────────────────────────────────────────
-
-// ── Scene backgrounds ─────────────────────────────────────────────────────────
+//Scene backgrounds 
 import houseBackground    from "../assets/images/environments/scenario/house.jpg";
 import kitchenBackground  from "../assets/images/environments/scenario/kitchen.jpg";
-import bedroomBackground from "../assets/images/environments/scenario/bedroom.jpg";
+import bedroomBackground  from "../assets/images/environments/scenario/bedroom.jpg";
 
-
-// ── Item images — Living Room ─────────────────────────────────────────────────
+//Item images — Living Room
 import BroomImg    from "../assets/items/broom.png";
 import DustpanImg  from "../assets/items/dustpan.png";
 import MopImg      from "../assets/items/mop.png";
@@ -23,7 +17,7 @@ import BedsheetImg from "../assets/items/bedsheet.png";
 import HabolImg    from "../assets/items/habol.png";
 import HandfanImg  from "../assets/items/hand_fan.png";
 
-// ── Item images — Kitchen ─────────────────────────────────────────────────────
+//Item images — Kitchen
 import PotImg    from "../assets/items/pot.png";
 import PanImg    from "../assets/items/pan.png";
 import LadleImg  from "../assets/items/ladle.png";
@@ -31,7 +25,19 @@ import KnifeImg  from "../assets/items/knife.png";
 import PlateImg  from "../assets/items/plate.png";
 import CupImg    from "../assets/items/cup.png";
 
-// ── Image lookup map ──────────────────────────────────────────────────────────
+// Item images — Bedroom
+import ShirtImg  from "../assets/items/shirts.png";   
+import PantsImg  from "../assets/items/pants.png"; 
+import DressImg  from "../assets/items/dress.jpg";
+import ShoesImg  from "../assets/items/shoes.png";
+
+// Item images — Market Stall (fruits)
+import MangoRipeImg    from "../assets/items/mango.jpg";
+import MangoUnripeImg  from "../assets/items/mango_notripe.jpg";
+import BananaRipeImg   from "../assets/items/banana.jpg";
+import BananaUnripeImg from "../assets/items/banana_notripe.jpg";
+
+
 export const ITEM_IMAGE_MAP = {
   // Living room
   broom:    BroomImg,
@@ -49,7 +55,6 @@ export const ITEM_IMAGE_MAP = {
   trapo:    RagImg,
   brush:    BrushImg,
   slipper:  SlipperImg,
-  sinelas:  SlipperImg,
   trash:    TrashImg,
   basura:   TrashImg,
   // Kitchen
@@ -65,59 +70,76 @@ export const ITEM_IMAGE_MAP = {
   plato:    PlateImg,
   cup:      CupImg,
   tasa:     CupImg,
-  // Bedroom — reuse existing assets
+  // Bedroom
+  almohada: PillowImg,
   bedsheet: BedsheetImg,
-  habol2:   HabolImg,
-  pillow2:  PillowImg,
-  slipper2: SlipperImg,
-  towel2:   TowelImg,
+  baro:     ShirtImg,
+  sinina:   PantsImg,
+  tuwalya:  TowelImg,
+  dress:    DressImg,
+  shoes:    ShoesImg,
+  // Market Stall — fruits
+  mangga:          MangoRipeImg,
+  mango:           MangoRipeImg,
+  mangga_ripe:     MangoRipeImg,
+  mangga_unripe:   MangoUnripeImg,
+  mango_notripe:   MangoUnripeImg,
+  fruit_sour:      MangoUnripeImg,   // comprehension wrong choice (sour/unripe)
+  saging:          BananaRipeImg,
+  banana:          BananaRipeImg,
+  saging_ripe:     BananaRipeImg,
+  saging_unripe:   BananaUnripeImg,
+  banana_notripe:  BananaUnripeImg,
+  fruit_round:     BananaUnripeImg,  // comprehension wrong choice (round/unripe)
 };
 
-// ── Scene backgrounds ─────────────────────────────────────────────────────────
+// Scene backgrounds
 export const SCENE_BACKGROUNDS = {
   living_room: houseBackground,
   kitchen:     kitchenBackground,
-  bedroom:     bedroomBackground,   // 🛏️ swap to bedroomBackground when asset is ready
+  bedroom:     bedroomBackground,
 };
 
 export const DEFAULT_BACKGROUND = houseBackground;
 
-// ── Zone registry ─────────────────────────────────────────────────────────────
+// Zone registry
 export const ZONE_REGISTRY = {
 
-  // ── Living room ───────────────────────────────────────────────────────────
-  bookshelf: { label: "Bookshelf / Estante", x: 73, y: 35, w: 20, h: 50 },
-  sofa:      { label: "Sofa / Sopa",         x: 40, y: 50, w: 21, h: 16 },
-  aparador:  { label: "Cabinet / Aparador",  x: 24, y: 40, w: 10, h: 30 },
-  lamesa:    { label: "Table / Lamesa",      x: 42, y: 68, w: 20, h: 10 },
-  sulok:     { label: "Corner / Sulok",      x: 34, y: 40, w:  6, h: 30 },
-  planggana: { label: "Basin / Planggana",   x: 57, y: 80, w: 14, h: 16 },
+  // Living room
+  bookshelf: { label: "Bookshelf / Estante",    x: 83, y: 40, w: 16, h: 50 },
+  sofa:      { label: "Sofa / Sopa",            x: 50, y: 48, w: 20, h: 16 },
+  aparador:  { label: "Cabinet / Aparador",     x: 73, y: 48, w: 10, h: 30 },
+  lamesa:    { label: "Table / Lamesa",         x: 53, y: 64, w: 14, h: 10 },
+  sulok:     { label: "Corner / Sulok",         x: 42, y: 40, w:  4, h: 24 },
+  planggana: { label: "Basin / Planggana",      x: 35, y: 62, w:  7, h:  8 },
 
-  // ── Kitchen ───────────────────────────────────────────────────────────────
-  // ⚠️ Calibrate once kitchen.jpg is available using Debug mode.
-  stove:     { label: "Stove / Kalan",       x: 15, y: 35, w: 22, h: 35 },
-  counter:   { label: "Counter / Kontra",    x: 38, y: 35, w: 25, h: 30 },
-  rack:      { label: "Rack / Estante",      x: 64, y: 20, w: 16, h: 45 },
-  dish_rack: { label: "Dish Rack / Plahan",  x: 64, y: 55, w: 16, h: 30 },
-  ref:       { label: "Ref / Ref",           x: 82, y: 10, w: 16, h: 60 },
-  sink:      { label: "Sink / Lababo",       x: 38, y: 65, w: 18, h: 25 },
+  // Kitchen
+  stove:     { label: "Stove / Kalan",          x: 57, y: 55, w: 10, h: 18 },
+  counter:   { label: "Counter / Kontra",       x: 20, y: 55, w: 25, h: 20 },
+  rack:      { label: "Rack / Estante",         x: 25, y: 28, w: 20, h: 20 },
+  dish_rack: { label: "Dish Rack / Plahan",     x: 78, y: 20, w: 20, h: 45 },
+  ref:       { label: "Ref / Ref",              x: 67, y: 50, w:  8, h: 25 },
+  sink:      { label: "Sink / Lababo",          x: 45, y: 52, w: 12, h: 22 },
 
-  // ── Bedroom (mock) ────────────────────────────────────────────────────────
-  // ⚠️ Calibrate once bedroom.jpg is available using Debug mode.
-  bed:       { label: "Bed / Higdaanan",     x: 30, y: 35, w: 40, h: 40 },
-  wardrobe:  { label: "Wardrobe / Aparador", x:  5, y: 10, w: 18, h: 70 },
-  bedside:   { label: "Bedside / Lamesa",    x: 72, y: 45, w: 14, h: 30 },
-  floor:     { label: "Floor / Salog",       x: 25, y: 78, w: 50, h: 18 },
+  // Bedroom
+  higdaanan:   { label: "Bed / Higdaanan",      x: 28, y: 50, w: 27, h: 20 },
+  bedAparador: { label: "Wardrobe / Aparador",  x: 70, y: 50, w: 10, h: 24 },
+  salog:       { label: "Floor / Salog",        x: 30, y: 72, w: 40, h: 10 },
 };
 
-// ── Scene → zone IDs ──────────────────────────────────────────────────────────
+export const SCENE_ZONE_OVERRIDES = {
+  bedroom: {
+    aparador: { label: "Wardrobe / Aparador", x: 70, y: 50, w: 10, h: 24 },
+  },
+};
+
 export const SCENE_ZONES = {
   living_room: ["bookshelf", "sofa", "aparador", "lamesa", "sulok", "planggana"],
   kitchen:     ["stove", "counter", "rack", "dish_rack", "ref", "sink"],
-  bedroom:     ["bed", "wardrobe", "bedside", "floor"],
+  bedroom:     ["higdaanan", "aparador", "salog"],   
 };
 
-// ── DragAndDrop start positions (by index) ────────────────────────────────────
+// DragAndDrop start positions
 export const START_POSITIONS = [
   { x: 52, y: 44 },
   { x: 78, y: 72 },
@@ -127,7 +149,7 @@ export const START_POSITIONS = [
   { x: 44, y: 62 },
 ];
 
-// ── ItemAssociation scatter positions (by index) ──────────────────────────────
+// ItemAssociation scatter positions
 export const IA_ITEM_POSITIONS = [
   { x: 72, y: 12 },
   { x: 55, y: 30 },
@@ -141,7 +163,7 @@ export const IA_ITEM_POSITIONS = [
   { x: 45, y: 22 },
 ];
 
-// ── Fallback items — Living Room ──────────────────────────────────────────────
+// Fallback items — Living Room
 export const FALLBACK_ITEMS = [
   { id: "fb_1", label: "Broom / Walis",      zone: "sulok",     startX: 52, startY: 44, image: BroomImg   },
   { id: "fb_2", label: "Dustpan / Panlabay", zone: "sulok",     startX: 78, startY: 72, image: DustpanImg },
@@ -151,7 +173,7 @@ export const FALLBACK_ITEMS = [
   { id: "fb_6", label: "Bucket / Timba",     zone: "planggana", startX: 44, startY: 62, image: null       },
 ];
 
-// ── Fallback items — Kitchen ──────────────────────────────────────────────────
+// Fallback items — Kitchen
 export const FALLBACK_ITEMS_KITCHEN = [
   { id: "kb_1", label: "Pot / Kaldero",    zone: "stove",     startX: 52, startY: 44, image: PotImg   },
   { id: "kb_2", label: "Pan / Kawali",     zone: "stove",     startX: 78, startY: 72, image: PanImg   },
@@ -161,13 +183,12 @@ export const FALLBACK_ITEMS_KITCHEN = [
   { id: "kb_6", label: "Cup / Tasa",       zone: "dish_rack", startX: 44, startY: 62, image: CupImg   },
 ];
 
-// ── Fallback items — Bedroom (mock) ───────────────────────────────────────────
-// Uses existing assets — swap images when bedroom-specific PNGs are ready.
+// Fallback items — Bedroom
 export const FALLBACK_ITEMS_BEDROOM = [
-  { id: "bb_1", label: "Pillow / Unan",       zone: "bed",      startX: 52, startY: 44, image: PillowImg   },
-  { id: "bb_2", label: "Bedsheet / Habol",    zone: "bed",      startX: 65, startY: 58, image: BedsheetImg },
-  { id: "bb_3", label: "Blanket / Kumot",     zone: "bed",      startX: 44, startY: 62, image: HabolImg    },
-  { id: "bb_4", label: "Slipper / Sinelas",   zone: "floor",    startX: 78, startY: 72, image: SlipperImg  },
-  { id: "bb_5", label: "Towel / Tualya",      zone: "wardrobe", startX: 38, startY: 78, image: TowelImg    },
-  { id: "bb_6", label: "Hand Fan / Abano",    zone: "bedside",  startX: 58, startY: 82, image: HandfanImg  },
+  { id: "bb_1", label: "Pillow / Almohada",  zone: "higdaanan", startX: 52, startY: 44, image: PillowImg   },
+  { id: "bb_2", label: "Blanket / Habol",    zone: "higdaanan", startX: 65, startY: 58, image: HabolImg    },
+  { id: "bb_3", label: "Bedsheet / Kumot",   zone: "higdaanan", startX: 44, startY: 62, image: BedsheetImg },
+  { id: "bb_4", label: "Shirt / Baro",       zone: "aparador",  startX: 78, startY: 72, image: ShirtImg    },
+  { id: "bb_5", label: "Pants / Sinina",     zone: "aparador",  startX: 38, startY: 78, image: PantsImg    },
+  { id: "bb_6", label: "Towel / Tuwalya",    zone: "aparador",  startX: 58, startY: 82, image: TowelImg    },
 ];

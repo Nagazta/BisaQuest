@@ -1,5 +1,4 @@
 import { useState } from "react";
-import NPCCharacter from "../NPCCharacter";
 import LoadingBoy from "../../assets/images/characters/loading_screen_boy.png";
 import ConfirmationDialog from "./ConfirmationDIalog";
 import Button from "../Button";
@@ -34,12 +33,13 @@ const SaveProgressModal = ({ isOpen, onContinue, onNewGame, onClose }) => {
             <div className="modal-content-progess">
               <h2 className="modal-title">Save Progress Detected</h2>
 
-              {/* Using NPCCharacter with modal variant */}
-              <NPCCharacter
-                characterImage={LoadingBoy}
-                variant="modal"
-                alt="Your Character"
-              />
+              <div className="modal-character-container">
+                <img
+                  src={LoadingBoy}
+                  alt="Your Character"
+                  className="modal-character-image"
+                />
+              </div>
 
               <div className="modal-actions">
                 <Button

@@ -60,66 +60,7 @@
   animation: hint-pulse 1.4s ease-in-out infinite;
 }
 
-/* ── Dialogue bar — fixed bottom, full width ──────────────────── */
-.fsp-dialogue-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  min-height: 90px;
-  background: #6B3E1D;
-  border-top: 4px solid #FCD765;
-  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.4);
-  z-index: 30;
-  display: flex;
-  align-items: center;
-}
-
-.fsp-dialogue-speaker {
-  font-family: 'Pixelify Sans', sans-serif;
-  font-size: 20px;
-  font-weight: bold;
-  color: #FFF9E6;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  white-space: nowrap;
-  padding: 0 28px;
-  min-width: 160px;
-  flex-shrink: 0;
-  background: #4e2c12;
-  align-self: stretch;
-  display: flex;
-  align-items: center;
-  border-right: 3px solid #FCD765;
-}
-
-.fsp-dialogue-text {
-  font-family: 'Grandstander', cursive;
-  font-size: 18px;
-  line-height: 1.6;
-  color: #F5E6D3;
-  padding: 18px 28px;
-  flex: 1;
-}
-
-.fsp-next-btn {
-  flex-shrink: 0;
-  width: 60px;
-  height: 60px;
-  margin-right: 20px;
-  background: #FCD765;
-  border: 3px solid #3a2008;
-  border-radius: 50%;
-  font-size: 20px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.15s ease, background 0.15s ease;
-  box-shadow: 0 4px 0 #3a2008;
-}
-
-.fsp-next-btn:hover  { background: #ffe082; transform: translateY(-2px); }
-.fsp-next-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #3a2008; }
+/* ── Dialogue bar now comes from shared DialogueBox.css ────────── */
 
 /* ── Quest complete overlay ───────────────────────────────────── */
 .fsp-complete-overlay {

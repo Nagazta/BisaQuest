@@ -1,8 +1,7 @@
-/* ─── DragAndDrop.css ────────────────────────────────────────────────────────
-   Main game screen — house background, NPC section, complete button.
-   ─────────────────────────────────────────────────────────────────────────── */
+/* DragAndDrop.css — only page-specific styles.
+   The dialogue bar comes from DialogueBox.css automatically.
+   No overrides of .dialogue-box needed here anymore. */
 
-/* ── Wrapper: full screen ───────────────────────────────────── */
 .dad-wrapper {
   width:      100vw;
   height:     100vh;
@@ -13,21 +12,19 @@
   overflow:   hidden;
 }
 
-/* ── Container: 16:9 game canvas ───────────────────────────── */
 .dad-container {
-  position:     relative;
-  width:        100%;
-  max-width:    1280px;
-  aspect-ratio: 16 / 9;
-  max-height:   100vh;
-  overflow:     hidden;
+  position:      relative;
+  width:         100%;
+  max-width:     1280px;
+  aspect-ratio:  16 / 9;
+  max-height:    100vh;
+  overflow:      hidden;
   border-radius: 8px;
-  box-shadow:   0 0 60px rgba(0,0,0,0.6);
-  touch-action: none;
-  user-select:  none;
+  box-shadow:    0 0 60px rgba(0,0,0,0.6);
+  touch-action:  none;
+  user-select:   none;
 }
 
-/* ── Background image ───────────────────────────────────────── */
 .dad-bg {
   position:        absolute;
   inset:           0;
@@ -38,7 +35,7 @@
   user-select:     none;
 }
 
-/* ── Back button ────────────────────────────────────────────── */
+/* ── Back button ─────────────────────────────────────────────── */
 .dad-back-btn {
   position: absolute;
   top:      16px;
@@ -46,59 +43,64 @@
   z-index:  50;
 }
 
-/* ── NPC + DialogueBox section — bottom left ────────────────── */
-.dad-npc-section {
-  position: absolute;
-  bottom:   16px;
-  left:     16px;
-  width:    270px;
-  z-index:  40;
-  animation: npc-enter 0.5s ease both;
+/* ── Scene label pill ────────────────────────────────────────── */
+.dad-scene-label {
+  position:    absolute;
+  top:         10px;
+  left:        50%;
+  transform:   translateX(-50%);
+  background:  rgba(0,0,0,0.6);
+  color:       #fff;
+  font-size:   12px;
+  font-weight: bold;
+  font-family: 'Pixelify Sans', sans-serif;
+  padding:     4px 14px;
+  border-radius: 20px;
+  border:      1px solid rgba(255,255,255,0.2);
+  z-index:     30;
+  white-space: nowrap;
 }
 
-/* Make NPC bigger */
-.dad-npc-img {
-  width:      360px;   /* increase this — was 110px */
-  height:     auto;
-  object-fit: contain;
+/* ── Debug button ────────────────────────────────────────────── */
+.dad-debug-btn {
+  position:      absolute;
+  top:           8px;
+  right:         8px;
+  z-index:       200;
+  background:    rgba(0,0,0,0.55);
+  color:         #fff;
+  border:        1px solid rgba(255,255,255,0.3);
+  border-radius: 5px;
+  padding:       4px 10px;
+  font-size:     11px;
+  font-weight:   bold;
+  cursor:        pointer;
+}
+
+.dad-debug-btn.active { background: #ff9900; }
+
+/* ── NPC — floats above the 90px dialogue bar ───────────────── */
+/* Matches .house-npc-wrap pattern exactly */
+.dad-npc-wrap {
   position:   absolute;
-  bottom:     calc(100% - 80px); /* increase this too so more of her hides behind box */
-  left:       1px;
-  z-index:    -39;
+  left:       60px;
+  bottom:     90px;       /* clears the dialogue bar */
+  z-index:    20;
+  pointer-events: none;
   animation:  npc-bob 3s ease-in-out infinite;
-  filter:     drop-shadow(0 4px 10px rgba(0,0,0,0.4));
 }
 
-
-/* ── Override DialogueBox absolute positioning ── */
-.dad-npc-section .dialogue-box {
-  position:   relative;
-  bottom:     auto;
-  left:       auto;
-  transform:  none;
-  width:      100%;
-  max-width:  100%;
-  min-height: 150px;  /* ← set minimum height */
-  height:     180px;  /* ← set fixed height, or remove for auto */
+.dad-npc-img {
+  height:     300px;
+  width:      auto;
+  object-fit: contain;
+  filter:     drop-shadow(0 8px 16px rgba(0,0,0,0.5));
 }
 
-.dad-npc-section .dialogue-content {
-  padding: 12px 16px 18px 16px;
-}
-
-.dad-npc-section .dialogue-text {
-  font-size:   13px !important;
-  line-height: 1.5;
-}
-
-.dad-npc-section .dialogue-title {
-  font-size: 20px !important;
-}
-
-/* ── Complete button — bottom right ─────────────────────────── */
+/* ── Complete button — above the bar on the right ───────────── */
 .dad-complete-btn {
   position:       absolute;
-  bottom:         20px;
+  bottom:         2%;  /* sits above the 90px dialogue bar */
   right:          20px;
   z-index:        50;
   font-family:    'Fredoka One', 'Nunito', cursive;
@@ -109,11 +111,8 @@
   border-radius:  14px;
   border:         3px solid #2d2d2d;
   cursor:         pointer;
-  transition:
-    background 0.2s ease,
-    box-shadow 0.2s ease,
-    transform  0.15s ease,
-    opacity    0.2s ease;
+  transition:     background 0.2s ease, box-shadow 0.2s ease,
+                  transform 0.15s ease, opacity 0.2s ease;
 }
 
 .dad-complete-btn--disabled {
@@ -143,11 +142,11 @@
   box-shadow: 0 2px 0 #15803d;
 }
 
-/* ── Completion overlay ─────────────────────────────────────── */
+/* ── Completion overlay ──────────────────────────────────────── */
 .dad-completion-overlay {
   position:        absolute;
   inset:           0;
-  background:      rgba(0, 0, 0, 0.55);
+  background:      rgba(0,0,0,0.55);
   backdrop-filter: blur(3px);
   display:         flex;
   align-items:     center;
@@ -163,14 +162,14 @@
   padding:       40px 56px;
   text-align:    center;
   box-shadow:    0 8px 0 #2d2d2d, 0 20px 60px rgba(0,0,0,0.4);
-  animation:     card-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation:     card-pop 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
 }
 
 .dad-completion-stars {
   font-size:     48px;
   line-height:   1;
   margin-bottom: 12px;
-  animation:     stars-spin 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+  animation:     stars-spin 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
 }
 
 .dad-completion-card h2 {
@@ -188,7 +187,7 @@
   margin:      0;
 }
 
-/* ── Loading / Error state ──────────────────────────────────── */
+/* ── Loading / Error ─────────────────────────────────────────── */
 .dad-loading,
 .dad-error {
   position:        absolute;
@@ -216,15 +215,10 @@
   text-shadow: 0 2px 8px rgba(0,0,0,0.5);
 }
 
-/* ── Keyframes ──────────────────────────────────────────────── */
-@keyframes npc-enter {
-  from { opacity: 0; transform: translateY(30px); }
-  to   { opacity: 1; transform: translateY(0);    }
-}
-
+/* ── Keyframes ───────────────────────────────────────────────── */
 @keyframes npc-bob {
-  0%,  100% { transform: translateY(0);    }
-  50%        { transform: translateY(-6px); }
+  0%, 100% { transform: translateY(0);    }
+  50%       { transform: translateY(-6px); }
 }
 
 @keyframes btn-pulse {
@@ -233,8 +227,7 @@
 }
 
 @keyframes overlay-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from { opacity: 0; } to { opacity: 1; }
 }
 
 @keyframes card-pop {

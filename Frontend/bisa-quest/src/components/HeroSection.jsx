@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import "./HeroSection.css";
 import bgImage from "../assets/images/bg-dashboard.png";
 import ParticleEffects from "../components/ParticleEffects";
+import titleImage from "../assets/images/bisaquest-title.png";
 
 const HeroSection = () => {
   const navigate = useNavigate();
@@ -35,27 +36,16 @@ const HeroSection = () => {
       {/* Center Content */}
       <div className="hero-content-game fade-in">
         <div className="game-title-container">
-          <h1 className="game-title epic-text">
-            <span className="title-line-1">Bisa</span>
-            <span className="title-line-2">Quest</span>
-          </h1>
-          <div className="title-decoration"></div>
-        </div>
-
-        <div className="epic-tagline">
-          <h2 className="tagline-main">
-            UNRAVELING READING. ENDLESS ADVENTURE.
-          </h2>
-          <p className="tagline-sub">
-            YOUNG READERS NEEDED IN THE LAND OF RISING KNOWLEDGE!
-          </p>
+          <img 
+            src={titleImage} 
+            alt="Bisa Quest - Basaha, Tun-i, Daoga - A Journey of Learning and Adventure" 
+            className="game-title-image"
+          />
         </div>
 
         <div className="game-buttons">
           <button className="game-btn primary-game-btn" onClick={goToLogin}>
-            <span className="btn-decoration left"></span>
-            <span className="btn-text">START YOUR QUEST</span>
-            <span className="btn-decoration right"></span>
+            <span className="btn-text" style={{color: 'transparent'}}>START YOUR QUEST</span>
           </button>
         </div>
       </div>

@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useLanguagePreference } from "../../hooks/useLanguagePreference";
 import { useCharacterPreference } from "../../hooks/useCharacterPreference";
 import EnvironmentPage from "../../components/EnvironmentPage";
 import Button from "../../components/Button";
@@ -12,10 +11,19 @@ import BoyCharacter from "../../assets/images/characters/Boy.png";
 import GirlCharacter from "../../assets/images/characters/Girl.png";
 import bgMusic from "../../assets/music/bg-music.mp3";
 import QuestStartModal from "../../components/QuestStartModal";
+import NandoCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
+import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_1.png";
 import "./VillagePage.css";
 
 const NPC_DB_ID = {
-    ligaya: "village_npc_2",
+    ligaya:  "village_npc_2",
+    nando:   "village_npc_3",
+    vicente: "village_npc_1",
+};
+
+const randomPick = (arr) => {
+    if (!arr || arr.length === 0) return null;
+    return arr[Math.floor(Math.random() * arr.length)];
 };
 
 const VillagePage = () => {
@@ -26,7 +34,7 @@ const VillagePage = () => {
 
     const API = import.meta.env.VITE_API_URL || "";
 
-    const { language, loading: langLoading } = useLanguagePreference();
+    const language = "en";
     const { character, loading: charLoading } = useCharacterPreference();
 
     const [villageNPCs,       setVillageNPCs]       = useState([]);
@@ -72,7 +80,27 @@ const VillagePage = () => {
                 y:         41,
                 character: LigayaCharacter,
                 showName:  true,
-                quest:     "word_association",
+                quest:     "word_association",   // → /student/house
+            },
+            {
+                npcId:     "nando",
+                dbNpcId:   "village_npc_3",
+                name:      "Nando",
+                x:         80,
+                y:         41,
+                character: NandoCharacter,
+                showName:  true,
+                quest:     "word_association",   // → /student/house
+            },
+            {
+                npcId:     "vicente",
+                dbNpcId:   "village_npc_1",
+                name:      "Vicente",
+                x:         20,
+                y:         60,
+                character: VicenteCharacter,
+                showName:  true,
+                quest:     "market_stall",       // → /student/market
             },
         ]);
         try {
@@ -119,11 +147,11 @@ const VillagePage = () => {
     }, [location.state]);
 
     // ── Handlers ──────────────────────────────────────────────────────────────
-    const handleNPCClick   = (npc) => { setSelectedNPC(npc); setShowModal(true); };
-    const handleCloseModal = ()    => { setShowModal(false); setSelectedNPC(null); };
-    const handleBackClick  = ()    => setShowExitConfirm(true);
-    const handleConfirmExit = ()   => { setShowExitConfirm(false); navigate("/dashboard"); };
-    const handleCancelExit  = ()   => setShowExitConfirm(false);
+    const handleNPCClick    = (npc) => { setSelectedNPC(npc); setShowModal(true); };
+    const handleCloseModal  = ()    => { setShowModal(false); setSelectedNPC(null); };
+    const handleBackClick   = ()    => setShowExitConfirm(true);
+    const handleConfirmExit = ()    => { setShowExitConfirm(false); navigate("/dashboard"); };
+    const handleCancelExit  = ()    => setShowExitConfirm(false);
 
     const handleViewSummary = async () => {
         if (!playerId) return;
@@ -142,11 +170,6 @@ const VillagePage = () => {
     };
 
     // ── Start quest ───────────────────────────────────────────────────────────
-    // Fetches ALL quests for the NPC and identifies:
-    //   - livingRoomQuestId  : drag_drop,        scene_type = living_room  (Step 1a)
-    //   - kitchenQuestId     : drag_drop,        scene_type = kitchen      (Step 1b)
-    //   - iaQuestId          : item_association, any scene                 (Step 2)
-    // All three are passed through so DragAndDrop can chain the scenes.
     const handleStartQuest = async () => {
         if (!selectedNPC || !playerId) return;
 
@@ -154,9 +177,15 @@ const VillagePage = () => {
 
         const dbNpcId = selectedNPC.dbNpcId || NPC_DB_ID[selectedNPC.npcId] || selectedNPC.npcId;
 
-        let resolvedQuestId        = null;   // living_room drag_drop quest ID
-        let resolvedKitchenQuestId = null;   // kitchen     drag_drop quest ID
-        let resolvedIaQuestId      = null;   // item_association quest ID
+        let resolvedQuestId          = null;
+        let resolvedKitchenQuestId   = null;
+        let resolvedBedroomQuestId   = null;
+        let resolvedIaLivingQuestId  = null;
+        let resolvedIaKitchenQuestId = null;
+        let resolvedIaBedroomQuestId = null;
+
+        // Vicente uses market_stall scene types
+        const isMarket = selectedNPC.quest === "market_stall";
 
         try {
             const res = await fetch(`${API}/api/challenge/npc/${dbNpcId}/quest`);
@@ -164,51 +193,65 @@ const VillagePage = () => {
                 const { data } = await res.json();
 
                 if (Array.isArray(data) && data.length) {
+                    if (isMarket) {
+                        // Market stall quests — filter by market_stall scene_type
+                        const marketDDs = data.filter(q =>
+                            q.game_mechanic === "drag_drop" && q.scene_type === "market_stall"
+                        );
+                        resolvedQuestId = randomPick(marketDDs)?.quest_id ?? null;
+                        console.log("[VillagePage] market_stall drag_drop →", resolvedQuestId, `(pool: ${marketDDs.length})`);
+                    } else {
+                        // House quests — existing logic unchanged
+                        const livingRoomDDs = data.filter(q => q.game_mechanic === "drag_drop"        && q.scene_type === "living_room");
+                        const kitchenDDs    = data.filter(q => q.game_mechanic === "drag_drop"        && q.scene_type === "kitchen");
+                        const bedroomDDs    = data.filter(q => q.game_mechanic === "drag_drop"        && q.scene_type === "bedroom");
+                        const iaLivings     = data.filter(q => q.game_mechanic === "item_association" && q.scene_type === "living_room");
+                        const iaKitchens    = data.filter(q => q.game_mechanic === "item_association" && q.scene_type === "kitchen");
+                        const iaBedroooms   = data.filter(q => q.game_mechanic === "item_association" && q.scene_type === "bedroom");
 
-                    // ── Split by mechanic + scene ─────────────────────────────
-                    const livingRoomDD = data.find(q =>
-                        q.game_mechanic === "drag_drop" && q.scene_type === "living_room"
-                    );
-                    const kitchenDD = data.find(q =>
-                        q.game_mechanic === "drag_drop" && q.scene_type === "kitchen"
-                    );
-                    const iaQuest = data.find(q =>
-                        q.game_mechanic === "item_association"
-                    );
-
-                    resolvedQuestId        = livingRoomDD?.quest_id ?? null;
-                    resolvedKitchenQuestId = kitchenDD?.quest_id    ?? null;
-                    resolvedIaQuestId      = iaQuest?.quest_id      ?? null;
-
-                    console.log("[VillagePage] drag_drop (living_room) quest →", resolvedQuestId);
-                    console.log("[VillagePage] drag_drop (kitchen) quest     →", resolvedKitchenQuestId);
-                    console.log("[VillagePage] item_association quest         →", resolvedIaQuestId);
+                        resolvedQuestId          = randomPick(livingRoomDDs)?.quest_id ?? null;
+                        resolvedKitchenQuestId   = randomPick(kitchenDDs)?.quest_id    ?? null;
+                        resolvedBedroomQuestId   = randomPick(bedroomDDs)?.quest_id    ?? null;
+                        resolvedIaLivingQuestId  = randomPick(iaLivings)?.quest_id     ?? null;
+                        resolvedIaKitchenQuestId = randomPick(iaKitchens)?.quest_id    ?? null;
+                        resolvedIaBedroomQuestId = randomPick(iaBedroooms)?.quest_id   ?? null;
+                    }
                 }
             } else {
                 console.warn("[VillagePage] Quest fetch failed:", res.status);
             }
         } catch (err) {
             console.error("[VillagePage] Could not fetch questId:", err);
+        } finally {
+            setQuestLoading(false);
         }
 
-        setQuestLoading(false);
-
         const state = {
-            questId:        resolvedQuestId,         // living room drag_drop
-            kitchenQuestId: resolvedKitchenQuestId,  // kitchen drag_drop
-            iaQuestId:      resolvedIaQuestId,        // item_association (final)
-            npcId:          dbNpcId,
-            npcName:        selectedNPC.name,
-            returnTo:       "/student/village",
-            sceneType:      "living_room",            // always start from living room
+            questId:               resolvedQuestId,
+            kitchenQuestId:        resolvedKitchenQuestId,
+            bedroomQuestId:        resolvedBedroomQuestId,
+            iaQuestId:             resolvedIaLivingQuestId,
+            iaKitchenQuestId:      resolvedIaKitchenQuestId,
+            iaBedroomQuestId:      resolvedIaBedroomQuestId,
+            npcId:                 dbNpcId,
+            npcName:               selectedNPC.name,
+            returnTo:              "/student/village",
+            sceneType:             isMarket ? "market_stall" : "living_room",
+            questSequence:         isMarket ? [{ type: "drag_drop", sceneType: "market_stall", questId: resolvedQuestId }]
+                                            : [
+                                                { type: "drag_drop",        sceneType: "living_room", questId: resolvedQuestId        },
+                                                { type: "item_association", sceneType: "living_room", questId: resolvedIaLivingQuestId },
+                                              ],
+            sequenceIndex:         0,
         };
 
         if      (selectedNPC.quest === "word_matching")       navigate("/student/wordMatching",       { state });
         else if (selectedNPC.quest === "sentence_completion") navigate("/student/sentenceCompletion", { state });
+        else if (selectedNPC.quest === "market_stall")        navigate("/student/market",             { state });
         else if (selectedNPC.quest === "word_association")    navigate("/student/house",              { state });
     };
 
-    if (langLoading || charLoading) return (
+    if (charLoading) return (
         <div className="village-page-wrapper">
             <div className="loading-message">Loading...</div>
         </div>
