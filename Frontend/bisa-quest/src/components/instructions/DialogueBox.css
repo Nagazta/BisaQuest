@@ -4,129 +4,157 @@
 ──────────────────────────────────────────────────────────────── */
 
 .dialogue-box {
-  position:    fixed;
-  bottom:      0;
-  left:        0;
-  width:       100%;
-  min-height:  90px;
-  background:  #6B3E1D;
-  border-top:  4px solid #FCD765;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  max-width: 100vw;
+  height: 130px;
+  /* fixed — fits 3 lines of text */
+  background: #6B3E1D;
+  border-top: 4px solid #FCD765;
   border-radius: 0;
-  box-shadow:  0 -6px 24px rgba(0, 0, 0, 0.4);
-  z-index:     30;
-  display:     flex;
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.4);
+  z-index: 30;
+  display: flex;
   align-items: center;
-  padding:     0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 /* ── Left panel — speaker name ───────────────────────────────── */
 .dialogue-header {
-  display:      flex;
-  align-items:  center;
-  align-self:   stretch;
-  flex-shrink:  0;
-  min-width:    160px;
-  padding:      0 28px;
-  background:   #4e2c12;
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  flex-shrink: 0;
+  min-width: 160px;
+  padding: 0 28px;
+  background: #4e2c12;
   border-right: 3px solid #FCD765;
   border-bottom: none;
   border-radius: 0;
 }
 
 .dialogue-title {
-  margin:      0;
+  margin: 0;
   font-family: 'Pixelify Sans', sans-serif !important;
-  font-size:   20px !important;
+  font-size: 20px !important;
   font-weight: bold;
-  color:       #FFF9E6;
+  color: #FFF9E6;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   white-space: nowrap;
 }
 
 /* ── Center — dialogue text ──────────────────────────────────── */
+/*
+   Height math (box = 130px, border-box, border-top 4px):
+     inner box height = 130 - 4 = 126px
+     content height   = 126px (height: 100%)
+     padding          = 14px top + 14px bottom = 28px
+     text area        = 126 - 28 = 98px
+     3 lines          = 3 × 18px × 1.6 = 86.4px  → fits ✓
+*/
 .dialogue-content {
-  flex:     1;
-  padding:  18px 28px;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  /* explicit: fill parent inner height */
+  padding: 14px 28px;
   position: relative;
+  overflow: hidden;
+  /* clip overflow — JS scrolls it */
+  scroll-behavior: smooth;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* vertically center short text */
+}
+
+/* When text overflows, align to top so scrolling works correctly */
+.dialogue-content--overflow {
+  justify-content: flex-start;
 }
 
 .dialogue-text {
   font-family: 'Grandstander', cursive !important;
-  font-size:   18px !important;
+  font-size: 18px !important;
   line-height: 1.6;
-  color:       #F5E6D3;
-  margin:      0;
-  text-align:  left;
+  color: #F5E6D3;
+  margin: 0;
+  text-align: left;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 /* ── Right — next arrow button ───────────────────────────────── */
 .next-arrow-btn {
-  position:      static;
-  flex-shrink:   0;
-  margin-right:  20px;
-  width:         60px !important;
-  height:        60px !important;
-  background:    #FCD765 !important;
-  border:        3px solid #3a2008 !important;
+  position: static;
+  flex-shrink: 0;
+  margin-right: 20px;
+  width: 60px !important;
+  height: 60px !important;
+  background: #FCD765 !important;
+  border: 3px solid #3a2008 !important;
   border-radius: 50% !important;
-  display:       flex !important;
-  align-items:   center;
+  display: flex !important;
+  align-items: center;
   justify-content: center;
-  cursor:        pointer;
-  transition:    transform 0.15s ease, background 0.15s ease;
-  box-shadow:    0 4px 0 #3a2008;
-  padding:       0 !important;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+  box-shadow: 0 4px 0 #3a2008;
+  padding: 0 !important;
 }
 
-.next-arrow-btn:hover  {
-  background:  #ffe082 !important;
-  transform:   translateY(-2px);
+.next-arrow-btn:hover {
+  background: #ffe082 !important;
+  transform: translateY(-2px);
 }
 
 .next-arrow-btn:active {
-  transform:   translateY(2px);
-  box-shadow:  0 1px 0 #3a2008;
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #3a2008;
 }
 
 .next-arrow-btn .arrow-icon {
-  width:   28px;
-  height:  28px;
+  width: 28px;
+  height: 28px;
   display: block;
-  filter:  drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 /* ── Narration variant ───────────────────────────────────────── */
 .dialogue-box--narration {
-  background:  #3a2a10;
-  border-top:  4px solid #a07840;
+  background: #3a2a10;
+  border-top: 4px solid #a07840;
 }
 
 /* No speaker panel for narration — text spans full width */
 .dialogue-box--narration .dialogue-content {
-  padding: 18px 48px;
+  padding: 14px 48px;
 }
 
 .dialogue-text--narration {
   font-family: 'Grandstander', cursive !important;
-  font-size:   16px !important;
-  font-style:  italic;
-  color:       #d4b896 !important;
-  text-align:  center !important;
+  font-size: 16px !important;
+  font-style: italic;
+  color: #d4b896 !important;
+  text-align: center !important;
   letter-spacing: 0.3px;
 }
 
 /* ── Player variant ──────────────────────────────────────────── */
-/* Flips the layout: speaker panel on the RIGHT, text left-aligned */
+/* Speaker panel stays on the LEFT for immersion; only colors change */
 .dialogue-box--player {
-  background:  #1a3a2a;
-  border-top:  4px solid #4ade80;
-  flex-direction: row-reverse;
+  background: #1a3a2a;
+  border-top: 4px solid #4ade80;
 }
 
 .dialogue-header--player {
-  background:   #14532d;
-  border-right: none;
-  border-left:  3px solid #4ade80;
+  background: #14532d;
+  border-right: 3px solid #4ade80;
 }
 
 .dialogue-box--player .dialogue-title {
@@ -134,79 +162,136 @@
 }
 
 .dialogue-text--player {
-  color:      #d1fae5 !important;
-  text-align: right !important;
+  color: #d1fae5 !important;
+}
+
+/* ── Responsive — small screens ──────────────────────────────── */
+@media (max-width: 768px) {
+  .dialogue-box {
+    height: 100px;
+    /* 3 lines at 15px × 1.6 + padding */
+  }
+
+  .dialogue-header {
+    min-width: 100px;
+    padding: 0 14px;
+  }
+
+  .dialogue-title {
+    font-size: 16px !important;
+  }
+
+  .dialogue-content {
+    padding: 12px 14px;
+  }
+
+  .dialogue-text {
+    font-size: 15px !important;
+  }
+
+  .next-arrow-btn {
+    width: 48px !important;
+    height: 48px !important;
+    margin-right: 10px;
+  }
+
+  .next-arrow-btn .arrow-icon {
+    width: 22px;
+    height: 22px;
+  }
 }
 
 /* ── Item intro card — floats above the dialogue bar ────────────────────── */
 .dialogue-intro-wrap {
-  position:        fixed;
-  left:            0;
-  right:           0;
-  bottom:          200px;            /* sits just above the 90px bar */
-  display:         flex;
-  align-items:     flex-end;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 200px;
+  /* sits just above the 90px bar */
+  display: flex;
+  align-items: flex-end;
   justify-content: center;
-  padding-bottom:  24px;
-  z-index:         25;
-  pointer-events:  none;
+  padding-bottom: 24px;
+  z-index: 25;
+  pointer-events: none;
 }
 
 .dialogue-intro-card {
-  display:         flex;
-  flex-direction:  column;
-  align-items:     center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  gap:             12px;
-  background:      rgba(255, 252, 230, 0.96);
-  border:          4px solid #FCD765;
-  border-radius:   28px;
-  padding:         32px 52px;
-  box-shadow:      0 8px 0 #3a2008, 0 20px 60px rgba(0,0,0,0.45);
-  animation:       dlg-intro-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  min-width:       220px;
+  gap: 12px;
+  background: rgba(255, 252, 230, 0.96);
+  border: 4px solid #FCD765;
+  border-radius: 28px;
+  padding: 32px 52px;
+  box-shadow: 0 8px 0 #3a2008, 0 20px 60px rgba(0, 0, 0, 0.45);
+  animation: dlg-intro-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  min-width: 220px;
 }
 
 .dialogue-intro-img {
-  width:       130px;
-  height:      130px;
-  object-fit:  contain;
-  filter:      drop-shadow(0 6px 16px rgba(0,0,0,0.25));
-  animation:   dlg-intro-float 3s ease-in-out infinite;
+  width: 130px;
+  height: 130px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.25));
+  animation: dlg-intro-float 3s ease-in-out infinite;
 }
 
 .dialogue-intro-emoji {
-  font-size:   84px;
+  font-size: 84px;
   line-height: 1;
-  animation:   dlg-intro-float 3s ease-in-out infinite;
+  animation: dlg-intro-float 3s ease-in-out infinite;
 }
 
 .dialogue-intro-label {
-  font-family:    'Fredoka One', cursive;
-  font-size:      24px;
-  color:          #3a2008;
-  margin:         0;
-  text-align:     center;
+  font-family: 'Fredoka One', cursive;
+  font-size: 24px;
+  color: #3a2008;
+  margin: 0;
+  text-align: center;
   letter-spacing: 0.5px;
 }
 
 .dialogue-intro-sparkles {
-  font-size:   20px;
+  font-size: 20px;
   line-height: 1;
-  animation:   dlg-intro-sparkle 1.4s ease-in-out infinite alternate;
+  animation: dlg-intro-sparkle 1.4s ease-in-out infinite alternate;
 }
 
 @keyframes dlg-intro-pop {
-  from { transform: scale(0.5) translateY(20px); opacity: 0; }
-  to   { transform: scale(1)   translateY(0);    opacity: 1; }
+  from {
+    transform: scale(0.5) translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
 }
 
 @keyframes dlg-intro-float {
-  0%,  100% { transform: translateY(0);     }
-  50%        { transform: translateY(-10px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 @keyframes dlg-intro-sparkle {
-  from { transform: scale(0.8) rotate(-10deg); opacity: 0.6; }
-  to   { transform: scale(1.2) rotate( 10deg); opacity: 1.0; }
+  from {
+    transform: scale(0.8) rotate(-10deg);
+    opacity: 0.6;
+  }
+
+  to {
+    transform: scale(1.2) rotate(10deg);
+    opacity: 1.0;
+  }
 }

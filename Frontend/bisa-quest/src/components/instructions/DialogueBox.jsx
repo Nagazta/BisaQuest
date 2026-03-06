@@ -1,3 +1,4 @@
+import { useRef, useEffect, useLayoutEffect, useCallback, useState } from "react";
 import Button from "../Button";
 import Arrow from "../../assets/images/signs/arrow.png";
 import { ITEM_IMAGE_MAP } from "../../game/dragDropConstants";
@@ -29,10 +30,39 @@ const DialogueBox = ({
   rightSlot = null,
   introItem = null,
 }) => {
+  const contentRef = useRef(null);
+  const [hasOverflow, setHasOverflow] = useState(false);
+
+  // Detect overflow before paint so centering switches without flash
+  useLayoutEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollTop = 0;
+      setHasOverflow(contentRef.current.scrollHeight > contentRef.current.clientHeight + 5);
+    }
+  }, [text]);
+
+  // Arrow click: if text overflows, scroll down one page; otherwise advance
+  const handleArrowClick = useCallback(() => {
+    const el = contentRef.current;
+    if (el) {
+      const scrollRemaining = el.scrollHeight - el.scrollTop - el.clientHeight;
+      if (scrollRemaining > 5) {
+        // More text below — scroll down by one visible page
+        const style = window.getComputedStyle(el);
+        const padTop = parseFloat(style.paddingTop) || 0;
+        const padBot = parseFloat(style.paddingBottom) || 0;
+        const visibleTextHeight = el.clientHeight - padTop - padBot;
+        el.scrollBy({ top: visibleTextHeight, behavior: "smooth" });
+        return;
+      }
+    }
+    onNext?.();
+  }, [onNext]);
+
   const boxClass = [
     "dialogue-box",
     isNarration ? "dialogue-box--narration" : "",
-    isPlayer    ? "dialogue-box--player"    : "",
+    isPlayer ? "dialogue-box--player" : "",
   ].filter(Boolean).join(" ");
 
   return (
@@ -41,13 +71,13 @@ const DialogueBox = ({
       {introItem && (() => {
         // Normalise the imageKey: lowercase + trim so DB values like "Walis" or "BROOM "
         // still resolve against ITEM_IMAGE_MAP keys like "walis" / "broom"
-        const rawKey     = introItem.imageKey || "";
-        const normKey    = rawKey.trim().toLowerCase();
+        const rawKey = introItem.imageKey || "";
+        const normKey = rawKey.trim().toLowerCase();
         // Also try the label itself as a fallback key (e.g. label="Walis" → key="walis")
-        const labelKey   = (introItem.label || "").trim().toLowerCase().split(/[\s/,]+/)[0];
+        const labelKey = (introItem.label || "").trim().toLowerCase().split(/[\s/,]+/)[0];
         const resolvedImg =
-          ITEM_IMAGE_MAP?.[normKey]  ||
-          ITEM_IMAGE_MAP?.[rawKey]   ||
+          ITEM_IMAGE_MAP?.[normKey] ||
+          ITEM_IMAGE_MAP?.[rawKey] ||
           ITEM_IMAGE_MAP?.[labelKey] ||
           null;
 
@@ -66,11 +96,11 @@ const DialogueBox = ({
               <div className="dialogue-intro-sparkles">✨</div>
               {resolvedImg
                 ? <img
-                    src={resolvedImg}
-                    alt={introItem.label}
-                    className="dialogue-intro-img"
-                    draggable={false}
-                  />
+                  src={resolvedImg}
+                  alt={introItem.label}
+                  className="dialogue-intro-img"
+                  draggable={false}
+                />
                 : <div className="dialogue-intro-emoji">🖼️</div>
               }
               <h3 className="dialogue-intro-label">{introItem.label}</h3>
@@ -83,7 +113,7 @@ const DialogueBox = ({
       {/* ── Main bar ─────────────────────────────────────────────────────── */}
       <div className={boxClass}>
 
-        {/* Left panel — hidden for narration; right-side for player */}
+        {/* Left panel — hidden for narration */}
         {!isNarration && (
           <div className={`dialogue-header ${isPlayer ? "dialogue-header--player" : ""}`}>
             <h3 className="dialogue-title">{title}</h3>
@@ -91,12 +121,15 @@ const DialogueBox = ({
         )}
 
         {/* Center — dialogue text */}
-        <div className="dialogue-content">
+        <div
+          className={`dialogue-content${hasOverflow ? " dialogue-content--overflow" : ""}`}
+          ref={contentRef}
+        >
           <p className={[
             "dialogue-text",
             language,
             isNarration ? "dialogue-text--narration" : "",
-            isPlayer    ? "dialogue-text--player"    : "",
+            isPlayer ? "dialogue-text--player" : "",
           ].filter(Boolean).join(" ")}>
             {isNarration ? `✦ ${text} ✦` : text}
           </p>
@@ -108,7 +141,7 @@ const DialogueBox = ({
             {rightSlot}
           </div>
         ) : showNextButton ? (
-          <Button variant="arrow" className="next-arrow-btn" onClick={onNext}>
+          <Button variant="arrow" className="next-arrow-btn" onClick={handleArrowClick}>
             <img src={Arrow} alt="Next" className="arrow-icon" />
           </Button>
         ) : null}
