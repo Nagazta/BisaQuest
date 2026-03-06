@@ -84,7 +84,7 @@
 .ms-dd-dropzone {
   position:        absolute;
   transform:       translate(-50%, -50%);
-  width:           220px;
+  width:           150px;
   min-height:      140px;
   background:      rgba(255,255,240,0.15);
   border:          3px dashed rgba(252,215,101,0.6);
