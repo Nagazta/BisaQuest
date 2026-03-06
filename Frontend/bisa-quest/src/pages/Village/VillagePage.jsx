@@ -17,6 +17,12 @@ const NPC_DB_ID = {
     ligaya: "village_npc_2",
 };
 
+// ── Pick a random item from an array — unlike .find(), never always the first ─
+const randomPick = (arr) => {
+    if (!arr || arr.length === 0) return null;
+    return arr[Math.floor(Math.random() * arr.length)];
+};
+
 const VillagePage = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -148,12 +154,12 @@ const VillagePage = () => {
 
         const dbNpcId = selectedNPC.dbNpcId || NPC_DB_ID[selectedNPC.npcId] || selectedNPC.npcId;
 
-        let resolvedQuestId          = null;  // drag_drop    living_room
-        let resolvedKitchenQuestId   = null;  // drag_drop    kitchen
-        let resolvedBedroomQuestId   = null;  // drag_drop    bedroom
-        let resolvedIaLivingQuestId  = null;  // item_association living_room
-        let resolvedIaKitchenQuestId = null;  // item_association kitchen
-        let resolvedIaBedroomQuestId = null;  // item_association bedroom
+        let resolvedQuestId          = null;
+        let resolvedKitchenQuestId   = null;
+        let resolvedBedroomQuestId   = null;
+        let resolvedIaLivingQuestId  = null;
+        let resolvedIaKitchenQuestId = null;
+        let resolvedIaBedroomQuestId = null;
 
         try {
             const res = await fetch(`${API}/api/challenge/npc/${dbNpcId}/quest`);
@@ -161,60 +167,61 @@ const VillagePage = () => {
                 const { data } = await res.json();
 
                 if (Array.isArray(data) && data.length) {
-                    // ── drag_drop ──────────────────────────────────────────
-                    const livingRoomDD = data.find(q =>
+                    // Filter ALL matching quests per slot, then pick one at random.
+                    // This means each session can get a different quest even within
+                    // the same scene + mechanic combination.
+                    const livingRoomDDs = data.filter(q =>
                         q.game_mechanic === "drag_drop" && q.scene_type === "living_room"
                     );
-                    const kitchenDD = data.find(q =>
+                    const kitchenDDs = data.filter(q =>
                         q.game_mechanic === "drag_drop" && q.scene_type === "kitchen"
                     );
-                    const bedroomDD = data.find(q =>
+                    const bedroomDDs = data.filter(q =>
                         q.game_mechanic === "drag_drop" && q.scene_type === "bedroom"
                     );
-
-                    // ── item_association — one per scene ───────────────────
-                    const iaLiving = data.find(q =>
+                    const iaLivings = data.filter(q =>
                         q.game_mechanic === "item_association" && q.scene_type === "living_room"
                     );
-                    const iaKitchen = data.find(q =>
+                    const iaKitchens = data.filter(q =>
                         q.game_mechanic === "item_association" && q.scene_type === "kitchen"
                     );
-                    const iaBedroom = data.find(q =>
+                    const iaBedroooms = data.filter(q =>
                         q.game_mechanic === "item_association" && q.scene_type === "bedroom"
                     );
 
-                    resolvedQuestId          = livingRoomDD?.quest_id ?? null;
-                    resolvedKitchenQuestId   = kitchenDD?.quest_id    ?? null;
-                    resolvedBedroomQuestId   = bedroomDD?.quest_id    ?? null;
-                    resolvedIaLivingQuestId  = iaLiving?.quest_id     ?? null;
-                    resolvedIaKitchenQuestId = iaKitchen?.quest_id    ?? null;
-                    resolvedIaBedroomQuestId = iaBedroom?.quest_id    ?? null;
+                    resolvedQuestId          = randomPick(livingRoomDDs)?.quest_id ?? null;
+                    resolvedKitchenQuestId   = randomPick(kitchenDDs)?.quest_id    ?? null;
+                    resolvedBedroomQuestId   = randomPick(bedroomDDs)?.quest_id    ?? null;
+                    resolvedIaLivingQuestId  = randomPick(iaLivings)?.quest_id     ?? null;
+                    resolvedIaKitchenQuestId = randomPick(iaKitchens)?.quest_id    ?? null;
+                    resolvedIaBedroomQuestId = randomPick(iaBedroooms)?.quest_id   ?? null;
 
-                    console.log("[VillagePage] drag_drop    living_room →", resolvedQuestId);
-                    console.log("[VillagePage] drag_drop    kitchen     →", resolvedKitchenQuestId);
-                    console.log("[VillagePage] drag_drop    bedroom     →", resolvedBedroomQuestId);
-                    console.log("[VillagePage] item_assoc   living_room →", resolvedIaLivingQuestId);
-                    console.log("[VillagePage] item_assoc   kitchen     →", resolvedIaKitchenQuestId);
-                    console.log("[VillagePage] item_assoc   bedroom     →", resolvedIaBedroomQuestId);
+                    console.log("[VillagePage] drag_drop    living_room →", resolvedQuestId,          `(pool: ${livingRoomDDs.length})`);
+                    console.log("[VillagePage] drag_drop    kitchen     →", resolvedKitchenQuestId,   `(pool: ${kitchenDDs.length})`);
+                    console.log("[VillagePage] drag_drop    bedroom     →", resolvedBedroomQuestId,   `(pool: ${bedroomDDs.length})`);
+                    console.log("[VillagePage] item_assoc   living_room →", resolvedIaLivingQuestId,  `(pool: ${iaLivings.length})`);
+                    console.log("[VillagePage] item_assoc   kitchen     →", resolvedIaKitchenQuestId, `(pool: ${iaKitchens.length})`);
+                    console.log("[VillagePage] item_assoc   bedroom     →", resolvedIaBedroomQuestId, `(pool: ${iaBedroooms.length})`);
                 }
             } else {
                 console.warn("[VillagePage] Quest fetch failed:", res.status);
             }
         } catch (err) {
             console.error("[VillagePage] Could not fetch questId:", err);
+        } finally {
+            setQuestLoading(false);
         }
 
-        // Two Sequences: DD -> IA -> Done
         const questSequence = [
-            { type: "drag_drop",        sceneType: "living_room", questId: resolvedQuestId           },
-            { type: "item_association", sceneType: "living_room", questId: resolvedIaLivingQuestId   },
+            { type: "drag_drop",        sceneType: "living_room", questId: resolvedQuestId          },
+            { type: "item_association", sceneType: "living_room", questId: resolvedIaLivingQuestId  },
         ];
 
         const state = {
             questId:               resolvedQuestId,
             kitchenQuestId:        resolvedKitchenQuestId,
             bedroomQuestId:        resolvedBedroomQuestId,
-            iaQuestId:             resolvedIaLivingQuestId,   // legacy fallback
+            iaQuestId:             resolvedIaLivingQuestId,
             iaKitchenQuestId:      resolvedIaKitchenQuestId,
             iaBedroomQuestId:      resolvedIaBedroomQuestId,
             npcId:                 dbNpcId,
