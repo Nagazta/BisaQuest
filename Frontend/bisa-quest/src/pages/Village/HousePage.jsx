@@ -118,6 +118,7 @@ const HousePage = () => {
   const [compLocked,  setCompLocked]  = useState(null);
 
   // ── DD state ───────────────────────────────────────────────────────────────
+  const [ddIntroItem,   setDdIntroItem]   = useState(null);  // correct item shown during story steps
   const [ddPlaced,      setDdPlaced]      = useState({});
   const [ddShake,       setDdShake]       = useState(null);
   const [ddCompleted,   setDdCompleted]   = useState(false);
@@ -201,6 +202,11 @@ const HousePage = () => {
 
         const correctDDItem = ddRaw.find(r => Boolean(r.is_correct));
         setDdDropZoneLabel(correctDDItem?.label || "");
+        setDdIntroItem(correctDDItem ? {
+          id:       String(correctDDItem.item_id),
+          label:    correctDDItem.label,
+          imageKey: correctDDItem.image_key || null,
+        } : null);
 
         // Hardcoded drop zone positions — mirrors ZONE_REGISTRY in dragDropConstants
         // Set correct_zone in SQL to pick which zone the drop target uses
@@ -433,7 +439,7 @@ const HousePage = () => {
     if (phase === Phase.COMPREHENSION) return "So, what do you think? Click the correct answer!";
     if (phase === Phase.DRAG_DROP)     return ddCompleted
       ? "Tama! Now click Complete to confirm!"
-      : "Drag the item to equip!";
+      : "Drag the correct word card to the picture!";
     return "";
   })();
 
@@ -457,7 +463,7 @@ const HousePage = () => {
         {ddWordCards.filter(c => ddPlaced[c.id] === "correct").length > 0 ? (
           <div className="house-dd-equip-chips">
             {ddWordCards.filter(c => ddPlaced[c.id] === "correct").map(c => (
-              <span key={c.id} className="house-dd-chip house-dd-chip--correct">{c.label}</span>
+              <span key={c.id} className="house-dd-chip house-dd-chip--correct">{c.word}</span>
             ))}
           </div>
         ) : (
@@ -630,6 +636,13 @@ const HousePage = () => {
         showNextButton={showNextBtn}
         onNext={handleNext}
         rightSlot={rightSlot}
+        introItem={
+          phase === Phase.STORY &&
+          ddIntroItem &&
+          Number(currentRow?.step_order) >= 3
+            ? ddIntroItem
+            : null
+        }
       />
 
       {/* ── Done overlay ─────────────────────────────────────────────────── */}
