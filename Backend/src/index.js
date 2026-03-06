@@ -3,7 +3,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import progressRoutes from './routes/progressRoutes.js';
 import challengeRoutes from './routes/challengeRoutes.js';
-import completionRoutes from './routes/completionRoutes.js';
 import playerRoutes from './routes/playerRoutes.js';
 // ── Environment routes ────────────────────────────────────────────────────────
 import lobbyRoutes from './routes/lobbyRoutes.js';
@@ -37,7 +36,6 @@ app.use('/api/castle', castleRoutes);   // UC-2.4
 // ── Game / progress routes ────────────────────────────────────────────────────
 app.use('/api/progress', progressRoutes);
 app.use('/api/challenge', challengeRoutes);
-app.use('/api/completion', completionRoutes);
 
 // ── Health / root ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
@@ -53,7 +51,6 @@ app.get('/', (req, res) => res.json({
         castle: '/api/castle',
         progress: '/api/progress',
         challenge: '/api/challenge',
-        completion: '/api/completion',
     }
 }));
 
