@@ -8,6 +8,7 @@ import VillagePage from "./pages/Village/VillagePage";
 import ForestPage from "./pages/Forest/ForestPage";
 import CastlePage from "./pages/Castle/CastlePage";
 import HousePage from "./pages/Village/HousePage";
+import MarketStallPage from "./pages/Village/MarketStallPage";
 import ForestScenePage from "./pages/Forest/ForestScenePage";
 import { useAuth } from "./context/AuthContext";
 import DragAndDrop from "./game/DragAndDrop";
@@ -37,6 +38,7 @@ function App() {
             <Route path="/forest/scene" element={<ForestScenePage />} />
             <Route path="/student/dragAndDrop"       element={<DragAndDrop />} />
             <Route path="/student/item-association"  element={<ItemAssociation />} />
+            <Route path="/student/market" element={<MarketStallPage />} />
             
             {/* ── Dashboard — requires player in context ─────────────────── */}
             <Route
