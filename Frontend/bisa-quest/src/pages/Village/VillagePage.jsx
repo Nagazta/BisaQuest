@@ -48,7 +48,6 @@ const VillagePage = () => {
 
     const PlayerCharacter = character === "roberta" ? GirlCharacter : BoyCharacter;
 
-    // ── Music ─────────────────────────────────────────────────────────────────
     useEffect(() => {
         const play = () => { if (audioRef.current) { audioRef.current.volume = 0.3; audioRef.current.play().catch(() => {}); } };
         play();
@@ -66,7 +65,6 @@ const VillagePage = () => {
         if (audioRef.current) { audioRef.current.muted = !isMuted; setIsMuted(p => !p); }
     };
 
-    // ── Init ──────────────────────────────────────────────────────────────────
     useEffect(() => { initializeVillage(); }, [refreshKey]);
 
     const initializeVillage = async () => {
@@ -90,7 +88,7 @@ const VillagePage = () => {
                 y:         41,
                 character: NandoCharacter,
                 showName:  true,
-                quest:     "word_association",   // → /student/house
+                quest:     "farm",               // → /student/farm
             },
             {
                 npcId:     "vicente",
@@ -146,7 +144,6 @@ const VillagePage = () => {
         }
     }, [location.state]);
 
-    // ── Handlers ──────────────────────────────────────────────────────────────
     const handleNPCClick    = (npc) => { setSelectedNPC(npc); setShowModal(true); };
     const handleCloseModal  = ()    => { setShowModal(false); setSelectedNPC(null); };
     const handleBackClick   = ()    => setShowExitConfirm(true);
@@ -169,7 +166,6 @@ const VillagePage = () => {
         } catch (e) { console.error(e); }
     };
 
-    // ── Start quest ───────────────────────────────────────────────────────────
     const handleStartQuest = async () => {
         if (!selectedNPC || !playerId) return;
 
@@ -184,8 +180,9 @@ const VillagePage = () => {
         let resolvedIaKitchenQuestId = null;
         let resolvedIaBedroomQuestId = null;
 
-        // Vicente uses market_stall scene types
+        // Vicente uses market_stall; Nando uses farm
         const isMarket = selectedNPC.quest === "market_stall";
+        const isFarm   = selectedNPC.quest === "farm";
 
         try {
             const res = await fetch(`${API}/api/challenge/npc/${dbNpcId}/quest`);
@@ -194,14 +191,18 @@ const VillagePage = () => {
 
                 if (Array.isArray(data) && data.length) {
                     if (isMarket) {
-                        // Market stall quests — filter by market_stall scene_type
                         const marketDDs = data.filter(q =>
                             q.game_mechanic === "drag_drop" && q.scene_type === "market_stall"
                         );
                         resolvedQuestId = randomPick(marketDDs)?.quest_id ?? null;
                         console.log("[VillagePage] market_stall drag_drop →", resolvedQuestId, `(pool: ${marketDDs.length})`);
+                    } else if (isFarm) {
+                        const farmDDs = data.filter(q =>
+                            q.game_mechanic === "drag_drop" && q.scene_type === "farm"
+                        );
+                        resolvedQuestId = randomPick(farmDDs)?.quest_id ?? null;
+                        console.log("[VillagePage] farm drag_drop →", resolvedQuestId, `(pool: ${farmDDs.length})`);
                     } else {
-                        // House quests — existing logic unchanged
                         const livingRoomDDs = data.filter(q => q.game_mechanic === "drag_drop"        && q.scene_type === "living_room");
                         const kitchenDDs    = data.filter(q => q.game_mechanic === "drag_drop"        && q.scene_type === "kitchen");
                         const bedroomDDs    = data.filter(q => q.game_mechanic === "drag_drop"        && q.scene_type === "bedroom");
@@ -236,8 +237,9 @@ const VillagePage = () => {
             npcId:                 dbNpcId,
             npcName:               selectedNPC.name,
             returnTo:              "/student/village",
-            sceneType:             isMarket ? "market_stall" : "living_room",
+            sceneType:             isMarket ? "market_stall" : isFarm ? "farm" : "living_room",
             questSequence:         isMarket ? [{ type: "drag_drop", sceneType: "market_stall", questId: resolvedQuestId }]
+                                 : isFarm   ? [{ type: "drag_drop", sceneType: "farm",         questId: resolvedQuestId }]
                                             : [
                                                 { type: "drag_drop",        sceneType: "living_room", questId: resolvedQuestId        },
                                                 { type: "item_association", sceneType: "living_room", questId: resolvedIaLivingQuestId },
@@ -248,6 +250,7 @@ const VillagePage = () => {
         if      (selectedNPC.quest === "word_matching")       navigate("/student/wordMatching",       { state });
         else if (selectedNPC.quest === "sentence_completion") navigate("/student/sentenceCompletion", { state });
         else if (selectedNPC.quest === "market_stall")        navigate("/student/market",             { state });
+        else if (selectedNPC.quest === "farm")                navigate("/student/farm",               { state });
         else if (selectedNPC.quest === "word_association")    navigate("/student/house",              { state });
     };
 

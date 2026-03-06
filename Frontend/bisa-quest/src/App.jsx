@@ -7,9 +7,14 @@ import ItemAssociation from "./game/ItemAssociation";
 import VillagePage from "./pages/Village/VillagePage";
 import ForestPage from "./pages/Forest/ForestPage";
 import CastlePage from "./pages/Castle/CastlePage";
+//Village environment pages
 import HousePage from "./pages/Village/HousePage";
-import MarketStallPage from "./pages/Village/MarketStallPage";
+import MarketStallPage from "./pages/Village/MarketStallPage"
+import FarmPage from "./pages/Village/FarmPage";
+
+//Forest environment pages
 import ForestScenePage from "./pages/Forest/ForestScenePage";
+
 import { useAuth } from "./context/AuthContext";
 import DragAndDrop from "./game/DragAndDrop";
 
@@ -39,6 +44,7 @@ function App() {
             <Route path="/student/dragAndDrop"       element={<DragAndDrop />} />
             <Route path="/student/item-association"  element={<ItemAssociation />} />
             <Route path="/student/market" element={<MarketStallPage />} />
+            <Route path="/student/farm" element={<FarmPage />} />
             
             {/* ── Dashboard — requires player in context ─────────────────── */}
             <Route

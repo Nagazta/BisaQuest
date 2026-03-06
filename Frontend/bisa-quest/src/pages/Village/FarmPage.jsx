@@ -1,5 +1,14 @@
 // ─────────────────────────────────────────────────────────────────────────────
-//  MarketStallPage.jsx  —  Scenario-driven Village quest page (Market Stall)
+//  FarmPage.jsx  —  Scenario-driven Village quest page (Nando's Farm)
+//
+//  Mirrors MarketStallPage structure exactly:
+//    Phase 1 — Story Introduction  (flow_type: main, step_order 1..N)
+//    Phase 2 — Comprehension       (round_number=0 items, image card grid)
+//    Phase 3 — Drag & Drop         (round_number=1 items, scene or equip mode)
+//    Phase 4 — Feedback            (flow_type: correct / wrong_*)
+//
+//  NPC: Nando (village_npc_3)
+//  Background: farm.png
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -8,37 +17,41 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Button      from "../../components/Button";
 import DialogueBox from "../../components/instructions/DialogueBox";
 
-import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_1.png";
 import NandoCharacter   from "../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
+import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_1.png";
 import LigayaCharacter  from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
-import marketBackground from "../../assets/images/environments/scenario/market_stall.png";
+import farmBackground   from "../../assets/images/environments/scenario/farm.png";
 
 import { ITEM_IMAGE_MAP } from "../../game/dragDropConstants";
 import { getPlayerId, saveNPCProgress } from "../../utils/playerStorage";
-import "./MarketStallPage.css";
+import "./FarmPage.css";
 
+// ── NPC map ───────────────────────────────────────────────────────────────────
 const NPC_IMAGES = {
-  village_npc_1: VicenteCharacter,
   village_npc_3: NandoCharacter,
+  village_npc_1: VicenteCharacter,
   village_npc_2: LigayaCharacter,
 };
 
+// ── Farm drop zone registry ───────────────────────────────────────────────────
+// Use the grid tool (📐) in-game to find the exact x/y for each zone.
+// Add new zone keys here as new quests are added.
 const SCENE_DROP_ZONES = {
-  market_stall: {
-    stall_left:     { x: 18, y: 48 },
-    stall_center:   { x: 50, y: 48 },
-    stall_right:    { x: 78, y: 48 },
-    basket_saging:  { x: 35, y: 60 },
-    basket_manga_1: { x: 65, y: 95 },
-    basket_manga_2: { x: 85, y: 95 },
-    tray:           { x: 62, y: 60 },
-    counter:        { x: 50, y: 55 },
+  farm: {
+    soil_patch_1:  { x: 13, y: 50 },
+    soil_patch_2:  { x: 95, y: 50 },
+    soil_patch_3:  { x: 60, y: 50 },
+    basket_farm:   { x: 75, y: 55 },
+    water_trough:  { x: 50, y: 40 },
+    barn_door:     { x: 82, y: 38 },
+    fence_left:    { x: 15, y: 42 },
+    fence_right:   { x: 85, y: 42 },
   },
 };
 
 // Resolve correct_zone to 1 or more drop zone positions.
-// correct_zone in DB can be a single key ("basket_manga_1") or
-// comma-separated ("basket_manga_1,basket_manga_2") for multi-zone quests.
+// correct_zone in DB can be a single key ("soil_patch_1") or
+// comma-separated ("soil_patch_1,soil_patch_2") for multi-zone quests.
 const resolveDropZones = (zoneKey, sceneZones) => {
   if (!zoneKey || !sceneZones) return [];
   return zoneKey.split(",")
@@ -47,6 +60,7 @@ const resolveDropZones = (zoneKey, sceneZones) => {
     .map(k => ({ key: k, ...sceneZones[k] }));
 };
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
 const isNarration    = (s) => typeof s === "string" && s.toLowerCase() === "narration";
 const isPlayer       = (s) => typeof s === "string" && s.toLowerCase() === "player";
 const resolveSpeaker = (speaker, fallback) => {
@@ -78,19 +92,19 @@ const groupByFlow = (rows) => {
   return g;
 };
 
-// ── Image Comprehension Card ──────────────────────────────────────────────────
+// ── Comprehension image card ──────────────────────────────────────────────────
 const CompCard = ({ item, onSelect, locked, result }) => {
   const img = item.imageKey && ITEM_IMAGE_MAP[item.imageKey]
     ? ITEM_IMAGE_MAP[item.imageKey]
     : null;
 
-  const stateClass = result === "correct" ? "ms-comp-card--correct"
-                   : result === "wrong"   ? "ms-comp-card--wrong"
+  const stateClass = result === "correct" ? "fp-comp-card--correct"
+                   : result === "wrong"   ? "fp-comp-card--wrong"
                    : "";
 
   return (
     <div
-      className={`ms-comp-card ${img ? "ms-comp-card--has-img" : "ms-comp-card--text-only"} ${stateClass} ${locked ? "ms-comp-card--locked" : ""}`}
+      className={`fp-comp-card ${img ? "fp-comp-card--has-img" : "fp-comp-card--text-only"} ${stateClass} ${locked ? "fp-comp-card--locked" : ""}`}
       onClick={() => !locked && onSelect(item)}
       role="button"
       tabIndex={locked ? -1 : 0}
@@ -99,74 +113,74 @@ const CompCard = ({ item, onSelect, locked, result }) => {
       {img
         ? (
           <>
-            <img src={img} alt={item.label} className="ms-comp-card-img" draggable={false} />
-            <span className="ms-comp-card-label">{item.label}</span>
+            <img src={img} alt={item.label} className="fp-comp-card-img" draggable={false} />
+            <span className="fp-comp-card-label">{item.label}</span>
           </>
         )
         : (
-          <span className="ms-comp-card-text">{item.label}</span>
+          <span className="fp-comp-card-text">{item.label}</span>
         )
       }
-      {result === "correct" && <div className="ms-comp-card-badge ms-comp-card-badge--correct">✓</div>}
-      {result === "wrong"   && <div className="ms-comp-card-badge ms-comp-card-badge--wrong">✗</div>}
+      {result === "correct" && <div className="fp-comp-card-badge fp-comp-card-badge--correct">✓</div>}
+      {result === "wrong"   && <div className="fp-comp-card-badge fp-comp-card-badge--wrong">✗</div>}
     </div>
   );
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
-const MarketStallPage = () => {
+const FarmPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const playerId = getPlayerId();
   const API      = import.meta.env.VITE_API_URL || "";
 
   const questId       = location.state?.questId       || null;
-  const npcId         = location.state?.npcId         || "village_npc_1";
-  const npcName       = location.state?.npcName       || "Vicente";
+  const npcId         = location.state?.npcId         || "village_npc_3";
+  const npcName       = location.state?.npcName       || "Nando";
   const returnTo      = location.state?.returnTo      || "/student/village";
   const questSequence = location.state?.questSequence || [];
   const seqIndex      = location.state?.sequenceIndex ?? 0;
 
-  const NpcImage = NPC_IMAGES[npcId] || VicenteCharacter;
+  const NpcImage = NPC_IMAGES[npcId] || NandoCharacter;
 
-  const [loading,         setLoading]         = useState(true);
-  const [fetchError,      setFetchError]       = useState(null);
-  const [background,      setBackground]       = useState(marketBackground);
-  const [flowGroups,      setFlowGroups]       = useState({});
-  const [compItems,       setCompItems]        = useState([]);
-  const [ddWordCards,     setDdWordCards]      = useState([]);
-  const [ddDropZoneLabel, setDdDropZoneLabel]  = useState("");
-  const [ddInstruction,   setDdInstruction]    = useState("");
+  // ── State ──────────────────────────────────────────────────────────────────
+  const [loading,         setLoading]        = useState(true);
+  const [fetchError,      setFetchError]     = useState(null);
+  const [background,      setBackground]     = useState(farmBackground);
+  const [flowGroups,      setFlowGroups]     = useState({});
+  const [compItems,       setCompItems]      = useState([]);
+  const [ddWordCards,     setDdWordCards]    = useState([]);
+  const [ddDropZoneLabel, setDdDropZoneLabel]= useState("");
+  const [ddInstruction,   setDdInstruction]  = useState("");
 
-  const [phase,       setPhase]       = useState(Phase.STORY);
-  const [storyIdx,    setStoryIdx]    = useState(0);
-  const [branchKey,   setBranchKey]   = useState(null);
-  const [branchIdx,   setBranchIdx]   = useState(0);
-  const [feedbackKey, setFeedbackKey] = useState(null);
-  const [feedbackIdx, setFeedbackIdx] = useState(0);
+  const [phase,       setPhase]      = useState(Phase.STORY);
+  const [storyIdx,    setStoryIdx]   = useState(0);
+  const [branchKey,   setBranchKey]  = useState(null);
+  const [branchIdx,   setBranchIdx]  = useState(0);
+  const [feedbackKey, setFeedbackKey]= useState(null);
+  const [feedbackIdx, setFeedbackIdx]= useState(0);
 
-  const [compResult,  setCompResult]  = useState({});
-  const [compLocked,  setCompLocked]  = useState(false);
+  const [compResult,  setCompResult] = useState({});
+  const [compLocked,  setCompLocked] = useState(false);
 
-  const [ddIntroItem,   setDdIntroItem]   = useState(null);
-  const [ddPlaced,      setDdPlaced]      = useState({});
-  const [ddShake,       setDdShake]       = useState(null);
-  const [ddCompleted,   setDdCompleted]   = useState(false);
-  const [draggingWord,  setDraggingWord]  = useState(null);
-  // dropHover is now a zone key (string) or null — tracks which zone is hovered
-  const [dropHover,     setDropHover]     = useState(null);
-  // ddDropZones: array of { key, x, y } — supports 1 or many zones
-  const [ddDropZones,   setDdDropZones]   = useState([]);
-  const [ddDropMode,    setDdDropMode]    = useState("equip");
-  const [gridMode,      setGridMode]      = useState(false);
-  const [hoverCell,     setHoverCell]     = useState(null);
+  const [ddIntroItem,  setDdIntroItem] = useState(null);
+  const [ddPlaced,     setDdPlaced]   = useState({});
+  const [ddShake,      setDdShake]    = useState(null);
+  const [ddCompleted,  setDdCompleted]= useState(false);
+  const [draggingWord, setDraggingWord]= useState(null);
+  const [dropHover,    setDropHover]  = useState(null);   // zone key or null
+  const [ddDropZones,  setDdDropZones]= useState([]);     // [{ key, x, y }, ...]
+  const [ddDropMode,   setDdDropMode] = useState("equip");// "scene" | "equip"
+  const [gridMode,     setGridMode]   = useState(false);
+  const [hoverCell,    setHoverCell]  = useState(null);
 
   const containerRef = useRef(null);
 
+  // ── Derived ────────────────────────────────────────────────────────────────
   const currentRow = (() => {
-    if (phase === Phase.STORY)       return flowGroups.main?.[storyIdx]            ?? null;
-    if (phase === Phase.COMP_BRANCH) return flowGroups[branchKey]?.[branchIdx]     ?? null;
-    if (phase === Phase.FEEDBACK)    return flowGroups[feedbackKey]?.[feedbackIdx]  ?? null;
+    if (phase === Phase.STORY)       return flowGroups.main?.[storyIdx]           ?? null;
+    if (phase === Phase.COMP_BRANCH) return flowGroups[branchKey]?.[branchIdx]    ?? null;
+    if (phase === Phase.FEEDBACK)    return flowGroups[feedbackKey]?.[feedbackIdx] ?? null;
     return null;
   })();
 
@@ -174,10 +188,11 @@ const MarketStallPage = () => {
     ? storyIdx === flowGroups.main.length - 1
     : false;
 
-  // ── Load ──────────────────────────────────────────────────────────────────
+  // ── Load quest data ────────────────────────────────────────────────────────
   useEffect(() => {
     if (!questId) { setFetchError("No quest selected."); setLoading(false); return; }
     let cancelled = false;
+
     const load = async () => {
       try {
         const [metaRes, dialoguesRes, itemsRes] = await Promise.all([
@@ -203,15 +218,17 @@ const MarketStallPage = () => {
         );
 
         // Phase 2 — comprehension (round_number = 0)
-        setCompItems(sorted.filter(r => Number(r.round_number) === 0).map(r => ({
-          id:        String(r.item_id),
-          label:     r.label,
-          imageKey:  r.image_key  || null,
-          isCorrect: Boolean(r.is_correct),
-          belongsTo: r.belongs_to || null,
-          x:         Number(r.position_x ?? 30),
-          y:         Number(r.position_y ?? 30),
-        })));
+        setCompItems(
+          sorted.filter(r => Number(r.round_number) === 0).map(r => ({
+            id:        String(r.item_id),
+            label:     r.label,
+            imageKey:  r.image_key  || null,
+            isCorrect: Boolean(r.is_correct),
+            belongsTo: r.belongs_to || null,
+            x:         Number(r.position_x ?? 30),
+            y:         Number(r.position_y ?? 30),
+          }))
+        );
 
         // Phase 3 — DD (round_number = 1)
         const ddRaw         = sorted.filter(r => Number(r.round_number) === 1);
@@ -222,23 +239,25 @@ const MarketStallPage = () => {
           : null
         );
 
-        // Resolve drop zones — supports comma-separated correct_zone values
-        const scene      = meta?.scene_type || "market_stall";
+        // Resolve drop zones — supports comma-separated correct_zone
+        const scene      = meta?.scene_type || "farm";
         const zoneKey    = correctDDItem?.correct_zone || null;
-        const sceneZones = SCENE_DROP_ZONES[scene] || SCENE_DROP_ZONES["market_stall"];
+        const sceneZones = SCENE_DROP_ZONES[scene] || SCENE_DROP_ZONES["farm"];
         const zones      = resolveDropZones(zoneKey, sceneZones);
         setDdDropMode(zones.length > 0 ? "scene" : "equip");
         setDdDropZones(zones);
 
-        setDdWordCards(ddRaw.map(r => ({
-          id:        String(r.item_id),
-          label:     r.label,
-          imageKey:  r.image_key  || null,
-          isCorrect: Boolean(r.is_correct),
-          belongsTo: r.belongs_to || null,
-          x:         Number(r.position_x ?? 50),
-          y:         Number(r.position_y ?? 55),
-        })));
+        setDdWordCards(
+          ddRaw.map(r => ({
+            id:        String(r.item_id),
+            label:     r.label,
+            imageKey:  r.image_key  || null,
+            isCorrect: Boolean(r.is_correct),
+            belongsTo: r.belongs_to || null,
+            x:         Number(r.position_x ?? 50),
+            y:         Number(r.position_y ?? 55),
+          }))
+        );
 
         setDdPlaced({});
         setLoading(false);
@@ -246,6 +265,7 @@ const MarketStallPage = () => {
         if (!cancelled) { setFetchError(err.message); setLoading(false); }
       }
     };
+
     load();
     return () => { cancelled = true; };
   }, [questId, API]);
@@ -261,14 +281,10 @@ const MarketStallPage = () => {
       const rows = flowGroups[branchKey] || [];
       if (branchIdx < rows.length - 1) { setBranchIdx(i => i + 1); }
       else if (branchKey === "correct_comp") {
-        setCompLocked(false);
-        setCompResult({});
-        setPhase(Phase.DRAG_DROP);
+        setCompLocked(false); setCompResult({}); setPhase(Phase.DRAG_DROP);
       } else {
-        setCompLocked(false);
-        setCompResult({});
-        setBranchKey(null);
-        setBranchIdx(0);
+        setCompLocked(false); setCompResult({});
+        setBranchKey(null); setBranchIdx(0);
         setPhase(Phase.COMPREHENSION);
       }
       return;
@@ -278,18 +294,15 @@ const MarketStallPage = () => {
       if (feedbackIdx < rows.length - 1) { setFeedbackIdx(i => i + 1); }
       else if (feedbackKey === "correct") { submitProgress(); advanceSequence(); }
       else {
-        setDdPlaced({});
-        setDdShake(null);
-        setDdCompleted(false);
-        setFeedbackKey(null);
-        setFeedbackIdx(0);
+        setDdPlaced({}); setDdShake(null); setDdCompleted(false);
+        setFeedbackKey(null); setFeedbackIdx(0);
         setPhase(Phase.DRAG_DROP);
       }
       return;
     }
   }, [phase, isLastStoryStep, branchKey, branchIdx, feedbackKey, feedbackIdx, flowGroups, compItems]);
 
-  // ── Phase 2: Comprehension image click ───────────────────────────────────
+  // ── Phase 2: Comprehension click ─────────────────────────────────────────
   const handleCompSelect = useCallback((item) => {
     if (compLocked) return;
     setCompLocked(true);
@@ -298,9 +311,7 @@ const MarketStallPage = () => {
       setCompResult({ [item.id]: "correct" });
       const target = flowGroups["correct_comp"] ? "correct_comp" : null;
       if (!target) { setPhase(Phase.DRAG_DROP); return; }
-      setBranchKey("correct_comp");
-      setBranchIdx(0);
-      setPhase(Phase.COMP_BRANCH);
+      setBranchKey("correct_comp"); setBranchIdx(0); setPhase(Phase.COMP_BRANCH);
     } else {
       setCompResult({ [item.id]: "wrong" });
       const wrongKeys = Object.keys(flowGroups).filter(k => k.startsWith("wrong_"));
@@ -312,25 +323,22 @@ const MarketStallPage = () => {
             return (match && flowGroups[match]) ? match : wrongKeys[0] || null;
           })();
       if (!target) { setCompLocked(false); setCompResult({}); return; }
-      setBranchKey(target);
-      setBranchIdx(0);
-      setPhase(Phase.COMP_BRANCH);
+      setBranchKey(target); setBranchIdx(0); setPhase(Phase.COMP_BRANCH);
     }
   }, [compLocked, flowGroups]);
 
-  // ── Phase 3: DD handlers ─────────────────────────────────────────────────
+  // ── Phase 3: Drag handlers ────────────────────────────────────────────────
   const handleWordDragStart = (card, e) => {
-    if (ddPlaced[card.id] === "correct") return;
+    if (ddPlaced[card.id] !== undefined) return;
     e.dataTransfer.setData("cardId", card.id);
     setDraggingWord(card.id);
   };
 
-  // Each drop zone gets its own drag over/leave/drop — keyed by zone key
   const handleDropZoneDragOver  = (e) => { e.preventDefault(); };
   const makeZoneDragEnter = (zoneKey) => () => setDropHover(zoneKey);
   const makeZoneDragLeave = (zoneKey) => () => setDropHover(prev => prev === zoneKey ? null : prev);
 
-  // makeZoneDrop — each zone passes its own key so ddPlaced records WHERE the card landed
+  // Each zone records its own key in ddPlaced so chips don't bleed across zones
   const makeZoneDrop = useCallback((zoneKey) => (e) => {
     e.preventDefault();
     setDropHover(null);
@@ -340,7 +348,6 @@ const MarketStallPage = () => {
     if (!card) return;
 
     if (card.isCorrect) {
-      // Store the zone key so each zone only shows its own placed chips
       const newPlaced = { ...ddPlaced, [cardId]: zoneKey };
       setDdPlaced(newPlaced);
       const allPlaced = ddWordCards.filter(c => c.isCorrect).every(c => newPlaced[c.id] !== undefined);
@@ -360,7 +367,7 @@ const MarketStallPage = () => {
     }
   }, [ddWordCards, ddPlaced, flowGroups]);
 
-  // Equip-mode drop (in dialogue bar slot)
+  // Equip-mode drop (dialogue bar slot — fallback when no scene zones defined)
   const handleEquipDrop = useCallback((e) => {
     e.preventDefault();
     setDropHover(null);
@@ -370,9 +377,9 @@ const MarketStallPage = () => {
     if (!card) return;
 
     if (card.isCorrect) {
-      const newPlaced = { ...ddPlaced, [cardId]: "correct" };
+      const newPlaced = { ...ddPlaced, [cardId]: "equip" };
       setDdPlaced(newPlaced);
-      const allPlaced = ddWordCards.filter(c => c.isCorrect).every(c => newPlaced[c.id] === "correct");
+      const allPlaced = ddWordCards.filter(c => c.isCorrect).every(c => newPlaced[c.id] !== undefined);
       if (allPlaced) setDdCompleted(true);
     } else {
       setDdShake(cardId);
@@ -393,11 +400,10 @@ const MarketStallPage = () => {
     if (!ddCompleted) return;
     const target = flowGroups["correct"] ? "correct" : null;
     if (!target) { submitProgress(); advanceSequence(); return; }
-    setFeedbackKey("correct");
-    setFeedbackIdx(0);
-    setPhase(Phase.FEEDBACK);
+    setFeedbackKey("correct"); setFeedbackIdx(0); setPhase(Phase.FEEDBACK);
   };
 
+  // ── Submit + sequence ──────────────────────────────────────────────────────
   const submitProgress = () => {
     saveNPCProgress("village", npcId, 1, true);
     if (playerId) {
@@ -405,7 +411,7 @@ const MarketStallPage = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ playerId, questId, npcId, score: 1, maxScore: 1, passed: true }),
-      }).catch(err => console.warn("[MarketStallPage] submit failed:", err));
+      }).catch(err => console.warn("[FarmPage] submit failed:", err));
     }
   };
 
@@ -413,23 +419,26 @@ const MarketStallPage = () => {
     const nextIndex = seqIndex + 1;
     const nextStep  = questSequence[nextIndex];
     if (!nextStep) { navigate(returnTo, { state: { completed: true } }); return; }
-    navigate("/student/market", {
-      state: { questId: nextStep.questId, npcId, npcName, returnTo, questSequence, sequenceIndex: nextIndex, sceneType: nextStep.sceneType },
+    navigate("/student/farm", {
+      state: {
+        questId: nextStep.questId, npcId, npcName, returnTo,
+        questSequence, sequenceIndex: nextIndex, sceneType: nextStep.sceneType,
+      },
     });
   }, [seqIndex, questSequence, navigate, returnTo, npcId, npcName]);
 
   const handleBack = () => navigate(returnTo);
 
-  // ── Dialogue ──────────────────────────────────────────────────────────────
+  // ── Dialogue content ───────────────────────────────────────────────────────
   const currentSpeaker  = currentRow?.speaker || null;
   const dialogueSpeaker = currentRow ? resolveSpeaker(currentSpeaker, npcName) : npcName;
+
   const dialogueText = (() => {
     if (loading)    return "...";
     if (currentRow) return currentRow.dialogue_text || "";
-    if (phase === Phase.COMPREHENSION) {
+    if (phase === Phase.COMPREHENSION)
       return flowGroups.main?.[flowGroups.main.length - 2]?.dialogue_text
           || "Pilia ang husto! Click the correct one!";
-    }
     if (phase === Phase.DRAG_DROP) return ddCompleted
       ? "Tama! Now click Complete to confirm!"
       : (ddInstruction || "Drag the correct word card to the picture!");
@@ -439,54 +448,69 @@ const MarketStallPage = () => {
   const showNextBtn = !!(currentRow) && phase !== Phase.COMPREHENSION && phase !== Phase.DRAG_DROP;
 
   const rightSlot = phase === Phase.DRAG_DROP ? (
-    <div className="ms-dd-bar-slot-wrap">
+    <div className="fp-dd-bar-slot-wrap">
       {ddDropMode === "equip" && (
         <div
-          className={["ms-dd-equip-slot", dropHover === "equip" ? "ms-dd-equip-slot--hover" : "", ddCompleted ? "ms-dd-equip-slot--complete" : ""].filter(Boolean).join(" ")}
+          className={[
+            "fp-dd-equip-slot",
+            dropHover === "equip"  ? "fp-dd-equip-slot--hover"    : "",
+            ddCompleted            ? "fp-dd-equip-slot--complete"  : "",
+          ].filter(Boolean).join(" ")}
           onDragOver={(e) => { e.preventDefault(); setDropHover("equip"); }}
           onDragLeave={() => setDropHover(null)}
           onDrop={handleEquipDrop}
         >
-          {ddWordCards.filter(c => ddPlaced[c.id] === "correct").length > 0
-            ? <div className="ms-dd-equip-chips">{ddWordCards.filter(c => ddPlaced[c.id] === "correct").map(c => <span key={c.id} className="ms-dd-chip ms-dd-chip--correct">{c.label}</span>)}</div>
-            : <span className="ms-dd-equip-hint">Drop here</span>
+          {ddWordCards.filter(c => ddPlaced[c.id] === "equip").length > 0
+            ? <div className="fp-dd-equip-chips">
+                {ddWordCards.filter(c => ddPlaced[c.id] === "equip").map(c => (
+                  <span key={c.id} className="fp-dd-chip fp-dd-chip--correct">{c.label}</span>
+                ))}
+              </div>
+            : <span className="fp-dd-equip-hint">Drop here</span>
           }
         </div>
       )}
-      <button className={`ms-complete-btn ${ddCompleted ? "ms-complete-btn--active" : "ms-complete-btn--disabled"}`} onClick={handleDDComplete} disabled={!ddCompleted}>
+      <button
+        className={`fp-complete-btn ${ddCompleted ? "fp-complete-btn--active" : "fp-complete-btn--disabled"}`}
+        onClick={handleDDComplete}
+        disabled={!ddCompleted}
+      >
         Completo na!
       </button>
     </div>
   ) : null;
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  // ── Render ─────────────────────────────────────────────────────────────────
   if (loading) return (
-    <div className="ms-container">
-      <img src={marketBackground} alt="" className="ms-background" draggable={false} />
-      <div className="ms-loading"><span>Gi-load ang dula...</span></div>
+    <div className="fp-container">
+      <img src={farmBackground} alt="" className="fp-background" draggable={false} />
+      <div className="fp-loading"><span>Gi-load ang dula...</span></div>
     </div>
   );
 
   if (fetchError) return (
-    <div className="ms-container">
-      <img src={marketBackground} alt="" className="ms-background" draggable={false} />
-      <div className="ms-loading">
-        <p style={{ color: "#fff", fontFamily: "'Fredoka One\'", fontSize: 18 }}>{fetchError}</p>
+    <div className="fp-container">
+      <img src={farmBackground} alt="" className="fp-background" draggable={false} />
+      <div className="fp-loading">
+        <p style={{ color: "#fff", fontFamily: "'Fredoka One', cursive", fontSize: 18 }}>{fetchError}</p>
         <Button variant="back" onClick={handleBack}>← Back</Button>
       </div>
     </div>
   );
 
   return (
-    <div className="ms-container">
-      <img src={background} alt="Market Stall" className="ms-background" draggable={false} />
-      <Button variant="back" className="ms-back" onClick={handleBack}>← Back</Button>
+    <div className="fp-container">
+      <img src={background} alt="Farm" className="fp-background" draggable={false} />
+      <Button variant="back" className="fp-back" onClick={handleBack}>← Back</Button>
 
-      <button className={`ms-grid-btn ${gridMode ? "ms-grid-btn--on" : ""}`} onClick={() => setGridMode(p => !p)}>
+      <button
+        className={`fp-grid-btn ${gridMode ? "fp-grid-btn--on" : ""}`}
+        onClick={() => setGridMode(p => !p)}
+      >
         {gridMode ? "📐 Grid ON" : "📐 Grid"}
       </button>
 
-      <div className="ms-scene-label">
+      <div className="fp-scene-label">
         {phase === Phase.STORY         && "Story Introduction"}
         {phase === Phase.COMPREHENSION && "Comprehension Check"}
         {phase === Phase.COMP_BRANCH   && "Comprehension Check"}
@@ -494,10 +518,10 @@ const MarketStallPage = () => {
         {phase === Phase.FEEDBACK      && "Feedback"}
       </div>
 
-      {/* ── Phase 2: Comprehension ────────────────────────────────── */}
+      {/* ── Phase 2: Comprehension image grid ───────────────────────── */}
       {phase === Phase.COMPREHENSION && (
-        <div className="ms-comp-wrap">
-          <div className="ms-comp-grid">
+        <div className="fp-comp-wrap">
+          <div className="fp-comp-grid">
             {compItems.map(item => (
               <CompCard
                 key={item.id}
@@ -513,16 +537,16 @@ const MarketStallPage = () => {
 
       {/* ── Phase 3: Drag & Drop ────────────────────────────────────── */}
       {phase === Phase.DRAG_DROP && (
-        <div className="ms-dd-scene" ref={containerRef}>
+        <div className="fp-dd-scene" ref={containerRef}>
 
-          {/* Drop zones — one or many, each from ddDropZones array */}
+          {/* Scene drop zones — one or many */}
           {ddDropMode === "scene" && ddDropZones.map(zone => (
             <div
               key={zone.key}
               className={[
-                "ms-dd-dropzone",
-                dropHover === zone.key ? "ms-dd-dropzone--hover"    : "",
-                ddCompleted            ? "ms-dd-dropzone--complete"  : "",
+                "fp-dd-dropzone",
+                dropHover === zone.key ? "fp-dd-dropzone--hover"   : "",
+                ddCompleted            ? "fp-dd-dropzone--complete" : "",
               ].filter(Boolean).join(" ")}
               style={{
                 left: `${Math.min(Math.max(zone.x, 5), 85)}%`,
@@ -533,57 +557,73 @@ const MarketStallPage = () => {
               onDragLeave={makeZoneDragLeave(zone.key)}
               onDrop={makeZoneDrop(zone.key)}
             >
-              {/* Only show chips dropped INTO this specific zone */}
-              <div className="ms-dd-placed-chips">
+              {/* Only show chips dropped into THIS zone */}
+              <div className="fp-dd-placed-chips">
                 {ddWordCards.filter(c => ddPlaced[c.id] === zone.key).map(c => (
-                  <span key={c.id} className="ms-dd-chip ms-dd-chip--correct">{c.label}</span>
+                  <span key={c.id} className="fp-dd-chip fp-dd-chip--correct">{c.label}</span>
                 ))}
               </div>
             </div>
           ))}
 
-          {/* Word cards */}
+          {/* Word / image cards */}
           {ddWordCards.map(card => {
-            const placed  = ddPlaced[card.id] === "correct";
+            const placed  = ddPlaced[card.id] !== undefined;
             const shaking = ddShake === card.id;
+            const imgSrc  = card.imageKey
+              ? (ITEM_IMAGE_MAP[card.imageKey.trim().toLowerCase()] || ITEM_IMAGE_MAP[card.imageKey] || null)
+              : null;
             return (
               <div
                 key={card.id}
-                className={["ms-dd-card", placed ? "ms-dd-card--placed" : "", shaking ? "ms-dd-card--shake" : "", draggingWord === card.id ? "ms-dd-card--dragging" : ""].filter(Boolean).join(" ")}
-                style={{ left: `${Math.min(Math.max(card.x, 5), 88)}%`, top: `${Math.min(Math.max(card.y, 5), 72)}%`, transform: "translate(-50%, -50%)" }}
+                className={[
+                  "fp-dd-card",
+                  placed               ? "fp-dd-card--placed"   : "",
+                  shaking              ? "fp-dd-card--shake"    : "",
+                  draggingWord === card.id ? "fp-dd-card--dragging" : "",
+                ].filter(Boolean).join(" ")}
+                style={{
+                  left:      `${Math.min(Math.max(card.x, 5), 88)}%`,
+                  top:       `${Math.min(Math.max(card.y, 5), 72)}%`,
+                  transform: "translate(-50%, -50%)",
+                }}
                 draggable={!placed}
                 onDragStart={(e) => handleWordDragStart(card, e)}
                 onDragEnd={() => setDraggingWord(null)}
               >
-                {card.imageKey && ITEM_IMAGE_MAP[card.imageKey]
-                  ? <img src={ITEM_IMAGE_MAP[card.imageKey]} alt={card.label} className="ms-dd-card-img" draggable={false} />
-                  : <span className="ms-dd-card-emoji">🖼️</span>
+                {imgSrc
+                  ? <img src={imgSrc} alt={card.label} className="fp-dd-card-img" draggable={false} />
+                  : <span className="fp-dd-card-emoji">🖼️</span>
                 }
-                <span className="ms-dd-card-label">{card.label}</span>
+                <span className="fp-dd-card-label">{card.label}</span>
               </div>
             );
           })}
         </div>
       )}
 
-      {/* ── Dev grid ─────────────────────────────────────────────────── */}
+      {/* ── Dev grid ──────────────────────────────────────────────────── */}
       {gridMode && (
-        <div className="ms-grid-overlay"
+        <div
+          className="fp-grid-overlay"
           onMouseMove={(e) => {
             const rect = e.currentTarget.getBoundingClientRect();
-            setHoverCell({ x: Math.round(((e.clientX - rect.left) / rect.width) * 100), y: Math.round(((e.clientY - rect.top) / rect.height) * 100) });
+            setHoverCell({
+              x: Math.round(((e.clientX - rect.left) / rect.width)  * 100),
+              y: Math.round(((e.clientY - rect.top)  / rect.height) * 100),
+            });
           }}
           onMouseLeave={() => setHoverCell(null)}
         >
-          {Array.from({ length: 11 }, (_, i) => <div key={`v${i}`} className="ms-grid-line ms-grid-line--v" style={{ left: `${i * 10}%` }} />)}
-          {Array.from({ length: 11 }, (_, i) => <div key={`h${i}`} className="ms-grid-line ms-grid-line--h" style={{ top:  `${i * 10}%` }} />)}
-          {Array.from({ length: 10 }, (_, i) => <span key={`xl${i}`} className="ms-grid-label ms-grid-label--x" style={{ left: `${i * 10 + 5}%`, top: 2 }}>{i * 10 + 5}</span>)}
-          {Array.from({ length: 10 }, (_, i) => <span key={`yl${i}`} className="ms-grid-label ms-grid-label--y" style={{ top: `${i * 10 + 5}%`, left: 4 }}>{i * 10 + 5}</span>)}
+          {Array.from({ length: 11 }, (_, i) => <div key={`v${i}`} className="fp-grid-line fp-grid-line--v" style={{ left: `${i * 10}%` }} />)}
+          {Array.from({ length: 11 }, (_, i) => <div key={`h${i}`} className="fp-grid-line fp-grid-line--h" style={{ top:  `${i * 10}%` }} />)}
+          {Array.from({ length: 10 }, (_, i) => <span key={`xl${i}`} className="fp-grid-label fp-grid-label--x" style={{ left: `${i * 10 + 5}%`, top: 2 }}>{i * 10 + 5}</span>)}
+          {Array.from({ length: 10 }, (_, i) => <span key={`yl${i}`} className="fp-grid-label fp-grid-label--y" style={{ top: `${i * 10 + 5}%`, left: 4 }}>{i * 10 + 5}</span>)}
           {hoverCell && (
             <>
-              <div className="ms-grid-crosshair ms-grid-crosshair--v" style={{ left: `${hoverCell.x}%` }} />
-              <div className="ms-grid-crosshair ms-grid-crosshair--h" style={{ top:  `${hoverCell.y}%` }} />
-              <div className="ms-grid-coord" style={{ left: `${Math.min(hoverCell.x + 1, 72)}%`, top: `${Math.max(hoverCell.y - 6, 2)}%` }}>
+              <div className="fp-grid-crosshair fp-grid-crosshair--v" style={{ left: `${hoverCell.x}%` }} />
+              <div className="fp-grid-crosshair fp-grid-crosshair--h" style={{ top:  `${hoverCell.y}%` }} />
+              <div className="fp-grid-coord" style={{ left: `${Math.min(hoverCell.x + 1, 72)}%`, top: `${Math.max(hoverCell.y - 6, 2)}%` }}>
                 x: {hoverCell.x}, y: {hoverCell.y}
               </div>
             </>
@@ -591,12 +631,12 @@ const MarketStallPage = () => {
         </div>
       )}
 
-      {/* ── NPC ──────────────────────────────────────────────────────── */}
-      <div className="ms-npc-wrap">
-        <img src={NpcImage} alt={npcName} className="ms-npc-image" draggable={false} />
+      {/* ── NPC ───────────────────────────────────────────────────────── */}
+      <div className="fp-npc-wrap">
+        <img src={NpcImage} alt={npcName} className="fp-npc-image" draggable={false} />
       </div>
 
-      {/* ── DialogueBox ──────────────────────────────────────────────── */}
+      {/* ── DialogueBox ───────────────────────────────────────────────── */}
       <DialogueBox
         title={dialogueSpeaker}
         text={dialogueText}
@@ -605,13 +645,18 @@ const MarketStallPage = () => {
         showNextButton={showNextBtn}
         onNext={handleNext}
         rightSlot={rightSlot}
-        introItem={phase === Phase.STORY && ddIntroItem && Number(currentRow?.step_order) >= 3 ? ddIntroItem : null}
+        introItem={
+          phase === Phase.STORY && ddIntroItem && Number(currentRow?.step_order) >= 3
+            ? ddIntroItem
+            : null
+        }
       />
 
+      {/* ── Done overlay ──────────────────────────────────────────────── */}
       {phase === Phase.DONE && (
-        <div className="ms-overlay">
-          <div className="ms-card">
-            <div className="ms-card-stars">⭐⭐⭐</div>
+        <div className="fp-overlay">
+          <div className="fp-card">
+            <div className="fp-card-stars">⭐⭐⭐</div>
             <h2>Scenario Complete!</h2>
             <p>Padayon sa sunod! 🎯</p>
           </div>
@@ -621,4 +666,4 @@ const MarketStallPage = () => {
   );
 };
 
-export default MarketStallPage;
+export default FarmPage;
