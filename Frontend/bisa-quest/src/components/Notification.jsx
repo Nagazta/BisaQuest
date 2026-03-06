@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import "./Notification.css";
-import ErrorIcon from "../assets/icons/ErrorIcon";
 
 const Notification = ({ type = "success", message, onClose, title }) => {
   useEffect(() => {
@@ -15,7 +14,6 @@ const Notification = ({ type = "success", message, onClose, title }) => {
   return (
     <div className={`notification notification-${type}`}>
       <span className="notification-icon">
-        {type === "error" ? <ErrorIcon /> : "✓"}
       </span>
 
       <div className="notification-content">

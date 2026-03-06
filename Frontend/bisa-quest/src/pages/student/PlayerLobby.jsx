@@ -1,17 +1,16 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import HamburgerMenu from "../../components/HamburgerMenu";
 import InteractiveMap from "../../components/InteractiveMap";
 import Village from "../../assets/images/cardsImage/village.png";
 import Forest from "../../assets/images/cardsImage/forest.png";
 import Kingdom from "../../assets/images/cardsImage/kingdom.png";
-import "./StudentDashboard.css";
 import QuestStartModal from "../../components/QuestStartModal";
 import SaveProgressModal from "../../components/progress/SaveProgressModal";
 import Notification from "../../components/Notification";
 import ParticleEffects from "../../components/ParticleEffects";
 import { getPlayerId } from "../../utils/playerStorage";
+import Button from "../../components/Button";
 
 // Quest ID → route map
 const QUEST_ROUTES = {
@@ -21,7 +20,7 @@ const QUEST_ROUTES = {
 };
 
 const PlayerLobby = () => {
-    const { player, logout } = useAuth();
+    const { player, startNewGame } = useAuth();
     const navigate = useNavigate();
 
     const [showQuestModal,  setShowQuestModal]  = React.useState(false);
@@ -45,18 +44,7 @@ const PlayerLobby = () => {
     }, [player]);
 
     const fetchModuleProgress = async () => {
-        try {
-            const playerId = getPlayerId();
-            if (!playerId) return;
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/completion/player/${playerId}`);
-            if (!response.ok) return;
-            const result = await response.json();
-            if (result.success && result.data) {
-                const progressMap = {};
-                result.data.forEach(c => { progressMap[c.module_id] = c.completion_percentage; });
-                setModuleProgress(progressMap);
-            }
-        } catch (error) { console.error('❌ Error fetching progress:', error); }
+        // TODO: wire up to /api/progress once progress feature is implemented
     };
 
     // ── Notification for completed module ─────────────────────────────────────
@@ -67,8 +55,27 @@ const PlayerLobby = () => {
         }
     }, [location.state, navigate, location.pathname]);
 
-    const handleLogout = async () => { await logout(); navigate("/"); };
+   // ── ESC key to show exit modal ────────────────────────────────────────────
+    const [showExitModal, setShowExitModal] = React.useState(false);
 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === "Escape") setShowExitModal(true);
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, []);
+
+    const handleBackToMenu = () => {
+        setShowExitModal(false);
+        navigate("/");
+    };
+
+    const handleSwitchPlayer = () => {
+        setShowExitModal(false);
+        startNewGame();
+        navigate("/login");
+    };
     const quests = [
         { id: 1, title: "Vocabulary Quest",           subtitle: "Village Theme", description: "Explore the village and learn new words",      progress: moduleProgress[1] || 0, image: Village },
         { id: 2, title: "Synonyms & Antonyms Quest",  subtitle: "Forest Theme",  description: "Journey through the magical forest",           progress: moduleProgress[2] || 0, image: Forest  },
@@ -146,7 +153,6 @@ const PlayerLobby = () => {
     return (
         <div className="dashboard-container">
             <ParticleEffects enableMouseTrail={false} />
-            <HamburgerMenu onLogout={handleLogout} />
 
             {/* 🛠️ DEV MODE TOGGLE — remove before production */}
             <button
@@ -223,6 +229,14 @@ const PlayerLobby = () => {
                     onClose={() => setNotification(null)}
                 />
             )}
+
+            <SaveProgressModal
+                isOpen={showExitModal}
+                mode="exit"
+                onBackToMenu={handleBackToMenu}
+                onSwitchPlayer={handleSwitchPlayer}
+                onClose={() => setShowExitModal(false)}
+            />
         </div>
     );
 };
