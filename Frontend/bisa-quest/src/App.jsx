@@ -49,16 +49,12 @@ function App() {
             <Route path="/student/castle"  element={<CastlePage />} />
 
             {/* ── Game / challenge pages ─────────────────────────────────── */}
-<<<<<<< Updated upstream
-            <Route path="/student/house"             element={<HousePage />} />
-            <Route path="/forest/scene"              element={<ForestScenePage />} />
-=======
             <Route path="/student/house" element={<HousePage />} />
             <Route path="/forest/scene" element={<ForestScenePage />} />
             <Route path="/castle/scene" element={<CastleScenePage />} />
             <Route path="/student/library" element={<CastleScenePage />} />
             <Route path="/student/garden-fountain" element={<GardenFountainPage />} />
->>>>>>> Stashed changes
+
             <Route path="/student/dragAndDrop"       element={<DragAndDrop />} />
             <Route path="/student/item-association"  element={<ItemAssociation />} />
             <Route path="/student/market"            element={<MarketStallPage />} />
