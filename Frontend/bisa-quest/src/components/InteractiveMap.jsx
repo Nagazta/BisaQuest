@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './InteractiveMap.css';
 import './MapDebug.css';
 import DashboardMap from '../../src/assets/images/environments/Dashboard.png';
@@ -25,7 +25,7 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
   const [startPan,     setStartPan]     = useState({ x: 0, y: 0 });
   const [mapPosition,  setMapPosition]  = useState({ x: 0, y: 0 });
   const [dragStarted,  setDragStarted]  = useState(false);
-  const [zoom,         setZoom]         = useState(1);
+
 
   const clickableAreas = [
     {
@@ -104,8 +104,8 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
       const rect = mapRef.current.getBoundingClientRect();
       let newX = e.clientX - startPan.x;
       let newY = e.clientY - startPan.y;
-      newX = Math.max(-(rect.width  * zoom - rect.width),  Math.min(0, newX));
-      newY = Math.max(-(rect.height * zoom - rect.height), Math.min(0, newY));
+      newX = Math.max(0, Math.min(0, newX));
+      newY = Math.max(0, Math.min(0, newY));
       if (Math.sqrt(Math.pow(newX - mapPosition.x, 2) + Math.pow(newY - mapPosition.y, 2)) > 5) setDragStarted(true);
       setMapPosition({ x: newX, y: newY });
     } else {
@@ -133,8 +133,8 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
       const rect = mapRef.current.getBoundingClientRect();
       let newX = e.touches[0].clientX - startPan.x;
       let newY = e.touches[0].clientY - startPan.y;
-      newX = Math.max(-(rect.width  * zoom - rect.width),  Math.min(0, newX));
-      newY = Math.max(-(rect.height * zoom - rect.height), Math.min(0, newY));
+      newX = Math.max(0, Math.min(0, newX));
+      newY = Math.max(0, Math.min(0, newY));
       if (Math.sqrt(Math.pow(newX - mapPosition.x, 2) + Math.pow(newY - mapPosition.y, 2)) > 5) setDragStarted(true);
       setMapPosition({ x: newX, y: newY });
     }
@@ -146,25 +146,7 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
     setDragStarted(false);
   };
 
-  const constrainPosition = (newZoom) => {
-    if (!mapRef.current) return;
-    const rect = mapRef.current.getBoundingClientRect();
-    setMapPosition(prev => ({
-      x: Math.max(-(rect.width  * newZoom - rect.width),  Math.min(0, prev.x)),
-      y: Math.max(-(rect.height * newZoom - rect.height), Math.min(0, prev.y)),
-    }));
-  };
 
-  const handleZoomIn  = () => { const z = Math.min(zoom + 0.2, 2);   setZoom(z); constrainPosition(z); };
-  const handleZoomOut = () => { const z = Math.max(zoom - 0.2, 0.5); setZoom(z); constrainPosition(z); };
-  const handleResetView = () => { setZoom(1); setMapPosition({ x: 0, y: 0 }); };
-
-  const handleWheel = (e) => {
-    e.preventDefault();
-    const newZoom = Math.max(0.5, Math.min(2, zoom + (e.deltaY > 0 ? -0.1 : 0.1)));
-    setZoom(newZoom);
-    constrainPosition(newZoom);
-  };
 
   const handleMapClick = (e) => {
     if (!mapRef.current) return;
@@ -207,7 +189,7 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
         <div className="debug-info">
           <h4>🔧 Debug Mode</h4>
           <p className="coords">Mouse: x: {mousePosition.x}%, y: {mousePosition.y}%</p>
-          <p>Zoom: {zoom.toFixed(2)}x</p>
+
           <div className="area-info">
             <p><strong>Clickable Areas:</strong></p>
             {clickableAreas.map(area => (
@@ -227,12 +209,12 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        onWheel={handleWheel}
+
       >
         <div
           className="map-content"
           style={{
-            transform: `translate(${mapPosition.x}px, ${mapPosition.y}px) scale(${zoom})`,
+            transform: `translate(${mapPosition.x}px, ${mapPosition.y}px)`,
             transition: isPanning ? 'none' : 'transform 0.3s ease',
           }}
         >
