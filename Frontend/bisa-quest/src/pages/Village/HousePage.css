@@ -525,6 +525,7 @@
   align-items: center;
   gap:         12px;
   flex-shrink: 0;
+  margin-top: 25px;
 }
 
 /* Equip slot — drag target inside the dialogue bar */

@@ -3,24 +3,33 @@
    HousePage, DragAndDrop, ForestScenePage — all just import this.
 ──────────────────────────────────────────────────────────────── */
 
+/* ── Base box — fixed 130 px, no scroll ─────────────────────── */
 .dialogue-box {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
   max-width: 100vw;
-  height: 130px;
-  /* fixed — fits 3 lines of text */
+  height: 160px;
   background: #6B3E1D;
   border-top: 4px solid #FCD765;
   border-radius: 0;
   box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.4);
   z-index: 30;
   display: flex;
-  align-items: center;
+  align-items: stretch;       /* children fill height */
   padding: 0;
   box-sizing: border-box;
   overflow: hidden;
+  transition: height 0.25s ease;
+}
+
+/* ── Expanded — text overflows, box grows upward ─────────────── */
+/*   Max 240 px (~6 lines) then the user scrolls inside           */
+.dialogue-box--expanded {
+  height: clamp(160px, auto, 280px);
+  max-height: 280px;
+  align-items: flex-start;
 }
 
 /* ── Left panel — speaker name ───────────────────────────────── */
@@ -33,8 +42,12 @@
   padding: 0 28px;
   background: #4e2c12;
   border-right: 3px solid #FCD765;
-  border-bottom: none;
-  border-radius: 0;
+}
+
+/* When box is expanded the header should span full height */
+.dialogue-box--expanded .dialogue-header {
+  align-items: flex-start;
+  padding-top: 14px;
 }
 
 .dialogue-title {
@@ -48,34 +61,38 @@
 }
 
 /* ── Center — dialogue text ──────────────────────────────────── */
-/*
-   Height math (box = 130px, border-box, border-top 4px):
-     inner box height = 130 - 4 = 126px
-     content height   = 126px (height: 100%)
-     padding          = 14px top + 14px bottom = 28px
-     text area        = 126 - 28 = 98px
-     3 lines          = 3 × 18px × 1.6 = 86.4px  → fits ✓
-*/
 .dialogue-content {
   flex: 1;
   min-width: 0;
   height: 100%;
-  /* explicit: fill parent inner height */
   padding: 14px 28px;
   position: relative;
-  overflow: hidden;
-  /* clip overflow — JS scrolls it */
-  scroll-behavior: smooth;
+  overflow: hidden;           /* no scroll for short text */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  /* vertically center short text */
+  justify-content: center;    /* vertically center short text */
 }
 
-/* When text overflows, align to top so scrolling works correctly */
+/* Overflow mode — enable manual scroll, align to top */
 .dialogue-content--overflow {
+  overflow-y: auto;
   justify-content: flex-start;
+  /* Custom scrollbar — subtle, themed */
+  scrollbar-width: thin;
+  scrollbar-color: #FCD765 #3a2008;
+}
+
+.dialogue-content--overflow::-webkit-scrollbar {
+  width: 6px;
+}
+.dialogue-content--overflow::-webkit-scrollbar-track {
+  background: #3a2008;
+  border-radius: 4px;
+}
+.dialogue-content--overflow::-webkit-scrollbar-thumb {
+  background: #FCD765;
+  border-radius: 4px;
 }
 
 .dialogue-text {
@@ -89,10 +106,34 @@
   overflow-wrap: break-word;
 }
 
+/* ── Scroll hint — fades at the bottom of long text ─────────── */
+.dialogue-scroll-hint {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: 'Grandstander', cursive;
+  font-size: 13px;
+  color: #FCD765;
+  background: linear-gradient(transparent, #6B3E1D 60%);
+  padding: 18px 0 4px;
+  pointer-events: none;
+  animation: hint-pulse 1.4s ease-in-out infinite;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+@keyframes hint-pulse {
+  0%, 100% { opacity: 0.55; transform: translateY(0);   }
+  50%       { opacity: 1;    transform: translateY(2px); }
+}
+
 /* ── Right — next arrow button ───────────────────────────────── */
 .next-arrow-btn {
   position: static;
   flex-shrink: 0;
+  align-self: center;
   margin-right: 20px;
   width: 60px !important;
   height: 60px !important;
@@ -103,21 +144,38 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.15s ease, background 0.15s ease;
+  transition: transform 0.15s ease, background 0.2s ease,
+              box-shadow 0.2s ease, opacity 0.2s ease, filter 0.2s ease;
   box-shadow: 0 4px 0 #3a2008;
   padding: 0 !important;
 }
 
-.next-arrow-btn:hover {
+.next-arrow-btn:hover:not(.next-arrow-btn--locked) {
   background: #ffe082 !important;
   transform: translateY(-2px);
 }
 
-.next-arrow-btn:active {
+.next-arrow-btn:active:not(.next-arrow-btn--locked) {
   transform: translateY(2px);
   box-shadow: 0 1px 0 #3a2008;
 }
 
+/* ── Locked state — player hasn't scrolled to bottom yet ─────── */
+.next-arrow-btn--locked {
+  background: #6b6b6b !important;
+  border-color: #3a3a3a !important;
+  box-shadow: 0 4px 0 #2a2a2a !important;
+  cursor: not-allowed !important;
+  opacity: 0.65;
+  filter: grayscale(60%);
+  transform: none !important;
+}
+
+.next-arrow-btn--locked .arrow-icon {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4)) grayscale(80%) brightness(0.7);
+}
+
+/* Normal arrow icon */
 .next-arrow-btn .arrow-icon {
   width: 28px;
   height: 28px;
@@ -131,9 +189,12 @@
   border-top: 4px solid #a07840;
 }
 
-/* No speaker panel for narration — text spans full width */
 .dialogue-box--narration .dialogue-content {
   padding: 14px 48px;
+}
+
+.dialogue-box--narration .dialogue-scroll-hint {
+  background: linear-gradient(transparent, #3a2a10 60%);
 }
 
 .dialogue-text--narration {
@@ -146,7 +207,6 @@
 }
 
 /* ── Player variant ──────────────────────────────────────────── */
-/* Speaker panel stays on the LEFT for immersion; only colors change */
 .dialogue-box--player {
   background: #1a3a2a;
   border-top: 4px solid #4ade80;
@@ -165,11 +225,19 @@
   color: #d1fae5 !important;
 }
 
+.dialogue-box--player .dialogue-scroll-hint {
+  background: linear-gradient(transparent, #1a3a2a 60%);
+  color: #4ade80;
+}
+
 /* ── Responsive — small screens ──────────────────────────────── */
 @media (max-width: 768px) {
   .dialogue-box {
-    height: 100px;
-    /* 3 lines at 15px × 1.6 + padding */
+    height: 130px;
+  }
+
+  .dialogue-box--expanded {
+    max-height: 230px;
   }
 
   .dialogue-header {
@@ -207,7 +275,6 @@
   left: 0;
   right: 0;
   bottom: 200px;
-  /* sits just above the 90px bar */
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -261,37 +328,16 @@
 }
 
 @keyframes dlg-intro-pop {
-  from {
-    transform: scale(0.5) translateY(20px);
-    opacity: 0;
-  }
-
-  to {
-    transform: scale(1) translateY(0);
-    opacity: 1;
-  }
+  from { transform: scale(0.5) translateY(20px); opacity: 0; }
+  to   { transform: scale(1)   translateY(0);    opacity: 1; }
 }
 
 @keyframes dlg-intro-float {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-10px);
-  }
+  0%, 100% { transform: translateY(0);    }
+  50%       { transform: translateY(-10px); }
 }
 
 @keyframes dlg-intro-sparkle {
-  from {
-    transform: scale(0.8) rotate(-10deg);
-    opacity: 0.6;
-  }
-
-  to {
-    transform: scale(1.2) rotate(10deg);
-    opacity: 1.0;
-  }
+  from { transform: scale(0.8) rotate(-10deg); opacity: 0.6; }
+  to   { transform: scale(1.2) rotate( 10deg); opacity: 1.0; }
 }

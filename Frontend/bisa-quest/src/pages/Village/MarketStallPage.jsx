@@ -5,8 +5,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-import Button      from "../../components/Button";
-import DialogueBox from "../../components/instructions/DialogueBox";
+import Button           from "../../components/Button";
+import DialogueBox      from "../../components/instructions/DialogueBox";
+import BookCollectModal from "../../game/components/BookCollectModal";
 
 import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_1.png";
 import NandoCharacter   from "../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
@@ -14,32 +15,37 @@ import LigayaCharacter  from "../../assets/images/characters/vocabulary/Village_
 import marketBackground from "../../assets/images/environments/scenario/market_stall.png";
 
 import { ITEM_IMAGE_MAP } from "../../game/dragDropConstants";
-import { getPlayerId, saveNPCProgress } from "../../utils/playerStorage";
+import {
+  getPlayerId,
+  saveNPCProgress,
+  awardLibroPage,
+  getLibroPageCount,
+  getLibroPageCountForEnv,
+} from "../../utils/playerStorage";
 import "./MarketStallPage.css";
 
+// ── NPC map ───────────────────────────────────────────────────────────────────
 const NPC_IMAGES = {
   village_npc_1: VicenteCharacter,
   village_npc_3: NandoCharacter,
   village_npc_2: LigayaCharacter,
 };
 
+// ── Scene drop zone registry ──────────────────────────────────────────────────
 const SCENE_DROP_ZONES = {
   market_stall: {
-    stall_left:     { x: 18, y: 48 },
-    stall_center:   { x: 50, y: 48 },
-    stall_right:    { x: 78, y: 48 },
+    stall_left:       { x: 18, y: 48 },
+    stall_center:     { x: 50, y: 48 },
+    stall_right:      { x: 78, y: 48 },
     basket_saging_1:  { x: 37, y: 74 },
     basket_saging_2:  { x: 23, y: 74 },
-    basket_manga_1: { x: 65, y: 95 },
-    basket_manga_2: { x: 85, y: 95 },
-    tray:           { x: 62, y: 60 },
-    counter:        { x: 50, y: 55 },
+    basket_manga_1:   { x: 65, y: 95 },
+    basket_manga_2:   { x: 85, y: 95 },
+    tray:             { x: 62, y: 60 },
+    counter:          { x: 50, y: 55 },
   },
 };
 
-// Resolve correct_zone to 1 or more drop zone positions.
-// correct_zone in DB can be a single key ("basket_manga_1") or
-// comma-separated ("basket_manga_1,basket_manga_2") for multi-zone quests.
 const resolveDropZones = (zoneKey, sceneZones) => {
   if (!zoneKey || !sceneZones) return [];
   return zoneKey.split(",")
@@ -48,6 +54,7 @@ const resolveDropZones = (zoneKey, sceneZones) => {
     .map(k => ({ key: k, ...sceneZones[k] }));
 };
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
 const isNarration    = (s) => typeof s === "string" && s.toLowerCase() === "narration";
 const isPlayer       = (s) => typeof s === "string" && s.toLowerCase() === "player";
 const resolveSpeaker = (speaker, fallback) => {
@@ -79,7 +86,7 @@ const groupByFlow = (rows) => {
   return g;
 };
 
-// ── Image Comprehension Card ──────────────────────────────────────────────────
+// ── Comprehension image card ──────────────────────────────────────────────────
 const CompCard = ({ item, onSelect, locked, result }) => {
   const img = item.imageKey && ITEM_IMAGE_MAP[item.imageKey]
     ? ITEM_IMAGE_MAP[item.imageKey]
@@ -97,17 +104,14 @@ const CompCard = ({ item, onSelect, locked, result }) => {
       tabIndex={locked ? -1 : 0}
       onKeyDown={e => e.key === "Enter" && !locked && onSelect(item)}
     >
-      {img
-        ? (
-          <>
-            <img src={img} alt={item.label} className="ms-comp-card-img" draggable={false} />
-            <span className="ms-comp-card-label">{item.label}</span>
-          </>
-        )
-        : (
-          <span className="ms-comp-card-text">{item.label}</span>
-        )
-      }
+      {img ? (
+        <>
+          <img src={img} alt={item.label} className="ms-comp-card-img" draggable={false} />
+          <span className="ms-comp-card-label">{item.label}</span>
+        </>
+      ) : (
+        <span className="ms-comp-card-text">{item.label}</span>
+      )}
       {result === "correct" && <div className="ms-comp-card-badge ms-comp-card-badge--correct">✓</div>}
       {result === "wrong"   && <div className="ms-comp-card-badge ms-comp-card-badge--wrong">✗</div>}
     </div>
@@ -130,6 +134,7 @@ const MarketStallPage = () => {
 
   const NpcImage = NPC_IMAGES[npcId] || VicenteCharacter;
 
+  // ── State ──────────────────────────────────────────────────────────────────
   const [loading,         setLoading]         = useState(true);
   const [fetchError,      setFetchError]       = useState(null);
   const [background,      setBackground]       = useState(marketBackground);
@@ -146,24 +151,27 @@ const MarketStallPage = () => {
   const [feedbackKey, setFeedbackKey] = useState(null);
   const [feedbackIdx, setFeedbackIdx] = useState(0);
 
-  const [compResult,  setCompResult]  = useState({});
-  const [compLocked,  setCompLocked]  = useState(false);
+  const [compResult, setCompResult] = useState({});
+  const [compLocked, setCompLocked] = useState(false);
 
-  const [ddIntroItem,   setDdIntroItem]   = useState(null);
-  const [ddPlaced,      setDdPlaced]      = useState({});
-  const [ddShake,       setDdShake]       = useState(null);
-  const [ddCompleted,   setDdCompleted]   = useState(false);
-  const [draggingWord,  setDraggingWord]  = useState(null);
-  // dropHover is now a zone key (string) or null — tracks which zone is hovered
-  const [dropHover,     setDropHover]     = useState(null);
-  // ddDropZones: array of { key, x, y } — supports 1 or many zones
-  const [ddDropZones,   setDdDropZones]   = useState([]);
-  const [ddDropMode,    setDdDropMode]    = useState("equip");
-  const [gridMode,      setGridMode]      = useState(false);
-  const [hoverCell,     setHoverCell]     = useState(null);
+  const [ddIntroItem,  setDdIntroItem]  = useState(null);
+  const [ddPlaced,     setDdPlaced]     = useState({});
+  const [ddShake,      setDdShake]      = useState(null);
+  const [ddCompleted,  setDdCompleted]  = useState(false);
+  const [draggingWord, setDraggingWord] = useState(null);
+  const [dropHover,    setDropHover]    = useState(null);
+  const [ddDropZones,  setDdDropZones]  = useState([]);
+  const [ddDropMode,   setDdDropMode]   = useState("equip");
+  const [gridMode,     setGridMode]     = useState(false);
+  const [hoverCell,    setHoverCell]    = useState(null);
+
+  // ── Modal state ────────────────────────────────────────────────────────────
+  const [showPageModal, setShowPageModal] = useState(false);
+  const [collectedPage, setCollectedPage] = useState(null);
 
   const containerRef = useRef(null);
 
+  // ── Derived ────────────────────────────────────────────────────────────────
   const currentRow = (() => {
     if (phase === Phase.STORY)       return flowGroups.main?.[storyIdx]            ?? null;
     if (phase === Phase.COMP_BRANCH) return flowGroups[branchKey]?.[branchIdx]     ?? null;
@@ -179,6 +187,7 @@ const MarketStallPage = () => {
   useEffect(() => {
     if (!questId) { setFetchError("No quest selected."); setLoading(false); return; }
     let cancelled = false;
+
     const load = async () => {
       try {
         const [metaRes, dialoguesRes, itemsRes] = await Promise.all([
@@ -223,7 +232,6 @@ const MarketStallPage = () => {
           : null
         );
 
-        // Resolve drop zones — supports comma-separated correct_zone values
         const scene      = meta?.scene_type || "market_stall";
         const zoneKey    = correctDDItem?.correct_zone || null;
         const sceneZones = SCENE_DROP_ZONES[scene] || SCENE_DROP_ZONES["market_stall"];
@@ -247,6 +255,7 @@ const MarketStallPage = () => {
         if (!cancelled) { setFetchError(err.message); setLoading(false); }
       }
     };
+
     load();
     return () => { cancelled = true; };
   }, [questId, API]);
@@ -277,8 +286,10 @@ const MarketStallPage = () => {
     if (phase === Phase.FEEDBACK) {
       const rows = flowGroups[feedbackKey] || [];
       if (feedbackIdx < rows.length - 1) { setFeedbackIdx(i => i + 1); }
-      else if (feedbackKey === "correct") { submitProgress(); advanceSequence(); }
-      else {
+      else if (feedbackKey === "correct") {
+        submitProgress();
+        // navigation deferred — fires from advanceSequence or modal onClose
+      } else {
         setDdPlaced({});
         setDdShake(null);
         setDdCompleted(false);
@@ -290,7 +301,7 @@ const MarketStallPage = () => {
     }
   }, [phase, isLastStoryStep, branchKey, branchIdx, feedbackKey, feedbackIdx, flowGroups, compItems]);
 
-  // ── Phase 2: Comprehension image click ───────────────────────────────────
+  // ── Phase 2: Comprehension ────────────────────────────────────────────────
   const handleCompSelect = useCallback((item) => {
     if (compLocked) return;
     setCompLocked(true);
@@ -319,19 +330,17 @@ const MarketStallPage = () => {
     }
   }, [compLocked, flowGroups]);
 
-  // ── Phase 3: DD handlers ─────────────────────────────────────────────────
+  // ── Phase 3: DD handlers ──────────────────────────────────────────────────
   const handleWordDragStart = (card, e) => {
-    if (ddPlaced[card.id] === "correct") return;
+    if (ddPlaced[card.id] !== undefined) return;
     e.dataTransfer.setData("cardId", card.id);
     setDraggingWord(card.id);
   };
 
-  // Each drop zone gets its own drag over/leave/drop — keyed by zone key
   const handleDropZoneDragOver  = (e) => { e.preventDefault(); };
   const makeZoneDragEnter = (zoneKey) => () => setDropHover(zoneKey);
   const makeZoneDragLeave = (zoneKey) => () => setDropHover(prev => prev === zoneKey ? null : prev);
 
-  // makeZoneDrop — each zone passes its own key so ddPlaced records WHERE the card landed
   const makeZoneDrop = useCallback((zoneKey) => (e) => {
     e.preventDefault();
     setDropHover(null);
@@ -341,7 +350,6 @@ const MarketStallPage = () => {
     if (!card) return;
 
     if (card.isCorrect) {
-      // Store the zone key so each zone only shows its own placed chips
       const newPlaced = { ...ddPlaced, [cardId]: zoneKey };
       setDdPlaced(newPlaced);
       const allPlaced = ddWordCards.filter(c => c.isCorrect).every(c => newPlaced[c.id] !== undefined);
@@ -361,7 +369,6 @@ const MarketStallPage = () => {
     }
   }, [ddWordCards, ddPlaced, flowGroups]);
 
-  // Equip-mode drop (in dialogue bar slot)
   const handleEquipDrop = useCallback((e) => {
     e.preventDefault();
     setDropHover(null);
@@ -393,14 +400,25 @@ const MarketStallPage = () => {
   const handleDDComplete = () => {
     if (!ddCompleted) return;
     const target = flowGroups["correct"] ? "correct" : null;
-    if (!target) { submitProgress(); advanceSequence(); return; }
+    if (!target) { submitProgress(); return; }
     setFeedbackKey("correct");
     setFeedbackIdx(0);
     setPhase(Phase.FEEDBACK);
   };
 
+  // ── Submit + advance ──────────────────────────────────────────────────────
   const submitProgress = () => {
     saveNPCProgress("village", npcId, 1, true);
+
+    const isNewPage = awardLibroPage("village", npcId);
+    if (isNewPage) {
+      const pageNumber     = getLibroPageCountForEnv("village");
+      const totalCollected = getLibroPageCount();
+      setCollectedPage({ pageNumber, totalCollected });
+      setShowPageModal(true);
+      return; // navigation held — fires from modal onClose
+    }
+
     if (playerId) {
       fetch(`${API}/api/challenge/quest/submit`, {
         method: "POST",
@@ -408,6 +426,8 @@ const MarketStallPage = () => {
         body: JSON.stringify({ playerId, questId, npcId, score: 1, maxScore: 1, passed: true }),
       }).catch(err => console.warn("[MarketStallPage] submit failed:", err));
     }
+
+    advanceSequence();
   };
 
   const advanceSequence = useCallback(() => {
@@ -415,7 +435,10 @@ const MarketStallPage = () => {
     const nextStep  = questSequence[nextIndex];
     if (!nextStep) { navigate(returnTo, { state: { completed: true } }); return; }
     navigate("/student/market", {
-      state: { questId: nextStep.questId, npcId, npcName, returnTo, questSequence, sequenceIndex: nextIndex, sceneType: nextStep.sceneType },
+      state: {
+        questId: nextStep.questId, npcId, npcName, returnTo,
+        questSequence, sequenceIndex: nextIndex, sceneType: nextStep.sceneType,
+      },
     });
   }, [seqIndex, questSequence, navigate, returnTo, npcId, npcName]);
 
@@ -424,6 +447,7 @@ const MarketStallPage = () => {
   // ── Dialogue ──────────────────────────────────────────────────────────────
   const currentSpeaker  = currentRow?.speaker || null;
   const dialogueSpeaker = currentRow ? resolveSpeaker(currentSpeaker, npcName) : npcName;
+
   const dialogueText = (() => {
     if (loading)    return "...";
     if (currentRow) return currentRow.dialogue_text || "";
@@ -443,18 +467,30 @@ const MarketStallPage = () => {
     <div className="ms-dd-bar-slot-wrap">
       {ddDropMode === "equip" && (
         <div
-          className={["ms-dd-equip-slot", dropHover === "equip" ? "ms-dd-equip-slot--hover" : "", ddCompleted ? "ms-dd-equip-slot--complete" : ""].filter(Boolean).join(" ")}
+          className={[
+            "ms-dd-equip-slot",
+            dropHover === "equip" ? "ms-dd-equip-slot--hover"    : "",
+            ddCompleted           ? "ms-dd-equip-slot--complete"  : "",
+          ].filter(Boolean).join(" ")}
           onDragOver={(e) => { e.preventDefault(); setDropHover("equip"); }}
           onDragLeave={() => setDropHover(null)}
           onDrop={handleEquipDrop}
         >
           {ddWordCards.filter(c => ddPlaced[c.id] === "correct").length > 0
-            ? <div className="ms-dd-equip-chips">{ddWordCards.filter(c => ddPlaced[c.id] === "correct").map(c => <span key={c.id} className="ms-dd-chip ms-dd-chip--correct">{c.label}</span>)}</div>
+            ? <div className="ms-dd-equip-chips">
+                {ddWordCards.filter(c => ddPlaced[c.id] === "correct").map(c => (
+                  <span key={c.id} className="ms-dd-chip ms-dd-chip--correct">{c.label}</span>
+                ))}
+              </div>
             : <span className="ms-dd-equip-hint">Drop here</span>
           }
         </div>
       )}
-      <button className={`ms-complete-btn ${ddCompleted ? "ms-complete-btn--active" : "ms-complete-btn--disabled"}`} onClick={handleDDComplete} disabled={!ddCompleted}>
+      <button
+        className={`ms-complete-btn ${ddCompleted ? "ms-complete-btn--active" : "ms-complete-btn--disabled"}`}
+        onClick={handleDDComplete}
+        disabled={!ddCompleted}
+      >
         Completo na!
       </button>
     </div>
@@ -472,7 +508,7 @@ const MarketStallPage = () => {
     <div className="ms-container">
       <img src={marketBackground} alt="" className="ms-background" draggable={false} />
       <div className="ms-loading">
-        <p style={{ color: "#fff", fontFamily: "'Fredoka One\'", fontSize: 18 }}>{fetchError}</p>
+        <p style={{ color: "#fff", fontFamily: "'Fredoka One', cursive", fontSize: 18 }}>{fetchError}</p>
         <Button variant="back" onClick={handleBack}>← Back</Button>
       </div>
     </div>
@@ -483,7 +519,10 @@ const MarketStallPage = () => {
       <img src={background} alt="Market Stall" className="ms-background" draggable={false} />
       <Button variant="back" className="ms-back" onClick={handleBack}>← Back</Button>
 
-      <button className={`ms-grid-btn ${gridMode ? "ms-grid-btn--on" : ""}`} onClick={() => setGridMode(p => !p)}>
+      <button
+        className={`ms-grid-btn ${gridMode ? "ms-grid-btn--on" : ""}`}
+        onClick={() => setGridMode(p => !p)}
+      >
         {gridMode ? "📐 Grid ON" : "📐 Grid"}
       </button>
 
@@ -495,7 +534,7 @@ const MarketStallPage = () => {
         {phase === Phase.FEEDBACK      && "Feedback"}
       </div>
 
-      {/* ── Phase 2: Comprehension ────────────────────────────────── */}
+      {/* Phase 2: Comprehension */}
       {phase === Phase.COMPREHENSION && (
         <div className="ms-comp-wrap">
           <div className="ms-comp-grid">
@@ -512,18 +551,17 @@ const MarketStallPage = () => {
         </div>
       )}
 
-      {/* ── Phase 3: Drag & Drop ────────────────────────────────────── */}
+      {/* Phase 3: Drag & Drop */}
       {phase === Phase.DRAG_DROP && (
         <div className="ms-dd-scene" ref={containerRef}>
 
-          {/* Drop zones — one or many, each from ddDropZones array */}
           {ddDropMode === "scene" && ddDropZones.map(zone => (
             <div
               key={zone.key}
               className={[
                 "ms-dd-dropzone",
-                dropHover === zone.key ? "ms-dd-dropzone--hover"    : "",
-                ddCompleted            ? "ms-dd-dropzone--complete"  : "",
+                dropHover === zone.key ? "ms-dd-dropzone--hover"   : "",
+                ddCompleted            ? "ms-dd-dropzone--complete" : "",
               ].filter(Boolean).join(" ")}
               style={{
                 left: `${Math.min(Math.max(zone.x, 5), 85)}%`,
@@ -534,7 +572,6 @@ const MarketStallPage = () => {
               onDragLeave={makeZoneDragLeave(zone.key)}
               onDrop={makeZoneDrop(zone.key)}
             >
-              {/* Only show chips dropped INTO this specific zone */}
               <div className="ms-dd-placed-chips">
                 {ddWordCards.filter(c => ddPlaced[c.id] === zone.key).map(c => (
                   <span key={c.id} className="ms-dd-chip ms-dd-chip--correct">{c.label}</span>
@@ -543,15 +580,23 @@ const MarketStallPage = () => {
             </div>
           ))}
 
-          {/* Word cards */}
           {ddWordCards.map(card => {
-            const placed  = ddPlaced[card.id] === "correct";
+            const placed  = ddPlaced[card.id] !== undefined;
             const shaking = ddShake === card.id;
             return (
               <div
                 key={card.id}
-                className={["ms-dd-card", placed ? "ms-dd-card--placed" : "", shaking ? "ms-dd-card--shake" : "", draggingWord === card.id ? "ms-dd-card--dragging" : ""].filter(Boolean).join(" ")}
-                style={{ left: `${Math.min(Math.max(card.x, 5), 88)}%`, top: `${Math.min(Math.max(card.y, 5), 72)}%`, transform: "translate(-50%, -50%)" }}
+                className={[
+                  "ms-dd-card",
+                  placed                  ? "ms-dd-card--placed"   : "",
+                  shaking                 ? "ms-dd-card--shake"    : "",
+                  draggingWord === card.id ? "ms-dd-card--dragging" : "",
+                ].filter(Boolean).join(" ")}
+                style={{
+                  left:      `${Math.min(Math.max(card.x, 5), 88)}%`,
+                  top:       `${Math.min(Math.max(card.y, 5), 72)}%`,
+                  transform: "translate(-50%, -50%)",
+                }}
                 draggable={!placed}
                 onDragStart={(e) => handleWordDragStart(card, e)}
                 onDragEnd={() => setDraggingWord(null)}
@@ -567,12 +612,16 @@ const MarketStallPage = () => {
         </div>
       )}
 
-      {/* ── Dev grid ─────────────────────────────────────────────────── */}
+      {/* Dev grid */}
       {gridMode && (
-        <div className="ms-grid-overlay"
+        <div
+          className="ms-grid-overlay"
           onMouseMove={(e) => {
             const rect = e.currentTarget.getBoundingClientRect();
-            setHoverCell({ x: Math.round(((e.clientX - rect.left) / rect.width) * 100), y: Math.round(((e.clientY - rect.top) / rect.height) * 100) });
+            setHoverCell({
+              x: Math.round(((e.clientX - rect.left) / rect.width)  * 100),
+              y: Math.round(((e.clientY - rect.top)  / rect.height) * 100),
+            });
           }}
           onMouseLeave={() => setHoverCell(null)}
         >
@@ -592,12 +641,12 @@ const MarketStallPage = () => {
         </div>
       )}
 
-      {/* ── NPC ──────────────────────────────────────────────────────── */}
+      {/* NPC */}
       <div className="ms-npc-wrap">
         <img src={NpcImage} alt={npcName} className="ms-npc-image" draggable={false} />
       </div>
 
-      {/* ── DialogueBox ──────────────────────────────────────────────── */}
+      {/* DialogueBox */}
       <DialogueBox
         title={dialogueSpeaker}
         text={dialogueText}
@@ -609,6 +658,7 @@ const MarketStallPage = () => {
         introItem={phase === Phase.STORY && ddIntroItem && Number(currentRow?.step_order) >= 3 ? ddIntroItem : null}
       />
 
+      {/* Done overlay */}
       {phase === Phase.DONE && (
         <div className="ms-overlay">
           <div className="ms-card">
@@ -618,6 +668,27 @@ const MarketStallPage = () => {
           </div>
         </div>
       )}
+
+      {/* BookCollectModal */}
+      <BookCollectModal
+        isOpen={showPageModal}
+        npcName={npcName}
+        pageNumber={collectedPage?.pageNumber}
+        totalPages={collectedPage?.totalCollected}
+        environment="village"
+        onClose={() => {
+          setShowPageModal(false);
+          setCollectedPage(null);
+          if (playerId) {
+            fetch(`${API}/api/challenge/quest/submit`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ playerId, questId, npcId, score: 1, maxScore: 1, passed: true }),
+            }).catch(err => console.warn("[MarketStallPage] submit failed:", err));
+          }
+          advanceSequence();
+        }}
+      />
     </div>
   );
 };
