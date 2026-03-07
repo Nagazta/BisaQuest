@@ -67,3 +67,12 @@
 .music-toggle-button:active {
   transform: scale(0.95);
 }
+
+.village-progress-bar-wrap {
+  position: fixed;
+  top: 70px;      /* sits just below the Back button (~56px tall) */
+  left: 30px;
+  z-index: 50;
+  width: 200px;
+  pointer-events: none;
+}

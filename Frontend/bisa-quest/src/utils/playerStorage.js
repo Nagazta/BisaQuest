@@ -6,7 +6,8 @@ const KEYS = {
     NICKNAME:    'bisaquest_nickname',
     CHARACTER:   'bisaquest_character',
     PROGRESS:    'bisaquest_progress',
-    PREFERENCES: 'bisaquest_preferences'
+    PREFERENCES: 'bisaquest_preferences',
+    UNLOCKS:     'bisaquest_unlocks',   // ← NEW: environment unlock flags
 };
 
 // ─── Save ────────────────────────────────────────────────────────────────────
@@ -30,15 +31,11 @@ export const savePreferences = (preferences) => {
 
 /**
  * saveNPCProgress
- * Called immediately after any challenge completes (drag & drop, item
- * association, synonym/antonym, compound words).
+ * Called immediately after any challenge completes.
+ * Also auto-unlocks the NEXT environment when this one hits 100%.
  *
- * Reads existing progress, merges the new NPC result, recalculates the
- * environment completion percentage, then writes everything back via
- * the existing saveProgress function.
- *
- * localStorage is ALWAYS written here first — Supabase background sync
- * is handled separately in the game component.
+ *   village 100% → unlocks forest
+ *   forest  100% → unlocks castle
  *
  * @param {string}  environment  'village' | 'forest' | 'castle'
  * @param {string}  npcId        e.g. 'village_npc_1'
@@ -59,8 +56,8 @@ export const saveNPCProgress = (environment, npcId, score, passed, npcCount = 3)
     progress[npcKey] = {
         ...progress[npcKey],
         [npcId]: {
-            completed:  passed || prev.completed,  // never un-complete a quest
-            score:      Math.max(score, prev.score), // keep best score
+            completed:  passed || prev.completed,
+            score:      Math.max(score, prev.score),
             encounters: prev.encounters + 1,
         },
     };
@@ -68,11 +65,50 @@ export const saveNPCProgress = (environment, npcId, score, passed, npcCount = 3)
     // Recalculate environment completion percentage
     const completedCount = Object.values(progress[npcKey])
         .filter(npc => npc.completed).length;
-    progress[`${environment}_progress`] = Math.round(
-        (completedCount / npcCount) * 100
-    );
+    const pct = Math.round((completedCount / npcCount) * 100);
+    progress[`${environment}_progress`] = pct;
 
     saveProgress(progress);
+
+    // ── Auto-unlock next environment at 100% ──────────────────────────────
+    if (pct >= 100) {
+        const NEXT = { village: 'forest', forest: 'castle' };
+        const next = NEXT[environment];
+        if (next) saveEnvironmentUnlock(next);
+    }
+};
+
+// ─── Unlock helpers ──────────────────────────────────────────────────────────
+
+/**
+ * Mark an environment as unlocked.
+ * Called automatically by saveNPCProgress, or manually (e.g. dev tools).
+ *
+ * @param {string} environment  'forest' | 'castle'
+ */
+export const saveEnvironmentUnlock = (environment) => {
+    const unlocks = getUnlocks();
+    unlocks[environment] = true;
+    localStorage.setItem(KEYS.UNLOCKS, JSON.stringify(unlocks));
+};
+
+/**
+ * Returns true if the player has unlocked the given environment.
+ * Village is always unlocked (starting zone).
+ *
+ * @param {string} environment  'village' | 'forest' | 'castle'
+ */
+export const isEnvironmentUnlocked = (environment) => {
+    if (environment === 'village') return true;   // always open
+    return !!getUnlocks()[environment];
+};
+
+/**
+ * Returns the raw unlocks object  { forest: true, castle: true }
+ */
+export const getUnlocks = () => {
+    const raw = localStorage.getItem(KEYS.UNLOCKS);
+    return raw ? JSON.parse(raw) : {};
 };
 
 // ─── Get ─────────────────────────────────────────────────────────────────────
@@ -95,20 +131,13 @@ export const getPreferences = () => {
 
 // ─── Check ───────────────────────────────────────────────────────────────────
 
-/**
- * Returns true if a player profile exists in localStorage (UC-1.2)
- */
 export const hasExistingPlayer = () => {
     return !!localStorage.getItem(KEYS.PLAYER_ID);
 };
 
-/**
- * Returns the full saved player profile or null
- */
 export const getSavedPlayer = () => {
     const player_id = getPlayerId();
     if (!player_id) return null;
-
     return {
         player_id,
         nickname:     getNickname(),
@@ -116,6 +145,27 @@ export const getSavedPlayer = () => {
         progress:     getProgress(),
         preferences:  getPreferences(),
     };
+};
+
+
+/**
+ * getLearnedWords
+ * Returns words learned per NPC for a given environment.
+ * Used by EnvironmentCompleteModal to display the word summary.
+ *
+ * @param {string} environment   'village' | 'forest' | 'castle'
+ * @param {Array}  npcMeta       [{ npcId: 'village_npc_1', npcName: 'Vicente', words: ['MANGGA','MANGO',...] }]
+ *
+ * @returns {Array}  [{ npcName, words }]  — only for completed NPCs
+ */
+export const getLearnedWords = (environment, npcMeta = []) => {
+    const progress = getProgress();
+    const npcKey   = `${environment}_npcs`;
+    const npcData  = progress[npcKey] || {};
+
+    return npcMeta
+        .filter(n => npcData[n.npcId]?.completed)
+        .map(n => ({ npcName: n.npcName, words: n.words }));
 };
 
 // ─── Clear ───────────────────────────────────────────────────────────────────

@@ -14,6 +14,18 @@ import QuestStartModal from "../../components/QuestStartModal";
 import NandoCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
 import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_1.png";
 import "./VillagePage.css";
+import ProgressBar from "../../components/ProgressBar";
+import EnvironmentCompleteModal from "../../components/EnvironmentCompleteModal";
+import FogTransition from "../../components/FogTransition";
+import { getProgress, getLearnedWords } from "../../utils/playerStorage";
+
+// Words each Village NPC teaches — used by EnvironmentCompleteModal
+// Update this list when new quests are added to a NPC
+const VILLAGE_NPC_META = [
+    { npcId: "village_npc_2", npcName: "Ligaya",  words: ["WALIS","BROOM","TRAPO","RAG","MOP","TIMBA","BUCKET"] },
+    { npcId: "village_npc_3", npcName: "Nando",   words: ["PALA","SHOVEL","REGADERA","WATERING CAN"] },
+    { npcId: "village_npc_1", npcName: "Vicente", words: ["MANGGA","MANGO","SAGING","BANANA"] },
+];
 
 const NPC_DB_ID = {
     ligaya:  "village_npc_2",
@@ -45,6 +57,10 @@ const VillagePage = () => {
     const [showSummaryButton, setShowSummaryButton]  = useState(false);
     const [isMuted,           setIsMuted]            = useState(false);
     const [questLoading,      setQuestLoading]       = useState(false);
+    const [villageProgress,   setVillageProgress]    = useState(0);
+    const [showCompleteModal, setShowCompleteModal]  = useState(false);
+    const [fogActive,         setFogActive]          = useState(false);
+    const [learnedWords,      setLearnedWords]       = useState([]);
 
     const PlayerCharacter = character === "roberta" ? GirlCharacter : BoyCharacter;
 
@@ -63,6 +79,18 @@ const VillagePage = () => {
 
     const toggleMute = () => {
         if (audioRef.current) { audioRef.current.muted = !isMuted; setIsMuted(p => !p); }
+    };
+
+    // ── Load village progress from localStorage ─────────────────────────────
+    const loadVillageProgress = () => {
+        const progress = getProgress();
+        const pct = progress.village_progress || 0;
+        setVillageProgress(pct);
+        if (pct >= 100) {
+            const words = getLearnedWords("village", VILLAGE_NPC_META);
+            setLearnedWords(words);
+            setShowCompleteModal(true);
+        }
     };
 
     useEffect(() => { initializeVillage(); }, [refreshKey]);
@@ -140,9 +168,21 @@ const VillagePage = () => {
         if (location.state?.completed) {
             setRefreshKey(p => p + 1);
             checkAndShowSummary();
+            loadVillageProgress();   // refresh bar + check for completion modal
             navigate(location.pathname, { replace: true, state: {} });
         }
     }, [location.state]);
+
+    // ── Fog transition to Forest ─────────────────────────────────────────────
+    const handleGoToForest = () => {
+        setShowCompleteModal(false);
+        setFogActive(true);
+        // FogTransition fires onDone at midpoint (screen fully covered)
+    };
+
+    const handleFogDone = () => {
+        navigate("/student/forest");
+    };
 
     const handleNPCClick    = (npc) => { setSelectedNPC(npc); setShowModal(true); };
     const handleCloseModal  = ()    => { setShowModal(false); setSelectedNPC(null); };
@@ -264,6 +304,28 @@ const VillagePage = () => {
         <div className="village-page-wrapper">
             <audio ref={audioRef} loop><source src={bgMusic} type="audio/mpeg" /></audio>
             <ParticleEffects enableMouseTrail={false} />
+
+            {/* ── Village progress bar — top-left, below Back button ── */}
+            <div className="village-progress-bar-wrap">
+                <ProgressBar
+                    progress={villageProgress}
+                    variant="village"
+                    showLabel={true}
+                />
+            </div>
+
+            {/* ── Village complete modal ── */}
+            <EnvironmentCompleteModal
+                isOpen={showCompleteModal}
+                environment="village"
+                learnedWords={learnedWords}
+                nextEnv="Forest"
+                onStay={() => setShowCompleteModal(false)}
+                onAdvance={handleGoToForest}
+            />
+
+            {/* ── Fog transition overlay ── */}
+            <FogTransition active={fogActive} onDone={handleFogDone} />
             <button className="music-toggle-button" onClick={toggleMute}>
                 {isMuted ? "🔇" : "🔊"}
             </button>

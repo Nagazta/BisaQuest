@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import ProgressBar from "./ProgressBar";
 import ChallengeCounter from "./ChallengeCounter";
 import DialogueBox from "../components/instructions/DialogueBox";
 import CollisionDebugger from "../config/CollisionDebugger";
@@ -18,7 +17,6 @@ const EnvironmentPage = ({
 }) => {
     const [playerPosition,     setPlayerPosition]     = useState({ x: 50, y: 50 });
     const [keysPressed,        setKeysPressed]        = useState({});
-    const [environmentProgress,setEnvironmentProgress]= useState(0);
     const [npcCompletionStatus,setNpcCompletionStatus]= useState({});
     const [nearbyNPC,          setNearbyNPC]          = useState(null);
     const [interactionRange]                          = useState(8);
@@ -69,12 +67,13 @@ const EnvironmentPage = ({
         return false;
     };
 
-    // ── Fetch environment progress ────────────────────────────────────────────
+    // ── NPC completion status — for ✓ checkmarks on NPCs ────────────────────
+    // Progress bar is handled by the parent page (VillagePage etc.) via localStorage.
     useEffect(() => {
-        if (playerId) fetchEnvironmentProgress();
+        if (playerId) fetchNpcStatus();
     }, [environmentType, playerId]);
 
-    const fetchEnvironmentProgress = async () => {
+    const fetchNpcStatus = async () => {
         if (!playerId) return;
         try {
             const response = await fetch(
@@ -82,7 +81,6 @@ const EnvironmentPage = ({
             );
             const result = await response.json();
             if (result.success) {
-                setEnvironmentProgress(result.data.progress ?? result.data.progress_percentage ?? 0);
                 const statusMap = {};
                 result.data.npcProgress?.forEach((npc) => {
                     statusMap[npc.npcId] = { completed: npc.completed, encounters: npc.encounters, bestScore: npc.bestScore };
@@ -90,7 +88,7 @@ const EnvironmentPage = ({
                 setNpcCompletionStatus(statusMap);
             }
         } catch (error) {
-            console.error("Error fetching environment progress:", error);
+            console.error("Error fetching NPC status:", error);
         }
     };
 
@@ -137,7 +135,6 @@ const EnvironmentPage = ({
         if (calculateDistance(npc) < interactionRange) onNPCClick?.(npc);
     };
 
-    // ── Derived values for ChallengeCounter ───────────────────────────────────
     const completedCount = Object.values(npcCompletionStatus).filter(s => s.completed).length;
 
     return (
@@ -178,9 +175,6 @@ const EnvironmentPage = ({
                     : <div className="player-placeholder">👤</div>
                 }
             </div>
-
-            {/* HUD */}
-            <ProgressBar progress={environmentProgress} variant="environment" showLabel={true} />
 
             {/* Challenge counter */}
             <ChallengeCounter completed={completedCount} total={npcs.length} label="Challenges" />
