@@ -3,6 +3,7 @@ import ChallengeCounter from "./ChallengeCounter";
 import DialogueBox from "../components/instructions/DialogueBox";
 import CollisionDebugger from "../config/CollisionDebugger";
 import { getCollisionZones, checkCollisionWithZones } from "../config/environmentCollisions";
+import { getProgress } from "../utils/playerStorage";
 import "./EnvironmentPage.css";
 
 const EnvironmentPage = ({
@@ -29,6 +30,36 @@ const EnvironmentPage = ({
         const dy = playerPosition.y - npc.y;
         return Math.sqrt(dx * dx + dy * dy);
     }, [playerPosition]);
+
+    // ── NPC completion status — read from localStorage ────────────────────────
+    // No API call needed — saveNPCProgress writes completed:true per NPC
+    useEffect(() => {
+        loadNpcStatus();
+    }, [environmentType, playerId]);
+
+    const loadNpcStatus = () => {
+        const progress = getProgress();
+        const npcKey   = `${environmentType}_npcs`;
+        const npcData  = progress[npcKey] || {};
+
+        const statusMap = {};
+        Object.entries(npcData).forEach(([npcId, data]) => {
+            statusMap[npcId] = {
+                completed:  data.completed  || false,
+                encounters: data.encounters || 0,
+                bestScore:  data.score      || 0,
+            };
+        });
+        setNpcCompletionStatus(statusMap);
+    };
+
+    // Re-read after returning from a quest (parent increments key, but also
+    // listen for storage changes in case of same-tab updates)
+    useEffect(() => {
+        const onStorage = () => loadNpcStatus();
+        window.addEventListener("storage", onStorage);
+        return () => window.removeEventListener("storage", onStorage);
+    }, [environmentType]);
 
     // ── Nearby NPC detection ──────────────────────────────────────────────────
     useEffect(() => {
@@ -65,31 +96,6 @@ const EnvironmentPage = ({
             if (newX < npc.x + npcSize && newX + playerSize > npc.x && newY < npc.y + npcSize && newY + playerSize > npc.y) return true;
         }
         return false;
-    };
-
-    // ── NPC completion status — for ✓ checkmarks on NPCs ────────────────────
-    // Progress bar is handled by the parent page (VillagePage etc.) via localStorage.
-    useEffect(() => {
-        if (playerId) fetchNpcStatus();
-    }, [environmentType, playerId]);
-
-    const fetchNpcStatus = async () => {
-        if (!playerId) return;
-        try {
-            const response = await fetch(
-                `${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=${environmentType}&playerId=${playerId}`
-            );
-            const result = await response.json();
-            if (result.success) {
-                const statusMap = {};
-                result.data.npcProgress?.forEach((npc) => {
-                    statusMap[npc.npcId] = { completed: npc.completed, encounters: npc.encounters, bestScore: npc.bestScore };
-                });
-                setNpcCompletionStatus(statusMap);
-            }
-        } catch (error) {
-            console.error("Error fetching NPC status:", error);
-        }
     };
 
     // ── Keyboard controls ─────────────────────────────────────────────────────
@@ -143,9 +149,11 @@ const EnvironmentPage = ({
 
             {/* NPCs */}
             {npcs.map((npc, index) => {
-                const status      = npcCompletionStatus[npc.npcId];
+                // Look up by dbNpcId first (what's stored in localStorage), fall back to npcId
+                const statusKey  = npc.dbNpcId || npc.npcId;
+                const status     = npcCompletionStatus[statusKey];
                 const isCompleted = status?.completed || false;
-                const isNearby    = nearbyNPC?.npcId === npc.npcId;
+                const isNearby   = nearbyNPC?.npcId === npc.npcId;
                 return (
                     <div
                         key={npc.npcId || index}
@@ -160,9 +168,7 @@ const EnvironmentPage = ({
                                 {isCompleted && <span className="completion-badge">✓</span>}
                             </div>
                         )}
-                        {status?.encounters > 0 && (
-                            <div className="npc-progress-indicator">{status.encounters}/3</div>
-                        )}
+                 
                         {isNearby && <div className="interaction-prompt">Press E to interact</div>}
                     </div>
                 );

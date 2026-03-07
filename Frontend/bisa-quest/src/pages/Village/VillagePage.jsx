@@ -17,10 +17,9 @@ import "./VillagePage.css";
 import ProgressBar from "../../components/ProgressBar";
 import EnvironmentCompleteModal from "../../components/EnvironmentCompleteModal";
 import FogTransition from "../../components/FogTransition";
-import { getProgress, getLearnedWords } from "../../utils/playerStorage";
+import { getProgress, getLearnedWords, saveNPCProgress } from "../../utils/playerStorage";
 
 // Words each Village NPC teaches — used by EnvironmentCompleteModal
-// Update this list when new quests are added to a NPC
 const VILLAGE_NPC_META = [
     { npcId: "village_npc_2", npcName: "Ligaya",  words: ["WALIS","BROOM","TRAPO","RAG","MOP","TIMBA","BUCKET"] },
     { npcId: "village_npc_3", npcName: "Nando",   words: ["PALA","SHOVEL","REGADERA","WATERING CAN"] },
@@ -39,14 +38,13 @@ const randomPick = (arr) => {
 };
 
 const VillagePage = () => {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const audioRef = useRef(null);
-    const playerId = getPlayerId();
+    const navigate  = useNavigate();
+    const location  = useLocation();
+    const audioRef  = useRef(null);
+    const playerId  = getPlayerId();
+    const API       = import.meta.env.VITE_API_URL || "";
+    const language  = "en";
 
-    const API = import.meta.env.VITE_API_URL || "";
-
-    const language = "en";
     const { character, loading: charLoading } = useCharacterPreference();
 
     const [villageNPCs,       setVillageNPCs]       = useState([]);
@@ -54,7 +52,6 @@ const VillagePage = () => {
     const [selectedNPC,       setSelectedNPC]        = useState(null);
     const [showModal,         setShowModal]          = useState(false);
     const [showExitConfirm,   setShowExitConfirm]    = useState(false);
-    const [showSummaryButton, setShowSummaryButton]  = useState(false);
     const [isMuted,           setIsMuted]            = useState(false);
     const [questLoading,      setQuestLoading]       = useState(false);
     const [villageProgress,   setVillageProgress]    = useState(0);
@@ -64,15 +61,21 @@ const VillagePage = () => {
 
     const PlayerCharacter = character === "roberta" ? GirlCharacter : BoyCharacter;
 
+    // ── Background music ─────────────────────────────────────────────────────
     useEffect(() => {
-        const play = () => { if (audioRef.current) { audioRef.current.volume = 0.3; audioRef.current.play().catch(() => {}); } };
+        const play = () => {
+            if (audioRef.current) {
+                audioRef.current.volume = 0.3;
+                audioRef.current.play().catch(() => {});
+            }
+        };
         play();
         const onInteract = () => { play(); document.removeEventListener("click", onInteract); document.removeEventListener("keydown", onInteract); };
-        document.addEventListener("click", onInteract);
+        document.addEventListener("click",   onInteract);
         document.addEventListener("keydown", onInteract);
         return () => {
             if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0; }
-            document.removeEventListener("click", onInteract);
+            document.removeEventListener("click",   onInteract);
             document.removeEventListener("keydown", onInteract);
         };
     }, []);
@@ -81,7 +84,7 @@ const VillagePage = () => {
         if (audioRef.current) { audioRef.current.muted = !isMuted; setIsMuted(p => !p); }
     };
 
-    // ── Load village progress from localStorage ─────────────────────────────
+    // ── Load village progress from localStorage ───────────────────────────────
     const loadVillageProgress = () => {
         const progress = getProgress();
         const pct = progress.village_progress || 0;
@@ -93,125 +96,45 @@ const VillagePage = () => {
         }
     };
 
+    // ── Initialize NPCs ───────────────────────────────────────────────────────
     useEffect(() => { initializeVillage(); }, [refreshKey]);
 
-    const initializeVillage = async () => {
-        if (!playerId) return;
+    const initializeVillage = () => {
         setVillageNPCs([
-            {
-                npcId:     "ligaya",
-                dbNpcId:   "village_npc_2",
-                name:      "Ligaya",
-                x:         40,
-                y:         41,
-                character: LigayaCharacter,
-                showName:  true,
-                quest:     "word_association",   // → /student/house
-            },
-            {
-                npcId:     "nando",
-                dbNpcId:   "village_npc_3",
-                name:      "Nando",
-                x:         80,
-                y:         41,
-                character: NandoCharacter,
-                showName:  true,
-                quest:     "farm",               // → /student/farm
-            },
-            {
-                npcId:     "vicente",
-                dbNpcId:   "village_npc_1",
-                name:      "Vicente",
-                x:         20,
-                y:         60,
-                character: VicenteCharacter,
-                showName:  true,
-                quest:     "market_stall",       // → /student/market
-            },
+            { npcId: "ligaya",  dbNpcId: "village_npc_2", name: "Ligaya",  x: 40, y: 41, character: LigayaCharacter,  showName: true, quest: "word_association" },
+            { npcId: "nando",   dbNpcId: "village_npc_3", name: "Nando",   x: 80, y: 41, character: NandoCharacter,   showName: true, quest: "farm"             },
+            { npcId: "vicente", dbNpcId: "village_npc_1", name: "Vicente", x: 20, y: 60, character: VicenteCharacter, showName: true, quest: "market_stall"     },
         ]);
-        try {
-            await checkEnvironmentProgress();
-        } catch (err) { console.error("Error initializing village:", err); }
+        loadVillageProgress();
     };
 
-    const checkEnvironmentProgress = async () => {
-        if (!playerId) return;
-        try {
-            const res    = await fetch(`${API}/api/npc/environment-progress?environmentType=village&playerId=${playerId}`);
-            const result = await res.json();
-            if (result.success) {
-                const progress = result.data.progress ?? 0;
-                if (progress >= 75) setShowSummaryButton(true);
-            }
-        } catch (e) { console.error(e); }
-    };
-
-    const checkAndShowSummary = async () => {
-        if (!playerId) return;
-        try {
-            const res    = await fetch(`${API}/api/npc/environment-progress?environmentType=village&playerId=${playerId}`);
-            const result = await res.json();
-            if (result.success && (result.data.progress ?? 0) >= 100) {
-                navigate("/student/viewCompletion", {
-                    state: {
-                        showSummary:         true,
-                        environmentProgress: result.data.progress,
-                        summaryData:         result.data,
-                        returnTo:            "/student/village",
-                    },
-                });
-            }
-        } catch (e) { console.error(e); }
-    };
-
+    // ── Refresh when returning from a quest ───────────────────────────────────
     useEffect(() => {
         if (location.state?.completed) {
             setRefreshKey(p => p + 1);
-            checkAndShowSummary();
-            loadVillageProgress();   // refresh bar + check for completion modal
             navigate(location.pathname, { replace: true, state: {} });
         }
     }, [location.state]);
 
-    // ── Fog transition to Forest ─────────────────────────────────────────────
-    const handleGoToForest = () => {
-        setShowCompleteModal(false);
-        setFogActive(true);
-        // FogTransition fires onDone at midpoint (screen fully covered)
-    };
+    // ── Fog transition handlers ───────────────────────────────────────────────
+    const handleGoToForest = () => { setShowCompleteModal(false); setFogActive(true); };
+    const handleFogDone    = () => navigate("/student/forest");
 
-    const handleFogDone = () => {
-        navigate("/student/forest");
-    };
-
+    // ── NPC / modal handlers ──────────────────────────────────────────────────
     const handleNPCClick    = (npc) => { setSelectedNPC(npc); setShowModal(true); };
     const handleCloseModal  = ()    => { setShowModal(false); setSelectedNPC(null); };
     const handleBackClick   = ()    => setShowExitConfirm(true);
     const handleConfirmExit = ()    => { setShowExitConfirm(false); navigate("/dashboard"); };
     const handleCancelExit  = ()    => setShowExitConfirm(false);
 
-    const handleViewSummary = async () => {
-        if (!playerId) return;
-        try {
-            const res    = await fetch(`${API}/api/npc/environment-progress?environmentType=village&playerId=${playerId}`);
-            const result = await res.json();
-            if (result.success) navigate("/student/summary", {
-                state: {
-                    showSummary:         true,
-                    environmentProgress: result.data.progress,
-                    summaryData:         result.data,
-                    returnTo:            "/student/village",
-                },
-            });
-        } catch (e) { console.error(e); }
-    };
-
+    // ── Start quest ───────────────────────────────────────────────────────────
     const handleStartQuest = async () => {
         if (!selectedNPC || !playerId) return;
-
         setQuestLoading(true);
 
-        const dbNpcId = selectedNPC.dbNpcId || NPC_DB_ID[selectedNPC.npcId] || selectedNPC.npcId;
+        const dbNpcId  = selectedNPC.dbNpcId || NPC_DB_ID[selectedNPC.npcId] || selectedNPC.npcId;
+        const isMarket = selectedNPC.quest === "market_stall";
+        const isFarm   = selectedNPC.quest === "farm";
 
         let resolvedQuestId          = null;
         let resolvedKitchenQuestId   = null;
@@ -220,46 +143,26 @@ const VillagePage = () => {
         let resolvedIaKitchenQuestId = null;
         let resolvedIaBedroomQuestId = null;
 
-        // Vicente uses market_stall; Nando uses farm
-        const isMarket = selectedNPC.quest === "market_stall";
-        const isFarm   = selectedNPC.quest === "farm";
-
         try {
             const res = await fetch(`${API}/api/challenge/npc/${dbNpcId}/quest`);
             if (res.ok) {
                 const { data } = await res.json();
-
                 if (Array.isArray(data) && data.length) {
                     if (isMarket) {
-                        const marketDDs = data.filter(q =>
-                            q.game_mechanic === "drag_drop" && q.scene_type === "market_stall"
-                        );
-                        resolvedQuestId = randomPick(marketDDs)?.quest_id ?? null;
-                        console.log("[VillagePage] market_stall drag_drop →", resolvedQuestId, `(pool: ${marketDDs.length})`);
+                        const pool = data.filter(q => q.game_mechanic === "drag_drop" && q.scene_type === "market_stall");
+                        resolvedQuestId = randomPick(pool)?.quest_id ?? null;
                     } else if (isFarm) {
-                        const farmDDs = data.filter(q =>
-                            q.game_mechanic === "drag_drop" && q.scene_type === "farm"
-                        );
-                        resolvedQuestId = randomPick(farmDDs)?.quest_id ?? null;
-                        console.log("[VillagePage] farm drag_drop →", resolvedQuestId, `(pool: ${farmDDs.length})`);
+                        const pool = data.filter(q => q.game_mechanic === "drag_drop" && q.scene_type === "farm");
+                        resolvedQuestId = randomPick(pool)?.quest_id ?? null;
                     } else {
-                        const livingRoomDDs = data.filter(q => q.game_mechanic === "drag_drop"        && q.scene_type === "living_room");
-                        const kitchenDDs    = data.filter(q => q.game_mechanic === "drag_drop"        && q.scene_type === "kitchen");
-                        const bedroomDDs    = data.filter(q => q.game_mechanic === "drag_drop"        && q.scene_type === "bedroom");
-                        const iaLivings     = data.filter(q => q.game_mechanic === "item_association" && q.scene_type === "living_room");
-                        const iaKitchens    = data.filter(q => q.game_mechanic === "item_association" && q.scene_type === "kitchen");
-                        const iaBedroooms   = data.filter(q => q.game_mechanic === "item_association" && q.scene_type === "bedroom");
-
-                        resolvedQuestId          = randomPick(livingRoomDDs)?.quest_id ?? null;
-                        resolvedKitchenQuestId   = randomPick(kitchenDDs)?.quest_id    ?? null;
-                        resolvedBedroomQuestId   = randomPick(bedroomDDs)?.quest_id    ?? null;
-                        resolvedIaLivingQuestId  = randomPick(iaLivings)?.quest_id     ?? null;
-                        resolvedIaKitchenQuestId = randomPick(iaKitchens)?.quest_id    ?? null;
-                        resolvedIaBedroomQuestId = randomPick(iaBedroooms)?.quest_id   ?? null;
+                        resolvedQuestId          = randomPick(data.filter(q => q.game_mechanic === "drag_drop"        && q.scene_type === "living_room"))?.quest_id ?? null;
+                        resolvedKitchenQuestId   = randomPick(data.filter(q => q.game_mechanic === "drag_drop"        && q.scene_type === "kitchen"))?.quest_id    ?? null;
+                        resolvedBedroomQuestId   = randomPick(data.filter(q => q.game_mechanic === "drag_drop"        && q.scene_type === "bedroom"))?.quest_id     ?? null;
+                        resolvedIaLivingQuestId  = randomPick(data.filter(q => q.game_mechanic === "item_association" && q.scene_type === "living_room"))?.quest_id  ?? null;
+                        resolvedIaKitchenQuestId = randomPick(data.filter(q => q.game_mechanic === "item_association" && q.scene_type === "kitchen"))?.quest_id      ?? null;
+                        resolvedIaBedroomQuestId = randomPick(data.filter(q => q.game_mechanic === "item_association" && q.scene_type === "bedroom"))?.quest_id      ?? null;
                     }
                 }
-            } else {
-                console.warn("[VillagePage] Quest fetch failed:", res.status);
             }
         } catch (err) {
             console.error("[VillagePage] Could not fetch questId:", err);
@@ -284,14 +187,12 @@ const VillagePage = () => {
                                                 { type: "drag_drop",        sceneType: "living_room", questId: resolvedQuestId        },
                                                 { type: "item_association", sceneType: "living_room", questId: resolvedIaLivingQuestId },
                                               ],
-            sequenceIndex:         0,
+            sequenceIndex: 0,
         };
 
-        if      (selectedNPC.quest === "word_matching")       navigate("/student/wordMatching",       { state });
-        else if (selectedNPC.quest === "sentence_completion") navigate("/student/sentenceCompletion", { state });
-        else if (selectedNPC.quest === "market_stall")        navigate("/student/market",             { state });
-        else if (selectedNPC.quest === "farm")                navigate("/student/farm",               { state });
-        else if (selectedNPC.quest === "word_association")    navigate("/student/house",              { state });
+        if      (selectedNPC.quest === "market_stall")     navigate("/student/market", { state });
+        else if (selectedNPC.quest === "farm")             navigate("/student/farm",   { state });
+        else if (selectedNPC.quest === "word_association") navigate("/student/house",  { state });
     };
 
     if (charLoading) return (
@@ -305,13 +206,9 @@ const VillagePage = () => {
             <audio ref={audioRef} loop><source src={bgMusic} type="audio/mpeg" /></audio>
             <ParticleEffects enableMouseTrail={false} />
 
-            {/* ── Village progress bar — top-left, below Back button ── */}
+            {/* ── Progress bar — top-left below Back button ── */}
             <div className="village-progress-bar-wrap">
-                <ProgressBar
-                    progress={villageProgress}
-                    variant="village"
-                    showLabel={true}
-                />
+                <ProgressBar progress={villageProgress} variant="village" showLabel={true} />
             </div>
 
             {/* ── Village complete modal ── */}
@@ -324,8 +221,9 @@ const VillagePage = () => {
                 onAdvance={handleGoToForest}
             />
 
-            {/* ── Fog transition overlay ── */}
+            {/* ── Fog transition ── */}
             <FogTransition active={fogActive} onDone={handleFogDone} />
+
             <button className="music-toggle-button" onClick={toggleMute}>
                 {isMuted ? "🔇" : "🔊"}
             </button>
@@ -333,12 +231,6 @@ const VillagePage = () => {
             <Button variant="back" className="back-button-village-overlay" onClick={handleBackClick}>
                 ← {language === "ceb" ? "Balik" : "Back"}
             </Button>
-
-            {showSummaryButton && (
-                <Button variant="primary" className="view-summary-button" onClick={handleViewSummary}>
-                    {language === "ceb" ? "Tan-awa ang Summary" : "View Summary"}
-                </Button>
-            )}
 
             <EnvironmentPage
                 key={refreshKey}
