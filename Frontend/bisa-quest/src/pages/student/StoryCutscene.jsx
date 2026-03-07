@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { hasCutsceneSeen, markCutsceneSeen } from "../../utils/playerStorage";
 import "./StoryCutscene.css";
 
-// ── Slide images ─────────────────────────────────────────────────────────────
+// ── Slide images ────────────────────────────────────────────────────────────
 import slide1 from "../../assets/images/cutscene/slide_1.png";
 import slide2 from "../../assets/images/cutscene/slide_2.png";
 import slide3 from "../../assets/images/cutscene/slide_3.png";
 import slide4 from "../../assets/images/cutscene/slide_4.png";
 
-// ── Slide data — swap images & text as you like ──────────────────────────────
+// ── Slide data ──────────────────────────────────────────────────────────────
 const SLIDES = [
     {
         image: slide1,
@@ -131,13 +131,12 @@ const StoryCutscene = () => {
                     {SLIDES.map((_, i) => (
                         <span
                             key={i}
-                            className={`cutscene-dot ${
-                                i === current
+                            className={`cutscene-dot ${i === current
                                     ? "active"
                                     : i < current
-                                    ? "visited"
-                                    : ""
-                            }`}
+                                        ? "visited"
+                                        : ""
+                                }`}
                             onClick={() => goToSlide(i)}
                         />
                     ))}
