@@ -5,11 +5,13 @@ import DialogueBox from "../../components/instructions/DialogueBox";
 import PrincessHara from "../../assets/images/characters/princess-hara.png";
 import castleLibraryImg from "../../assets/images/environments/scenario/castle-library.png";
 import castleLibraryLitImg from "../../assets/images/environments/scenario/castle-library-light.png";
+import castleGardenImg from "../../assets/images/environments/scenario/castle-garden.fountain.png";
 import { getPlayerId, saveNPCProgress } from "../../utils/playerStorage";
 import "./CastleScenePage.css";
 
 const SCENE_BG = {
-    "castle-library": castleLibraryImg,
+    "castle-library":  castleLibraryImg,
+    "garden-fountain": castleGardenImg,
 };
 const DEFAULT_BG = castleLibraryImg;
 
@@ -50,6 +52,7 @@ const EMOJI_MAP = {
     sun: "☀️", light: "💡", fire: "🔥", fly: "🪰",
     rain: "🌧️", bow: "🏹", snow: "❄️", flake: "❄️",
     thunder: "⚡", storm: "⛈️", moon: "🌙", star: "⭐",
+    water: "💧", fall: "🌊", stone: "🪨",
 };
 
 const toEmoji = (label) => {
@@ -77,23 +80,46 @@ const CastleScenePage = () => {
     const [loading, setLoading]       = useState(true);
     const [error, setError]           = useState(null);
 
+    // Quest chaining
+    const [npcQuests, setNpcQuests]         = useState([]);
+    const [currentQuestId, setCurrentQuestId] = useState(null);
+
     // Phase: "dialogue" | "combine" | "branch" | "done"
     const [phase, setPhase]         = useState("dialogue");
     const [mainIdx, setMainIdx]     = useState(0);
     const [branchKey, setBranchKey] = useState(null);
     const [branchIdx, setBranchIdx] = useState(0);
 
-    // Combine mechanic state
-    const [selectedIds, setSelectedIds] = useState([]);
-    const [combining, setCombining]     = useState(false); // brief "checking" lock
-    const [combineRound, setCombineRound] = useState(0);   // reset key on retry
+    // Spell-circle drag & drop state
+    const [slots, setSlots]               = useState([null, null]); // [itemId, itemId]
+    const [dragItemId, setDragItemId]     = useState(null);
+    const [combining, setCombining]       = useState(false);
+    const [combineRound, setCombineRound] = useState(0);
     const [showTryAgain, setShowTryAgain] = useState(false);
-    const [isLit, setIsLit]             = useState(false); // true after correct answer
+    const [isLit, setIsLit]               = useState(false);
 
     const currentRow =
         phase === "dialogue" ? (flowGroups.main?.[mainIdx] ?? null) :
         phase === "branch"   ? (flowGroups[branchKey]?.[branchIdx] ?? null) :
         null;
+
+    // ── Reset game state on quest change ──────────────────────────────────────
+    useEffect(() => {
+        setPhase("dialogue");
+        setMainIdx(0);
+        setBranchKey(null);
+        setBranchIdx(0);
+        setSlots([null, null]);
+        setCombining(false);
+        setCombineRound(0);
+        setShowTryAgain(false);
+        setIsLit(false);
+        setBackground(DEFAULT_BG);
+        setFlowGroups({});
+        setItems([]);
+        setLoading(true);
+        setError(null);
+    }, [questId, npcId]);
 
     // ── Load quest data ────────────────────────────────────────────────────────
     useEffect(() => {
@@ -101,21 +127,22 @@ const CastleScenePage = () => {
 
         const load = async () => {
             try {
-                // Resolve the questId — use state value or look it up by npcId
-                let resolvedQuestId = questId;
+                // Always fetch all NPC quests for chaining
+                const npcQuestRes = await fetch(`${API}/api/challenge/npc/${npcId}/quest`);
+                if (!npcQuestRes.ok) throw new Error(`Quest lookup: ${npcQuestRes.status}`);
+                const { data: allNpcQuests } = await npcQuestRes.json();
+                if (!cancelled) setNpcQuests(allNpcQuests ?? []);
 
-                if (!resolvedQuestId) {
-                    const npcQuestRes = await fetch(`${API}/api/challenge/npc/${npcId}/quest`);
-                    if (!npcQuestRes.ok) throw new Error(`Quest lookup: ${npcQuestRes.status}`);
-                    const { data: npcQuests } = await npcQuestRes.json();
-                    resolvedQuestId = npcQuests?.[0]?.quest_id ?? null;
-                }
+                // Resolve which quest to load
+                let resolvedQuestId = questId ?? allNpcQuests?.[0]?.quest_id ?? null;
 
                 if (!resolvedQuestId) {
                     setError("No quest found for this NPC. Please check the database.");
                     setLoading(false);
                     return;
                 }
+
+                if (!cancelled) setCurrentQuestId(resolvedQuestId);
 
                 // Fetch dialogues and items — required
                 // Meta is optional (only used for scene_type); don't fail if it 500s
@@ -197,33 +224,43 @@ const CastleScenePage = () => {
         }
     }, [phase, mainIdx, branchIdx, branchKey, flowGroups]);
 
-    // ── Combine mechanic ───────────────────────────────────────────────────────
-    const handleIconClick = useCallback((item) => {
+    // ── Drag & drop handlers ───────────────────────────────────────────────────
+    const handleDragStart = useCallback((itemId) => {
         if (combining) return;
-
-        setSelectedIds(prev => {
-            // Toggle off if already selected
-            if (prev.includes(item.id)) return prev.filter(id => id !== item.id);
-            // Already have 2 — replace oldest
-            if (prev.length >= 2) return [prev[1], item.id];
-            return [...prev, item.id];
-        });
+        setDragItemId(itemId);
     }, [combining]);
 
-    // Auto-check when 2 are selected
-    useEffect(() => {
-        if (phase !== "combine" || selectedIds.length !== 2 || combining) return;
+    const handleDropOnSlot = useCallback((slotIdx) => {
+        if (!dragItemId || combining) return;
+        setSlots(prev => {
+            const next = [...prev];
+            const existing = next.indexOf(dragItemId);
+            if (existing !== -1) next[existing] = null;
+            next[slotIdx] = dragItemId;
+            return next;
+        });
+        setDragItemId(null);
+    }, [dragItemId, combining]);
+
+    const handleRemoveFromSlot = useCallback((slotIdx) => {
+        if (combining) return;
+        setSlots(prev => { const next = [...prev]; next[slotIdx] = null; return next; });
+    }, [combining]);
+
+    // ── Cast Spell button ──────────────────────────────────────────────────────
+    const handleCastSpell = useCallback(() => {
+        if (!slots[0] || !slots[1] || combining) return;
 
         setCombining(true);
 
-        const selected = items.filter(i => selectedIds.includes(i.id));
+        const selected   = items.filter(i => slots.includes(i.id));
         const allCorrect = selected.every(i => i.isCorrect);
         const wrongKeys  = Object.keys(flowGroups).filter(k => k.startsWith("wrong_"));
 
         setTimeout(() => {
             if (allCorrect) {
                 setIsLit(true);
-                setBackground(castleLibraryLitImg);
+                setBackground(prev => prev === castleLibraryImg ? castleLibraryLitImg : prev);
                 const target = flowGroups["correct"] ? "correct" : null;
                 if (!target) { setPhase("done"); submitProgress(); return; }
                 setBranchKey("correct");
@@ -232,7 +269,6 @@ const CastleScenePage = () => {
             } else {
                 const target = matchPairToFlow(selected, wrongKeys);
                 if (!target || !flowGroups[target]) {
-                    // No wrong branch in DB — show try again prompt directly
                     setCombining(false);
                     setShowTryAgain(true);
                     return;
@@ -242,18 +278,18 @@ const CastleScenePage = () => {
                 setPhase("branch");
             }
             setCombining(false);
-        }, 500); // brief pause so selection is visible
-    }, [phase, selectedIds, combining, items, flowGroups]);
+        }, 500);
+    }, [slots, combining, items, flowGroups]);
 
     // ── Submit progress ────────────────────────────────────────────────────────
     const submitProgress = () => {
-        if (!playerId || !questId) return;
+        if (!playerId || !currentQuestId) return;
         saveNPCProgress?.("castle", npcId, items.length, true);
         fetch(`${API}/api/challenge/quest/submit`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                playerId, questId, npcId,
+                playerId, questId: currentQuestId, npcId,
                 score: items.length, maxScore: items.length, passed: true,
             }),
         }).catch(err => console.warn("[CastleScenePage] submit failed:", err));
@@ -261,13 +297,25 @@ const CastleScenePage = () => {
 
     const handleTryAgain = () => {
         setShowTryAgain(false);
-        setSelectedIds([]);
+        setSlots([null, null]);
         setCombineRound(k => k + 1);
         setPhase("combine");
     };
 
-    const handleBack     = () => navigate(returnTo);
-    const handleDoneClose = () => navigate(returnTo, { state: { completed: true } });
+    const handleBack = () => navigate(returnTo);
+
+    const handleDoneClose = () => {
+        const idx  = npcQuests.findIndex(q => String(q.quest_id) === String(currentQuestId));
+        const next = npcQuests[idx + 1];
+        if (next) {
+            // Chain to next quest for same NPC — navigate pushes new location.state
+            navigate("/student/library", {
+                state: { npcId, npcName, questId: next.quest_id, returnTo },
+            });
+        } else {
+            navigate(returnTo, { state: { completed: true } });
+        }
+    };
 
     // ── Loading / error states ─────────────────────────────────────────────────
     if (loading) return (
@@ -296,10 +344,6 @@ const CastleScenePage = () => {
         : npcName;
     const dialogueText = currentRow?.dialogue_text || "";
 
-    // Hint — from first wrong item if available
-    const wrongHint = items.find(i => !i.isCorrect && i.hint)?.hint
-        ?? "Think of something that shines in the sky.";
-
     return (
         <div className="csp-wrapper">
             <img src={background} alt="Castle Library" className={`csp-bg${isLit ? " csp-bg--lit" : ""}`} draggable={false} />
@@ -318,53 +362,71 @@ const CastleScenePage = () => {
                 </div>
             )}
 
-            {/* Combine mechanic — icon selection grid */}
+            {/* Spell circle — drag & drop */}
             {showCombine && (
-                <div className="csp-combine-area">
+                <div className="csp-combine-area" key={`combine-${combineRound}`}>
+
+                    {/* Prompt */}
                     <p className="csp-combine-prompt">
-                        Choose 2 icons to make a compound word!
+                        Drag icons into the spell circle!
                     </p>
 
-                    <div className="csp-combine-hint" key={`hint-${combineRound}`}>
-                        {wrongHint}
+                    {/* Spell circle — two drop slots + cast button */}
+                    <div className="csp-spell-circle">
+                        {/* Slots row */}
+                        <div className="csp-spell-slots">
+                            {/* Slot 1 */}
+                            <div
+                                className={["csp-slot", slots[0] ? "csp-slot--filled" : "csp-slot--empty", combining ? "csp-slot--locked" : ""].filter(Boolean).join(" ")}
+                                onDragOver={e => e.preventDefault()}
+                                onDrop={e => { e.preventDefault(); handleDropOnSlot(0); }}
+                                onClick={() => slots[0] && handleRemoveFromSlot(0)}
+                                title={slots[0] ? "Click to remove" : "Drop here"}
+                            >
+                                {slots[0] ? (() => { const it = items.find(i => i.id === slots[0]); return (<><span className="csp-slot-emoji">{it?.emoji}</span><span className="csp-slot-label">{it?.label}</span></>); })() : <span className="csp-slot-placeholder">?</span>}
+                            </div>
+
+                            <span className="csp-spell-plus">+</span>
+
+                            {/* Slot 2 */}
+                            <div
+                                className={["csp-slot", slots[1] ? "csp-slot--filled" : "csp-slot--empty", combining ? "csp-slot--locked" : ""].filter(Boolean).join(" ")}
+                                onDragOver={e => e.preventDefault()}
+                                onDrop={e => { e.preventDefault(); handleDropOnSlot(1); }}
+                                onClick={() => slots[1] && handleRemoveFromSlot(1)}
+                                title={slots[1] ? "Click to remove" : "Drop here"}
+                            >
+                                {slots[1] ? (() => { const it = items.find(i => i.id === slots[1]); return (<><span className="csp-slot-emoji">{it?.emoji}</span><span className="csp-slot-label">{it?.label}</span></>); })() : <span className="csp-slot-placeholder">?</span>}
+                            </div>
+                        </div>
+
+                        <button
+                            className={["csp-cast-btn", slots[0] && slots[1] && !combining ? "csp-cast-btn--ready" : "csp-cast-btn--disabled"].filter(Boolean).join(" ")}
+                            onClick={handleCastSpell}
+                            disabled={!slots[0] || !slots[1] || combining}
+                        >
+                            ✨ Cast Spell
+                        </button>
                     </div>
 
-                    <div className="csp-icons-grid" key={`grid-${combineRound}`}>
+                    {/* Inventory bar */}
+                    <div className="csp-inventory-bar">
                         {items.map(item => {
-                            const isSelected = selectedIds.includes(item.id);
+                            const inSlot = slots.includes(item.id);
                             return (
-                                <button
+                                <div
                                     key={item.id}
-                                    className={[
-                                        "csp-icon-card",
-                                        isSelected ? "csp-icon-card--selected" : "",
-                                        combining   ? "csp-icon-card--locked"   : "",
-                                    ].filter(Boolean).join(" ")}
-                                    onClick={() => handleIconClick(item)}
-                                    disabled={combining}
-                                    aria-pressed={isSelected}
+                                    className={["csp-inv-card", inSlot ? "csp-inv-card--used" : "", combining ? "csp-inv-card--locked" : ""].filter(Boolean).join(" ")}
+                                    draggable={!combining && !inSlot}
+                                    onDragStart={() => handleDragStart(item.id)}
                                     aria-label={item.label}
                                 >
-                                    <span className="csp-icon-emoji">{item.emoji}</span>
-                                    <span className="csp-icon-label">{item.label}</span>
-                                </button>
+                                    <span className="csp-inv-emoji">{item.emoji}</span>
+                                    <span className="csp-inv-label">{item.label}</span>
+                                </div>
                             );
                         })}
                     </div>
-
-                    {selectedIds.length === 2 && (
-                        <div className="csp-combine-preview">
-                            {selectedIds.map((id, idx) => {
-                                const item = items.find(i => i.id === id);
-                                return (
-                                    <span key={id}>
-                                        <span className="csp-preview-emoji">{item?.emoji}</span>
-                                        {idx === 0 && <span className="csp-preview-plus"> + </span>}
-                                    </span>
-                                );
-                            })}
-                        </div>
-                    )}
                 </div>
             )}
 
