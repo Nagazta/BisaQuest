@@ -18,7 +18,7 @@ const CASTLE_HINT = "Enter the Castle! Complete all tasks to master compound wor
 const CASTLE_NPCS = [
     { npcId: "castle_npc_3", name: "Gulo",          x: 28, y: 60, character: BoyCharacter,  showName: true, quest: "compound_words", scenePath: "/student/library"          },
     { npcId: "castle_npc_1", name: "Princess Hara", x: 50, y: 45, character: GirlCharacter, showName: true, quest: "compound_words", scenePath: "/student/library"          },
-    { npcId: "castle_npc_2", name: "Manong Kwill",  x: 72, y: 55, character: BoyCharacter,  showName: true, quest: "compound_words", scenePath: "/student/garden-fountain" },
+    { npcId: "castle_npc_2", name: "Manong Kwill",  x: 72, y: 55, character: BoyCharacter,  showName: true, quest: "compound_words", scenePath: "/student/library" },
 ];
 
 const CastlePage = () => {

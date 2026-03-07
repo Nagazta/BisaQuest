@@ -17,7 +17,6 @@ import ForestScenePage from "./pages/Forest/ForestScenePage";
 
 //Castle environment pages
 import CastleScenePage from "./pages/Castle/CastleScenePage";
-import GardenFountainPage from "./pages/Castle/GardenFountainPage";
 
 import { useAuth } from "./context/AuthContext";
 import DragAndDrop from "./game/DragAndDrop";
@@ -53,7 +52,6 @@ function App() {
             <Route path="/forest/scene" element={<ForestScenePage />} />
             <Route path="/castle/scene" element={<CastleScenePage />} />
             <Route path="/student/library" element={<CastleScenePage />} />
-            <Route path="/student/garden-fountain" element={<GardenFountainPage />} />
 
             <Route path="/student/dragAndDrop"       element={<DragAndDrop />} />
             <Route path="/student/item-association"  element={<ItemAssociation />} />
