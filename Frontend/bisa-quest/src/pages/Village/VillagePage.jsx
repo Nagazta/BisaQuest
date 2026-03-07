@@ -272,7 +272,7 @@ const VillagePage = () => {
                                 {language === "ceb" ? "Ang imong progreso natipigan." : "Your progress is saved."}
                             </p>
                             <div style={{ display: "flex", gap: "15px", justifyContent: "center", marginTop: "20px" }}>
-                                <Button onClick={handleCancelExit} variant="secondary">
+                                <Button onClick={handleCancelExit} variant="secondary" style={{ background: "linear-gradient(180deg, #5a3e2b, #3b2414)", border: "3px solid #78350f", color: "#f5d89a", fontFamily: "'Pixelify Sans', sans-serif", fontWeight: "bold" }}>
                                     {language === "ceb" ? "Magpabilin" : "Stay"}
                                 </Button>
                                 <Button onClick={handleConfirmExit} variant="primary">

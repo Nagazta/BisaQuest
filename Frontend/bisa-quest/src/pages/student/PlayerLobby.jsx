@@ -208,6 +208,23 @@ const PlayerLobby = () => {
                 <div className="cloud cloud-3"></div>
             </div>
 
+            <div style={{
+                position: "fixed",
+                top: "16px",
+                left: "16px",
+                background: "rgba(0,0,0,0.5)",
+                color: "#f5d89a",
+                fontFamily: "'Pixelify Sans', sans-serif",
+                fontSize: "14px",
+                padding: "6px 16px",
+                borderRadius: "20px",
+                zIndex: 100,
+                pointerEvents: "none",
+                letterSpacing: "1px",
+            }}>
+                Press <strong>ESC</strong> to exit
+            </div>
+
             <QuestStartModal
                 isOpen={showQuestModal}
                 questTitle={selectedQuest?.title}
