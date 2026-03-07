@@ -19,7 +19,7 @@
   transform: rotate(-2deg);
   max-width: 500px;
   width: 90%;
-  box-shadow: 
+  box-shadow:
     0 0 0 4px #8B4513,
     0 0 0 8px #5a2c0c;
   animation: popIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -103,7 +103,7 @@
   border: none;
   display: inline-block;
   max-width: 90%;
-  text-shadow: 
+  text-shadow:
     3px 3px 0 #FCD34D,
     -1px -1px 0 #FCD34D,
     1px -1px 0 #FCD34D,
@@ -114,9 +114,12 @@
 }
 
 @keyframes questGlow {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.05);
   }
@@ -132,7 +135,7 @@
 
 .quest-modal-button {
   font-family: 'Pixelify Sans', sans-serif;
-  font-size: 22px;  
+  font-size: 22px;
   padding: 18px 50px;
   background: #FCD34D;
   color: #5a2c0c;
@@ -161,6 +164,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -171,9 +175,11 @@
     transform: scale(0.7) rotate(-2deg);
     opacity: 0;
   }
+
   50% {
     transform: scale(1.03) rotate(-2deg);
   }
+
   100% {
     transform: scale(1) rotate(-2deg);
   }
@@ -183,7 +189,7 @@
   .quest-modal-scroll {
     max-width: 95%;
     border: 6px solid #5a2c0c;
-    box-shadow: 
+    box-shadow:
       0 0 0 3px #8B4513,
       0 0 0 6px #5a2c0c;
   }
