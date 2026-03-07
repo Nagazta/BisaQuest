@@ -1,0 +1,193 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   FogTransition.css  —  Realistic left-to-right fog wipe
+   Uses multiple staggered wisp layers + a noise texture simulation via
+   layered radial gradients to mimic real ground fog rolling in.
+───────────────────────────────────────────────────────────────────────────── */
+
+.fog-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: all;
+  overflow: hidden;
+  background: transparent;
+}
+
+/* ── Base fill — comes in last, locks the screen solid ── */
+.fog-base {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(210, 230, 210, 0)    0%,
+    rgba(225, 240, 220, 0.85) 30%,
+    rgba(240, 248, 238, 0.97) 60%,
+    rgba(255, 255, 255, 1)    100%
+  );
+  opacity: 0;
+  animation: fog-base-fill 1.8s ease forwards;
+  animation-delay: 400ms;
+}
+
+@keyframes fog-base-fill {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* ── Individual wisp layers ── */
+/* Each wisp is a large softly-shaped blob that drifts in from the left
+   at a slightly different speed, height, and blur to simulate depth */
+.fog-wisp {
+  position: absolute;
+  left: -140%;
+  border-radius: 50%;
+  filter: blur(38px);
+  animation: wisp-drift linear forwards;
+  will-change: transform, opacity;
+}
+
+/* Layer 1 — thick low ground fog, slowest */
+.fog-wisp--1 {
+  width: 180%;
+  height: 55%;
+  top: 40%;
+  background: radial-gradient(ellipse at 35% 55%,
+    rgba(255, 255, 255, 0.96) 0%,
+    rgba(220, 240, 215, 0.88) 35%,
+    rgba(180, 215, 180, 0.60) 65%,
+    transparent 100%);
+  animation-duration: 1.8s;
+  animation-delay: 0ms;
+  filter: blur(48px);
+}
+
+/* Layer 2 — mid-height wisp, medium speed */
+.fog-wisp--2 {
+  width: 160%;
+  height: 70%;
+  top: 15%;
+  background: radial-gradient(ellipse at 50% 60%,
+    rgba(245, 252, 242, 0.94) 0%,
+    rgba(200, 230, 200, 0.82) 40%,
+    rgba(150, 200, 150, 0.45) 70%,
+    transparent 100%);
+  animation-duration: 1.55s;
+  animation-delay: 120ms;
+  filter: blur(36px);
+}
+
+/* Layer 3 — tall wisp that covers the upper half */
+.fog-wisp--3 {
+  width: 170%;
+  height: 80%;
+  top: -10%;
+  background: radial-gradient(ellipse at 45% 45%,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(210, 235, 210, 0.78) 45%,
+    rgba(140, 195, 140, 0.40) 72%,
+    transparent 100%);
+  animation-duration: 1.65s;
+  animation-delay: 60ms;
+  filter: blur(42px);
+}
+
+/* Layer 4 — thin fast wisp near bottom, creates "crawling" feel */
+.fog-wisp--4 {
+  width: 150%;
+  height: 35%;
+  top: 62%;
+  background: radial-gradient(ellipse at 40% 40%,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(230, 245, 228, 0.90) 30%,
+    rgba(170, 215, 165, 0.55) 60%,
+    transparent 100%);
+  animation-duration: 1.3s;
+  animation-delay: 200ms;
+  filter: blur(28px);
+}
+
+/* Layer 5 — faint trailing wisp for the "tail" of the fog bank */
+.fog-wisp--5 {
+  width: 130%;
+  height: 90%;
+  top: -5%;
+  background: radial-gradient(ellipse at 60% 50%,
+    rgba(240, 250, 238, 0.85) 0%,
+    rgba(190, 225, 190, 0.65) 50%,
+    transparent 85%);
+  animation-duration: 2.0s;
+  animation-delay: 280ms;
+  filter: blur(55px);
+}
+
+/* Layer 6 — bright leading edge, gives the "wall of mist" front face */
+.fog-wisp--6 {
+  width: 30%;
+  height: 120%;
+  top: -10%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.55) 40%,
+    rgba(255, 255, 255, 0.92) 70%,
+    rgba(240, 250, 240, 0.98) 100%
+  );
+  filter: blur(18px);
+  animation-duration: 1.4s;
+  animation-delay: 0ms;
+}
+
+@keyframes wisp-drift {
+  0%   { left: -140%; opacity: 0;    }
+  15%  { opacity: 1;                 }
+  70%  { opacity: 1;                 }
+  100% { left: 10%;   opacity: 1;    }
+}
+
+/* ── Particle specks — tiny bright dots floating in the fog ── */
+.fog-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  filter: blur(2px);
+  animation: particle-float linear forwards;
+  will-change: transform, opacity;
+}
+
+.fog-particle--1 { width: 6px;  height: 6px;  top: 22%; animation-duration: 1.9s; animation-delay: 300ms; }
+.fog-particle--2 { width: 4px;  height: 4px;  top: 55%; animation-duration: 1.6s; animation-delay: 150ms; }
+.fog-particle--3 { width: 8px;  height: 8px;  top: 38%; animation-duration: 2.1s; animation-delay: 420ms; }
+.fog-particle--4 { width: 3px;  height: 3px;  top: 70%; animation-duration: 1.5s; animation-delay: 80ms;  }
+.fog-particle--5 { width: 5px;  height: 5px;  top: 15%; animation-duration: 1.75s; animation-delay: 350ms; }
+
+@keyframes particle-float {
+  0%   { left: -5%;  opacity: 0;    transform: translateY(0px);   }
+  20%  { opacity: 0.9;              transform: translateY(-8px);  }
+  55%  { opacity: 0.7;              transform: translateY(5px);   }
+  100% { left: 105%; opacity: 0.5;  transform: translateY(-3px);  }
+}
+
+/* ── Center text ── */
+.fog-center-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(20px, 3vw, 32px);
+  color: #fff;
+  text-shadow:
+    0 2px 16px rgba(0, 0, 0, 0.35),
+    0 0   32px rgba(180, 220, 180, 0.6);
+  letter-spacing: 2px;
+  opacity: 0;
+  animation: fog-text-fade 0.8s ease forwards;
+  animation-delay: 900ms;
+  z-index: 10;
+}
+
+@keyframes fog-text-fade {
+  0%   { opacity: 0; transform: scale(0.92) translateY(6px); }
+  100% { opacity: 1; transform: scale(1)    translateY(0);   }
+}
