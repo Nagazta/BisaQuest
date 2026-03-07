@@ -9,14 +9,24 @@ import QuestStartModal from "../../components/QuestStartModal";
 import SaveProgressModal from "../../components/progress/SaveProgressModal";
 import Notification from "../../components/Notification";
 import ParticleEffects from "../../components/ParticleEffects";
-import { getPlayerId, getProgress, isEnvironmentUnlocked } from "../../utils/playerStorage";
+import {
+    getPlayerId, getProgress, isEnvironmentUnlocked,
+    hasCutsceneSeen, clearPlayerData,
+} from "../../utils/playerStorage";
 import Button from "../../components/Button";
 
-// Quest ID → route map
+// Quest ID → direct environment route (used on return visits)
 const QUEST_ROUTES = {
     1: "/student/village",
     2: "/student/forest",
     3: "/student/castle",
+};
+
+// Quest ID → entry cutscene type (used on first visit)
+const CUTSCENE_KEYS = {
+    1: "village_entry",
+    2: "forest_entry",
+    3: "castle_entry",
 };
 
 // Quest ID → environment key (matches playerStorage keys)
@@ -36,6 +46,7 @@ const PlayerLobby = () => {
     const [selectedQuest,   setSelectedQuest]   = React.useState(null);
     const [notification,    setNotification]    = React.useState(null);
     const [moduleProgress,  setModuleProgress]  = React.useState({});
+    const [showExitModal,   setShowExitModal]   = React.useState(false);
 
     // 🛠️ DEV MODE — unlocks all quests
     const [devMode, setDevMode] = React.useState(false);
@@ -69,98 +80,90 @@ const PlayerLobby = () => {
     }, [location.state, navigate, location.pathname]);
 
     // ── ESC key to show exit modal ────────────────────────────────────────────
-    const [showExitModal, setShowExitModal] = React.useState(false);
-
     useEffect(() => {
-        const handleKeyDown = (e) => {
-            if (e.key === "Escape") setShowExitModal(true);
-        };
+        const handleKeyDown = (e) => { if (e.key === "Escape") setShowExitModal(true); };
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, []);
 
-    const handleBackToMenu = () => { setShowExitModal(false); navigate("/"); };
+    const handleBackToMenu   = () => { setShowExitModal(false); navigate("/"); };
     const handleSwitchPlayer = () => { setShowExitModal(false); startNewGame(); navigate("/login"); };
 
     const quests = [
-        { id: 1, title: "Vocabulary Quest",          subtitle: "Village Theme", description: "Explore the village and learn new words",  progress: moduleProgress[1] || 0, image: Village },
-        { id: 2, title: "Synonyms & Antonyms Quest", subtitle: "Forest Theme",  description: "Journey through the magical forest",       progress: moduleProgress[2] || 0, image: Forest  },
-        { id: 3, title: "Compound Quest",            subtitle: "Castle Theme",  description: "Master word building in the Castle",       progress: moduleProgress[3] || 0, image: Kingdom },
+        { id: 1, title: "Vocabulary Quest",          subtitle: "Village Theme", description: "Explore the village and learn new words", progress: moduleProgress[1] || 0, image: Village },
+        { id: 2, title: "Synonyms & Antonyms Quest", subtitle: "Forest Theme",  description: "Journey through the magical forest",      progress: moduleProgress[2] || 0, image: Forest  },
+        { id: 3, title: "Compound Quest",            subtitle: "Castle Theme",  description: "Master word building in the Castle",      progress: moduleProgress[3] || 0, image: Kingdom },
     ];
 
-    // ── Quest lock logic — reads from localStorage unlock flags ───────────────
+    // ── Quest lock logic ──────────────────────────────────────────────────────
     const isQuestUnlocked = (questId) => {
         if (devMode) return true;
-        const env = QUEST_ENV[questId];
-        return isEnvironmentUnlocked(env);
+        return isEnvironmentUnlocked(QUEST_ENV[questId]);
     };
 
-    // Lock message per quest
     const getLockMessage = (questId) => {
         if (questId === 2) return "Complete all 3 Village NPCs to unlock the Forest!";
         if (questId === 3) return "Complete the Forest to unlock the Castle!";
         return "Complete the previous quest first!";
     };
 
-    const handleStartQuest = async (questId) => {
+    // ── Start quest ───────────────────────────────────────────────────────────
+    const handleStartQuest = (questId) => {
         setNotification(null);
 
         if (!isQuestUnlocked(questId)) {
-            setNotification({
-                type: "error",
-                title: "🔒 Quest Locked",
-                message: getLockMessage(questId),
-            });
+            setNotification({ type: "error", title: "🔒 Quest Locked", message: getLockMessage(questId) });
             return;
         }
 
         const quest = quests.find(q => q.id === questId);
         setSelectedQuest(quest);
-        await checkForSavedProgress(questId);
+        checkForSavedProgress(questId);
     };
 
-    const checkForSavedProgress = async (questId) => {
-        try {
-            const playerId = getPlayerId();
-            if (!playerId) { setShowQuestModal(true); return; }
+    // ── Check saved progress — localStorage only, no API ─────────────────────
+    const checkForSavedProgress = (questId) => {
+        const progress = getProgress();
+        const envKey   = QUEST_ENV[questId];
+        const pct      = progress[`${envKey}_progress`] || 0;
 
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/progress/${playerId}/${questId}`);
-            if (!response.ok) { setShowQuestModal(true); return; }
-
-            const progressData = await response.json();
-            if (progressData.hasProgress && progressData.data) {
-                setSavedProgress(progressData.data);
-                setShowSaveModal(true);
-            } else {
-                setShowQuestModal(true);
-            }
-        } catch (err) { setShowQuestModal(true); }
+        if (pct > 0) {
+            // Has existing progress — show Continue / New Game modal
+            setSavedProgress({ progress: pct, environment: envKey });
+            setShowSaveModal(true);
+        } else {
+            setShowQuestModal(true);
+        }
     };
 
+    // ── Continue existing save ────────────────────────────────────────────────
     const handleContinue = () => {
         setShowSaveModal(false);
         navigate(QUEST_ROUTES[selectedQuest?.id] || "/student/village");
     };
 
-    const handleNewGame = async () => {
-        try {
-            const playerId = getPlayerId();
-            if (!playerId) return;
-            await fetch(`${import.meta.env.VITE_API_URL}/api/progress/reset-all`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ player_id: playerId }),
-            });
-            setSavedProgress(null);
-            setShowSaveModal(false);
-            setShowQuestModal(true);
-            fetchModuleProgress();
-        } catch (err) { setShowSaveModal(false); setShowQuestModal(true); }
+    // ── New game — wipe localStorage, no API needed ───────────────────────────
+    const handleNewGame = () => {
+        clearPlayerData();
+        setSavedProgress(null);
+        setShowSaveModal(false);
+        setShowQuestModal(true);
+        fetchModuleProgress();
     };
 
+    // ── Confirm quest start ───────────────────────────────────────────────────
     const handleConfirmQuest = () => {
         setShowQuestModal(false);
-        navigate(QUEST_ROUTES[selectedQuest?.id] || "/student/village");
+
+        const id           = selectedQuest?.id;
+        const cutsceneKey  = CUTSCENE_KEYS[id];
+
+        // First visit → play entry cutscene; return visits → go direct
+        if (cutsceneKey && !hasCutsceneSeen(cutsceneKey)) {
+            navigate(`/cutscene/${cutsceneKey}`);
+        } else {
+            navigate(QUEST_ROUTES[id] || "/student/village");
+        }
     };
 
     if (!player) return null;

@@ -10,9 +10,8 @@ import ForestPage from "./pages/Forest/ForestPage";
 import CastlePage from "./pages/Castle/CastlePage";
 //Village environment pages
 import HousePage from "./pages/Village/HousePage";
-import MarketStallPage from "./pages/Village/MarketStallPage"
+import MarketStallPage from "./pages/Village/MarketStallPage";
 import FarmPage from "./pages/Village/FarmPage";
-
 //Forest environment pages
 import ForestScenePage from "./pages/Forest/ForestScenePage";
 
@@ -31,24 +30,29 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<Login />} />
 
-            {/* ── Player setup flow (public) ─────────────────────────────── */}
+            {/* ── Player setup flow ──────────────────────────────────────── */}
             <Route path="/student/characterSelection" element={<CharacterSelection />} />
-            <Route path="/student/cutscene" element={<StoryCutscene />} />
 
-            {/* ── Environment pages (public — player_id from localStorage) ─ */}
+            {/* Old route kept as alias — explicitly passes type="story" */}
+            <Route path="/student/cutscene" element={<StoryCutscene type="story" />} />
+
+            {/* All cutscenes go through here: /cutscene/story, /cutscene/village_entry, etc. */}
+            <Route path="/cutscene/:type" element={<StoryCutscene />} />
+
+            {/* ── Environment pages ──────────────────────────────────────── */}
             <Route path="/student/village" element={<VillagePage />} />
-            <Route path="/student/forest" element={<ForestPage />} />
-            <Route path="/student/castle" element={<CastlePage />} />
+            <Route path="/student/forest"  element={<ForestPage />} />
+            <Route path="/student/castle"  element={<CastlePage />} />
 
             {/* ── Game / challenge pages ─────────────────────────────────── */}
-            <Route path="/student/house" element={<HousePage />} />
-            <Route path="/forest/scene" element={<ForestScenePage />} />
+            <Route path="/student/house"             element={<HousePage />} />
+            <Route path="/forest/scene"              element={<ForestScenePage />} />
             <Route path="/student/dragAndDrop"       element={<DragAndDrop />} />
             <Route path="/student/item-association"  element={<ItemAssociation />} />
-            <Route path="/student/market" element={<MarketStallPage />} />
-            <Route path="/student/farm" element={<FarmPage />} />
-            
-            {/* ── Dashboard — requires player in context ─────────────────── */}
+            <Route path="/student/market"            element={<MarketStallPage />} />
+            <Route path="/student/farm"              element={<FarmPage />} />
+
+            {/* ── Dashboard ─────────────────────────────────────────────── */}
             <Route
                 path="/dashboard"
                 element={player ? <StudentDashboard /> : <Navigate to="/login" replace />}
