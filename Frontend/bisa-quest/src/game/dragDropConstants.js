@@ -16,6 +16,8 @@ import TowelImg    from "../assets/items/towel.png";
 import BedsheetImg from "../assets/items/bedsheet.png";
 import HabolImg    from "../assets/items/habol.png";
 import HandfanImg  from "../assets/items/hand_fan.png";
+import electricFanImg from "../assets/items/electricfanRed.png";
+
 
 //Item images — Kitchen
 import PotImg    from "../assets/items/pot.png";
@@ -37,6 +39,8 @@ import MangoUnripeImg  from "../assets/items/mango_notripe.jpg";
 import BananaRipeImg   from "../assets/items/banana.jpg";
 import BananaUnripeImg from "../assets/items/banana_notripe.jpg";
 
+//Item images - Farm
+import WateringCanImg from "../assets/items/wateringCan.png";
 
 export const ITEM_IMAGE_MAP = {
   // Living room
@@ -57,6 +61,7 @@ export const ITEM_IMAGE_MAP = {
   slipper:  SlipperImg,
   trash:    TrashImg,
   basura:   TrashImg,
+  Bentilador: electricFanImg,
   // Kitchen
   pot:      PotImg,
   kaldero:  PotImg,
@@ -91,6 +96,9 @@ export const ITEM_IMAGE_MAP = {
   saging_unripe:   BananaUnripeImg,
   banana_notripe:  BananaUnripeImg,
   fruit_round:     BananaUnripeImg,  // comprehension wrong choice (round/unripe)
+
+  // Farm
+  regadera: WateringCanImg,
 };
 
 // Scene backgrounds
