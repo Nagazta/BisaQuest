@@ -1,17 +1,17 @@
 /* CharacterCard.css */
 .character-frame {
     position: relative;
-    width: 120%;
-    height: 100%;
+    width: 100%;
+    height: 105%;
 }
 
 .card-frame {
     position: absolute;
-    top: -30px;
-    left: -3%;
+    top: -35px;
+    left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: fill;
     z-index: 1;
     pointer-events: none;
 }
