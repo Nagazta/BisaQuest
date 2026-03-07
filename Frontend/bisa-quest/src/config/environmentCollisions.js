@@ -57,27 +57,19 @@ export const environmentCollisions = {
     // Quest 3 - Castle Environment (Compound Words)
     castle: {
         houses: [
-            // Castle walls and towers
-            { x: 35, y: 20, width: 30, height: 35, name: "Main Castle" },
-            { x: 15, y: 25, width: 12, height: 15, name: "Tower Left" },
-            { x: 73, y: 25, width: 12, height: 15, name: "Tower Right" },
+            // Castle building — top-left corner of the map
+            { x: 0, y: 0, width: 24, height: 58, name: "Castle Building" },
         ],
 
         obstacles: [
-            // Statues
-            { x: 28, y: 60, width: 5, height: 6, name: "Statue" },
-            { x: 67, y: 60, width: 5, height: 6, name: "Statue" },
-
-            // Garden features
-            { x: 20, y: 70, width: 10, height: 8, name: "Garden" },
-            { x: 70, y: 70, width: 10, height: 8, name: "Garden" },
-
-            // Fountain
-            { x: 45, y: 65, width: 10, height: 10, name: "Fountain" },
+            // Trees — bottom-left
+            { x: 4, y: 72, width: 14, height: 18, name: "Trees Left" },
+            // Trees — bottom-right
+            { x: 82, y: 65, width: 14, height: 22, name: "Trees Right" },
         ],
 
         playerSize: 5,
-        boundaries: { minX: 0, maxX: 95, minY: 0, maxY: 90 },
+        boundaries: { minX: 5, maxX: 92, minY: 5, maxY: 88 },
     },
 
     // Quest 4 - Kingdom Environment (Narrative/Problem Solving)

@@ -16,9 +16,9 @@ import "./CastlePage.css";
 const CASTLE_HINT = "Enter the Castle! Complete all tasks to master compound words";
 
 const CASTLE_NPCS = [
-    { npcId: "castle_npc_1", name: "Sir Reynaldo", x: 45, y: 40, character: BoyCharacter,  showName: true, quest: "compound_words" },
-    { npcId: "castle_npc_2", name: "Lady Mira",    x: 60, y: 55, character: GirlCharacter, showName: true, quest: "compound_words" },
-    { npcId: "castle_npc_3", name: "The Archivist",x: 30, y: 50, character: BoyCharacter,  showName: true, quest: "compound_words" },
+    { npcId: "castle_npc_3", name: "Gulo",          x: 28, y: 60, character: BoyCharacter,  showName: true, quest: "compound_words", scenePath: "/student/library"          },
+    { npcId: "castle_npc_1", name: "Princess Hara", x: 50, y: 45, character: GirlCharacter, showName: true, quest: "compound_words", scenePath: "/student/library"          },
+    { npcId: "castle_npc_2", name: "Manong Kwill",  x: 72, y: 55, character: BoyCharacter,  showName: true, quest: "compound_words", scenePath: "/student/garden-fountain" },
 ];
 
 const CastlePage = () => {
@@ -37,6 +37,56 @@ const CastlePage = () => {
     const [showExitConfirm,   setShowExitConfirm]    = useState(false);
     const [showSummaryButton, setShowSummaryButton]  = useState(false);
     const [isMuted,           setIsMuted]            = useState(false);
+
+    // ── NPC position editor (dev tool) ────────────────────────────────────────
+    const [npcEditMode,  setNpcEditMode]  = useState(false);
+    const [npcEditIdx,   setNpcEditIdx]   = useState(0);
+    const npcEditModeRef = useRef(false);
+    const npcEditIdxRef  = useRef(0);
+
+    useEffect(() => { npcEditModeRef.current = npcEditMode; }, [npcEditMode]);
+    useEffect(() => { npcEditIdxRef.current  = npcEditIdx;  }, [npcEditIdx]);
+
+    useEffect(() => {
+        const onKey = (e) => {
+            // Backtick toggles editor on/off
+            if (e.key === '`') {
+                e.preventDefault();
+                setNpcEditMode(p => !p);
+                return;
+            }
+            if (!npcEditModeRef.current) return;
+
+            const k = e.key.toLowerCase();
+            if (!['w', 'a', 's', 'd', 'e'].includes(k)) return;
+            e.preventDefault();
+            e.stopPropagation(); // block EnvironmentPage player movement
+
+            if (k === 'e') {
+                setNpcEditIdx(i => {
+                    const next = (i + 1) % CASTLE_NPCS.length;
+                    npcEditIdxRef.current = next;
+                    return next;
+                });
+                return;
+            }
+
+            setCastleNPCs(prev => prev.map((npc, i) => {
+                if (i !== npcEditIdxRef.current) return npc;
+                let { x, y } = npc;
+                if (k === 'w') y = Math.max(0,   y - 1);
+                if (k === 's') y = Math.min(100, y + 1);
+                if (k === 'a') x = Math.max(0,   x - 1);
+                if (k === 'd') x = Math.min(100, x + 1);
+                console.log(`[NPC Pos] ${npc.name}: x=${x}, y=${y}`);
+                return { ...npc, x, y };
+            }));
+        };
+
+        // capture:true so we intercept before EnvironmentPage's bubble-phase listeners
+        window.addEventListener('keydown', onKey, true);
+        return () => window.removeEventListener('keydown', onKey, true);
+    }, []);
 
     const PlayerCharacter = character === "roberta" ? GirlCharacter : BoyCharacter;
 
@@ -115,7 +165,16 @@ const CastlePage = () => {
             await environmentApi.logNPCInteraction({ playerId, npcName: selectedNPC.name });
             await environmentApi.startNPCInteraction({ npcId: selectedNPC.npcId, challengeType: selectedNPC.quest, playerId });
         } catch (err) { console.error(err); }
-        navigate("/student/compoundWords", { state: { npcId: selectedNPC.npcId, npcName: selectedNPC.name, questId, returnTo: "/student/castle" } });
+
+        // Fetch the actual quest_id for this NPC from the DB
+        let npcQuestId = questId;
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/challenge/npc/${selectedNPC.npcId}/quest`);
+            const result = await res.json();
+            if (result.data?.length) npcQuestId = result.data[0].quest_id;
+        } catch (err) { console.warn("[CastlePage] quest lookup failed, using default:", err); }
+
+        navigate(selectedNPC.scenePath, { state: { npcId: selectedNPC.npcId, npcName: selectedNPC.name, questId: npcQuestId, returnTo: "/student/castle" } });
     };
 
     if (charLoading) return <div className="castle-page-wrapper"><div className="loading-message">Loading...</div></div>;
@@ -140,6 +199,21 @@ const CastlePage = () => {
                 playerId={playerId}
                 hintMessage={CASTLE_HINT}
             />
+
+            {/* NPC position editor overlay */}
+            {npcEditMode && (
+                <div style={{
+                    position: "fixed", top: 16, left: "50%", transform: "translateX(-50%)",
+                    background: "rgba(0,0,0,0.82)", color: "#FCD765",
+                    fontFamily: "'Pixelify Sans', sans-serif", fontSize: 14,
+                    padding: "10px 20px", borderRadius: 12, border: "2px solid #FCD765",
+                    zIndex: 999, textAlign: "center", lineHeight: 1.7, pointerEvents: "none",
+                }}>
+                    <div>NPC Editor ON — editing: <strong>{castleNPCs[npcEditIdx]?.name}</strong></div>
+                    <div>x: {castleNPCs[npcEditIdx]?.x} &nbsp;|&nbsp; y: {castleNPCs[npcEditIdx]?.y}</div>
+                    <div style={{ color: "#aaa", fontSize: 12 }}>WASD = move &nbsp;·&nbsp; E = next NPC &nbsp;·&nbsp; ` = exit</div>
+                </div>
+            )}
 
             <div className="decorative-clouds">
                 <div className="cloud cloud-1"></div><div className="cloud cloud-2"></div><div className="cloud cloud-3"></div>

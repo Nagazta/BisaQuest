@@ -1,0 +1,308 @@
+/* ── Full-screen wrapper ──────────────────────────────────────── */
+.csp-wrapper {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #0d0a1a;
+}
+
+.csp-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  user-select: none;
+}
+
+/* ── Back button ──────────────────────────────────────────────── */
+.csp-back {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 50;
+}
+
+/* ── Princess Hara ────────────────────────────────────────────── */
+.csp-princess-wrap {
+  position: absolute;
+  left: 12%;
+  bottom: 130px; /* sits just above the dialogue bar */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 20;
+}
+
+.csp-princess-img {
+  height: 320px;
+  object-fit: contain;
+  animation: princess-float 4s ease-in-out infinite;
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.55));
+}
+
+/* ── Combine area ─────────────────────────────────────────────── */
+.csp-combine-area {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 40px;
+  z-index: 20;
+  gap: 20px;
+}
+
+.csp-combine-prompt {
+  font-family: 'Fredoka One', cursive;
+  font-size: 22px;
+  color: #FFF9E6;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+  margin: 0;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 10px 28px;
+  border-radius: 20px;
+  border: 2px solid rgba(252, 215, 101, 0.4);
+}
+
+.csp-combine-hint {
+  font-family: 'Grandstander', cursive;
+  font-size: 15px;
+  font-style: italic;
+  color: #FCD765;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  margin: 0;
+  text-align: center;
+  opacity: 0.9;
+  animation: hint-fade-in 0.5s ease both;
+}
+
+/* ── Icon grid — 2×2 ──────────────────────────────────────────── */
+.csp-icons-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  animation: grid-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.csp-icon-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 130px;
+  height: 130px;
+  background: rgba(255, 252, 230, 0.92);
+  border: 4px solid #3a2008;
+  border-radius: 20px;
+  box-shadow: 0 6px 0 #3a2008, 0 12px 30px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  font-family: inherit;
+  padding: 0;
+}
+
+.csp-icon-card:hover:not(.csp-icon-card--locked) {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 0 #3a2008, 0 16px 40px rgba(0, 0, 0, 0.35);
+}
+
+.csp-icon-card:active:not(.csp-icon-card--locked) {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #3a2008;
+}
+
+.csp-icon-card--selected {
+  border-color: #FCD765;
+  background: rgba(252, 215, 101, 0.25);
+  box-shadow: 0 6px 0 #FCD765, 0 0 24px rgba(252, 215, 101, 0.6);
+  transform: translateY(-4px) scale(1.05);
+}
+
+.csp-icon-card--locked {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.csp-icon-emoji {
+  font-size: 44px;
+  line-height: 1;
+}
+
+.csp-icon-label {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 15px;
+  font-weight: bold;
+  color: #3a2008;
+  text-align: center;
+}
+
+/* ── Combination preview ──────────────────────────────────────── */
+.csp-combine-preview {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 36px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px 24px;
+  border-radius: 16px;
+  border: 2px solid rgba(252, 215, 101, 0.5);
+  animation: preview-pop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.csp-preview-emoji {
+  font-size: 36px;
+}
+
+.csp-preview-plus {
+  font-family: 'Fredoka One', cursive;
+  font-size: 26px;
+  color: #FCD765;
+  line-height: 1;
+}
+
+/* ── Quest complete overlay ───────────────────────────────────── */
+.csp-complete-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: overlay-in 0.3s ease both;
+}
+
+.csp-complete-card {
+  background: #fffef5;
+  border: 4px solid #2d2d2d;
+  border-radius: 28px;
+  padding: 48px 64px;
+  text-align: center;
+  box-shadow: 0 8px 0 #2d2d2d, 0 24px 70px rgba(0, 0, 0, 0.45);
+  animation: card-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.csp-libro-fragment {
+  font-size: 72px;
+  animation: libro-float 2.5s ease-in-out infinite;
+  filter: drop-shadow(0 4px 12px rgba(252, 215, 101, 0.7));
+}
+
+.csp-complete-stars {
+  font-size: 32px;
+}
+
+.csp-complete-card h2 {
+  font-family: 'Fredoka One', cursive;
+  font-size: 32px;
+  color: #6B3E1D;
+  margin: 0;
+}
+
+.csp-complete-card p {
+  font-family: 'Grandstander', cursive;
+  font-size: 16px;
+  color: #4b5563;
+  margin: 0;
+}
+
+/* ── Loading / error ──────────────────────────────────────────── */
+.csp-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 22px;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  z-index: 50;
+}
+
+.csp-error {
+  color: #fca5a5;
+}
+
+/* ── Keyframes ────────────────────────────────────────────────── */
+@keyframes princess-float {
+  0%, 100% { transform: translateY(0);    }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes grid-pop {
+  from { transform: scale(0.7) translateY(20px); opacity: 0; }
+  to   { transform: scale(1)   translateY(0);    opacity: 1; }
+}
+
+@keyframes preview-pop {
+  from { transform: scale(0.8); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes hint-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 0.9; transform: translateY(0); }
+}
+
+@keyframes libro-float {
+  0%, 100% { transform: translateY(0)    rotate(-3deg); }
+  50%       { transform: translateY(-12px) rotate(3deg); }
+}
+
+@keyframes overlay-in {
+  from { opacity: 0; } to { opacity: 1; }
+}
+
+@keyframes card-pop {
+  from { transform: scale(0.6); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+/* ── Responsive ───────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .csp-princess-img {
+    height: 220px;
+  }
+
+  .csp-icons-grid {
+    gap: 12px;
+  }
+
+  .csp-icon-card {
+    width: 100px;
+    height: 100px;
+  }
+
+  .csp-icon-emoji {
+    font-size: 34px;
+  }
+
+  .csp-icon-label {
+    font-size: 13px;
+  }
+
+  .csp-complete-card {
+    padding: 32px 36px;
+  }
+
+  .csp-complete-card h2 {
+    font-size: 24px;
+  }
+
+  .csp-libro-fragment {
+    font-size: 56px;
+  }
+}
