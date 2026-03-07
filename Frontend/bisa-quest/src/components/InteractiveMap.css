@@ -1,3 +1,32 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   InteractiveMap.css  —  RPG Quest Board / Wooden Signpost Game UI
+   Aesthetic: Stardew Valley × old-school JRPG × pixel-art board game
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=MedievalSharp&family=Pixelify+Sans:wght@400;700&family=Fredoka+One&display=swap');
+
+/* ── CSS Variables ─────────────────────────────────────────────────────────── */
+:root {
+  --parchment-light:  #fef9e4;
+  --parchment-mid:    #f0d98c;
+  --parchment-dark:   #c8922a;
+  --parchment-border: #7a4e1a;
+  --wood-dark:        #3b1f0a;
+  --wood-mid:         #6b3a1f;
+  --wood-light:       #a0622a;
+  --ink-dark:         #1a0e05;
+  --gold-bright:      #ffd700;
+  --gold-mid:         #e8a020;
+  --gold-dim:         #b07818;
+  --red-seal:         #8b1a1a;
+  --green-ok:         #2d7a3a;
+  --green-bright:     #4caf50;
+  --locked-red:       #c0392b;
+  --shadow-deep:      rgba(0,0,0,0.7);
+  --shadow-warm:      rgba(80,30,0,0.5);
+}
+
+/* ── Container ─────────────────────────────────────────────────────────────── */
 .interactive-map-container {
   position: relative;
   width: 100%;
@@ -6,9 +35,10 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: transparent;
+  background: #1a2e1a;
 }
 
+/* ── Map Wrapper ───────────────────────────────────────────────────────────── */
 .map-wrapper {
   position: relative;
   width: 100%;
@@ -16,232 +46,325 @@
   overflow: hidden;
   user-select: none;
   -webkit-user-select: none;
-  background: #2a5c2a; /* Dark green to blend with map edges */
+  background: #1a2e1a;
+  animation: map-fade-in 0.8s ease;
 }
 
-.map-wrapper.grab {
-  cursor: grab;
-}
+.map-wrapper.grab    { cursor: grab; }
+.map-wrapper.grabbing { cursor: grabbing; }
 
-.map-wrapper.grabbing {
-  cursor: grabbing;
+@keyframes map-fade-in {
+  from { opacity: 0; filter: brightness(0.4); }
+  to   { opacity: 1; filter: brightness(1);   }
 }
 
 .map-content {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  min-width: 100%;
-  min-height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   will-change: transform;
   transform-origin: center center;
 }
 
 .map-image {
-  width: 100%;
-  height: 100%;
+  width: 100%; height: 100%;
   object-fit: cover;
   object-position: center;
   display: block;
   user-select: none;
-  -webkit-user-select: none;
   pointer-events: none;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  background: transparent;
 }
 
 .map-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   pointer-events: none;
 }
 
-/* Map areas - clickable regions */
+/* ── Clickable map areas ───────────────────────────────────────────────────── */
 .map-area {
   pointer-events: all;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
 }
 
+/* Unlocked: golden shimmer pulse on hover */
+.map-area.unlocked {
+  cursor: pointer;
+}
 .map-area.unlocked:hover {
-  animation: subtle-pulse 1.5s infinite;
+  animation: area-gold-pulse 1.2s ease-in-out infinite;
 }
 
+@keyframes area-gold-pulse {
+  0%, 100% { fill-opacity: 0.12; stroke-opacity: 0.7; }
+  50%       { fill-opacity: 0.28; stroke-opacity: 1;   }
+}
+
+/* Locked: red dim + crosshatch feel */
 .map-area.locked {
   cursor: not-allowed;
-  opacity: 0.6;
 }
 
-@keyframes subtle-pulse {
-  0%, 100% {
-    fill-opacity: 0.15;
-  }
-  50% {
-    fill-opacity: 0.25;
-  }
+/* ── Lock icon overlay ─────────────────────────────────────────────────────── */
+.map-lock-icons text {
+  font-size: 5px;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.8));
+  animation: lock-bob 2.5s ease-in-out infinite;
 }
 
-/* Tooltip */
+@keyframes lock-bob {
+  0%, 100% { transform: translateY(0);    }
+  50%       { transform: translateY(-0.6px); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOOLTIP  —  Wooden quest board nailed to a post
+   ═══════════════════════════════════════════════════════════════════════════ */
 .map-tooltip {
-  animation: tooltip-appear 0.2s ease;
+  animation: tooltip-slam 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 6px 20px rgba(0,0,0,0.7));
   z-index: 1000;
 }
 
+@keyframes tooltip-slam {
+  from { opacity: 0; transform: scale(0.78) translateY(8px) rotate(-1deg); }
+  to   { opacity: 1; transform: scale(1)    translateY(0)   rotate(0deg);  }
+}
+
 .tooltip-content {
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-  padding: 16px 20px;
-  border-radius: 16px;
-  border: 3px solid #FFD700;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-  min-width: 250px;
+  position: relative;
+  padding: 18px 20px 16px;
+  border-radius: 6px;
+  min-width: 240px;
   max-width: 300px;
+
+  /* Layered wood/parchment background */
+  background:
+    /* grain texture via noise */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E"),
+    linear-gradient(170deg,
+      #2a1505 0%,
+      #3d1f08 25%,
+      #2e1606 50%,
+      #3a1c07 75%,
+      #251204 100%
+    );
+
+  /* Carved wood border — double ring */
+  border: 3px solid #7a4e1a;
+  outline: 1px solid #3b1f0a;
+  box-shadow:
+    inset 0  1px 0 rgba(200,146,42,0.3),
+    inset 0 -1px 0 rgba(0,0,0,0.5),
+    inset  1px 0 0 rgba(160,98,42,0.2),
+    inset -1px 0 0 rgba(0,0,0,0.4),
+    0 4px 0 #1a0a02,
+    0 6px 0 rgba(0,0,0,0.4),
+    0 10px 30px rgba(0,0,0,0.6);
 }
 
+/* Top nail decorations */
+.tooltip-content::before,
+.tooltip-content::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  width: 10px; height: 10px;
+  background: radial-gradient(circle at 35% 35%, #d4a020, #7a5010);
+  border-radius: 50%;
+  border: 1.5px solid #3b2008;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+.tooltip-content::before { left:  16px; }
+.tooltip-content::after  { right: 16px; }
+
+/* ── Title ─────────────────────────────────────────────────────────────── */
 .tooltip-content h3 {
-  font-family: 'Pixelify Sans', sans-serif;
-  color: #FFD700;
-  margin: 0 0 8px 0;
-  font-size: 18px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-family: 'Fredoka One', cursive;
+  font-size: 17px;
+  color: var(--gold-bright);
+  margin: 4px 0 4px;
+  text-align: center;
+  letter-spacing: 0.5px;
+  text-shadow:
+    0  1px 0 #3b1f0a,
+    0  2px 6px rgba(0,0,0,0.6),
+    0  0  12px rgba(255,200,0,0.25);
+  line-height: 1.25;
 }
 
+/* Engraved divider under title */
+.tooltip-content h3::after {
+  content: '';
+  display: block;
+  margin: 6px auto 0;
+  width: 80%;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent,
+    var(--parchment-dark) 20%,
+    var(--gold-mid)       50%,
+    var(--parchment-dark) 80%,
+    transparent
+  );
+  border-radius: 1px;
+}
+
+/* ── Subtitle ───────────────────────────────────────────────────────────── */
 .tooltip-subtitle {
-  color: #94a3b8;
-  margin: 0 0 12px 0;
-  font-size: 14px;
-  font-style: italic;
+  font-family: 'Pixelify Sans', monospace;
+  color: #c8a060;
+  margin: 4px 0 10px;
+  font-size: 11px;
+  text-align: center;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  opacity: 0.85;
 }
 
+/* ── Progress bar ───────────────────────────────────────────────────────── */
 .tooltip-progress {
-  margin-top: 12px;
+  margin: 8px 0 6px;
 }
 
 .progress-bar-container {
   width: 100%;
-  height: 8px;
-  background: rgba(148, 163, 184, 0.3);
-  border-radius: 4px;
+  height: 10px;
+  background: rgba(0,0,0,0.5);
+  border-radius: 3px;
+  border: 1.5px solid #5a3010;
   overflow: hidden;
   margin-bottom: 4px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
 }
 
 .progress-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
-  border-radius: 4px;
-  transition: width 0.3s ease;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+  background: linear-gradient(90deg,
+    #4caf50 0%,
+    #81c784 50%,
+    #4caf50 100%
+  );
+  background-size: 200% 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+  animation: progress-shimmer 2s linear infinite;
+  box-shadow: 0 0 8px rgba(76,175,80,0.6);
+}
+
+@keyframes progress-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .progress-text {
-  color: #10b981;
-  font-size: 12px;
+  font-family: 'Pixelify Sans', monospace;
+  color: #81c784;
+  font-size: 11px;
   font-weight: bold;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
 }
 
+/* ── Lock status line ───────────────────────────────────────────────────── */
 .tooltip-locked {
-  color: #f87171;
-  margin: 8px 0 0 0;
-  font-size: 12px;
-  font-style: italic;
+  font-family: 'Pixelify Sans', monospace;
+  color: #ff6b6b;
+  margin: 8px 0 0;
+  font-size: 11px;
+  text-align: center;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 4px rgba(180,0,0,0.5);
+  padding: 5px 8px;
+  background: rgba(180,0,0,0.15);
+  border: 1px solid rgba(180,0,0,0.3);
+  border-radius: 4px;
 }
 
-@keyframes tooltip-appear {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+.tooltip-unlocked {
+  font-family: 'Pixelify Sans', monospace;
+  color: #81c784;
+  margin: 8px 0 0;
+  font-size: 11px;
+  text-align: center;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 4px rgba(0,130,0,0.4);
+  padding: 5px 8px;
+  background: rgba(0,120,0,0.2);
+  border: 1px solid rgba(76,175,80,0.4);
+  border-radius: 4px;
+  animation: unlocked-glow 2s ease-in-out infinite;
 }
 
-/* Zoom Controls */
-.map-controls {
+@keyframes unlocked-glow {
+  0%, 100% { box-shadow: 0 0 4px rgba(76,175,80,0.2);  }
+  50%       { box-shadow: 0 0 10px rgba(76,175,80,0.5); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DEBUG TOGGLE  —  top-right, styled as a worn wax seal
+   ═══════════════════════════════════════════════════════════════════════════ */
+.debug-toggle {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  z-index: 100;
-}
-
-.control-button {
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  border: 3px solid #78350f;
-  border-radius: 12px;
-  color: #78350f;
-  font-size: 24px;
-  font-weight: bold;
+  top: 16px; right: 16px;
+  z-index: 500;
+  padding: 8px 16px;
+  font-family: 'Pixelify Sans', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #fff;
+  background: linear-gradient(135deg, #8b1a1a, #c0392b);
+  border: 2px solid #5a0e0e;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Pixelify Sans', sans-serif;
+  box-shadow:
+    0 3px 0 #3a0808,
+    0 5px 12px rgba(0,0,0,0.5);
+  transition: all 0.15s;
+}
+.debug-toggle:hover  { transform: translateY(-1px); box-shadow: 0 4px 0 #3a0808, 0 6px 16px rgba(0,0,0,0.5); }
+.debug-toggle:active { transform: translateY(1px);  box-shadow: 0 1px 0 #3a0808; }
+.debug-toggle.active {
+  background: linear-gradient(135deg, #1a6b1a, #2ecc71);
+  border-color: #0e4a0e;
+  box-shadow: 0 3px 0 #083a08, 0 5px 12px rgba(0,0,0,0.5);
 }
 
-.control-button:hover {
-  background: linear-gradient(135deg, #f59e0b, #f97316);
-  transform: scale(1.1);
+/* ── Debug info panel ───────────────────────────────────────────────────── */
+.debug-info {
+  position: fixed;
+  top: 56px; right: 16px;
+  z-index: 500;
+  background: rgba(10,5,0,0.92);
+  border: 2px solid var(--parchment-dark);
+  border-radius: 6px;
+  padding: 12px 16px;
+  min-width: 200px;
+  font-family: 'Pixelify Sans', monospace;
+  font-size: 12px;
+  color: var(--parchment-mid);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.6);
 }
-
-.control-button:active {
-  transform: scale(0.95);
+.debug-info h4 {
+  color: var(--gold-bright);
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-family: 'Fredoka One', cursive;
 }
+.debug-info .coords { color: #81c784; font-size: 11px; margin: 2px 0; }
+.debug-info .area-info p { margin: 2px 0; font-size: 11px; }
 
-.control-button.reset-view {
-  font-size: 28px;
-}
-
-/* Responsive adjustments */
+/* ── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .map-controls {
-    bottom: 20px;
-    right: 20px;
-    gap: 8px;
-  }
-  
-  .control-button {
-    width: 45px;
-    height: 45px;
-    font-size: 20px;
-  }
-  
-  .control-button.reset-view {
-    font-size: 24px;
-  }
-  
   .tooltip-content {
-    min-width: 200px;
-    padding: 12px 16px;
+    min-width: 190px;
+    padding: 14px 14px 12px;
   }
-  
-  .tooltip-content h3 {
-    font-size: 16px;
-  }
-}
-
-/* Animation for when map first loads */
-@keyframes map-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.map-wrapper {
-  animation: map-fade-in 0.6s ease;
+  .tooltip-content h3  { font-size: 15px; }
+  .tooltip-subtitle    { font-size: 10px; }
 }

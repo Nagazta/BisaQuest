@@ -1,50 +1,50 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import './InteractiveMap.css';
-import './MapDebug.css'; // Import debug styles
+import './MapDebug.css';
 import DashboardMap from '../../src/assets/images/environments/Dashboard.png';
+import { isEnvironmentUnlocked } from '../../src/utils/playerStorage';
 
-const InteractiveMap = ({ quests, onQuestClick, moduleProgress }) => {
-  const [hoveredQuest, setHoveredQuest] = useState(null);
+// Quest ID → environment key
+const QUEST_ENV = {
+  1: 'village',
+  2: 'forest',
+  3: 'castle',
+};
+
+const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false }) => {
+  const [hoveredQuest,    setHoveredQuest]    = useState(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const mapRef = useRef(null);
-  
-  // Debug mode state
-  const [debugMode, setDebugMode] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  
-  // Pan/Drag state
-  const [isPanning, setIsPanning] = useState(false);
-  const [startPan, setStartPan] = useState({ x: 0, y: 0 });
-  const [mapPosition, setMapPosition] = useState({ x: 0, y: 0 });
-  const [dragStarted, setDragStarted] = useState(false);
-  const [zoom, setZoom] = useState(1); // Start at 1x to show full image
 
-  // Define clickable areas for each quest on the map
-  // Coordinates are in percentages for responsiveness
+  // Debug mode state
+  const [debugMode,     setDebugMode]     = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  // Pan/Drag state
+  const [isPanning,    setIsPanning]    = useState(false);
+  const [startPan,     setStartPan]     = useState({ x: 0, y: 0 });
+  const [mapPosition,  setMapPosition]  = useState({ x: 0, y: 0 });
+  const [dragStarted,  setDragStarted]  = useState(false);
+  const [zoom,         setZoom]         = useState(1);
+
   const clickableAreas = [
     {
       id: 1,
       name: "Village",
       title: "Vocabulary Quest",
-      // Village area (bottom-left cluster of red houses)
       polygon: [
-        { x: 36, y: 55 },
-        { x: 65, y: 55 },
-        { x: 65, y: 85 },
-        { x: 36, y: 85 }
+        { x: 36, y: 55 }, { x: 65, y: 55 },
+        { x: 65, y: 85 }, { x: 36, y: 85 }
       ],
-      center: { x: 27.5, y: 85 } // For tooltip positioning
+      center: { x: 27.5, y: 85 }
     },
     {
       id: 2,
       name: "Forest",
       title: "Synonyms & Antonyms Quest",
-      // Forest area (right side dense trees)
       polygon: [
-        { x: 70, y: 29 },
-        { x: 70, y: 50 },
-        { x: 45, y: 50 },
-        { x: 45, y: 29 }
+        { x: 70, y: 29 }, { x: 70, y: 50 },
+        { x: 45, y: 50 }, { x: 45, y: 29 }
       ],
       center: { x: 77.5, y: 72.5 }
     },
@@ -52,25 +52,33 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress }) => {
       id: 3,
       name: "Castle",
       title: "Compound Quest",
-      // Castle area (top-left with moat)
       polygon: [
-        { x: 38, y:  7 },
-        { x: 38, y: 29 },
-        { x: 20, y: 29 },
-        { x: 20, y:  7 }
+        { x: 38, y:  7 }, { x: 38, y: 29 },
+        { x: 20, y: 29 }, { x: 20, y:  7 }
       ],
       center: { x: 25, y: 25 }
     },
-   
   ];
 
-  // Check if a point is inside a polygon
+  // ── Lock check — reads from playerStorage, bypassed in dev mode ────────────
+  const isAreaLocked = (areaId) => {
+    if (devMode) return false;
+    const env = QUEST_ENV[areaId];
+    return env ? !isEnvironmentUnlocked(env) : false;
+  };
+
+  // ── Tooltip lock message ───────────────────────────────────────────────────
+  const getLockMessage = (areaId) => {
+    if (areaId === 2) return "Complete all Village quests to unlock";
+    if (areaId === 3) return "Complete the Forest to unlock";
+    return "Complete previous quest to unlock";
+  };
+
   const isPointInPolygon = (point, polygon) => {
     let inside = false;
     for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
       const xi = polygon[i].x, yi = polygon[i].y;
       const xj = polygon[j].x, yj = polygon[j].y;
-      
       const intersect = ((yi > point.y) !== (yj > point.y))
         && (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
       if (intersect) inside = !inside;
@@ -78,63 +86,35 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress }) => {
     return inside;
   };
 
-  // Pan handlers
   const handleMouseDown = (e) => {
     setIsPanning(true);
     setDragStarted(false);
-    setStartPan({
-      x: e.clientX - mapPosition.x,
-      y: e.clientY - mapPosition.y
-    });
+    setStartPan({ x: e.clientX - mapPosition.x, y: e.clientY - mapPosition.y });
   };
 
   const handleMouseMove = (e) => {
-  // Track mouse position for debug mode
-  if (debugMode && mapRef.current) {
-    const rect = mapRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setMousePosition({ x: x.toFixed(2), y: y.toFixed(2) });
-  }
-
-  if (isPanning) {
-    const rect = mapRef.current.getBoundingClientRect();
-    const mapContentWidth = rect.width * zoom;
-    const mapContentHeight = rect.height * zoom;
-    
-    let newX = e.clientX - startPan.x;
-    let newY = e.clientY - startPan.y;
-    
-    // Always constrain both X and Y to prevent white space
-    const maxX = 0;
-    const minX = -(mapContentWidth - rect.width);
-    const maxY = 0;
-    const minY = -(mapContentHeight - rect.height);
-    
-    newX = Math.max(minX, Math.min(maxX, newX));
-    newY = Math.max(minY, Math.min(maxY, newY));
-    
-    // Check if actually dragging (moved more than 5px)
-    const dragDistance = Math.sqrt(
-      Math.pow(newX - mapPosition.x, 2) + Math.pow(newY - mapPosition.y, 2)
-    );
-    
-    if (dragDistance > 5) {
-      setDragStarted(true);
+    if (debugMode && mapRef.current) {
+      const rect = mapRef.current.getBoundingClientRect();
+      setMousePosition({
+        x: (((e.clientX - rect.left) / rect.width) * 100).toFixed(2),
+        y: (((e.clientY - rect.top)  / rect.height) * 100).toFixed(2),
+      });
     }
-    
-    setMapPosition({ x: newX, y: newY });
-  } else {
-    // Only show hover tooltip when not panning
-    handleMapHover(e);
-  }
-};
+    if (isPanning) {
+      const rect = mapRef.current.getBoundingClientRect();
+      let newX = e.clientX - startPan.x;
+      let newY = e.clientY - startPan.y;
+      newX = Math.max(-(rect.width  * zoom - rect.width),  Math.min(0, newX));
+      newY = Math.max(-(rect.height * zoom - rect.height), Math.min(0, newY));
+      if (Math.sqrt(Math.pow(newX - mapPosition.x, 2) + Math.pow(newY - mapPosition.y, 2)) > 5) setDragStarted(true);
+      setMapPosition({ x: newX, y: newY });
+    } else {
+      handleMapHover(e);
+    }
+  };
 
   const handleMouseUp = (e) => {
-    if (isPanning && !dragStarted) {
-      // This was a click, not a drag
-      handleMapClick(e);
-    }
+    if (isPanning && !dragStarted) handleMapClick(e);
     setIsPanning(false);
     setDragStarted(false);
   };
@@ -143,115 +123,57 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress }) => {
     if (e.touches.length === 1) {
       setIsPanning(true);
       setDragStarted(false);
-      setStartPan({
-        x: e.touches[0].clientX - mapPosition.x,
-        y: e.touches[0].clientY - mapPosition.y
-      });
+      setStartPan({ x: e.touches[0].clientX - mapPosition.x, y: e.touches[0].clientY - mapPosition.y });
     }
   };
 
- const handleTouchMove = (e) => {
-  if (isPanning && e.touches.length === 1) {
-    e.preventDefault();
-    
-    const rect = mapRef.current.getBoundingClientRect();
-    const mapContentWidth = rect.width * zoom;
-    const mapContentHeight = rect.height * zoom;
-    
-    let newX = e.touches[0].clientX - startPan.x;
-    let newY = e.touches[0].clientY - startPan.y;
-    
-    // Always constrain both X and Y to prevent white space
-    const maxX = 0;
-    const minX = -(mapContentWidth - rect.width);
-    const maxY = 0;
-    const minY = -(mapContentHeight - rect.height);
-    
-    newX = Math.max(minX, Math.min(maxX, newX));
-    newY = Math.max(minY, Math.min(maxY, newY));
-    
-    const dragDistance = Math.sqrt(
-      Math.pow(newX - mapPosition.x, 2) + Math.pow(newY - mapPosition.y, 2)
-    );
-    
-    if (dragDistance > 5) {
-      setDragStarted(true);
+  const handleTouchMove = (e) => {
+    if (isPanning && e.touches.length === 1) {
+      e.preventDefault();
+      const rect = mapRef.current.getBoundingClientRect();
+      let newX = e.touches[0].clientX - startPan.x;
+      let newY = e.touches[0].clientY - startPan.y;
+      newX = Math.max(-(rect.width  * zoom - rect.width),  Math.min(0, newX));
+      newY = Math.max(-(rect.height * zoom - rect.height), Math.min(0, newY));
+      if (Math.sqrt(Math.pow(newX - mapPosition.x, 2) + Math.pow(newY - mapPosition.y, 2)) > 5) setDragStarted(true);
+      setMapPosition({ x: newX, y: newY });
     }
-    
-    setMapPosition({ x: newX, y: newY });
-  }
-};
+  };
 
   const handleTouchEnd = (e) => {
-    if (isPanning && !dragStarted) {
-      handleMapClick(e.changedTouches[0]);
-    }
+    if (isPanning && !dragStarted) handleMapClick(e.changedTouches[0]);
     setIsPanning(false);
     setDragStarted(false);
   };
 
-  // Zoom handlers
-  const handleZoomIn = () => {
-    setZoom(prev => {
-      const newZoom = Math.min(prev + 0.2, 2);
-      // Reset position when zooming to prevent going out of bounds
-      constrainPosition(newZoom);
-      return newZoom;
-    });
-  };
-
-  const handleZoomOut = () => {
-    setZoom(prev => {
-      const newZoom = Math.max(prev - 0.2, 0.5);
-      constrainPosition(newZoom);
-      return newZoom;
-    });
-  };
-
   const constrainPosition = (newZoom) => {
-  if (!mapRef.current) return;
-  
-  const rect = mapRef.current.getBoundingClientRect();
-  const mapContentWidth = rect.width * newZoom;
-  const mapContentHeight = rect.height * newZoom;
-  
-  const maxX = 0;
-  const minX = -(mapContentWidth - rect.width);
-  const maxY = 0;
-  const minY = -(mapContentHeight - rect.height);
-  
-  setMapPosition(prev => ({
-    x: Math.max(minX, Math.min(maxX, prev.x)),
-    y: Math.max(minY, Math.min(maxY, prev.y))
-  }));
-};
-
-  const handleResetView = () => {
-    setZoom(1); // Reset to 1x to show full image
-    setMapPosition({ x: 0, y: 0 });
+    if (!mapRef.current) return;
+    const rect = mapRef.current.getBoundingClientRect();
+    setMapPosition(prev => ({
+      x: Math.max(-(rect.width  * newZoom - rect.width),  Math.min(0, prev.x)),
+      y: Math.max(-(rect.height * newZoom - rect.height), Math.min(0, prev.y)),
+    }));
   };
 
-  // Mouse wheel zoom
+  const handleZoomIn  = () => { const z = Math.min(zoom + 0.2, 2);   setZoom(z); constrainPosition(z); };
+  const handleZoomOut = () => { const z = Math.max(zoom - 0.2, 0.5); setZoom(z); constrainPosition(z); };
+  const handleResetView = () => { setZoom(1); setMapPosition({ x: 0, y: 0 }); };
+
   const handleWheel = (e) => {
     e.preventDefault();
-    const delta = e.deltaY > 0 ? -0.1 : 0.1;
-    const newZoom = Math.max(0.5, Math.min(2, zoom + delta));
+    const newZoom = Math.max(0.5, Math.min(2, zoom + (e.deltaY > 0 ? -0.1 : 0.1)));
     setZoom(newZoom);
     constrainPosition(newZoom);
   };
 
   const handleMapClick = (e) => {
     if (!mapRef.current) return;
-
     const rect = mapRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-
-    // Check which area was clicked (in reverse order so smaller areas take priority)
+    const x = ((e.clientX - rect.left) / rect.width)  * 100;
+    const y = ((e.clientY - rect.top)  / rect.height) * 100;
     for (let i = clickableAreas.length - 1; i >= 0; i--) {
-      const area = clickableAreas[i];
-      if (isPointInPolygon({ x, y }, area.polygon)) {
-        onQuestClick(area.id);
+      if (isPointInPolygon({ x, y }, clickableAreas[i].polygon)) {
+        onQuestClick(clickableAreas[i].id);
         break;
       }
     }
@@ -259,45 +181,28 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress }) => {
 
   const handleMapHover = (e) => {
     if (!mapRef.current) return;
-
     const rect = mapRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-
-    // Find which area is being hovered
+    const x = ((e.clientX - rect.left) / rect.width)  * 100;
+    const y = ((e.clientY - rect.top)  / rect.height) * 100;
     let found = null;
     for (let i = clickableAreas.length - 1; i >= 0; i--) {
-      const area = clickableAreas[i];
-      if (isPointInPolygon({ x, y }, area.polygon)) {
-        found = area;
-        break;
-      }
+      if (isPointInPolygon({ x, y }, clickableAreas[i].polygon)) { found = clickableAreas[i]; break; }
     }
-
     setHoveredQuest(found);
     setTooltipPosition({ x: e.clientX, y: e.clientY });
   };
 
-  const handleMapLeave = () => {
-    setHoveredQuest(null);
-  };
-
-  // Get quest data
-  const getQuestData = (questId) => {
-    return quests.find(q => q.id === questId);
-  };
-
   return (
     <div className="interactive-map-container">
-      {/* Debug Toggle Button */}
-      <button 
+
+      {/* Debug Toggle */}
+      <button
         className={`debug-toggle ${debugMode ? 'active' : ''}`}
         onClick={() => setDebugMode(!debugMode)}
       >
         {debugMode ? '✓ Debug ON' : 'Debug OFF'}
       </button>
 
-      {/* Debug Info Panel */}
       {debugMode && (
         <div className="debug-info">
           <h4>🔧 Debug Mode</h4>
@@ -306,90 +211,88 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress }) => {
           <div className="area-info">
             <p><strong>Clickable Areas:</strong></p>
             {clickableAreas.map(area => (
-              <p key={area.id}>
-                {area.id}. {area.name} - {area.polygon.length} points
-              </p>
+              <p key={area.id}>{area.id}. {area.name} — {isAreaLocked(area.id) ? 'Locked' : 'Unlocked'}</p>
             ))}
           </div>
         </div>
       )}
 
-      {/* Pure Map - Click anywhere to interact, Drag to pan */}
-      <div 
+      <div
         ref={mapRef}
         className={`map-wrapper ${isPanning ? 'grabbing' : 'grab'}`}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
-        onMouseLeave={() => {
-          setIsPanning(false);
-          setHoveredQuest(null);
-        }}
+        onMouseLeave={() => { setIsPanning(false); setHoveredQuest(null); }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onWheel={handleWheel}
       >
-        <div 
+        <div
           className="map-content"
           style={{
             transform: `translate(${mapPosition.x}px, ${mapPosition.y}px) scale(${zoom})`,
-            transition: isPanning ? 'none' : 'transform 0.3s ease'
+            transition: isPanning ? 'none' : 'transform 0.3s ease',
           }}
         >
-          <img 
-            src={DashboardMap}
-            alt="Quest Map"
-            className="map-image"
-            draggable={false}
-          />
+          <img src={DashboardMap} alt="Quest Map" className="map-image" draggable={false} />
 
-          {/* Invisible clickable areas with subtle hover effect */}
+          {/* Clickable area polygons */}
           <svg className="map-overlay" viewBox="0 0 100 100" preserveAspectRatio="none">
             {clickableAreas.map((area) => {
-              const isLocked = area.id !== 1 && area.id !== 4;
+              const locked   = isAreaLocked(area.id);
               const isHovered = hoveredQuest?.id === area.id;
-
               return (
                 <polygon
                   key={area.id}
                   points={area.polygon.map(p => `${p.x},${p.y}`).join(' ')}
-                  className={`map-area ${isHovered ? 'hovered' : ''} ${isLocked ? 'locked' : 'unlocked'}`}
+                  className={`map-area ${isHovered ? 'hovered' : ''} ${locked ? 'locked' : 'unlocked'}`}
                   style={{
-                    fill: isHovered ? 'rgba(255, 215, 0, 0.15)' : 'transparent',
-                    stroke: isHovered ? '#FFD700' : 'transparent',
+                    fill:        isHovered ? (locked ? 'rgba(255,80,80,0.15)' : 'rgba(255,215,0,0.15)') : 'transparent',
+                    stroke:      isHovered ? (locked ? '#ff5050'              : '#FFD700')              : 'transparent',
                     strokeWidth: isHovered ? '0.3' : '0',
-                    cursor: isLocked ? 'not-allowed' : 'pointer',
-                    transition: 'all 0.3s ease'
+                    cursor:      locked ? 'not-allowed' : 'pointer',
+                    transition:  'all 0.3s ease',
                   }}
                 />
               );
             })}
           </svg>
 
-          {/* Debug Overlay - Shows clickable areas */}
+          {/* Lock icons overlaid on locked areas */}
+          <svg className="map-overlay map-lock-icons" viewBox="0 0 100 100" preserveAspectRatio="none">
+            {clickableAreas.map((area) => {
+              if (!isAreaLocked(area.id)) return null;
+              // Place lock at center of each polygon bounding box
+              const xs = area.polygon.map(p => p.x);
+              const ys = area.polygon.map(p => p.y);
+              const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
+              const cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+              return (
+                <text
+                  key={`lock-${area.id}`}
+                  x={cx}
+                  y={cy}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fontSize="5"
+                  style={{ pointerEvents: 'none', userSelect: 'none', filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.6))' }}
+                >
+                
+                </text>
+              );
+            })}
+          </svg>
+
+          {/* Debug overlay */}
           {debugMode && (
             <svg className="debug-overlay" viewBox="0 0 100 100" preserveAspectRatio="none">
               {clickableAreas.map((area) => (
                 <g key={`debug-${area.id}`}>
-                  {/* Polygon outline */}
-                  <polygon
-                    points={area.polygon.map(p => `${p.x},${p.y}`).join(' ')}
-                    className="debug-area"
-                  />
-                  {/* Center point */}
-                  <circle
-                    cx={area.center.x}
-                    cy={area.center.y}
-                    r="1"
-                    className="debug-center"
-                  />
-                  {/* Label */}
-                  <text
-                    x={area.center.x}
-                    y={area.center.y}
-                    className="debug-label"
-                  >
+                  <polygon points={area.polygon.map(p => `${p.x},${p.y}`).join(' ')} className="debug-area" />
+                  <circle cx={area.center.x} cy={area.center.y} r="1" className="debug-center" />
+                  <text x={area.center.x} y={area.center.y} className="debug-label">
                     {area.id}. {area.name}
                   </text>
                 </g>
@@ -399,42 +302,40 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress }) => {
         </div>
       </div>
 
-      {/* Tooltip on hover - only UI element */}
+      {/* Tooltip */}
       {hoveredQuest && (
-        <div 
+        <div
           className="map-tooltip"
           style={{
             position: 'fixed',
             left: `${tooltipPosition.x + 20}px`,
-            top: `${tooltipPosition.y - 20}px`,
+            top:  `${tooltipPosition.y - 20}px`,
             pointerEvents: 'none',
-            zIndex: 1000
+            zIndex: 1000,
           }}
         >
           <div className="tooltip-content">
             <h3>{hoveredQuest.title}</h3>
             <p className="tooltip-subtitle">{hoveredQuest.name} Theme</p>
-            {moduleProgress[hoveredQuest.id] > 0 && (
+            {(moduleProgress[hoveredQuest.id] || 0) > 0 && (
               <div className="tooltip-progress">
                 <div className="progress-bar-container">
-                  <div 
-                    className="progress-bar-fill"
-                    style={{ width: `${moduleProgress[hoveredQuest.id]}%` }}
-                  />
+                  <div className="progress-bar-fill" style={{ width: `${moduleProgress[hoveredQuest.id]}%` }} />
                 </div>
-                <span className="progress-text">
-                  {Math.round(moduleProgress[hoveredQuest.id])}% Complete
-                </span>
+                <span className="progress-text">{Math.round(moduleProgress[hoveredQuest.id])}% Complete</span>
               </div>
             )}
-            {hoveredQuest.id !== 1 && hoveredQuest.id !== 4 && (
-              <p className="tooltip-locked">🔒 Complete previous quest to unlock</p>
+            {/* Lock message — only if actually locked */}
+            {isAreaLocked(hoveredQuest.id) && (
+              <p className="tooltip-locked">{getLockMessage(hoveredQuest.id)}</p>
+            )}
+            {/* Unlocked badge */}
+            {!isAreaLocked(hoveredQuest.id) && hoveredQuest.id !== 1 && (
+              <p className="tooltip-unlocked">Unlocked — Ready to explore!</p>
             )}
           </div>
         </div>
       )}
-
-
     </div>
   );
 };
