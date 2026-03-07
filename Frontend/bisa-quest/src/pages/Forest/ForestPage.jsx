@@ -169,6 +169,7 @@ const ForestPage = () => {
                 <QuestStartModal
                     npcName={selectedNPC.name}
                     npcImage={selectedNPC.character}
+                    npcId={selectedNPC.dbNpcId}
                     questType={selectedNPC.quest}
                     onStart={handleStartQuest}
                     onClose={handleCloseModal}

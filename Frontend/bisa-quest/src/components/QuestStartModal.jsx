@@ -6,6 +6,7 @@ const QuestStartModal = ({
   // Village NPC props
   npcName,
   npcImage,
+  npcId,
   questType,
   onStart,
   onClose,
@@ -69,19 +70,50 @@ const QuestStartModal = ({
     );
   }
 
-  // Handle village NPC mode
-  const getInstructions = (type) => {
-    switch (type) {
-      case "word_matching":
-        return "Match the Bisaya words with their English translations. Click on pairs that have the same meaning!";
-      case "word_association":
-        return "Look at the pictures and choose the correct Bisaya word that matches each image!";
-      case "sentence_completion":
-        return "Complete the sentences by choosing the correct Bisaya word from the options given!";
-      default:
-        return "Complete the challenge to help the village!";
-    }
-  };
+  // NPC specific instructions
+const getInstructions = (npcId) => {
+  switch (npcId) {
+
+    // =====================
+    // VILLAGE NPCS
+    // =====================
+    case "village_npc_1":
+      return "Learn more about fruits and the market with Vicente!";
+
+    case "village_npc_2":
+      return "Help Ligaya clean the house while learning Bisaya house vocabulary!";
+
+    case "village_npc_3":
+      return "Learn farm vocabulary with Nando while helping him with his farming tasks!";
+
+    // =====================
+    // FOREST NPCS
+    // =====================
+    case "forest_npc_1":
+      return "*to edit (forest npc 1)";
+
+    case "forest_npc_2":
+      return "*to edit (forest npc 2)";
+
+    case "forest_npc_3":
+      return "*to edit (forest npc 3)";
+
+    // =====================
+    // CASTLE NPCS
+    // =====================
+    case "castle_npc_1":
+      return "*to edit (castle npc 1)";
+
+    case "castle_npc_2":
+      return "*to edit (castle npc 2)";
+
+    case "castle_npc_3":
+      return "*to edit (castle npc 3)";
+
+    default:
+      return "Complete the challenge to help the village!";
+  }
+};
 
   return (
     <div className="quest-modal-overlay" onClick={onClose}>
@@ -94,7 +126,7 @@ const QuestStartModal = ({
           <h2 className="quest-modal-title">{npcName}</h2>
           <div className="quest-modal-divider"></div>
           <p className="quest-modal-instructions">
-            {getInstructions(questType)}
+            {getInstructions(npcId)}
           </p>
           <Button
             onClick={onStart}
