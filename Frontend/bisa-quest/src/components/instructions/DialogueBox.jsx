@@ -8,16 +8,14 @@ import "./DialogueBox.css";
  * DialogueBox — reusable full-width bottom bar.
  *
  * Props:
- *   title          — speaker name shown in the left panel
- *   text           — dialogue text in the center
- *   isNarration    — true → italic narration style, no speaker panel
- *   isPlayer       — true → player response style (right-aligned, teal panel)
- *   language       — "en" | "ceb"
- *   onNext         — arrow button callback
- *   showNextButton — show the arrow (default true)
- *   rightSlot      — optional JSX on the right instead of arrow
- *   introItem      — { label, imageKey } — if provided, floats an item card
- *                    above the dialogue bar while this row is active
+ *   title, text, isNarration, isPlayer, language, onNext, showNextButton,
+ *   rightSlot, introItem
+ *
+ * Scroll behaviour:
+ *   - If text fits in the box → arrow is active, click advances dialogue.
+ *   - If text overflows → box expands upward, player scrolls manually.
+ *     Arrow is greyed and disabled until they reach the bottom, then
+ *     it lights up and clicking it advances to the next dialogue line.
  */
 const DialogueBox = ({
   title = "The Guide",
@@ -31,62 +29,72 @@ const DialogueBox = ({
   introItem = null,
 }) => {
   const contentRef = useRef(null);
-  const [hasOverflow, setHasOverflow] = useState(false);
 
-  // Detect overflow before paint so centering switches without flash
-  useLayoutEffect(() => {
-    if (contentRef.current) {
-      contentRef.current.scrollTop = 0;
-      setHasOverflow(contentRef.current.scrollHeight > contentRef.current.clientHeight + 5);
-    }
+  const [hasOverflow,   setHasOverflow]   = useState(false);
+  const [atBottom,      setAtBottom]      = useState(true);   // true = arrow active
+  const [displayText,   setDisplayText]   = useState(text);
+
+  // ── Reset on new text ────────────────────────────────────────────────────
+  useEffect(() => {
+    setDisplayText(text);
   }, [text]);
 
-  // Arrow click: if text overflows, scroll down one page; otherwise advance
-  const handleArrowClick = useCallback(() => {
+  // ── Detect overflow after paint ──────────────────────────────────────────
+  useLayoutEffect(() => {
     const el = contentRef.current;
-    if (el) {
-      const scrollRemaining = el.scrollHeight - el.scrollTop - el.clientHeight;
-      if (scrollRemaining > 5) {
-        // More text below — scroll down by one visible page
-        const style = window.getComputedStyle(el);
-        const padTop = parseFloat(style.paddingTop) || 0;
-        const padBot = parseFloat(style.paddingBottom) || 0;
-        const visibleTextHeight = el.clientHeight - padTop - padBot;
-        el.scrollBy({ top: visibleTextHeight, behavior: "smooth" });
-        return;
-      }
-    }
-    onNext?.();
-  }, [onNext]);
+    if (!el) return;
 
+    el.scrollTop = 0;
+
+    const overflow = el.scrollHeight > el.clientHeight + 20;
+    setHasOverflow(overflow);
+    // If no overflow the arrow is immediately active; if overflow, lock it
+    setAtBottom(!overflow);
+  }, [displayText]);
+
+  // ── Track manual scroll → unlock arrow when at bottom ───────────────────
+  const handleScroll = useCallback(() => {
+    const el = contentRef.current;
+    if (!el) return;
+    const remaining = el.scrollHeight - el.scrollTop - el.clientHeight;
+    setAtBottom(remaining <= 20);
+  }, []);
+
+  // ── Arrow click — only fires when unlocked ───────────────────────────────
+  const handleArrowClick = useCallback(() => {
+    if (!atBottom) return;   // locked — player hasn't scrolled yet
+    onNext?.();
+  }, [atBottom, onNext]);
+
+  // ── CSS classes ──────────────────────────────────────────────────────────
   const boxClass = [
     "dialogue-box",
-    isNarration ? "dialogue-box--narration" : "",
-    isPlayer ? "dialogue-box--player" : "",
+    isNarration  ? "dialogue-box--narration" : "",
+    isPlayer     ? "dialogue-box--player"    : "",
+    hasOverflow  ? "dialogue-box--expanded"  : "",
+  ].filter(Boolean).join(" ");
+
+  const arrowClass = [
+    "next-arrow-btn",
+    !atBottom ? "next-arrow-btn--locked" : "",
   ].filter(Boolean).join(" ");
 
   return (
     <>
-      {/* ── Item intro card — floats above the bar when introItem is set ── */}
+      {/* ── Item intro card ── */}
       {introItem && (() => {
-        // Normalise the imageKey: lowercase + trim so DB values like "Walis" or "BROOM "
-        // still resolve against ITEM_IMAGE_MAP keys like "walis" / "broom"
-        const rawKey = introItem.imageKey || "";
-        const normKey = rawKey.trim().toLowerCase();
-        // Also try the label itself as a fallback key (e.g. label="Walis" → key="walis")
+        const rawKey   = introItem.imageKey || "";
+        const normKey  = rawKey.trim().toLowerCase();
         const labelKey = (introItem.label || "").trim().toLowerCase().split(/[\s/,]+/)[0];
         const resolvedImg =
-          ITEM_IMAGE_MAP?.[normKey] ||
-          ITEM_IMAGE_MAP?.[rawKey] ||
+          ITEM_IMAGE_MAP?.[normKey]  ||
+          ITEM_IMAGE_MAP?.[rawKey]   ||
           ITEM_IMAGE_MAP?.[labelKey] ||
           null;
 
-        // Dev hint — remove after confirming images show correctly
         if (introItem.imageKey && !resolvedImg) {
           console.warn(
-            `[DialogueBox] introItem imageKey "${introItem.imageKey}" (normalised: "${normKey}") ` +
-            `not found in ITEM_IMAGE_MAP. Available keys:`,
-            Object.keys(ITEM_IMAGE_MAP)
+            `[DialogueBox] introItem imageKey "${introItem.imageKey}" not found in ITEM_IMAGE_MAP`
           );
         }
 
@@ -95,12 +103,7 @@ const DialogueBox = ({
             <div className="dialogue-intro-card">
               <div className="dialogue-intro-sparkles">✨</div>
               {resolvedImg
-                ? <img
-                  src={resolvedImg}
-                  alt={introItem.label}
-                  className="dialogue-intro-img"
-                  draggable={false}
-                />
+                ? <img src={resolvedImg} alt={introItem.label} className="dialogue-intro-img" draggable={false} />
                 : <div className="dialogue-intro-emoji">🖼️</div>
               }
               <h3 className="dialogue-intro-label">{introItem.label}</h3>
@@ -110,7 +113,7 @@ const DialogueBox = ({
         );
       })()}
 
-      {/* ── Main bar ─────────────────────────────────────────────────────── */}
+      {/* ── Main dialogue bar ── */}
       <div className={boxClass}>
 
         {/* Left panel — hidden for narration */}
@@ -120,19 +123,28 @@ const DialogueBox = ({
           </div>
         )}
 
-        {/* Center — dialogue text */}
+        {/* Center — scrollable dialogue text */}
         <div
+          key={displayText}
           className={`dialogue-content${hasOverflow ? " dialogue-content--overflow" : ""}`}
           ref={contentRef}
+          onScroll={hasOverflow ? handleScroll : undefined}
         >
           <p className={[
             "dialogue-text",
             language,
             isNarration ? "dialogue-text--narration" : "",
-            isPlayer ? "dialogue-text--player" : "",
+            isPlayer    ? "dialogue-text--player"    : "",
           ].filter(Boolean).join(" ")}>
-            {isNarration ? `✦ ${text} ✦` : text}
+            {isNarration ? `✦ ${displayText} ✦` : displayText}
           </p>
+
+          {/* Scroll-hint fade at bottom when locked */}
+          {hasOverflow && !atBottom && (
+            <div className="dialogue-scroll-hint" aria-hidden="true">
+              ▼ scroll
+            </div>
+          )}
         </div>
 
         {/* Right — custom slot OR arrow */}
@@ -141,7 +153,13 @@ const DialogueBox = ({
             {rightSlot}
           </div>
         ) : showNextButton ? (
-          <Button variant="arrow" className="next-arrow-btn" onClick={handleArrowClick}>
+          <Button
+            variant="arrow"
+            className={arrowClass}
+            onClick={handleArrowClick}
+            disabled={!atBottom}
+            title={!atBottom ? "Scroll down to continue" : "Next"}
+          >
             <img src={Arrow} alt="Next" className="arrow-icon" />
           </Button>
         ) : null}

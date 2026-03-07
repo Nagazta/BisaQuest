@@ -1,21 +1,13 @@
 // ─────────────────────────────────────────────────────────────────────────────
 //  FarmPage.jsx  —  Scenario-driven Village quest page (Nando's Farm)
-//
-//  Mirrors MarketStallPage structure exactly:
-//    Phase 1 — Story Introduction  (flow_type: main, step_order 1..N)
-//    Phase 2 — Comprehension       (round_number=0 items, image card grid)
-//    Phase 3 — Drag & Drop         (round_number=1 items, scene or equip mode)
-//    Phase 4 — Feedback            (flow_type: correct / wrong_*)
-//
-//  NPC: Nando (village_npc_3)
-//  Background: farm.png
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-import Button      from "../../components/Button";
-import DialogueBox from "../../components/instructions/DialogueBox";
+import Button           from "../../components/Button";
+import DialogueBox      from "../../components/instructions/DialogueBox";
+import BookCollectModal from "../../game/components/BookCollectModal";
 
 import NandoCharacter   from "../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
 import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_1.png";
@@ -23,7 +15,13 @@ import LigayaCharacter  from "../../assets/images/characters/vocabulary/Village_
 import farmBackground   from "../../assets/images/environments/scenario/farm.png";
 
 import { ITEM_IMAGE_MAP } from "../../game/dragDropConstants";
-import { getPlayerId, saveNPCProgress } from "../../utils/playerStorage";
+import {
+  getPlayerId,
+  saveNPCProgress,
+  awardLibroPage,
+  getLibroPageCount,
+  getLibroPageCountForEnv,
+} from "../../utils/playerStorage";
 import "./FarmPage.css";
 
 // ── NPC map ───────────────────────────────────────────────────────────────────
@@ -34,24 +32,19 @@ const NPC_IMAGES = {
 };
 
 // ── Farm drop zone registry ───────────────────────────────────────────────────
-// Use the grid tool (📐) in-game to find the exact x/y for each zone.
-// Add new zone keys here as new quests are added.
 const SCENE_DROP_ZONES = {
   farm: {
-    soil_patch_1:  { x: 13, y: 50 },
-    soil_patch_2:  { x: 95, y: 50 },
-    soil_patch_3:  { x: 60, y: 50 },
-    basket_farm:   { x: 75, y: 55 },
-    water_trough:  { x: 50, y: 40 },
-    barn_door:     { x: 82, y: 38 },
-    fence_left:    { x: 15, y: 42 },
-    fence_right:   { x: 85, y: 42 },
+    soil_patch_1: { x: 13, y: 50 },
+    soil_patch_2: { x: 95, y: 50 },
+    soil_patch_3: { x: 60, y: 50 },
+    basket_farm:  { x: 75, y: 55 },
+    water_trough: { x: 50, y: 40 },
+    barn_door:    { x: 82, y: 38 },
+    fence_left:   { x: 15, y: 42 },
+    fence_right:  { x: 85, y: 42 },
   },
 };
 
-// Resolve correct_zone to 1 or more drop zone positions.
-// correct_zone in DB can be a single key ("soil_patch_1") or
-// comma-separated ("soil_patch_1,soil_patch_2") for multi-zone quests.
 const resolveDropZones = (zoneKey, sceneZones) => {
   if (!zoneKey || !sceneZones) return [];
   return zoneKey.split(",")
@@ -110,17 +103,14 @@ const CompCard = ({ item, onSelect, locked, result }) => {
       tabIndex={locked ? -1 : 0}
       onKeyDown={e => e.key === "Enter" && !locked && onSelect(item)}
     >
-      {img
-        ? (
-          <>
-            <img src={img} alt={item.label} className="fp-comp-card-img" draggable={false} />
-            <span className="fp-comp-card-label">{item.label}</span>
-          </>
-        )
-        : (
-          <span className="fp-comp-card-text">{item.label}</span>
-        )
-      }
+      {img ? (
+        <>
+          <img src={img} alt={item.label} className="fp-comp-card-img" draggable={false} />
+          <span className="fp-comp-card-label">{item.label}</span>
+        </>
+      ) : (
+        <span className="fp-comp-card-text">{item.label}</span>
+      )}
       {result === "correct" && <div className="fp-comp-card-badge fp-comp-card-badge--correct">✓</div>}
       {result === "wrong"   && <div className="fp-comp-card-badge fp-comp-card-badge--wrong">✗</div>}
     </div>
@@ -144,43 +134,47 @@ const FarmPage = () => {
   const NpcImage = NPC_IMAGES[npcId] || NandoCharacter;
 
   // ── State ──────────────────────────────────────────────────────────────────
-  const [loading,         setLoading]        = useState(true);
-  const [fetchError,      setFetchError]     = useState(null);
-  const [background,      setBackground]     = useState(farmBackground);
-  const [flowGroups,      setFlowGroups]     = useState({});
-  const [compItems,       setCompItems]      = useState([]);
-  const [ddWordCards,     setDdWordCards]    = useState([]);
-  const [ddDropZoneLabel, setDdDropZoneLabel]= useState("");
-  const [ddInstruction,   setDdInstruction]  = useState("");
+  const [loading,         setLoading]         = useState(true);
+  const [fetchError,      setFetchError]       = useState(null);
+  const [background,      setBackground]       = useState(farmBackground);
+  const [flowGroups,      setFlowGroups]       = useState({});
+  const [compItems,       setCompItems]        = useState([]);
+  const [ddWordCards,     setDdWordCards]      = useState([]);
+  const [ddDropZoneLabel, setDdDropZoneLabel]  = useState("");
+  const [ddInstruction,   setDdInstruction]    = useState("");
 
-  const [phase,       setPhase]      = useState(Phase.STORY);
-  const [storyIdx,    setStoryIdx]   = useState(0);
-  const [branchKey,   setBranchKey]  = useState(null);
-  const [branchIdx,   setBranchIdx]  = useState(0);
-  const [feedbackKey, setFeedbackKey]= useState(null);
-  const [feedbackIdx, setFeedbackIdx]= useState(0);
+  const [phase,       setPhase]       = useState(Phase.STORY);
+  const [storyIdx,    setStoryIdx]    = useState(0);
+  const [branchKey,   setBranchKey]   = useState(null);
+  const [branchIdx,   setBranchIdx]   = useState(0);
+  const [feedbackKey, setFeedbackKey] = useState(null);
+  const [feedbackIdx, setFeedbackIdx] = useState(0);
 
-  const [compResult,  setCompResult] = useState({});
-  const [compLocked,  setCompLocked] = useState(false);
+  const [compResult, setCompResult] = useState({});
+  const [compLocked, setCompLocked] = useState(false);
 
-  const [ddIntroItem,  setDdIntroItem] = useState(null);
-  const [ddPlaced,     setDdPlaced]   = useState({});
-  const [ddShake,      setDdShake]    = useState(null);
-  const [ddCompleted,  setDdCompleted]= useState(false);
-  const [draggingWord, setDraggingWord]= useState(null);
-  const [dropHover,    setDropHover]  = useState(null);   // zone key or null
-  const [ddDropZones,  setDdDropZones]= useState([]);     // [{ key, x, y }, ...]
-  const [ddDropMode,   setDdDropMode] = useState("equip");// "scene" | "equip"
-  const [gridMode,     setGridMode]   = useState(false);
-  const [hoverCell,    setHoverCell]  = useState(null);
+  const [ddIntroItem,  setDdIntroItem]  = useState(null);
+  const [ddPlaced,     setDdPlaced]     = useState({});
+  const [ddShake,      setDdShake]      = useState(null);
+  const [ddCompleted,  setDdCompleted]  = useState(false);
+  const [draggingWord, setDraggingWord] = useState(null);
+  const [dropHover,    setDropHover]    = useState(null);
+  const [ddDropZones,  setDdDropZones]  = useState([]);
+  const [ddDropMode,   setDdDropMode]   = useState("equip");
+  const [gridMode,     setGridMode]     = useState(false);
+  const [hoverCell,    setHoverCell]    = useState(null);
+
+  // ── Modal state ────────────────────────────────────────────────────────────
+  const [showPageModal, setShowPageModal] = useState(false);
+  const [collectedPage, setCollectedPage] = useState(null);
 
   const containerRef = useRef(null);
 
   // ── Derived ────────────────────────────────────────────────────────────────
   const currentRow = (() => {
-    if (phase === Phase.STORY)       return flowGroups.main?.[storyIdx]           ?? null;
-    if (phase === Phase.COMP_BRANCH) return flowGroups[branchKey]?.[branchIdx]    ?? null;
-    if (phase === Phase.FEEDBACK)    return flowGroups[feedbackKey]?.[feedbackIdx] ?? null;
+    if (phase === Phase.STORY)       return flowGroups.main?.[storyIdx]            ?? null;
+    if (phase === Phase.COMP_BRANCH) return flowGroups[branchKey]?.[branchIdx]     ?? null;
+    if (phase === Phase.FEEDBACK)    return flowGroups[feedbackKey]?.[feedbackIdx]  ?? null;
     return null;
   })();
 
@@ -239,7 +233,6 @@ const FarmPage = () => {
           : null
         );
 
-        // Resolve drop zones — supports comma-separated correct_zone
         const scene      = meta?.scene_type || "farm";
         const zoneKey    = correctDDItem?.correct_zone || null;
         const sceneZones = SCENE_DROP_ZONES[scene] || SCENE_DROP_ZONES["farm"];
@@ -281,10 +274,14 @@ const FarmPage = () => {
       const rows = flowGroups[branchKey] || [];
       if (branchIdx < rows.length - 1) { setBranchIdx(i => i + 1); }
       else if (branchKey === "correct_comp") {
-        setCompLocked(false); setCompResult({}); setPhase(Phase.DRAG_DROP);
+        setCompLocked(false);
+        setCompResult({});
+        setPhase(Phase.DRAG_DROP);
       } else {
-        setCompLocked(false); setCompResult({});
-        setBranchKey(null); setBranchIdx(0);
+        setCompLocked(false);
+        setCompResult({});
+        setBranchKey(null);
+        setBranchIdx(0);
         setPhase(Phase.COMPREHENSION);
       }
       return;
@@ -292,17 +289,22 @@ const FarmPage = () => {
     if (phase === Phase.FEEDBACK) {
       const rows = flowGroups[feedbackKey] || [];
       if (feedbackIdx < rows.length - 1) { setFeedbackIdx(i => i + 1); }
-      else if (feedbackKey === "correct") { submitProgress(); advanceSequence(); }
-      else {
-        setDdPlaced({}); setDdShake(null); setDdCompleted(false);
-        setFeedbackKey(null); setFeedbackIdx(0);
+      else if (feedbackKey === "correct") {
+        submitProgress();
+        // navigation deferred — fires from advanceSequence or modal onClose
+      } else {
+        setDdPlaced({});
+        setDdShake(null);
+        setDdCompleted(false);
+        setFeedbackKey(null);
+        setFeedbackIdx(0);
         setPhase(Phase.DRAG_DROP);
       }
       return;
     }
   }, [phase, isLastStoryStep, branchKey, branchIdx, feedbackKey, feedbackIdx, flowGroups, compItems]);
 
-  // ── Phase 2: Comprehension click ─────────────────────────────────────────
+  // ── Phase 2: Comprehension ────────────────────────────────────────────────
   const handleCompSelect = useCallback((item) => {
     if (compLocked) return;
     setCompLocked(true);
@@ -311,7 +313,9 @@ const FarmPage = () => {
       setCompResult({ [item.id]: "correct" });
       const target = flowGroups["correct_comp"] ? "correct_comp" : null;
       if (!target) { setPhase(Phase.DRAG_DROP); return; }
-      setBranchKey("correct_comp"); setBranchIdx(0); setPhase(Phase.COMP_BRANCH);
+      setBranchKey("correct_comp");
+      setBranchIdx(0);
+      setPhase(Phase.COMP_BRANCH);
     } else {
       setCompResult({ [item.id]: "wrong" });
       const wrongKeys = Object.keys(flowGroups).filter(k => k.startsWith("wrong_"));
@@ -323,11 +327,13 @@ const FarmPage = () => {
             return (match && flowGroups[match]) ? match : wrongKeys[0] || null;
           })();
       if (!target) { setCompLocked(false); setCompResult({}); return; }
-      setBranchKey(target); setBranchIdx(0); setPhase(Phase.COMP_BRANCH);
+      setBranchKey(target);
+      setBranchIdx(0);
+      setPhase(Phase.COMP_BRANCH);
     }
   }, [compLocked, flowGroups]);
 
-  // ── Phase 3: Drag handlers ────────────────────────────────────────────────
+  // ── Phase 3: DD handlers ──────────────────────────────────────────────────
   const handleWordDragStart = (card, e) => {
     if (ddPlaced[card.id] !== undefined) return;
     e.dataTransfer.setData("cardId", card.id);
@@ -338,7 +344,6 @@ const FarmPage = () => {
   const makeZoneDragEnter = (zoneKey) => () => setDropHover(zoneKey);
   const makeZoneDragLeave = (zoneKey) => () => setDropHover(prev => prev === zoneKey ? null : prev);
 
-  // Each zone records its own key in ddPlaced so chips don't bleed across zones
   const makeZoneDrop = useCallback((zoneKey) => (e) => {
     e.preventDefault();
     setDropHover(null);
@@ -367,7 +372,6 @@ const FarmPage = () => {
     }
   }, [ddWordCards, ddPlaced, flowGroups]);
 
-  // Equip-mode drop (dialogue bar slot — fallback when no scene zones defined)
   const handleEquipDrop = useCallback((e) => {
     e.preventDefault();
     setDropHover(null);
@@ -399,13 +403,25 @@ const FarmPage = () => {
   const handleDDComplete = () => {
     if (!ddCompleted) return;
     const target = flowGroups["correct"] ? "correct" : null;
-    if (!target) { submitProgress(); advanceSequence(); return; }
-    setFeedbackKey("correct"); setFeedbackIdx(0); setPhase(Phase.FEEDBACK);
+    if (!target) { submitProgress(); return; }
+    setFeedbackKey("correct");
+    setFeedbackIdx(0);
+    setPhase(Phase.FEEDBACK);
   };
 
-  // ── Submit + sequence ──────────────────────────────────────────────────────
+  // ── Submit + advance ──────────────────────────────────────────────────────
   const submitProgress = () => {
     saveNPCProgress("village", npcId, 1, true);
+
+    const isNewPage = awardLibroPage("village", npcId);
+    if (isNewPage) {
+      const pageNumber     = getLibroPageCountForEnv("village");
+      const totalCollected = getLibroPageCount();
+      setCollectedPage({ pageNumber, totalCollected });
+      setShowPageModal(true);
+      return; // navigation held — fires from modal onClose
+    }
+
     if (playerId) {
       fetch(`${API}/api/challenge/quest/submit`, {
         method: "POST",
@@ -413,6 +429,8 @@ const FarmPage = () => {
         body: JSON.stringify({ playerId, questId, npcId, score: 1, maxScore: 1, passed: true }),
       }).catch(err => console.warn("[FarmPage] submit failed:", err));
     }
+
+    advanceSequence();
   };
 
   const advanceSequence = useCallback(() => {
@@ -429,7 +447,7 @@ const FarmPage = () => {
 
   const handleBack = () => navigate(returnTo);
 
-  // ── Dialogue content ───────────────────────────────────────────────────────
+  // ── Dialogue ──────────────────────────────────────────────────────────────
   const currentSpeaker  = currentRow?.speaker || null;
   const dialogueSpeaker = currentRow ? resolveSpeaker(currentSpeaker, npcName) : npcName;
 
@@ -453,8 +471,8 @@ const FarmPage = () => {
         <div
           className={[
             "fp-dd-equip-slot",
-            dropHover === "equip"  ? "fp-dd-equip-slot--hover"    : "",
-            ddCompleted            ? "fp-dd-equip-slot--complete"  : "",
+            dropHover === "equip" ? "fp-dd-equip-slot--hover"   : "",
+            ddCompleted           ? "fp-dd-equip-slot--complete" : "",
           ].filter(Boolean).join(" ")}
           onDragOver={(e) => { e.preventDefault(); setDropHover("equip"); }}
           onDragLeave={() => setDropHover(null)}
@@ -480,7 +498,7 @@ const FarmPage = () => {
     </div>
   ) : null;
 
-  // ── Render ─────────────────────────────────────────────────────────────────
+  // ── Render ────────────────────────────────────────────────────────────────
   if (loading) return (
     <div className="fp-container">
       <img src={farmBackground} alt="" className="fp-background" draggable={false} />
@@ -518,7 +536,7 @@ const FarmPage = () => {
         {phase === Phase.FEEDBACK      && "Feedback"}
       </div>
 
-      {/* ── Phase 2: Comprehension image grid ───────────────────────── */}
+      {/* Phase 2: Comprehension */}
       {phase === Phase.COMPREHENSION && (
         <div className="fp-comp-wrap">
           <div className="fp-comp-grid">
@@ -535,11 +553,10 @@ const FarmPage = () => {
         </div>
       )}
 
-      {/* ── Phase 3: Drag & Drop ────────────────────────────────────── */}
+      {/* Phase 3: Drag & Drop */}
       {phase === Phase.DRAG_DROP && (
         <div className="fp-dd-scene" ref={containerRef}>
 
-          {/* Scene drop zones — one or many */}
           {ddDropMode === "scene" && ddDropZones.map(zone => (
             <div
               key={zone.key}
@@ -557,7 +574,6 @@ const FarmPage = () => {
               onDragLeave={makeZoneDragLeave(zone.key)}
               onDrop={makeZoneDrop(zone.key)}
             >
-              {/* Only show chips dropped into THIS zone */}
               <div className="fp-dd-placed-chips">
                 {ddWordCards.filter(c => ddPlaced[c.id] === zone.key).map(c => (
                   <span key={c.id} className="fp-dd-chip fp-dd-chip--correct">{c.label}</span>
@@ -566,7 +582,6 @@ const FarmPage = () => {
             </div>
           ))}
 
-          {/* Word / image cards */}
           {ddWordCards.map(card => {
             const placed  = ddPlaced[card.id] !== undefined;
             const shaking = ddShake === card.id;
@@ -578,8 +593,8 @@ const FarmPage = () => {
                 key={card.id}
                 className={[
                   "fp-dd-card",
-                  placed               ? "fp-dd-card--placed"   : "",
-                  shaking              ? "fp-dd-card--shake"    : "",
+                  placed                  ? "fp-dd-card--placed"   : "",
+                  shaking                 ? "fp-dd-card--shake"    : "",
                   draggingWord === card.id ? "fp-dd-card--dragging" : "",
                 ].filter(Boolean).join(" ")}
                 style={{
@@ -602,7 +617,7 @@ const FarmPage = () => {
         </div>
       )}
 
-      {/* ── Dev grid ──────────────────────────────────────────────────── */}
+      {/* Dev grid */}
       {gridMode && (
         <div
           className="fp-grid-overlay"
@@ -631,12 +646,12 @@ const FarmPage = () => {
         </div>
       )}
 
-      {/* ── NPC ───────────────────────────────────────────────────────── */}
+      {/* NPC */}
       <div className="fp-npc-wrap">
         <img src={NpcImage} alt={npcName} className="fp-npc-image" draggable={false} />
       </div>
 
-      {/* ── DialogueBox ───────────────────────────────────────────────── */}
+      {/* DialogueBox */}
       <DialogueBox
         title={dialogueSpeaker}
         text={dialogueText}
@@ -652,7 +667,7 @@ const FarmPage = () => {
         }
       />
 
-      {/* ── Done overlay ──────────────────────────────────────────────── */}
+      {/* Done overlay */}
       {phase === Phase.DONE && (
         <div className="fp-overlay">
           <div className="fp-card">
@@ -662,6 +677,27 @@ const FarmPage = () => {
           </div>
         </div>
       )}
+
+      {/* BookCollectModal */}
+      <BookCollectModal
+        isOpen={showPageModal}
+        npcName={npcName}
+        pageNumber={collectedPage?.pageNumber}
+        totalPages={collectedPage?.totalCollected}
+        environment="village"
+        onClose={() => {
+          setShowPageModal(false);
+          setCollectedPage(null);
+          if (playerId) {
+            fetch(`${API}/api/challenge/quest/submit`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ playerId, questId, npcId, score: 1, maxScore: 1, passed: true }),
+            }).catch(err => console.warn("[FarmPage] submit failed:", err));
+          }
+          advanceSequence();
+        }}
+      />
     </div>
   );
 };

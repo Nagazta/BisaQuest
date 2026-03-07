@@ -273,6 +273,7 @@
   border:        3px solid #2d2d2d;
   cursor:        pointer;
   transition:    background 0.2s, box-shadow 0.2s, transform 0.15s, opacity 0.2s;
+  margin-top: 30px;
 }
 
 .ms-complete-btn--disabled {

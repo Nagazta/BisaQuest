@@ -10,6 +10,7 @@ const KEYS = {
     UNLOCKS:        'bisaquest_unlocks',        // environment unlock flags
     CUTSCENE_SEEN:  'bisaquest_cutscene_seen',  // legacy global story intro flag
     CUTSCENES:      'bisaquest_cutscenes',      // named per-cutscene flags
+    LIBRO_PAGES:    'bisaquest_libro_pages',    // collected book page fragments
 };
 
 // ─── Save ────────────────────────────────────────────────────────────────────
@@ -38,6 +39,11 @@ export const savePreferences = (preferences) => {
  *
  *   village 100% → unlocks forest
  *   forest  100% → unlocks castle
+ *
+ * NOTE: Libro page awarding is intentionally NOT done here.
+ * Each quest page (HousePage, MarketStallPage, FarmPage) calls
+ * awardLibroPage() manually after this function so it can show
+ * the BookCollectModal before navigating away.
  *
  * @param {string}  environment  'village' | 'forest' | 'castle'
  * @param {string}  npcId        e.g. 'village_npc_1'
@@ -173,6 +179,79 @@ export const markCutsceneSeen = (key) => {
     const seen = raw ? JSON.parse(raw) : {};
     seen[key]  = true;
     localStorage.setItem(KEYS.CUTSCENES, JSON.stringify(seen));
+};
+
+
+// ─── Libro page collectible helpers ──────────────────────────────────────────
+//
+//  Each NPC that is completed for the FIRST TIME awards one Libro page.
+//  Structure stored in LIBRO_PAGES:
+//    {
+//      village: ["village_npc_2", "village_npc_3", "village_npc_1"],
+//      forest:  [...],
+//      castle:  [...],
+//    }
+//
+//  9 pages total — 3 per environment.
+//
+//  IMPORTANT: awardLibroPage is called manually by each quest page
+//  (HousePage, MarketStallPage, FarmPage) — NOT inside saveNPCProgress —
+//  so the BookCollectModal can be shown before navigation occurs.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Award a Libro page for completing an NPC for the first time.
+ * Called manually by quest pages after saveNPCProgress.
+ * @param {string} environment  'village' | 'forest' | 'castle'
+ * @param {string} npcId        e.g. 'village_npc_2'
+ * @returns {boolean}  true if this was a NEW page (not already collected)
+ */
+export const awardLibroPage = (environment, npcId) => {
+    const pages = getLibroPages();
+    if (!pages[environment]) pages[environment] = [];
+
+    // Don't double-award
+    if (pages[environment].includes(npcId)) return false;
+
+    pages[environment].push(npcId);
+    localStorage.setItem(KEYS.LIBRO_PAGES, JSON.stringify(pages));
+    return true;
+};
+
+/**
+ * Returns all collected Libro pages.
+ * @returns {{ village: string[], forest: string[], castle: string[] }}
+ */
+export const getLibroPages = () => {
+    const raw = localStorage.getItem(KEYS.LIBRO_PAGES);
+    return raw ? JSON.parse(raw) : {};
+};
+
+/**
+ * Returns the total number of collected pages across all environments.
+ * Max = 9 (3 environments × 3 NPCs each).
+ */
+export const getLibroPageCount = () => {
+    const pages = getLibroPages();
+    return Object.values(pages).reduce((total, arr) => total + arr.length, 0);
+};
+
+/**
+ * Returns how many pages have been collected for a specific environment.
+ * @param {string} environment  'village' | 'forest' | 'castle'
+ */
+export const getLibroPageCountForEnv = (environment) => {
+    return (getLibroPages()[environment] || []).length;
+};
+
+/**
+ * Returns true if a page was already collected for this NPC.
+ * Useful to show a "already collected" badge instead of popup.
+ * @param {string} environment
+ * @param {string} npcId
+ */
+export const hasLibroPage = (environment, npcId) => {
+    return (getLibroPages()[environment] || []).includes(npcId);
 };
 
 // ─── Word summary helper ──────────────────────────────────────────────────────

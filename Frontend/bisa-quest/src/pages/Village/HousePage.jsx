@@ -1,15 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
 //  HousePage.jsx  —  Scenario-driven Village quest page
-//
-//  One questId = one full scenario:
-//    Phase 1 — Story Introduction  (flow_type: main, step_order 1..N)
-//    Phase 2 — Comprehension       (last main step shows 2 ClickableItems)
-//    Phase 3 — Drag & Drop         (challenge_items: label only, one card per row)
-//    Phase 4 — Feedback            (flow_type: correct / wrong_*)
-//
-//  Speaker field drives DialogueBox style:
-//    "Narration" → italic narration bar
-//    anything else → normal NPC bar
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -19,6 +9,7 @@ import Button           from "../../components/Button";
 import DialogueBox      from "../../components/instructions/DialogueBox";
 import ClickableItem    from "../../game/components/ClickableItem";
 import ZoneDebugOverlay from "../../game/components/ZoneDebugOverlay";
+import BookCollectModal from "../../game/components/BookCollectModal";
 
 import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
 import houseBackground from "../../assets/images/environments/scenario/house.jpg";
@@ -30,18 +21,22 @@ import {
   DEFAULT_BACKGROUND,
   ITEM_IMAGE_MAP,
 } from "../../game/dragDropConstants";
-import { getPlayerId, saveNPCProgress } from "../../utils/playerStorage";
+import {
+  getPlayerId,
+  saveNPCProgress,
+  awardLibroPage,
+  getLibroPageCount,
+  getLibroPageCountForEnv,
+} from "../../utils/playerStorage";
 import "./HousePage.css";
 
-// ── NPC image map (extend as Vicente / Nando are added) ───────────────────────
+// ── NPC image map ─────────────────────────────────────────────────────────────
 const NPC_IMAGES = {
   village_npc_2: LigayaCharacter,
 };
 
 const SCENE_BG = {
   living_room: houseBackground,
-  // kitchen: kitchenBackground,   ← add when asset ready
-  // bedroom: bedroomBackground,
 };
 
 // ── Speaker classifiers ───────────────────────────────────────────────────────
@@ -52,7 +47,7 @@ const isPlayer = (speaker) =>
   typeof speaker === "string" && speaker.toLowerCase() === "player";
 
 const resolveSpeaker = (speaker, fallback) => {
-  if (!speaker) return fallback;
+  if (!speaker)             return fallback;
   if (isNarration(speaker)) return "Narration";
   if (isPlayer(speaker))    return "Player";
   return speaker;
@@ -60,12 +55,12 @@ const resolveSpeaker = (speaker, fallback) => {
 
 // ── Phase enum ────────────────────────────────────────────────────────────────
 const Phase = {
-  STORY:         "story",          // Phase 1 — story intro dialogues
-  COMPREHENSION: "comprehension",  // Phase 2 — 2-choice picture click
-  COMP_BRANCH:   "comp_branch",    // Phase 2 — correct/wrong branch after click
-  DRAG_DROP:     "drag_drop",      // Phase 3 — word card drag & drop
-  FEEDBACK:      "feedback",       // Phase 4 — post-DD feedback dialogues
-  DONE:          "done",           // scenario complete
+  STORY:         "story",
+  COMPREHENSION: "comprehension",
+  COMP_BRANCH:   "comp_branch",
+  DRAG_DROP:     "drag_drop",
+  FEEDBACK:      "feedback",
+  DONE:          "done",
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -89,7 +84,6 @@ const HousePage = () => {
   const playerId = getPlayerId();
   const API      = import.meta.env.VITE_API_URL || "";
 
-  // Route state
   const questId       = location.state?.questId       || null;
   const npcId         = location.state?.npcId         || "village_npc_2";
   const npcName       = location.state?.npcName       || "Ligaya";
@@ -100,14 +94,14 @@ const HousePage = () => {
   const NpcImage = NPC_IMAGES[npcId] || LigayaCharacter;
 
   // ── Data state ─────────────────────────────────────────────────────────────
-  const [loading,         setLoading]         = useState(true);
-  const [fetchError,      setFetchError]      = useState(null);
-  const [background,      setBackground]      = useState(houseBackground);
-  const [flowGroups,      setFlowGroups]      = useState({});
-  const [compItems,       setCompItems]       = useState([]);
-  const [ddWordCards,     setDdWordCards]     = useState([]);
-  const [ddDropZoneLabel,  setDdDropZoneLabel]  = useState("");
-  const [ddInstruction,    setDdInstruction]    = useState("");
+  const [loading,          setLoading]          = useState(true);
+  const [fetchError,       setFetchError]        = useState(null);
+  const [background,       setBackground]        = useState(houseBackground);
+  const [flowGroups,       setFlowGroups]        = useState({});
+  const [compItems,        setCompItems]         = useState([]);
+  const [ddWordCards,      setDdWordCards]       = useState([]);
+  const [ddDropZoneLabel,  setDdDropZoneLabel]   = useState("");
+  const [ddInstruction,    setDdInstruction]     = useState("");
 
   // ── Phase + dialogue cursor state ─────────────────────────────────────────
   const [phase,       setPhase]       = useState(Phase.STORY);
@@ -119,23 +113,27 @@ const HousePage = () => {
   const [compLocked,  setCompLocked]  = useState(null);
 
   // ── DD state ───────────────────────────────────────────────────────────────
-  const [ddIntroItem,   setDdIntroItem]   = useState(null);  // correct item shown during story steps
+  const [ddIntroItem,   setDdIntroItem]   = useState(null);
   const [ddPlaced,      setDdPlaced]      = useState({});
   const [ddShake,       setDdShake]       = useState(null);
   const [ddCompleted,   setDdCompleted]   = useState(false);
   const [draggingWord,  setDraggingWord]  = useState(null);
   const [dropHover,     setDropHover]     = useState(false);
   const [ddDropZonePos, setDdDropZonePos] = useState({ x: 50, y: 40 });
-  const [ddDropMode,    setDdDropMode]    = useState("equip"); // "equip" | "scene"
+  const [ddDropMode,    setDdDropMode]    = useState("equip");
   const [gridMode,      setGridMode]      = useState(false);
   const [hoverCell,     setHoverCell]     = useState(null);
+
+  // ── Modal state ────────────────────────────────────────────────────────────
+  const [showPageModal, setShowPageModal] = useState(false);
+  const [collectedPage, setCollectedPage] = useState(null);
 
   const containerRef = useRef(null);
 
   // ── Derived current dialogue row ──────────────────────────────────────────
   const currentRow = (() => {
-    if (phase === Phase.STORY)       return flowGroups.main?.[storyIdx]          ?? null;
-    if (phase === Phase.COMP_BRANCH) return flowGroups[branchKey]?.[branchIdx]   ?? null;
+    if (phase === Phase.STORY)       return flowGroups.main?.[storyIdx]           ?? null;
+    if (phase === Phase.COMP_BRANCH) return flowGroups[branchKey]?.[branchIdx]    ?? null;
     if (phase === Phase.FEEDBACK)    return flowGroups[feedbackKey]?.[feedbackIdx] ?? null;
     return null;
   })();
@@ -158,7 +156,7 @@ const HousePage = () => {
         const [metaRes, dialoguesRes, itemsRes] = await Promise.all([
           fetch(`${API}/api/challenge/quest/${questId}`),
           fetch(`${API}/api/challenge/quest/${questId}/dialogues`),
-          fetch(`${API}/api/challenge/quest/${questId}/items?randomize=false`), // ← get ALL items, no random filtering
+          fetch(`${API}/api/challenge/quest/${questId}/items?randomize=false`),
         ]);
         if (!metaRes.ok)      throw new Error(`Quest meta: ${metaRes.status}`);
         if (!dialoguesRes.ok) throw new Error(`Dialogues: ${dialoguesRes.status}`);
@@ -181,27 +179,21 @@ const HousePage = () => {
           (a, b) => Number(a.display_order ?? 99) - Number(b.display_order ?? 99)
         );
 
-        // ── Phase 2: Comprehension (round_number = 0) ────────────────────────
-        // Dynamic x/y preserved. belongsTo added for accurate branch matching.
+        // Phase 2: Comprehension (round_number = 0)
         const compRaw = sortedItems.filter(r => Number(r.round_number) === 0);
-        if (compRaw.length === 0)
-          console.warn("[HousePage] No comprehension items (round_number=0) found for quest", questId);
         setCompItems(compRaw.map(r => ({
           id:        String(r.item_id),
           label:     r.label,
           imageKey:  r.image_key  || null,
           isCorrect: Boolean(r.is_correct),
           hint:      r.hint       || null,
-          belongsTo: r.belongs_to || null,   // ← FIX 1: carry belongs_to from DB
+          belongsTo: r.belongs_to || null,
           x:         Number(r.position_x ?? 60),
           y:         Number(r.position_y ?? 30),
         })));
 
-        // ── Phase 3: DD (round_number = 1) ───────────────────────────────────
-        // ONE card per DB row using label — dynamic x/y preserved.
+        // Phase 3: DD (round_number = 1)
         const ddRaw = sortedItems.filter(r => Number(r.round_number) === 1);
-        if (ddRaw.length === 0)
-          console.warn("[HousePage] No DD items (round_number=1) found for quest", questId);
 
         const correctDDItem = ddRaw.find(r => Boolean(r.is_correct));
         setDdDropZoneLabel(correctDDItem?.label || "");
@@ -211,8 +203,6 @@ const HousePage = () => {
           imageKey: correctDDItem.image_key || null,
         } : null);
 
-        // Hardcoded drop zone positions — mirrors ZONE_REGISTRY in dragDropConstants
-        // Set correct_zone in SQL to pick which zone the drop target uses
         const SCENE_DROP_ZONES = {
           living_room: {
             bookshelf: { x: 83, y: 40 },
@@ -236,17 +226,14 @@ const HousePage = () => {
             salog:       { x: 30, y: 72 },
           },
         };
-        const zoneKey    = correctDDItem?.correct_zone || null;
-        const sceneZones = SCENE_DROP_ZONES[scene] || {};
+        const zoneKey     = correctDDItem?.correct_zone || null;
+        const sceneZones  = SCENE_DROP_ZONES[scene] || {};
         const resolvedPos = zoneKey && sceneZones[zoneKey] ? sceneZones[zoneKey] : null;
 
-        // drop_mode: "scene" if correct_zone maps to a known scene zone → floating drop target on scene
-        //            "equip" if correct_zone is "equip", null, or unknown → equip slot in dialogue bar
         const dropMode = resolvedPos ? "scene" : "equip";
         setDdDropMode(dropMode);
         setDdDropZonePos(resolvedPos || { x: 50, y: 40 });
 
-        // ← FIX 2: one card per row, label only (no word_left / word_right split)
         const cards = ddRaw.map(r => ({
           id:        String(r.item_id),
           label:     r.label,
@@ -257,7 +244,6 @@ const HousePage = () => {
           y:         Number(r.position_y ?? 60),
         }));
 
-        console.log(`[HousePage] quest=${questId} | comp=${compRaw.length} items | dd=${cards.length} cards`);
         setDdWordCards(cards);
         setDdPlaced({});
         setLoading(false);
@@ -273,7 +259,6 @@ const HousePage = () => {
 
   // ── Navigation ─────────────────────────────────────────────────────────────
   const handleNext = useCallback(() => {
-
     if (phase === Phase.STORY) {
       if (!isLastStoryStep) {
         setStoryIdx(i => i + 1);
@@ -287,7 +272,7 @@ const HousePage = () => {
       const branchRows = flowGroups[branchKey] || [];
       if (branchIdx < branchRows.length - 1) {
         setBranchIdx(i => i + 1);
-      } else if (branchKey === "correct_comp") {   // ← FIX 3: SQL uses "correct_comp"
+      } else if (branchKey === "correct_comp") {
         setCompLocked(null);
         setPhase(Phase.DRAG_DROP);
       } else {
@@ -305,7 +290,7 @@ const HousePage = () => {
         setFeedbackIdx(i => i + 1);
       } else if (feedbackKey === "correct") {
         submitProgress();
-        advanceSequence();
+        // navigation is deferred to advanceSequence() unless modal fires
       } else {
         setDdPlaced({});
         setDdShake(null);
@@ -325,14 +310,12 @@ const HousePage = () => {
     setCompLocked(item.id);
 
     if (isCorrect) {
-      // ← FIX 3: SQL flow_type is "correct_comp" for comprehension correct branch
       const target = flowGroups["correct_comp"] ? "correct_comp" : null;
       if (!target) { setPhase(Phase.DRAG_DROP); return; }
       setBranchKey("correct_comp");
       setBranchIdx(0);
       setPhase(Phase.COMP_BRANCH);
     } else {
-      // ← FIX 1: use belongs_to from DB first, keyword match as fallback
       const wrongKeys = Object.keys(flowGroups).filter(k => k.startsWith("wrong_"));
       const target = (item.belongsTo && flowGroups[item.belongsTo])
         ? item.belongsTo
@@ -369,15 +352,12 @@ const HousePage = () => {
     if (card.isCorrect) {
       const newPlaced = { ...ddPlaced, [cardId]: "correct" };
       setDdPlaced(newPlaced);
-      const allPlaced = ddWordCards
-        .filter(c => c.isCorrect)
-        .every(c => newPlaced[c.id] === "correct");
+      const allPlaced = ddWordCards.filter(c => c.isCorrect).every(c => newPlaced[c.id] === "correct");
       if (allPlaced) setDdCompleted(true);
     } else {
       setDdShake(cardId);
       setTimeout(() => setDdShake(null), 600);
 
-      // ← FIX 1: belongs_to first, keyword fallback on label
       const wrongKeys = Object.keys(flowGroups).filter(k => k.startsWith("wrong_"));
       const target = (card.belongsTo && flowGroups[card.belongsTo])
         ? card.belongsTo
@@ -398,7 +378,7 @@ const HousePage = () => {
   const handleDDComplete = () => {
     if (!ddCompleted) return;
     const target = flowGroups["correct"] ? "correct" : null;
-    if (!target) { submitProgress(); advanceSequence(); return; }
+    if (!target) { submitProgress(); return; }
     setFeedbackKey("correct");
     setFeedbackIdx(0);
     setPhase(Phase.FEEDBACK);
@@ -407,13 +387,33 @@ const HousePage = () => {
   // ── Submit + advance ───────────────────────────────────────────────────────
   const submitProgress = () => {
     saveNPCProgress("village", npcId, 1, true);
+
+    const isNewPage = awardLibroPage("village", npcId);
+    if (isNewPage) {
+      const pageNumber     = getLibroPageCountForEnv("village");
+      const totalCollected = getLibroPageCount();
+      setCollectedPage({ pageNumber, totalCollected });
+      setShowPageModal(true);
+      return;
+    }
+
     if (playerId) {
       fetch(`${API}/api/challenge/quest/submit`, {
-        method:  "POST",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ playerId, questId, npcId, score: 1, maxScore: 1, passed: true }),
+        body: JSON.stringify({
+          playerId,
+          questId,
+          npcId,
+          score: 1,
+          maxScore: 1,
+          passed: true
+        }),
       }).catch(err => console.warn("[HousePage] submit failed:", err));
     }
+
+    // ✅ return to village instead of next quest
+    navigate(returnTo, { state: { completed: true } });
   };
 
   const advanceSequence = useCallback(() => {
@@ -458,7 +458,6 @@ const HousePage = () => {
 
   const rightSlot = phase === Phase.DRAG_DROP ? (
     <div className="house-dd-bar-slot-wrap">
-      {/* Equip slot — only shown when ddDropMode === "equip" */}
       {ddDropMode === "equip" && (
         <div
           className={[
@@ -481,8 +480,6 @@ const HousePage = () => {
           )}
         </div>
       )}
-
-      {/* Complete button — always shown */}
       <button
         className={`house-complete-btn ${ddCompleted ? "house-complete-btn--active" : "house-complete-btn--disabled"}`}
         onClick={handleDDComplete}
@@ -532,7 +529,7 @@ const HousePage = () => {
         {phase === Phase.FEEDBACK      && "Feedback"}
       </div>
 
-      {/* ── Phase 2: Comprehension — dynamic x/y from DB ────────────────── */}
+      {/* Phase 2: Comprehension */}
       {phase === Phase.COMPREHENSION && compItems.length > 0 && compItems.map(item => (
         <div
           key={item.id}
@@ -550,17 +547,16 @@ const HousePage = () => {
         </div>
       ))}
 
-      {/* ── Phase 3: Drag & Drop ────────────────────────────────────────── */}
+      {/* Phase 3: Drag & Drop */}
       {phase === Phase.DRAG_DROP && (
         <div className="house-dd-scene" ref={containerRef}>
 
-          {/* Scene drop zone — only shown when ddDropMode === "scene" */}
           {ddDropMode === "scene" && (
             <div
               className={[
                 "house-dd-dropzone",
-                dropHover   ? "house-dd-dropzone--hover"    : "",
-                ddCompleted ? "house-dd-dropzone--complete"  : "",
+                dropHover   ? "house-dd-dropzone--hover"   : "",
+                ddCompleted ? "house-dd-dropzone--complete" : "",
               ].filter(Boolean).join(" ")}
               style={{
                 left: `${Math.min(Math.max(ddDropZonePos.x, 5), 85)}%`,
@@ -579,7 +575,6 @@ const HousePage = () => {
             </div>
           )}
 
-          {/* Word cards — dynamic x/y from DB, one per row, label only */}
           {ddWordCards.map(card => {
             const placed  = ddPlaced[card.id] === "correct";
             const shaking = ddShake === card.id;
@@ -617,14 +612,16 @@ const HousePage = () => {
         </div>
       )}
 
-      {/* ── Dev grid overlay ───────────────────────────────────────────── */}
+      {/* Dev grid overlay */}
       {gridMode && (
-        <div className="house-grid-overlay"
+        <div
+          className="house-grid-overlay"
           onMouseMove={(e) => {
             const rect = e.currentTarget.getBoundingClientRect();
-            const x = Math.round(((e.clientX - rect.left) / rect.width)  * 100);
-            const y = Math.round(((e.clientY - rect.top)  / rect.height) * 100);
-            setHoverCell({ x, y });
+            setHoverCell({
+              x: Math.round(((e.clientX - rect.left) / rect.width)  * 100),
+              y: Math.round(((e.clientY - rect.top)  / rect.height) * 100),
+            });
           }}
           onMouseLeave={() => setHoverCell(null)}
         >
@@ -658,12 +655,12 @@ const HousePage = () => {
         </div>
       )}
 
-      {/* ── NPC — floats above dialogue bar ─────────────────────────────── */}
+      {/* NPC */}
       <div className="house-npc-wrap">
         <img src={NpcImage} alt={npcName} className="house-npc-image" draggable={false} />
       </div>
 
-      {/* ── Shared DialogueBox ───────────────────────────────────────────── */}
+      {/* DialogueBox */}
       <DialogueBox
         title={dialogueSpeaker}
         text={dialogueText}
@@ -681,7 +678,7 @@ const HousePage = () => {
         }
       />
 
-      {/* ── Done overlay ─────────────────────────────────────────────────── */}
+      {/* Done overlay */}
       {phase === Phase.DONE && (
         <div className="house-overlay">
           <div className="house-card">
@@ -691,6 +688,27 @@ const HousePage = () => {
           </div>
         </div>
       )}
+
+      {/* BookCollectModal */}
+      <BookCollectModal
+        isOpen={showPageModal}
+        npcName={npcName}
+        pageNumber={collectedPage?.pageNumber}
+        totalPages={collectedPage?.totalCollected}
+        environment="village"
+        onClose={() => {
+          setShowPageModal(false);
+          setCollectedPage(null);
+          if (playerId) {
+            fetch(`${API}/api/challenge/quest/submit`, {
+              method:  "POST",
+              headers: { "Content-Type": "application/json" },
+              body:    JSON.stringify({ playerId, questId, npcId, score: 1, maxScore: 1, passed: true }),
+            }).catch(err => console.warn("[HousePage] submit failed:", err));
+          }
+          navigate(returnTo, { state: { completed: true } });
+        }}
+      />
     </div>
   );
 };
