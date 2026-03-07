@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import progressRoutes from './routes/progressRoutes.js';
 import challengeRoutes from './routes/challengeRoutes.js';
 import playerRoutes from './routes/playerRoutes.js';
 // ── Environment routes ────────────────────────────────────────────────────────
@@ -34,7 +33,6 @@ app.use('/api/forest', forestRoutes);   // UC-2.3
 app.use('/api/castle', castleRoutes);   // UC-2.4
 
 // ── Game / progress routes ────────────────────────────────────────────────────
-app.use('/api/progress', progressRoutes);
 app.use('/api/challenge', challengeRoutes);
 
 // ── Health / root ─────────────────────────────────────────────────────────────
