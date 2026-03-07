@@ -2,12 +2,13 @@
 // Centralized localStorage management for BisaQuest player data
 
 const KEYS = {
-    PLAYER_ID:   'bisaquest_player_id',
-    NICKNAME:    'bisaquest_nickname',
-    CHARACTER:   'bisaquest_character',
-    PROGRESS:    'bisaquest_progress',
-    PREFERENCES: 'bisaquest_preferences',
-    UNLOCKS:     'bisaquest_unlocks',   // ← NEW: environment unlock flags
+    PLAYER_ID:      'bisaquest_player_id',
+    NICKNAME:       'bisaquest_nickname',
+    CHARACTER:      'bisaquest_character',
+    PROGRESS:       'bisaquest_progress',
+    PREFERENCES:    'bisaquest_preferences',
+    UNLOCKS:        'bisaquest_unlocks',         // environment unlock flags
+    CUTSCENE_SEEN:  'bisaquest_cutscene_seen',   // story intro played flag
 };
 
 // ─── Save ────────────────────────────────────────────────────────────────────
@@ -166,6 +167,18 @@ export const getLearnedWords = (environment, npcMeta = []) => {
     return npcMeta
         .filter(n => npcData[n.npcId]?.completed)
         .map(n => ({ npcName: n.npcName, words: n.words }));
+};
+
+// ─── Cutscene flag ───────────────────────────────────────────────────────────
+
+/** Mark the story cutscene as seen so it only plays once. */
+export const markCutsceneSeen = () => {
+    localStorage.setItem(KEYS.CUTSCENE_SEEN, 'true');
+};
+
+/** Returns true if the player has already watched the story cutscene. */
+export const hasCutsceneSeen = () => {
+    return localStorage.getItem(KEYS.CUTSCENE_SEEN) === 'true';
 };
 
 // ─── Clear ───────────────────────────────────────────────────────────────────

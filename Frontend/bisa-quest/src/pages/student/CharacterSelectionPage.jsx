@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { updateCharacter } from "../../services/playerServices";
-import { getPlayerId, saveCharacter } from "../../utils/playerStorage";
+import { getPlayerId, saveCharacter, hasCutsceneSeen } from "../../utils/playerStorage";
 import Button from "../../components/Button";
 import CharacterCard from "../../components/CharacterCard";
 import ParticleEffects from "../../components/ParticleEffects";
@@ -34,7 +34,12 @@ const CharacterSelectionPage = () => {
             saveCharacter(characterId);
             setCharacter(characterId);
 
-            navigate("/dashboard");
+            // First-time players see the story cutscene; returning players skip to dashboard
+            if (hasCutsceneSeen()) {
+                navigate("/dashboard");
+            } else {
+                navigate("/student/cutscene");
+            }
 
         } catch (err) {
             console.error("Error saving character:", err);

@@ -3,6 +3,7 @@ import HomePage from "./components/HeroSection";
 import Login from "./pages/Login";
 import StudentDashboard from "./pages/student/PlayerLobby";
 import CharacterSelection from "./pages/student/CharacterSelectionPage";
+import StoryCutscene from "./pages/student/StoryCutscene";
 import ItemAssociation from "./game/ItemAssociation";
 import VillagePage from "./pages/Village/VillagePage";
 import ForestPage from "./pages/Forest/ForestPage";
@@ -32,6 +33,7 @@ function App() {
 
             {/* ── Player setup flow (public) ─────────────────────────────── */}
             <Route path="/student/characterSelection" element={<CharacterSelection />} />
+            <Route path="/student/cutscene" element={<StoryCutscene />} />
 
             {/* ── Environment pages (public — player_id from localStorage) ─ */}
             <Route path="/student/village" element={<VillagePage />} />
