@@ -7,8 +7,9 @@ const KEYS = {
     CHARACTER:      'bisaquest_character',
     PROGRESS:       'bisaquest_progress',
     PREFERENCES:    'bisaquest_preferences',
-    UNLOCKS:        'bisaquest_unlocks',         // environment unlock flags
-    CUTSCENE_SEEN:  'bisaquest_cutscene_seen',   // story intro played flag
+    UNLOCKS:        'bisaquest_unlocks',        // environment unlock flags
+    CUTSCENE_SEEN:  'bisaquest_cutscene_seen',  // legacy global story intro flag
+    CUTSCENES:      'bisaquest_cutscenes',      // named per-cutscene flags
 };
 
 // ─── Save ────────────────────────────────────────────────────────────────────
@@ -53,7 +54,6 @@ export const saveNPCProgress = (environment, npcId, score, passed, npcCount = 3)
         encounters: 0,
     };
 
-    // Merge this result into the NPC's existing entry
     progress[npcKey] = {
         ...progress[npcKey],
         [npcId]: {
@@ -63,7 +63,6 @@ export const saveNPCProgress = (environment, npcId, score, passed, npcCount = 3)
         },
     };
 
-    // Recalculate environment completion percentage
     const completedCount = Object.values(progress[npcKey])
         .filter(npc => npc.completed).length;
     const pct = Math.round((completedCount / npcCount) * 100);
@@ -71,7 +70,7 @@ export const saveNPCProgress = (environment, npcId, score, passed, npcCount = 3)
 
     saveProgress(progress);
 
-    // ── Auto-unlock next environment at 100% ──────────────────────────────
+    // Auto-unlock next environment at 100%
     if (pct >= 100) {
         const NEXT = { village: 'forest', forest: 'castle' };
         const next = NEXT[environment];
@@ -81,32 +80,17 @@ export const saveNPCProgress = (environment, npcId, score, passed, npcCount = 3)
 
 // ─── Unlock helpers ──────────────────────────────────────────────────────────
 
-/**
- * Mark an environment as unlocked.
- * Called automatically by saveNPCProgress, or manually (e.g. dev tools).
- *
- * @param {string} environment  'forest' | 'castle'
- */
 export const saveEnvironmentUnlock = (environment) => {
     const unlocks = getUnlocks();
     unlocks[environment] = true;
     localStorage.setItem(KEYS.UNLOCKS, JSON.stringify(unlocks));
 };
 
-/**
- * Returns true if the player has unlocked the given environment.
- * Village is always unlocked (starting zone).
- *
- * @param {string} environment  'village' | 'forest' | 'castle'
- */
 export const isEnvironmentUnlocked = (environment) => {
-    if (environment === 'village') return true;   // always open
+    if (environment === 'village') return true;
     return !!getUnlocks()[environment];
 };
 
-/**
- * Returns the raw unlocks object  { forest: true, castle: true }
- */
 export const getUnlocks = () => {
     const raw = localStorage.getItem(KEYS.UNLOCKS);
     return raw ? JSON.parse(raw) : {};
@@ -114,11 +98,9 @@ export const getUnlocks = () => {
 
 // ─── Get ─────────────────────────────────────────────────────────────────────
 
-export const getPlayerId = () => localStorage.getItem(KEYS.PLAYER_ID);
-
-export const getNickname = () => localStorage.getItem(KEYS.NICKNAME);
-
-export const getCharacter = () => localStorage.getItem(KEYS.CHARACTER);
+export const getPlayerId   = () => localStorage.getItem(KEYS.PLAYER_ID);
+export const getNickname   = () => localStorage.getItem(KEYS.NICKNAME);
+export const getCharacter  = () => localStorage.getItem(KEYS.CHARACTER);
 
 export const getProgress = () => {
     const raw = localStorage.getItem(KEYS.PROGRESS);
@@ -132,22 +114,68 @@ export const getPreferences = () => {
 
 // ─── Check ───────────────────────────────────────────────────────────────────
 
-export const hasExistingPlayer = () => {
-    return !!localStorage.getItem(KEYS.PLAYER_ID);
-};
+export const hasExistingPlayer = () => !!localStorage.getItem(KEYS.PLAYER_ID);
 
 export const getSavedPlayer = () => {
     const player_id = getPlayerId();
     if (!player_id) return null;
     return {
         player_id,
-        nickname:     getNickname(),
-        character:    getCharacter(),
-        progress:     getProgress(),
-        preferences:  getPreferences(),
+        nickname:    getNickname(),
+        character:   getCharacter(),
+        progress:    getProgress(),
+        preferences: getPreferences(),
     };
 };
 
+// ─── Cutscene helpers ─────────────────────────────────────────────────────────
+//
+//  Two modes — backward compatible:
+//
+//  NO KEY  — legacy, used by the original StoryCutscene.jsx
+//    hasCutsceneSeen()       reads CUTSCENE_SEEN flag
+//    markCutsceneSeen()      writes CUTSCENE_SEEN flag
+//
+//  NAMED KEY  — used by village/forest/castle entry + complete cutscenes
+//    hasCutsceneSeen("village_entry")      reads from CUTSCENES object
+//    markCutsceneSeen("village_complete")  writes to  CUTSCENES object
+//
+//  Named keys in use:
+//    "village_entry"    | "village_complete"
+//    "forest_entry"     | "forest_complete"
+//    "castle_entry"     | "castle_complete"
+//
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Returns true if a cutscene has already been played.
+ * @param {string} [key]  Named key. Omit for the legacy global story flag.
+ */
+export const hasCutsceneSeen = (key) => {
+    if (!key) {
+        return localStorage.getItem(KEYS.CUTSCENE_SEEN) === 'true';
+    }
+    const raw  = localStorage.getItem(KEYS.CUTSCENES);
+    const seen = raw ? JSON.parse(raw) : {};
+    return !!seen[key];
+};
+
+/**
+ * Mark a cutscene as seen so it never auto-plays again.
+ * @param {string} [key]  Named key. Omit for the legacy global story flag.
+ */
+export const markCutsceneSeen = (key) => {
+    if (!key) {
+        localStorage.setItem(KEYS.CUTSCENE_SEEN, 'true');
+        return;
+    }
+    const raw  = localStorage.getItem(KEYS.CUTSCENES);
+    const seen = raw ? JSON.parse(raw) : {};
+    seen[key]  = true;
+    localStorage.setItem(KEYS.CUTSCENES, JSON.stringify(seen));
+};
+
+// ─── Word summary helper ──────────────────────────────────────────────────────
 
 /**
  * getLearnedWords
@@ -155,8 +183,7 @@ export const getSavedPlayer = () => {
  * Used by EnvironmentCompleteModal to display the word summary.
  *
  * @param {string} environment   'village' | 'forest' | 'castle'
- * @param {Array}  npcMeta       [{ npcId: 'village_npc_1', npcName: 'Vicente', words: ['MANGGA','MANGO',...] }]
- *
+ * @param {Array}  npcMeta       [{ npcId: 'village_npc_1', npcName: 'Vicente', words: [...] }]
  * @returns {Array}  [{ npcName, words }]  — only for completed NPCs
  */
 export const getLearnedWords = (environment, npcMeta = []) => {
@@ -169,22 +196,11 @@ export const getLearnedWords = (environment, npcMeta = []) => {
         .map(n => ({ npcName: n.npcName, words: n.words }));
 };
 
-// ─── Cutscene flag ───────────────────────────────────────────────────────────
-
-/** Mark the story cutscene as seen so it only plays once. */
-export const markCutsceneSeen = () => {
-    localStorage.setItem(KEYS.CUTSCENE_SEEN, 'true');
-};
-
-/** Returns true if the player has already watched the story cutscene. */
-export const hasCutsceneSeen = () => {
-    return localStorage.getItem(KEYS.CUTSCENE_SEEN) === 'true';
-};
-
 // ─── Clear ───────────────────────────────────────────────────────────────────
 
 /**
- * Clears ALL BisaQuest data from localStorage (UC-1.2 New Game)
+ * Clears ALL BisaQuest data from localStorage (UC-1.2 New Game).
+ * Wipes both the legacy cutscene flag and all named cutscene flags.
  */
 export const clearPlayerData = () => {
     Object.values(KEYS).forEach(key => localStorage.removeItem(key));

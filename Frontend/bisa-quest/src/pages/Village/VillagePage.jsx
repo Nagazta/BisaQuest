@@ -4,7 +4,7 @@ import { useCharacterPreference } from "../../hooks/useCharacterPreference";
 import EnvironmentPage from "../../components/EnvironmentPage";
 import Button from "../../components/Button";
 import ParticleEffects from "../../components/ParticleEffects";
-import { getPlayerId } from "../../utils/playerStorage";
+import { getPlayerId, getProgress, getLearnedWords, hasCutsceneSeen } from "../../utils/playerStorage";
 import VillageBackground from "../../assets/images/environments/Vocabulary/village-bg.png";
 import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
 import BoyCharacter from "../../assets/images/characters/Boy.png";
@@ -17,9 +17,7 @@ import "./VillagePage.css";
 import ProgressBar from "../../components/ProgressBar";
 import EnvironmentCompleteModal from "../../components/EnvironmentCompleteModal";
 import FogTransition from "../../components/FogTransition";
-import { getProgress, getLearnedWords, saveNPCProgress } from "../../utils/playerStorage";
 
-// Words each Village NPC teaches — used by EnvironmentCompleteModal
 const VILLAGE_NPC_META = [
     { npcId: "village_npc_2", npcName: "Ligaya",  words: ["WALIS","BROOM","TRAPO","RAG","MOP","TIMBA","BUCKET"] },
     { npcId: "village_npc_3", npcName: "Nando",   words: ["PALA","SHOVEL","REGADERA","WATERING CAN"] },
@@ -61,7 +59,7 @@ const VillagePage = () => {
 
     const PlayerCharacter = character === "roberta" ? GirlCharacter : BoyCharacter;
 
-    // ── Background music ─────────────────────────────────────────────────────
+    // ── Background music ──────────────────────────────────────────────────────
     useEffect(() => {
         const play = () => {
             if (audioRef.current) {
@@ -84,7 +82,7 @@ const VillagePage = () => {
         if (audioRef.current) { audioRef.current.muted = !isMuted; setIsMuted(p => !p); }
     };
 
-    // ── Load village progress from localStorage ───────────────────────────────
+    // ── Load village progress ─────────────────────────────────────────────────
     const loadVillageProgress = () => {
         const progress = getProgress();
         const pct = progress.village_progress || 0;
@@ -96,7 +94,7 @@ const VillagePage = () => {
         }
     };
 
-    // ── Initialize NPCs ───────────────────────────────────────────────────────
+    // ── Initialize ────────────────────────────────────────────────────────────
     useEffect(() => { initializeVillage(); }, [refreshKey]);
 
     const initializeVillage = () => {
@@ -108,7 +106,7 @@ const VillagePage = () => {
         loadVillageProgress();
     };
 
-    // ── Refresh when returning from a quest ───────────────────────────────────
+    // ── Refresh on return from quest ──────────────────────────────────────────
     useEffect(() => {
         if (location.state?.completed) {
             setRefreshKey(p => p + 1);
@@ -116,9 +114,24 @@ const VillagePage = () => {
         }
     }, [location.state]);
 
-    // ── Fog transition handlers ───────────────────────────────────────────────
-    const handleGoToForest = () => { setShowCompleteModal(false); setFogActive(true); };
-    const handleFogDone    = () => navigate("/student/forest");
+    // ── "Adto sa Forest!" button handler ─────────────────────────────────────
+    //
+    //  Flow (fog ALWAYS fires first):
+    //    First time  → fog wipe → village_complete cutscene → /student/forest
+    //    Already seen → fog wipe → /student/forest directly
+    //
+    const handleGoToForest = () => {
+        setShowCompleteModal(false);
+        setFogActive(true);   // fog always fires first
+    };
+
+    const handleFogDone = () => {
+        if (!hasCutsceneSeen("village_complete")) {
+            navigate("/cutscene/village_complete", { replace: true });
+        } else {
+            navigate("/student/forest", { replace: true });
+        }
+    };
 
     // ── NPC / modal handlers ──────────────────────────────────────────────────
     const handleNPCClick    = (npc) => { setSelectedNPC(npc); setShowModal(true); };
@@ -206,12 +219,10 @@ const VillagePage = () => {
             <audio ref={audioRef} loop><source src={bgMusic} type="audio/mpeg" /></audio>
             <ParticleEffects enableMouseTrail={false} />
 
-            {/* ── Progress bar — top-left below Back button ── */}
             <div className="village-progress-bar-wrap">
                 <ProgressBar progress={villageProgress} variant="village" showLabel={true} />
             </div>
 
-            {/* ── Village complete modal ── */}
             <EnvironmentCompleteModal
                 isOpen={showCompleteModal}
                 environment="village"
@@ -221,8 +232,7 @@ const VillagePage = () => {
                 onAdvance={handleGoToForest}
             />
 
-            {/* ── Fog transition ── */}
-            <FogTransition active={fogActive} onDone={handleFogDone} />
+            <FogTransition active={fogActive} onDone={handleFogDone} label="🌲 Entering the Forest..." />
 
             <button className="music-toggle-button" onClick={toggleMute}>
                 {isMuted ? "🔇" : "🔊"}
