@@ -15,6 +15,9 @@ import {
 } from "../../utils/playerStorage";
 import Button from "../../components/Button";
 
+// ── Import CUTSCENES so we can check if a cutscene actually exists ────────────
+import { CUTSCENES } from "./data/cutsceneData";
+
 // Quest ID → direct environment route (used on return visits)
 const QUEST_ROUTES = {
     1: "/student/village",
@@ -128,7 +131,6 @@ const PlayerLobby = () => {
         const pct      = progress[`${envKey}_progress`] || 0;
 
         if (pct > 0) {
-            // Has existing progress — show Continue / New Game modal
             setSavedProgress({ progress: pct, environment: envKey });
             setShowSaveModal(true);
         } else {
@@ -155,14 +157,21 @@ const PlayerLobby = () => {
     const handleConfirmQuest = () => {
         setShowQuestModal(false);
 
-        const id           = selectedQuest?.id;
-        const cutsceneKey  = CUTSCENE_KEYS[id];
+        const id          = selectedQuest?.id;
+        const cutsceneKey = CUTSCENE_KEYS[id];
+        const destination = QUEST_ROUTES[id] || "/student/village";
 
-        // First visit → play entry cutscene; return visits → go direct
-        if (cutsceneKey && !hasCutsceneSeen(cutsceneKey)) {
+        // Only play a cutscene if:
+        //   1. A cutscene key is defined for this quest
+        //   2. That cutscene actually exists in CUTSCENES data
+        //   3. The player hasn't seen it yet
+        const cutsceneExists = cutsceneKey && CUTSCENES[cutsceneKey];
+        const shouldPlay     = cutsceneExists && !hasCutsceneSeen(cutsceneKey);
+
+        if (shouldPlay) {
             navigate(`/cutscene/${cutsceneKey}`);
         } else {
-            navigate(QUEST_ROUTES[id] || "/student/village");
+            navigate(destination);
         }
     };
 
