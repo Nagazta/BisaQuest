@@ -56,13 +56,13 @@ const getInstructions = (npcId) => {
     // VILLAGE NPCS
     // =====================
     case "village_npc_1":
-      return "Vicente Blabla";
+      return "Learn more about fruits and the market with Vicente!";
 
     case "village_npc_2":
-      return "Ligaya Blabla";
+      return "Help Ligaya clean the house while learning Bisaya house vocabulary!";
 
     case "village_npc_3":
-      return "Nando Blabla";
+      return "Learn farm vocabulary with Nando while helping him with his farming tasks!";
 
     // =====================
     // FOREST NPCS
