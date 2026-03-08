@@ -9,23 +9,27 @@
 //    3. Remove bg + emoji (or leave — they're ignored when image is set)
 // ─────────────────────────────────────────────────────────────────────────────
 
-// ── Story intro images (already exist) ───────────────────────────────────────
-import slide1 from "../../../assets/images/cutscene/slide_1.png";
-import slide2 from "../../../assets/images/cutscene/slide_2.png";
-import slide3 from "../../../assets/images/cutscene/slide_3.png";
-import slide4 from "../../../assets/images/cutscene/slide_4.png";
+// ── Story intro images ────────────────────────────────────────────────────────
+import intro1 from "../../../assets/images/cutscene/intro/intro_1.png";
+import intro2 from "../../../assets/images/cutscene/intro/intro_2.png";
+import intro3 from "../../../assets/images/cutscene/intro/intro_3.png";
+import intro4 from "../../../assets/images/cutscene/intro/intro_4.png";
+import intro5 from "../../../assets/images/cutscene/intro/intro_5.png";
+import intro6 from "../../../assets/images/cutscene/intro/intro_6.png";
+import intro7 from "../../../assets/images/cutscene/intro/intro_7.png";
+import intro8 from "../../../assets/images/cutscene/intro/intro_8.png";
 
-// ── Village artwork — uncomment when ready ────────────────────────────────────
-import villageEntry1    from "../../../assets/images/cutscene/village/village_1.png";
-import villageEntry2    from "../../../assets/images/cutscene/village/village_2.png";
-import villageEntry3    from "../../../assets/images/cutscene/village/village_3.png";
-import villageEntry4    from "../../../assets/images/cutscene/village/village_4.png";
-import villageEntry5    from "../../../assets/images/cutscene/village/village_5.png";
-import villageEntry6    from "../../../assets/images/cutscene/village/village_6.png";
-import villageEntry7    from "../../../assets/images/cutscene/village/village_7.png";
-import villageEntry8    from "../../../assets/images/cutscene/village/village_8.png";
-import villageEntry9    from "../../../assets/images/cutscene/village/village_9.png";
-import villageEntry10   from "../../../assets/images/cutscene/village/village_10.png";
+// ── Village artwork ───────────────────────────────────────────────────────────
+import villageEntry1 from "../../../assets/images/cutscene/village/village_1.png";
+import villageEntry2 from "../../../assets/images/cutscene/village/village_2.png";
+import villageEntry3 from "../../../assets/images/cutscene/village/village_3.png";
+import villageEntry4 from "../../../assets/images/cutscene/village/village_4.png";
+import villageEntry5 from "../../../assets/images/cutscene/village/village_5.png";
+import villageEntry6 from "../../../assets/images/cutscene/village/village_6.png";
+import villageEntry7 from "../../../assets/images/cutscene/village/village_7.png";
+import villageEntry8 from "../../../assets/images/cutscene/village/village_8.png";
+import villageEntry9 from "../../../assets/images/cutscene/village/village_9.png";
+import villageEntry10 from "../../../assets/images/cutscene/village/village_10.png";
 
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -50,31 +54,35 @@ export const CUTSCENES = {
 
     // ── Story intro (after character creation → /dashboard) ──────────────────
     story: {
-        key:         undefined,
+        key: undefined,
         destination: "/dashboard",
-        finalLabel:  "Begin Quest →",
-        fogColor:    "#ffffff",
+        finalLabel: "Begin Quest →",
+        fogColor: "#ffffff",
         slides: [
-            { image: slide1, text: "Long ago, in the vibrant islands of the Visayas, the people spoke a language rich with wisdom and beauty — Bisaya." },
-            { image: slide2, text: "But as time passed, the younger generations began to forget the old words. An ancient book of knowledge was scattered across the land…" },
-            { image: slide3, text: "Three mystical realms hold the lost knowledge — the Village, the enchanted Forest, and the mighty Castle. Each one guards a piece of the language." },
-            { image: slide4, text: "Now, a new hero rises. That hero is YOU. Embark on your quest, learn the words, and restore the language of your ancestors!" },
+            { image: intro1, text: "The Grand Fiesta sa mga Pulong is drawing near. It is a celebration of language, knowledge, and community." },
+            { image: intro2, text: "Ang Village na Baryo Bulawan kay nag-andam na." },
+            { image: intro3, text: "But just a week before the Festival Day... In the Castle..." },
+            { image: intro4, text: "Naay usa ka duwende nga si Gulo. For some reason, nakasulod siya sa Castle Library, nakatutok sa Libro sa mga Pulong - the magical Book of Words that holds the wisdom of the land." },
+            { image: intro5, text: "This playful duwende stole the book. As he flees, the book pages start to scatter." },
+            { image: intro6, text: "Shortly after, naka bantay ang mga tao sa library. But it's too late... and they panic." },
+            { image: intro7, text: "Eventually, the book breaks apart. Many fragments sa book kay na punta sa lain-lain na lugar. In the Village, Forest, and some remained in the Castle." },
+            { image: intro8, text: "Without the book, the people slowly fall into confusion, forget words, and lose belongings..." },
         ],
     },
 
     // ── Village entry (first visit → /student/village) ───────────────────────
     village_entry: {
-        key:         "village_entry",
+        key: "village_entry",
         destination: "/student/village",
-        finalLabel:  "Enter Village →",
-        fogColor:    "#e8d5a3",   // warm golden dust
+        finalLabel: "Enter Village →",
+        fogColor: "#e8d5a3",   // warm golden dust
         slides: [
             {
-                image: villageEntry1, 
+                image: villageEntry1,
                 text: "Welcome to Baryo Bulawan — a small, cheerful village nestled between golden fields and the edge of the ancient forest.",
             },
             {
-                image: villageEntry2, 
+                image: villageEntry2,
                 text: "But something is wrong. The village is in gentle chaos. Houses are cluttered, market stalls are in disarray, and tools lie scattered everywhere.",
             },
             {
@@ -82,7 +90,7 @@ export const CUTSCENES = {
                 text: '"Anak," says Lolo Tasyo, stepping out from the shade of the acacia tree. "Pages from the ancient Libro have been scattered across the village. The words are lost — and with them, order itself."',
             },
             {
-                image: villageEntry4, 
+                image: villageEntry4,
                 text: '"Three of your neighbors need your help — Ligaya, Nando, and Vicente. Help them restore their places, and you will find the scattered pages of the Libro."',
             },
             {
@@ -94,13 +102,13 @@ export const CUTSCENES = {
 
     // ── Village complete (all 3 NPCs done → /student/forest) ─────────────────
     village_complete: {
-        key:         "village_complete",
+        key: "village_complete",
         destination: "/student/forest",
-        finalLabel:  "Enter the Forest →",
-        fogColor:    "#c8e6c9",   // soft forest green
+        finalLabel: "Enter the Forest →",
+        fogColor: "#c8e6c9",   // soft forest green
         slides: [
             {
-                image: villageEntry6, 
+                image: villageEntry6,
                 text: "The last of the scattered pages flutters down from Nando's barn roof. You catch it gently. Something ancient stirs in the air.",
             },
             {
@@ -112,15 +120,15 @@ export const CUTSCENES = {
                 text: 'Lolo Tasyo emerges from the shade of the old acacia tree, eyes twinkling. "You have done it, anak. The Village Fragment of the Libro — it\'s whole again."',
             },
             {
-                image: villageEntry9, 
+                image: villageEntry9,
                 text: '"Nando says, beyond the tree line lies a deeper mystery. In the enchanted Forest, the words grow twisted — words that look alike but mean different things."',
             },
             {
-                image: villageEntry10, 
+                image: villageEntry10,
                 text: 'He points toward the dark tree line. "The Forest Fragment awaits. The path is open now — but only for those brave enough to follow." The trees part. A soft light beckons from within.',
             },
         ],
     },
 
-  
+
 };
