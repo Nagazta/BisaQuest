@@ -234,18 +234,27 @@ const MarketStallPage = () => {
 
     const load = async () => {
       try {
-        const [metaRes, dialoguesRes, itemsRes] = await Promise.all([
-          fetch(`${API}/api/challenge/quest/${questId}`),
-          fetch(`${API}/api/challenge/quest/${questId}/dialogues`),
-          fetch(`${API}/api/challenge/quest/${questId}/items?randomize=false`),
-        ]);
-        if (!metaRes.ok || !dialoguesRes.ok || !itemsRes.ok)
-          throw new Error("Failed to load quest data.");
-
-        const { data: meta } = await metaRes.json();
-        const { data: dialogues } = await dialoguesRes.json();
-        const { data: rawItems } = await itemsRes.json();
+        // ── DEV MOCK: bypass API for mock quest IDs ──────────────────────────
+        let meta, dialogues, rawItems;
+        if (questId?.startsWith?.('mock_')) {
+          const { getMockQuestData } = await import('../../game/mockData/villageQuestMocks.js');
+          const mock = getMockQuestData(questId);
+          if (!mock) throw new Error(`Mock quest "${questId}" not found.`);
+          meta = mock.meta; dialogues = mock.dialogues; rawItems = mock.items;
+        } else {
+          const [metaRes, dialoguesRes, itemsRes] = await Promise.all([
+            fetch(`${API}/api/challenge/quest/${questId}`),
+            fetch(`${API}/api/challenge/quest/${questId}/dialogues`),
+            fetch(`${API}/api/challenge/quest/${questId}/items?randomize=false`),
+          ]);
+          if (!metaRes.ok || !dialoguesRes.ok || !itemsRes.ok)
+            throw new Error("Failed to load quest data.");
+          ({ data: meta } = await metaRes.json());
+          ({ data: dialogues } = await dialoguesRes.json());
+          ({ data: rawItems } = await itemsRes.json());
+        }
         if (cancelled) return;
+
 
         const qMechanic = meta?.game_mechanic || "drag_drop";
         setMechanic(qMechanic);

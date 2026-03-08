@@ -152,7 +152,7 @@ const FarmPage = () => {
     const [compResult, setCompResult] = useState({});
     const [compLocked, setCompLocked] = useState(false);
 
-    const [ddIntroItem, setDdIntroItem] = useState(null);
+    const [ddIntroItems, setDdIntroItems] = useState(null);
     const [ddPlaced, setDdPlaced] = useState({});
     const [ddShake, setDdShake] = useState(null);
     const [ddCompleted, setDdCompleted] = useState(false);
@@ -188,19 +188,28 @@ const FarmPage = () => {
 
         const load = async () => {
             try {
-                const [metaRes, dialoguesRes, itemsRes] = await Promise.all([
-                    fetch(`${API}/api/challenge/quest/${questId}`),
-                    fetch(`${API}/api/challenge/quest/${questId}/dialogues`),
-                    fetch(`${API}/api/challenge/quest/${questId}/items?randomize=false`),
-                ]);
-                if (!metaRes.ok || !dialoguesRes.ok || !itemsRes.ok)
-                    throw new Error("Failed to load quest data.");
-
-                const { data: meta } = await metaRes.json();
-                const { data: dialogues } = await dialoguesRes.json();
-                const { data: rawItems } = await itemsRes.json();
+                // ── DEV MOCK: bypass API for mock quest IDs ─────────────────────
+                let meta, dialogues, rawItems;
+                if (questId?.startsWith?.('mock_')) {
+                    const { getMockQuestData } = await import('../../game/mockData/villageQuestMocks.js');
+                    const mock = getMockQuestData(questId);
+                    if (!mock) throw new Error(`Mock quest "${questId}" not found.`);
+                    meta = mock.meta; dialogues = mock.dialogues; rawItems = mock.items;
+                } else {
+                    const [metaRes, dialoguesRes, itemsRes] = await Promise.all([
+                        fetch(`${API}/api/challenge/quest/${questId}`),
+                        fetch(`${API}/api/challenge/quest/${questId}/dialogues`),
+                        fetch(`${API}/api/challenge/quest/${questId}/items?randomize=false`),
+                    ]);
+                    if (!metaRes.ok || !dialoguesRes.ok || !itemsRes.ok)
+                        throw new Error("Failed to load quest data.");
+                    ({ data: meta } = await metaRes.json());
+                    ({ data: dialogues } = await dialoguesRes.json());
+                    ({ data: rawItems } = await itemsRes.json());
+                }
 
                 if (cancelled) return;
+
 
                 setDdInstruction(meta?.instructions || "");
                 if (!dialogues?.length) throw new Error("No dialogues found.");
@@ -225,15 +234,15 @@ const FarmPage = () => {
 
                 // Phase 3 — DD (round_number = 1)
                 const ddRaw = sorted.filter(r => Number(r.round_number) === 1);
-                const correctDDItem = ddRaw.find(r => Boolean(r.is_correct));
-                setDdDropZoneLabel(correctDDItem?.label || "");
-                setDdIntroItem(correctDDItem
-                    ? { id: String(correctDDItem.item_id), label: correctDDItem.label, imageKey: correctDDItem.image_key || null }
+                const correctDDItems = ddRaw.filter(r => Boolean(r.is_correct));
+                setDdDropZoneLabel(correctDDItems[0]?.label || "");
+                setDdIntroItems(correctDDItems.length > 0
+                    ? correctDDItems.map(item => ({ id: String(item.item_id), label: item.label, imageKey: item.image_key || null }))
                     : null
                 );
 
                 const scene = meta?.scene_type || "farm";
-                const zoneKey = correctDDItem?.correct_zone || null;
+                const zoneKey = correctDDItems[0]?.correct_zone || null;
                 const sceneZones = SCENE_DROP_ZONES[scene] || SCENE_DROP_ZONES["farm"];
                 const zones = resolveDropZones(zoneKey, sceneZones);
                 setDdDropMode(zones.length > 0 ? "scene" : "equip");
@@ -364,7 +373,10 @@ const FarmPage = () => {
                 : (() => {
                     const words = (card.label || "").toLowerCase().split(/[\s/,_-]+/);
                     const match = wrongKeys.find(k => words.some(w => w.length > 2 && k.includes(w)));
-                    return (match && flowGroups[match]) ? match : wrongKeys[0] || null;
+                    if (match && flowGroups[match]) return match;
+                    if (wrongKeys.length > 0) return wrongKeys[0];
+                    if (flowGroups["wrong"]) return "wrong";
+                    return null;
                 })();
             if (target) { setFeedbackKey(target); setFeedbackIdx(0); setPhase(Phase.FEEDBACK); }
         }
@@ -392,7 +404,10 @@ const FarmPage = () => {
                 : (() => {
                     const words = (card.label || "").toLowerCase().split(/[\s/,_-]+/);
                     const match = wrongKeys.find(k => words.some(w => w.length > 2 && k.includes(w)));
-                    return (match && flowGroups[match]) ? match : wrongKeys[0] || null;
+                    if (match && flowGroups[match]) return match;
+                    if (wrongKeys.length > 0) return wrongKeys[0];
+                    if (flowGroups["wrong"]) return "wrong";
+                    return null;
                 })();
             if (target) { setFeedbackKey(target); setFeedbackIdx(0); setPhase(Phase.FEEDBACK); }
         }
@@ -686,9 +701,9 @@ const FarmPage = () => {
                 showNextButton={showNextBtn}
                 onNext={handleNext}
                 rightSlot={rightSlot}
-                introItem={
-                    phase === Phase.STORY && ddIntroItem && Number(currentRow?.step_order) >= 3
-                        ? ddIntroItem
+                introItems={
+                    phase === Phase.STORY && ddIntroItems && Number(currentRow?.step_order) >= 3
+                        ? ddIntroItems
                         : null
                 }
             />

@@ -20,6 +20,7 @@ import CastleScenePage from "./pages/Castle/CastleScenePage";
 
 import { useAuth } from "./context/AuthContext";
 import DragAndDrop from "./game/DragAndDrop";
+import MockTestPage from "./pages/dev/MockTestPage";
 
 import "./App.css";
 
@@ -44,8 +45,8 @@ function App() {
 
             {/* ── Environment pages ──────────────────────────────────────── */}
             <Route path="/student/village" element={<VillagePage />} />
-            <Route path="/student/forest"  element={<ForestPage />} />
-            <Route path="/student/castle"  element={<CastlePage />} />
+            <Route path="/student/forest" element={<ForestPage />} />
+            <Route path="/student/castle" element={<CastlePage />} />
 
             {/* ── Game / challenge pages ─────────────────────────────────── */}
             <Route path="/student/house" element={<HousePage />} />
@@ -53,10 +54,13 @@ function App() {
             <Route path="/castle/scene" element={<CastleScenePage />} />
             <Route path="/student/library" element={<CastleScenePage />} />
 
-            <Route path="/student/dragAndDrop"       element={<DragAndDrop />} />
-            <Route path="/student/item-association"  element={<ItemAssociation />} />
-            <Route path="/student/market"            element={<MarketStallPage />} />
-            <Route path="/student/farm"              element={<FarmPage />} />
+            <Route path="/student/dragAndDrop" element={<DragAndDrop />} />
+            <Route path="/student/item-association" element={<ItemAssociation />} />
+            <Route path="/student/market" element={<MarketStallPage />} />
+            <Route path="/student/farm" element={<FarmPage />} />
+
+            {/* ── Dev / testing ────────────────────────────────────────────── */}
+            {import.meta.env.DEV && <Route path="/dev/mock-quests" element={<MockTestPage />} />}
 
             {/* ── Dashboard ─────────────────────────────────────────────── */}
             <Route

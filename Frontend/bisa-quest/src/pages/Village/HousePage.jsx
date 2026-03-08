@@ -124,7 +124,7 @@ const HousePage = () => {
   const [compLocked, setCompLocked] = useState(null);
 
   // ── DD state ───────────────────────────────────────────────────────────────
-  const [ddIntroItem, setDdIntroItem] = useState(null);
+  const [ddIntroItems, setDdIntroItems] = useState(null);
   const [ddPlaced, setDdPlaced] = useState({});
   const [ddShake, setDdShake] = useState(null);
   const [ddCompleted, setDdCompleted] = useState(false);
@@ -178,22 +178,31 @@ const HousePage = () => {
     let cancelled = false;
     const load = async () => {
       try {
-        const [metaRes, dialoguesRes, itemsRes] = await Promise.all([
-          fetch(`${API}/api/challenge/quest/${questId}`),
-          fetch(`${API}/api/challenge/quest/${questId}/dialogues`),
-          fetch(`${API}/api/challenge/quest/${questId}/items?randomize=false`),
-        ]);
-        if (!metaRes.ok) throw new Error(`Quest meta: ${metaRes.status}`);
-        if (!dialoguesRes.ok) throw new Error(`Dialogues: ${dialoguesRes.status}`);
-        if (!itemsRes.ok) throw new Error(`Items: ${itemsRes.status}`);
-
-        const { data: meta } = await metaRes.json();
-        const { data: dialogues } = await dialoguesRes.json();
-        const { data: rawItems } = await itemsRes.json();
+        // ── DEV MOCK: bypass API for mock quest IDs ───────────────────────────
+        let meta, dialogues, rawItems;
+        if (questId?.startsWith?.('mock_')) {
+          const { getMockQuestData } = await import('../../game/mockData/villageQuestMocks.js');
+          const mock = getMockQuestData(questId);
+          if (!mock) throw new Error(`Mock quest "${questId}" not found.`);
+          meta = mock.meta; dialogues = mock.dialogues; rawItems = mock.items;
+        } else {
+          const [metaRes, dialoguesRes, itemsRes] = await Promise.all([
+            fetch(`${API}/api/challenge/quest/${questId}`),
+            fetch(`${API}/api/challenge/quest/${questId}/dialogues`),
+            fetch(`${API}/api/challenge/quest/${questId}/items?randomize=false`),
+          ]);
+          if (!metaRes.ok) throw new Error(`Quest meta: ${metaRes.status}`);
+          if (!dialoguesRes.ok) throw new Error(`Dialogues: ${dialoguesRes.status}`);
+          if (!itemsRes.ok) throw new Error(`Items: ${itemsRes.status}`);
+          ({ data: meta } = await metaRes.json());
+          ({ data: dialogues } = await dialoguesRes.json());
+          ({ data: rawItems } = await itemsRes.json());
+        }
 
         if (cancelled) return;
 
         const scene = meta?.scene_type || "living_room";
+
         setSceneType(scene);
         setBackground(SCENE_BG[scene] || houseBackground);
         setDdInstruction(meta?.instructions || "");
@@ -229,13 +238,12 @@ const HousePage = () => {
 
         // Phase 3: DD (round_number = 1)
         const ddRaw = sortedItems.filter(r => Number(r.round_number) === 1);
-        const correctDDItem = ddRaw.find(r => Boolean(r.is_correct));
-        setDdDropZoneLabel(correctDDItem?.label || "");
-        setDdIntroItem(correctDDItem ? {
-          id: String(correctDDItem.item_id),
-          label: correctDDItem.label,
-          imageKey: correctDDItem.image_key || null,
-        } : null);
+        const correctDDItems = ddRaw.filter(r => Boolean(r.is_correct));
+        setDdDropZoneLabel(correctDDItems[0]?.label || "");
+        setDdIntroItems(correctDDItems.length > 0
+          ? correctDDItems.map(item => ({ id: String(item.item_id), label: item.label, imageKey: item.image_key || null }))
+          : null
+        );
 
         const SCENE_DROP_ZONES = {
           living_room: {
@@ -269,7 +277,7 @@ const HousePage = () => {
           },
         };
 
-        const zoneKey = correctDDItem?.correct_zone || null;
+        const zoneKey = correctDDItems[0]?.correct_zone || null;
         const sceneZones = SCENE_DROP_ZONES[scene] || {};
         const resolvedPos = zoneKey && sceneZones[zoneKey] ? sceneZones[zoneKey] : null;
 
@@ -407,7 +415,10 @@ const HousePage = () => {
         : (() => {
           const words = (card.label || "").toLowerCase().split(/[\s/,_-]+/);
           const match = wrongKeys.find(k => words.some(w => w.length > 2 && k.includes(w)));
-          return (match && flowGroups[match]) ? match : wrongKeys[0] || null;
+          if (match && flowGroups[match]) return match;
+          if (wrongKeys.length > 0) return wrongKeys[0];
+          if (flowGroups["wrong"]) return "wrong";
+          return null;
         })();
 
       if (target) {
@@ -727,11 +738,11 @@ const HousePage = () => {
         showNextButton={showNextBtn}
         onNext={handleNext}
         rightSlot={rightSlot}
-        introItem={
+        introItems={
           phase === Phase.STORY &&
-            ddIntroItem &&
+            ddIntroItems &&
             Number(currentRow?.step_order) >= 3
-            ? ddIntroItem
+            ? ddIntroItems
             : null
         }
       />

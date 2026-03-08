@@ -278,6 +278,8 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
   padding-bottom: 24px;
   z-index: 25;
   pointer-events: none;

@@ -27,12 +27,13 @@ const DialogueBox = ({
   showNextButton = true,
   rightSlot = null,
   introItem = null,
+  introItems = null, // Support for multiple items
 }) => {
   const contentRef = useRef(null);
 
-  const [hasOverflow,   setHasOverflow]   = useState(false);
-  const [atBottom,      setAtBottom]      = useState(true);   // true = arrow active
-  const [displayText,   setDisplayText]   = useState(text);
+  const [hasOverflow, setHasOverflow] = useState(false);
+  const [atBottom, setAtBottom] = useState(true);   // true = arrow active
+  const [displayText, setDisplayText] = useState(text);
 
   // ── Reset on new text ────────────────────────────────────────────────────
   useEffect(() => {
@@ -69,9 +70,9 @@ const DialogueBox = ({
   // ── CSS classes ──────────────────────────────────────────────────────────
   const boxClass = [
     "dialogue-box",
-    isNarration  ? "dialogue-box--narration" : "",
-    isPlayer     ? "dialogue-box--player"    : "",
-    hasOverflow  ? "dialogue-box--expanded"  : "",
+    isNarration ? "dialogue-box--narration" : "",
+    isPlayer ? "dialogue-box--player" : "",
+    hasOverflow ? "dialogue-box--expanded" : "",
   ].filter(Boolean).join(" ");
 
   const arrowClass = [
@@ -81,37 +82,37 @@ const DialogueBox = ({
 
   return (
     <>
-      {/* ── Item intro card ── */}
-      {introItem && (() => {
-        const rawKey   = introItem.imageKey || "";
-        const normKey  = rawKey.trim().toLowerCase();
-        const labelKey = (introItem.label || "").trim().toLowerCase().split(/[\s/,]+/)[0];
-        const resolvedImg =
-          ITEM_IMAGE_MAP?.[normKey]  ||
-          ITEM_IMAGE_MAP?.[rawKey]   ||
-          ITEM_IMAGE_MAP?.[labelKey] ||
-          null;
+      {/* ── Item intro card(s) ── */}
+      {(introItems || (introItem ? [introItem] : null)) && (
+        <div className="dialogue-intro-wrap">
+          {(introItems || [introItem]).map((item, idx) => {
+            const rawKey = item.imageKey || "";
+            const normKey = rawKey.trim().toLowerCase();
+            const labelKey = (item.label || "").trim().toLowerCase().split(/[\s/,]+/)[0];
+            const resolvedImg =
+              ITEM_IMAGE_MAP?.[normKey] ||
+              ITEM_IMAGE_MAP?.[rawKey] ||
+              ITEM_IMAGE_MAP?.[labelKey] ||
+              null;
 
-        if (introItem.imageKey && !resolvedImg) {
-          console.warn(
-            `[DialogueBox] introItem imageKey "${introItem.imageKey}" not found in ITEM_IMAGE_MAP`
-          );
-        }
+            if (item.imageKey && !resolvedImg) {
+              console.warn(`[DialogueBox] introItem imageKey "${item.imageKey}" not found in ITEM_IMAGE_MAP`);
+            }
 
-        return (
-          <div className="dialogue-intro-wrap">
-            <div className="dialogue-intro-card">
-              <div className="dialogue-intro-sparkles">✨</div>
-              {resolvedImg
-                ? <img src={resolvedImg} alt={introItem.label} className="dialogue-intro-img" draggable={false} />
-                : <div className="dialogue-intro-emoji">🖼️</div>
-              }
-              <h3 className="dialogue-intro-label">{introItem.label}</h3>
-              <div className="dialogue-intro-sparkles">✨</div>
-            </div>
-          </div>
-        );
-      })()}
+            return (
+              <div key={item.id || idx} className="dialogue-intro-card">
+                <div className="dialogue-intro-sparkles">✨</div>
+                {resolvedImg
+                  ? <img src={resolvedImg} alt={item.label} className="dialogue-intro-img" draggable={false} />
+                  : <div className="dialogue-intro-emoji">🖼️</div>
+                }
+                <h3 className="dialogue-intro-label">{item.label}</h3>
+                <div className="dialogue-intro-sparkles">✨</div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* ── Main dialogue bar ── */}
       <div className={boxClass}>
@@ -134,7 +135,7 @@ const DialogueBox = ({
             "dialogue-text",
             language,
             isNarration ? "dialogue-text--narration" : "",
-            isPlayer    ? "dialogue-text--player"    : "",
+            isPlayer ? "dialogue-text--player" : "",
           ].filter(Boolean).join(" ")}>
             {isNarration ? `✦ ${displayText} ✦` : displayText}
           </p>
