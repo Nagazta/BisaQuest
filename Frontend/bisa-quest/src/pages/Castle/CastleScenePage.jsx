@@ -2,16 +2,37 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Button from "../../components/Button";
 import DialogueBox from "../../components/instructions/DialogueBox";
-import PrincessHara from "../../assets/images/characters/princess-hara.png";
+import PrincessHara  from "../../assets/images/characters/princess-hara.png";
+import ManongKwill   from "../../assets/images/characters/castle-manong-kwill.png";
+import GuloImg       from "../../assets/images/characters/gulo.png";
 import castleLibraryImg from "../../assets/images/environments/scenario/castle-library.png";
 import castleLibraryLitImg from "../../assets/images/environments/scenario/castle-library-light.png";
-import castleGardenImg from "../../assets/images/environments/scenario/castle-garden.fountain.png";
+import castleGardenImg    from "../../assets/images/environments/scenario/castle-garden.fountain.png";
+import castleNightGardenImg from "../../assets/images/environments/scenario/castle-night-garden.png";
+import castleCourtyardImg   from "../../assets/images/environments/scenario/castle-courtyard.png";
+import castleFirewoodImg    from "../../assets/images/environments/scenario/castle-firewood.png";
+import castleFireworkImg      from "../../assets/images/environments/scenario/castle-firework.png";
+import castleMoonlightRoomImg from "../../assets/images/environments/scenario/castle-moonlight-room.png";
+import castleRainbowImg       from "../../assets/images/environments/scenario/castle-rainbow.png";
 import { getPlayerId, saveNPCProgress } from "../../utils/playerStorage";
 import "./CastleScenePage.css";
 
 const SCENE_BG = {
     "castle-library":  castleLibraryImg,
     "garden-fountain": castleGardenImg,
+    "night-garden":    castleNightGardenImg,
+    "castle-courtyard": castleCourtyardImg,
+    "castle-firewood":  castleFirewoodImg,
+    "castle-firework":      castleFireworkImg,
+    "castle-moonlight-room": castleMoonlightRoomImg,
+    "castle-rainbow":        castleRainbowImg,
+};
+
+// NPC character sprites (null = no character shown)
+const NPC_CHARACTER = {
+    "castle_npc_1": PrincessHara,
+    "castle_npc_2": ManongKwill,
+    "castle_npc_3": GuloImg,
 };
 const DEFAULT_BG = castleLibraryImg;
 
@@ -53,6 +74,9 @@ const EMOJI_MAP = {
     rain: "🌧️", bow: "🏹", snow: "❄️", flake: "❄️",
     thunder: "⚡", storm: "⛈️", moon: "🌙", star: "⭐",
     water: "💧", fall: "🌊", stone: "🪨",
+    court: "🏰", yard: "🌳", wood: "🪵", window: "🪟",
+    play: "🎭", work: "⚙️", cloud: "☁️",
+
 };
 
 const toEmoji = (label) => {
@@ -350,12 +374,12 @@ const CastleScenePage = () => {
 
             <Button variant="back" className="csp-back" onClick={handleBack}>← Back</Button>
 
-            {/* Princess Hara — visible unless combine phase */}
-            {phase !== "combine" && (
+            {/* NPC character — only shown when a sprite exists for this NPC */}
+            {phase !== "combine" && NPC_CHARACTER[npcId] && (
                 <div className="csp-princess-wrap">
                     <img
-                        src={PrincessHara}
-                        alt="Princess Hara"
+                        src={NPC_CHARACTER[npcId]}
+                        alt={npcName}
                         className="csp-princess-img"
                         draggable={false}
                     />
@@ -405,7 +429,7 @@ const CastleScenePage = () => {
                             onClick={handleCastSpell}
                             disabled={!slots[0] || !slots[1] || combining}
                         >
-                            ✨ Cast Spell
+                            Cast Spell
                         </button>
                     </div>
 

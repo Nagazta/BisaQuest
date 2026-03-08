@@ -9,6 +9,9 @@ import { getPlayerId } from "../../utils/playerStorage";
 import CastleBackground from "../../assets/images/environments/castle.png";
 import BoyCharacter from "../../assets/images/characters/Boy.png";
 import GirlCharacter from "../../assets/images/characters/Girl.png";
+import ManongKwillImg from "../../assets/images/characters/castle-manong-kwill.png";
+import GuloImg        from "../../assets/images/characters/gulo.png";
+import PrincessHaraImg from "../../assets/images/characters/castle-princess-hara.png";
 import bgMusic from "../../assets/music/bg-music.mp3";
 import QuestStartModal from "../../components/QuestStartModal";
 import "./CastlePage.css";
@@ -16,9 +19,9 @@ import "./CastlePage.css";
 const CASTLE_HINT = "Enter the Castle! Complete all tasks to master compound words";
 
 const CASTLE_NPCS = [
-    { npcId: "castle_npc_3", name: "Gulo",          x: 28, y: 60, character: BoyCharacter,  showName: true, quest: "compound_words", scenePath: "/student/library"          },
-    { npcId: "castle_npc_1", name: "Princess Hara", x: 50, y: 45, character: GirlCharacter, showName: true, quest: "compound_words", scenePath: "/student/library"          },
-    { npcId: "castle_npc_2", name: "Manong Kwill",  x: 72, y: 55, character: BoyCharacter,  showName: true, quest: "compound_words", scenePath: "/student/library" },
+    { npcId: "castle_npc_3", name: "Gulo",          x: 28, y: 60, character: GuloImg,       showName: true, quest: "compound_words", scenePath: "/student/library"          },
+    { npcId: "castle_npc_1", name: "Princess Hara", x: 50, y: 45, character: PrincessHaraImg, showName: true, quest: "compound_words", scenePath: "/student/library"          },
+    { npcId: "castle_npc_2", name: "Manong Kwill",  x: 72, y: 55, character: ManongKwillImg, showName: true, quest: "compound_words", scenePath: "/student/library" },
 ];
 
 const CastlePage = () => {
