@@ -63,6 +63,27 @@
   50%       { transform: translateY(-8px); }
 }
 
+/* ── Customer sprite (item_association rounds) ───────────────── */
+/*
+ * Generic customer image — used during IA rounds across any scene.
+ * Positioned to the right of centre so it doesn't overlap the NPC slot.
+ * key={iaRound} on the <img> forces React to remount on round change,
+ * re-running the ms-customer-enter animation automatically.
+ */
+.ms-customer-image {
+  height:           300px;
+  width:            auto;
+  object-fit:       contain;
+  image-rendering:  pixelated;
+  filter:           drop-shadow(0 8px 16px rgba(0,0,0,0.5));
+  animation:        ms-customer-enter 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes ms-customer-enter {
+  from { opacity: 0; transform: translateY(20px) scale(0.9); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);   }
+}
+
 /* ── Phase 2: Comprehension ──────────────────────────────────── */
 .ms-comp-item {
   position:  absolute;
@@ -457,10 +478,9 @@
 
 /* ── Phase 2: Comprehension image cards ──────────────────────── */
 
-/* Centered grid — sits above the dialogue bar */
 .ms-comp-grid {
   position:        absolute;
-  bottom:          110px;   /* sits just above dialogue bar */
+  bottom:          110px;
   left:            50%;
   transform:       translateX(-50%);
   display:         flex;

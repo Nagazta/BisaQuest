@@ -17,7 +17,8 @@ import BedsheetImg from "../assets/items/bedsheet.png";
 import HabolImg    from "../assets/items/habol.png";
 import HandfanImg  from "../assets/items/hand_fan.png";
 import electricFanImg from "../assets/items/electricfanRed.png";
-
+import bucketImg   from "../assets/items/bucket.png";
+import lampImg     from "../assets/items/lamp.png";
 
 //Item images — Kitchen
 import PotImg    from "../assets/items/pot.png";
@@ -38,6 +39,9 @@ import MangoRipeImg    from "../assets/items/mango.jpg";
 import MangoUnripeImg  from "../assets/items/mango_notripe.jpg";
 import BananaRipeImg   from "../assets/items/banana.jpg";
 import BananaUnripeImg from "../assets/items/banana_notripe.jpg";
+import watermelonImg    from "../assets/items/fruit_watermelon.png";
+import santolImg         from "../assets/items/fruit_santol.png";
+import lansonsesImg       from "../assets/items/fruit_lansones.png";
 
 //Item images - Farm
 import WateringCanImg from "../assets/items/wateringCan.png";
@@ -62,6 +66,9 @@ export const ITEM_IMAGE_MAP = {
   trash:    TrashImg,
   basura:   TrashImg,
   Bentilador: electricFanImg,
+  bucket: bucketImg,
+  lamp: lampImg,
+
   // Kitchen
   pot:      PotImg,
   kaldero:  PotImg,
@@ -96,6 +103,9 @@ export const ITEM_IMAGE_MAP = {
   saging_unripe:   BananaUnripeImg,
   banana_notripe:  BananaUnripeImg,
   fruit_round:     BananaUnripeImg,  // comprehension wrong choice (round/unripe)
+  pakwan:          watermelonImg,
+  santol:          santolImg,
+  lansones:        lansonsesImg,
 
   // Farm
   regadera: WateringCanImg,

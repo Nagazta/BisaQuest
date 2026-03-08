@@ -21,7 +21,7 @@ import FogTransition from "../../components/FogTransition";
 const VILLAGE_NPC_META = [
     { npcId: "village_npc_2", npcName: "Ligaya",  words: ["WALIS","BROOM","TRAPO","RAG","MOP","TIMBA","BUCKET"] },
     { npcId: "village_npc_3", npcName: "Nando",   words: ["PALA","SHOVEL","REGADERA","WATERING CAN"] },
-    { npcId: "village_npc_1", npcName: "Vicente", words: ["MANGGA","MANGO","SAGING","BANANA"] },
+    { npcId: "village_npc_1", npcName: "Vicente", words: ["SANTOL","COTTON FRUIT","LANSONES","LANZONES","PAKWAN","WATERMELON","MANGGA","MANGO","SAGING","BANANA"] },
 ];
 
 const NPC_DB_ID = {
@@ -68,7 +68,11 @@ const VillagePage = () => {
             }
         };
         play();
-        const onInteract = () => { play(); document.removeEventListener("click", onInteract); document.removeEventListener("keydown", onInteract); };
+        const onInteract = () => {
+            play();
+            document.removeEventListener("click",   onInteract);
+            document.removeEventListener("keydown", onInteract);
+        };
         document.addEventListener("click",   onInteract);
         document.addEventListener("keydown", onInteract);
         return () => {
@@ -115,14 +119,9 @@ const VillagePage = () => {
     }, [location.state]);
 
     // ── "Adto sa Forest!" button handler ─────────────────────────────────────
-    //
-    //  Flow (fog ALWAYS fires first):
-    //    First time  → fog wipe → village_complete cutscene → /student/forest
-    //    Already seen → fog wipe → /student/forest directly
-    //
     const handleGoToForest = () => {
         setShowCompleteModal(false);
-        setFogActive(true);   // fog always fires first
+        setFogActive(true);
     };
 
     const handleFogDone = () => {
@@ -161,12 +160,19 @@ const VillagePage = () => {
             if (res.ok) {
                 const { data } = await res.json();
                 if (Array.isArray(data) && data.length) {
+
                     if (isMarket) {
-                        const pool = data.filter(q => q.game_mechanic === "drag_drop" && q.scene_type === "market_stall");
+                        const pool = data.filter(q => q.scene_type === "market_stall");
+                        console.log("[VillagePage] market_stall pool:", pool.map(q => ({
+                            id: q.quest_id, mechanic: q.game_mechanic
+                        })));
                         resolvedQuestId = randomPick(pool)?.quest_id ?? null;
+                        console.log("[VillagePage] picked questId:", resolvedQuestId);
+
                     } else if (isFarm) {
-                        const pool = data.filter(q => q.game_mechanic === "drag_drop" && q.scene_type === "farm");
+                        const pool = data.filter(q => q.scene_type === "farm");
                         resolvedQuestId = randomPick(pool)?.quest_id ?? null;
+
                     } else {
                         resolvedQuestId          = randomPick(data.filter(q => q.game_mechanic === "drag_drop"        && q.scene_type === "living_room"))?.quest_id ?? null;
                         resolvedKitchenQuestId   = randomPick(data.filter(q => q.game_mechanic === "drag_drop"        && q.scene_type === "kitchen"))?.quest_id    ?? null;
@@ -194,12 +200,12 @@ const VillagePage = () => {
             npcName:               selectedNPC.name,
             returnTo:              "/student/village",
             sceneType:             isMarket ? "market_stall" : isFarm ? "farm" : "living_room",
-            questSequence:         isMarket ? [{ type: "drag_drop", sceneType: "market_stall", questId: resolvedQuestId }]
-                                 : isFarm   ? [{ type: "drag_drop", sceneType: "farm",         questId: resolvedQuestId }]
+            questSequence:         isMarket ? [{ type: "any", sceneType: "market_stall", questId: resolvedQuestId }]
+                                : isFarm   ? [{ type: "any", sceneType: "farm",         questId: resolvedQuestId }]
                                             : [
                                                 { type: "drag_drop",        sceneType: "living_room", questId: resolvedQuestId        },
                                                 { type: "item_association", sceneType: "living_room", questId: resolvedIaLivingQuestId },
-                                              ],
+                                            ],
             sequenceIndex: 0,
         };
 
@@ -283,7 +289,11 @@ const VillagePage = () => {
                                 {language === "ceb" ? "Ang imong progreso natipigan." : "Your progress is saved."}
                             </p>
                             <div style={{ display: "flex", gap: "15px", justifyContent: "center", marginTop: "20px" }}>
-                                <Button onClick={handleCancelExit} variant="secondary" style={{ background: "linear-gradient(180deg, #5a3e2b, #3b2414)", border: "3px solid #78350f", color: "#f5d89a", fontFamily: "'Pixelify Sans', sans-serif", fontWeight: "bold" }}>
+                                <Button
+                                    onClick={handleCancelExit}
+                                    variant="secondary"
+                                    style={{ background: "linear-gradient(180deg, #5a3e2b, #3b2414)", border: "3px solid #78350f", color: "#f5d89a", fontFamily: "'Pixelify Sans', sans-serif", fontWeight: "bold" }}
+                                >
                                     {language === "ceb" ? "Magpabilin" : "Stay"}
                                 </Button>
                                 <Button onClick={handleConfirmExit} variant="primary">
