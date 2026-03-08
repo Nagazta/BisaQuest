@@ -11,8 +11,10 @@ import ClickableItem    from "../../game/components/ClickableItem";
 import ZoneDebugOverlay from "../../game/components/ZoneDebugOverlay";
 import BookCollectModal from "../../game/components/BookCollectModal";
 
-import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
-import houseBackground from "../../assets/images/environments/scenario/house.jpg";
+import LigayaCharacter    from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
+import LigayaSweating     from "../../assets/images/characters/Ligaya_gealimut-an.png";
+import houseBackground    from "../../assets/images/environments/scenario/house.jpg";
+import dirtyLivingRoom    from "../../assets/images/environments/scenario/dirtyLivingRoom.PNG";
 
 import {
   SCENE_BACKGROUNDS,
@@ -35,8 +37,21 @@ const NPC_IMAGES = {
   village_npc_2: LigayaCharacter,
 };
 
+// ── Words awarded per NPC on completion ──────────────────────────────────────
+const NPC_WORDS = {
+  village_npc_2: ["WALIS", "BROOM", "TRAPO", "RAG", "MOP", "TIMBA", "BUCKET"],
+  village_npc_3: ["PALA", "SHOVEL", "REGADERA", "WATERING CAN"],
+  village_npc_1: ["SANTOL", "COTTON FRUIT", "LANSONES", "LANZONES", "PAKWAN", "WATERMELON", "MANGGA", "MANGO", "SAGING", "BANANA"],
+};
+
+// ── Background map ────────────────────────────────────────────────────────────
 const SCENE_BG = {
-  living_room: houseBackground,
+  living_room:       houseBackground,
+  living_room_dirty: dirtyLivingRoom,
+};
+
+const CLEAN_BG_FOR = {
+  living_room_dirty: houseBackground,
 };
 
 // ── Speaker classifiers ───────────────────────────────────────────────────────
@@ -96,6 +111,7 @@ const HousePage = () => {
   // ── Data state ─────────────────────────────────────────────────────────────
   const [loading,          setLoading]          = useState(true);
   const [fetchError,       setFetchError]        = useState(null);
+  const [sceneType,        setSceneType]         = useState("living_room");
   const [background,       setBackground]        = useState(houseBackground);
   const [flowGroups,       setFlowGroups]        = useState({});
   const [compItems,        setCompItems]         = useState([]);
@@ -124,6 +140,12 @@ const HousePage = () => {
   const [gridMode,      setGridMode]      = useState(false);
   const [hoverCell,     setHoverCell]     = useState(null);
 
+  // ── BG / sprite swap state ─────────────────────────────────────────────────
+  const [bgRevealed,       setBgRevealed]       = useState(false);
+  const [ligayaCool,       setLigayaCool]        = useState(false);
+  const [isPaypayQuest,    setIsPaypayQuest]     = useState(false);
+  const [isDirtyRoomQuest, setIsDirtyRoomQuest]  = useState(false);
+
   // ── Modal state ────────────────────────────────────────────────────────────
   const [showPageModal, setShowPageModal] = useState(false);
   const [collectedPage, setCollectedPage] = useState(null);
@@ -141,6 +163,14 @@ const HousePage = () => {
   const isLastStoryStep = flowGroups.main
     ? storyIdx === flowGroups.main.length - 1
     : false;
+
+  // ── Derived: which NPC sprite to show ────────────────────────────────────
+  const npcSprite = (() => {
+    if (isPaypayQuest && npcId === "village_npc_2" && !ligayaCool) {
+      return LigayaSweating;
+    }
+    return NpcImage;
+  })();
 
   // ── Load quest data ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -169,8 +199,18 @@ const HousePage = () => {
         if (cancelled) return;
 
         const scene = meta?.scene_type || "living_room";
+        setSceneType(scene);
         setBackground(SCENE_BG[scene] || houseBackground);
         setDdInstruction(meta?.instructions || "");
+
+        const dirty  = scene === "living_room_dirty";
+        const paypay = (meta?.title || "").toLowerCase().includes("paypay") ||
+                       (meta?.instructions || "").toLowerCase().includes("paypay") ||
+                       (meta?.title || "").toLowerCase().includes("electric fan");
+        setIsDirtyRoomQuest(dirty);
+        setIsPaypayQuest(paypay);
+        setBgRevealed(false);
+        setLigayaCool(false);
 
         if (!dialogues?.length) throw new Error("No dialogues found for this quest.");
         setFlowGroups(groupByFlow(dialogues));
@@ -193,8 +233,7 @@ const HousePage = () => {
         })));
 
         // Phase 3: DD (round_number = 1)
-        const ddRaw = sortedItems.filter(r => Number(r.round_number) === 1);
-
+        const ddRaw         = sortedItems.filter(r => Number(r.round_number) === 1);
         const correctDDItem = ddRaw.find(r => Boolean(r.is_correct));
         setDdDropZoneLabel(correctDDItem?.label || "");
         setDdIntroItem(correctDDItem ? {
@@ -205,6 +244,14 @@ const HousePage = () => {
 
         const SCENE_DROP_ZONES = {
           living_room: {
+            bookshelf: { x: 83, y: 40 },
+            sofa:      { x: 50, y: 48 },
+            aparador:  { x: 73, y: 48 },
+            lamesa:    { x: 62, y: 64 },
+            sulok:     { x: 42, y: 40 },
+            planggana: { x: 35, y: 62 },
+          },
+          living_room_dirty: {
             bookshelf: { x: 83, y: 40 },
             sofa:      { x: 50, y: 48 },
             aparador:  { x: 73, y: 48 },
@@ -226,15 +273,15 @@ const HousePage = () => {
             salog:       { x: 30, y: 72 },
           },
         };
+
         const zoneKey     = correctDDItem?.correct_zone || null;
         const sceneZones  = SCENE_DROP_ZONES[scene] || {};
         const resolvedPos = zoneKey && sceneZones[zoneKey] ? sceneZones[zoneKey] : null;
 
-        const dropMode = resolvedPos ? "scene" : "equip";
-        setDdDropMode(dropMode);
+        setDdDropMode(resolvedPos ? "scene" : "equip");
         setDdDropZonePos(resolvedPos || { x: 50, y: 40 });
 
-        const cards = ddRaw.map(r => ({
+        setDdWordCards(ddRaw.map(r => ({
           id:        String(r.item_id),
           label:     r.label,
           imageKey:  r.image_key  || null,
@@ -242,9 +289,8 @@ const HousePage = () => {
           belongsTo: r.belongs_to || null,
           x:         Number(r.position_x ?? 50),
           y:         Number(r.position_y ?? 60),
-        }));
+        })));
 
-        setDdWordCards(cards);
         setDdPlaced({});
         setLoading(false);
       } catch (err) {
@@ -290,7 +336,6 @@ const HousePage = () => {
         setFeedbackIdx(i => i + 1);
       } else if (feedbackKey === "correct") {
         submitProgress();
-        // navigation is deferred to advanceSequence() unless modal fires
       } else {
         setDdPlaced({});
         setDdShake(null);
@@ -353,7 +398,10 @@ const HousePage = () => {
       const newPlaced = { ...ddPlaced, [cardId]: "correct" };
       setDdPlaced(newPlaced);
       const allPlaced = ddWordCards.filter(c => c.isCorrect).every(c => newPlaced[c.id] === "correct");
-      if (allPlaced) setDdCompleted(true);
+      if (allPlaced) {
+        setDdCompleted(true);
+        if (isPaypayQuest) setLigayaCool(true);
+      }
     } else {
       setDdShake(cardId);
       setTimeout(() => setDdShake(null), 600);
@@ -373,7 +421,7 @@ const HousePage = () => {
         setPhase(Phase.FEEDBACK);
       }
     }
-  }, [ddWordCards, ddPlaced, flowGroups]);
+  }, [ddWordCards, ddPlaced, flowGroups, isPaypayQuest]);
 
   const handleDDComplete = () => {
     if (!ddCompleted) return;
@@ -385,37 +433,6 @@ const HousePage = () => {
   };
 
   // ── Submit + advance ───────────────────────────────────────────────────────
-  const submitProgress = () => {
-    saveNPCProgress("village", npcId, 1, true);
-
-    const isNewPage = awardLibroPage("village", npcId);
-    if (isNewPage) {
-      const pageNumber     = getLibroPageCountForEnv("village");
-      const totalCollected = getLibroPageCount();
-      setCollectedPage({ pageNumber, totalCollected });
-      setShowPageModal(true);
-      return;
-    }
-
-    if (playerId) {
-      fetch(`${API}/api/challenge/quest/submit`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          playerId,
-          questId,
-          npcId,
-          score: 1,
-          maxScore: 1,
-          passed: true
-        }),
-      }).catch(err => console.warn("[HousePage] submit failed:", err));
-    }
-
-    // ✅ return to village instead of next quest
-    navigate(returnTo, { state: { completed: true } });
-  };
-
   const advanceSequence = useCallback(() => {
     const nextIndex = seqIndex + 1;
     const nextStep  = questSequence[nextIndex];
@@ -433,6 +450,38 @@ const HousePage = () => {
       },
     });
   }, [seqIndex, questSequence, navigate, returnTo, npcId, npcName]);
+
+  const submitProgress = useCallback(() => {
+    // ── KEY FIX: pass NPC_WORDS so only this NPC's words get stored ──────────
+    const words = NPC_WORDS[npcId] || [];
+    saveNPCProgress("village", npcId, 1, true, 3, words);
+
+    if (isDirtyRoomQuest && CLEAN_BG_FOR[sceneType]) {
+      setBackground(CLEAN_BG_FOR[sceneType]);
+      setBgRevealed(true);
+    }
+
+    const isNewPage = awardLibroPage("village", npcId);
+    if (isNewPage) {
+      const pageNumber     = getLibroPageCountForEnv("village");
+      const totalCollected = getLibroPageCount();
+      setCollectedPage({ pageNumber, totalCollected });
+      setShowPageModal(true);
+      return;
+    }
+
+    if (playerId) {
+      fetch(`${API}/api/challenge/quest/submit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          playerId, questId, npcId, score: 1, maxScore: 1, passed: true
+        }),
+      }).catch(err => console.warn("[HousePage] submit failed:", err));
+    }
+
+    advanceSequence();
+  }, [npcId, playerId, questId, API, isDirtyRoomQuest, sceneType, advanceSequence]);
 
   const handleBack = () => navigate(returnTo);
 
@@ -510,7 +559,16 @@ const HousePage = () => {
 
   return (
     <div className="house-container">
-      <img src={background} alt="Scene" className="house-background" draggable={false} />
+
+      <img
+        src={background}
+        alt="Scene"
+        className={[
+          "house-background",
+          bgRevealed ? "house-background--revealed" : "",
+        ].filter(Boolean).join(" ")}
+        draggable={false}
+      />
 
       <Button variant="back" className="house-back" onClick={handleBack}>← Back</Button>
 
@@ -583,8 +641,8 @@ const HousePage = () => {
                 key={card.id}
                 className={[
                   "house-dd-card",
-                  placed              ? "house-dd-card--placed"   : "",
-                  shaking             ? "house-dd-card--shake"    : "",
+                  placed                  ? "house-dd-card--placed"   : "",
+                  shaking                 ? "house-dd-card--shake"    : "",
                   draggingWord === card.id ? "house-dd-card--dragging" : "",
                 ].filter(Boolean).join(" ")}
                 style={{
@@ -605,7 +663,6 @@ const HousePage = () => {
                     />
                   : <span className="house-dd-card-emoji">🖼️</span>
                 }
-                <span className="house-dd-card-label">{card.label}</span>
               </div>
             );
           })}
@@ -657,7 +714,13 @@ const HousePage = () => {
 
       {/* NPC */}
       <div className="house-npc-wrap">
-        <img src={NpcImage} alt={npcName} className="house-npc-image" draggable={false} />
+        <img
+          key={npcSprite}
+          src={npcSprite}
+          alt={npcName}
+          className="house-npc-image"
+          draggable={false}
+        />
       </div>
 
       {/* DialogueBox */}
@@ -706,7 +769,7 @@ const HousePage = () => {
               body:    JSON.stringify({ playerId, questId, npcId, score: 1, maxScore: 1, passed: true }),
             }).catch(err => console.warn("[HousePage] submit failed:", err));
           }
-          navigate(returnTo, { state: { completed: true } });
+          advanceSequence();
         }}
       />
     </div>
