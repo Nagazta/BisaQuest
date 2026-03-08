@@ -4,7 +4,14 @@ import { useCharacterPreference } from "../../hooks/useCharacterPreference";
 import EnvironmentPage from "../../components/EnvironmentPage";
 import Button from "../../components/Button";
 import ParticleEffects from "../../components/ParticleEffects";
-import { getPlayerId, getProgress, getLearnedWords, hasCutsceneSeen } from "../../utils/playerStorage";
+import {
+    getPlayerId,
+    getProgress,
+    getLearnedWords,
+    hasCutsceneSeen,
+    markCompleteDismissed,
+    isCompleteDismissed,
+} from "../../utils/playerStorage";
 import VillageBackground from "../../assets/images/environments/Vocabulary/village-bg.png";
 import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
 import BoyCharacter from "../../assets/images/characters/Boy.png";
@@ -91,7 +98,9 @@ const VillagePage = () => {
         const progress = getProgress();
         const pct = progress.village_progress || 0;
         setVillageProgress(pct);
-        if (pct >= 100) {
+
+        // Only show the modal if at 100% AND the player hasn't dismissed it yet
+        if (pct >= 100 && !isCompleteDismissed("village")) {
             const words = getLearnedWords("village", VILLAGE_NPC_META);
             setLearnedWords(words);
             setShowCompleteModal(true);
@@ -120,6 +129,7 @@ const VillagePage = () => {
 
     // ── "Adto sa Forest!" button handler ─────────────────────────────────────
     const handleGoToForest = () => {
+        markCompleteDismissed("village");
         setShowCompleteModal(false);
         setFogActive(true);
     };
@@ -163,23 +173,32 @@ const VillagePage = () => {
 
                     if (isMarket) {
                         const pool = data.filter(q => q.scene_type === "market_stall");
-                        console.log("[VillagePage] market_stall pool:", pool.map(q => ({
-                            id: q.quest_id, mechanic: q.game_mechanic
-                        })));
                         resolvedQuestId = randomPick(pool)?.quest_id ?? null;
-                        console.log("[VillagePage] picked questId:", resolvedQuestId);
 
                     } else if (isFarm) {
                         const pool = data.filter(q => q.scene_type === "farm");
                         resolvedQuestId = randomPick(pool)?.quest_id ?? null;
 
                     } else {
-                        resolvedQuestId          = randomPick(data.filter(q => q.game_mechanic === "drag_drop"        && q.scene_type === "living_room"))?.quest_id ?? null;
-                        resolvedKitchenQuestId   = randomPick(data.filter(q => q.game_mechanic === "drag_drop"        && q.scene_type === "kitchen"))?.quest_id    ?? null;
-                        resolvedBedroomQuestId   = randomPick(data.filter(q => q.game_mechanic === "drag_drop"        && q.scene_type === "bedroom"))?.quest_id     ?? null;
-                        resolvedIaLivingQuestId  = randomPick(data.filter(q => q.game_mechanic === "item_association" && q.scene_type === "living_room"))?.quest_id  ?? null;
-                        resolvedIaKitchenQuestId = randomPick(data.filter(q => q.game_mechanic === "item_association" && q.scene_type === "kitchen"))?.quest_id      ?? null;
-                        resolvedIaBedroomQuestId = randomPick(data.filter(q => q.game_mechanic === "item_association" && q.scene_type === "bedroom"))?.quest_id      ?? null;
+                        const livingPool    = data.filter(q =>
+                            q.game_mechanic === "drag_drop" &&
+                            (q.scene_type === "living_room" || q.scene_type === "living_room_dirty")
+                        );
+                        const kitchenPool   = data.filter(q => q.game_mechanic === "drag_drop"        && q.scene_type === "kitchen");
+                        const bedroomPool   = data.filter(q => q.game_mechanic === "drag_drop"        && q.scene_type === "bedroom");
+                        const iaLivingPool  = data.filter(q =>
+                            q.game_mechanic === "item_association" &&
+                            (q.scene_type === "living_room" || q.scene_type === "living_room_dirty")
+                        );
+                        const iaKitchenPool = data.filter(q => q.game_mechanic === "item_association" && q.scene_type === "kitchen");
+                        const iaBedroomPool = data.filter(q => q.game_mechanic === "item_association" && q.scene_type === "bedroom");
+
+                        resolvedQuestId          = randomPick(livingPool)?.quest_id    ?? null;
+                        resolvedKitchenQuestId   = randomPick(kitchenPool)?.quest_id   ?? null;
+                        resolvedBedroomQuestId   = randomPick(bedroomPool)?.quest_id   ?? null;
+                        resolvedIaLivingQuestId  = randomPick(iaLivingPool)?.quest_id  ?? null;
+                        resolvedIaKitchenQuestId = randomPick(iaKitchenPool)?.quest_id ?? null;
+                        resolvedIaBedroomQuestId = randomPick(iaBedroomPool)?.quest_id ?? null;
                     }
                 }
             }
@@ -203,9 +222,9 @@ const VillagePage = () => {
             questSequence:         isMarket ? [{ type: "any", sceneType: "market_stall", questId: resolvedQuestId }]
                                 : isFarm   ? [{ type: "any", sceneType: "farm",         questId: resolvedQuestId }]
                                             : [
-                                                { type: "drag_drop",        sceneType: "living_room", questId: resolvedQuestId        },
-                                                { type: "item_association", sceneType: "living_room", questId: resolvedIaLivingQuestId },
-                                            ],
+                                                resolvedQuestId         && { type: "drag_drop",        sceneType: "living_room", questId: resolvedQuestId },
+                                                resolvedIaLivingQuestId && { type: "item_association", sceneType: "living_room", questId: resolvedIaLivingQuestId },
+                                              ].filter(Boolean),
             sequenceIndex: 0,
         };
 
@@ -234,7 +253,10 @@ const VillagePage = () => {
                 environment="village"
                 learnedWords={learnedWords}
                 nextEnv="Forest"
-                onStay={() => setShowCompleteModal(false)}
+                onStay={() => {
+                    markCompleteDismissed("village");
+                    setShowCompleteModal(false);
+                }}
                 onAdvance={handleGoToForest}
             />
 

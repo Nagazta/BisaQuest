@@ -107,7 +107,6 @@
 
 .house-dd-dropzone--complete {
   background:   rgba(34,197,94,0.15);
-  border-color: #22c55e;
   border-style: solid;
 }
 
@@ -139,7 +138,6 @@
 }
 
 .house-dd-chip--correct {
-  background:   #dcfce7;
   color:        #15803d;
   border-color: #15803d;
 }
@@ -147,24 +145,10 @@
 /* Word cards — absolutely positioned on the scene from DB x/y */
 .house-dd-card {
   position: absolute;
-  font-family:   'Pixelify Sans', sans-serif;
-  font-size:     17px;
-  font-weight:   bold;
-  color:         #3a2008;
-  background:    #FFF9E6;
-  border:        3px solid #3a2008;
-  border-radius: 12px;
-  padding:       10px 22px;
-  cursor:        grab;
-  box-shadow:    0 4px 0 #3a2008;
-  transition:    transform 0.15s, opacity 0.15s, box-shadow 0.15s;
-  user-select:   none;
+  cursor: pointer;
 }
 
-.house-dd-card:hover:not(.house-dd-card--placed) {
-  transform:  translateY(-3px);
-  box-shadow: 0 7px 0 #3a2008;
-}
+
 
 .house-dd-card--dragging {
   opacity:   0.5;
@@ -173,10 +157,8 @@
 }
 
 .house-dd-card--placed {
-  background:  #d1fae5;
   border-color: #15803d;
   color:        #15803d;
-  box-shadow:   0 4px 0 #15803d;
   cursor:       default;
   opacity:      0.7;
 }
@@ -449,20 +431,7 @@
   z-index:         20;
 }
 
-.house-dd-card {
-  padding:         10px 18px;
-  background:      rgba(255,255,255,0.95);
-  border:          2px solid rgba(0,0,0,0.18);
-  border-radius:   10px;
-  font-size:       14px;
-  font-weight:     700;
-  color:           #3a2a10;
-  cursor:          grab;
-  user-select:     none;
-  box-shadow:      0 3px 10px rgba(0,0,0,0.18);
-  transition:      opacity 0.2s, transform 0.15s;
-  white-space:     nowrap;
-}
+
 
 .house-dd-card:hover             { transform: scale(1.05); border-color: #f0a500; }
 .house-dd-card--dragging         { opacity: 0.5; cursor: grabbing; }
@@ -582,8 +551,8 @@
 }
 
 .house-dd-card-img {
-  width:      64px;
-  height:     64px;
+  width:      264px;
+  height:     164px;
   object-fit: contain;
   display:    block;
   filter:     drop-shadow(0 2px 4px rgba(0,0,0,0.2));

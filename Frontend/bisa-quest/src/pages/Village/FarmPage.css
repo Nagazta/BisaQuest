@@ -473,3 +473,18 @@
   white-space: nowrap;
   z-index: 100;
 }
+/* ── Placed active image (e.g. watering animation) ─────────────────────────── */
+.fp-dd-placed-img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.35));
+  animation: fp-placed-pop 0.3s ease-out;
+  pointer-events: none;
+}
+
+@keyframes fp-placed-pop {
+  0%   { transform: scale(0.5); opacity: 0; }
+  70%  { transform: scale(1.15); }
+  100% { transform: scale(1);   opacity: 1; }
+}

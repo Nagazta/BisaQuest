@@ -1,8 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
 //  MarketStallPage.jsx  —  supports BOTH drag_drop AND item_association quests
-//  Key change: after loading quest meta, checks game_mechanic and either:
-//    • drag_drop        → existing Phase flow (unchanged)
-//    • item_association → multi-round customer flow (new IA section)
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -33,6 +30,13 @@ const NPC_IMAGES = {
   village_npc_1: VicenteCharacter,
   village_npc_3: NandoCharacter,
   village_npc_2: LigayaCharacter,
+};
+
+// ── Words awarded per NPC on completion ──────────────────────────────────────
+const NPC_WORDS = {
+  village_npc_1: ["SANTOL", "COTTON FRUIT", "LANSONES", "LANZONES", "PAKWAN", "WATERMELON", "MANGGA", "MANGO", "SAGING", "BANANA"],
+  village_npc_3: ["PALA", "SHOVEL", "REGADERA", "WATERING CAN"],
+  village_npc_2: ["WALIS", "BROOM", "TRAPO", "RAG", "MOP", "TIMBA", "BUCKET"],
 };
 
 // ── Scene drop zone registry ──────────────────────────────────────────────────
@@ -70,15 +74,12 @@ const resolveSpeaker = (speaker, fallback) => {
 
 // ── Phase enums ───────────────────────────────────────────────────────────────
 const Phase = {
-  // shared
-  STORY:         "story",
-  DONE:          "done",
-  // drag_drop only
-  COMPREHENSION: "comprehension",
-  COMP_BRANCH:   "comp_branch",
-  DRAG_DROP:     "drag_drop",
-  FEEDBACK:      "feedback",
-  // item_association only
+  STORY:            "story",
+  DONE:             "done",
+  COMPREHENSION:    "comprehension",
+  COMP_BRANCH:      "comp_branch",
+  DRAG_DROP:        "drag_drop",
+  FEEDBACK:         "feedback",
   IA_ROUND_INTRO:   "ia_round_intro",
   IA_ROUND_PICK:    "ia_round_pick",
   IA_ROUND_BRANCH:  "ia_round_branch",
@@ -168,90 +169,68 @@ const MarketStallPage = () => {
   const NpcImage = NPC_IMAGES[npcId] || VicenteCharacter;
 
   // ── Shared state ──────────────────────────────────────────────────────────
-  const [loading,      setLoading]      = useState(true);
-  const [fetchError,   setFetchError]   = useState(null);
-  const [mechanic,     setMechanic]     = useState(null); // "drag_drop" | "item_association"
-  const [flowGroups,   setFlowGroups]   = useState({});
-  const [phase,        setPhase]        = useState(Phase.STORY);
-  const [storyIdx,     setStoryIdx]     = useState(0);
-  const [showPageModal,setShowPageModal]= useState(false);
-  const [collectedPage,setCollectedPage]= useState(null);
+  const [loading,       setLoading]       = useState(true);
+  const [fetchError,    setFetchError]    = useState(null);
+  const [mechanic,      setMechanic]      = useState(null);
+  const [flowGroups,    setFlowGroups]    = useState({});
+  const [phase,         setPhase]         = useState(Phase.STORY);
+  const [storyIdx,      setStoryIdx]      = useState(0);
+  const [showPageModal, setShowPageModal] = useState(false);
+  const [collectedPage, setCollectedPage] = useState(null);
 
   // ── drag_drop state ───────────────────────────────────────────────────────
-  const [compItems,       setCompItems]       = useState([]);
-  const [ddWordCards,     setDdWordCards]      = useState([]);
-  const [ddInstruction,   setDdInstruction]    = useState("");
-  const [branchKey,       setBranchKey]        = useState(null);
-  const [branchIdx,       setBranchIdx]        = useState(0);
-  const [feedbackKey,     setFeedbackKey]      = useState(null);
-  const [feedbackIdx,     setFeedbackIdx]      = useState(0);
-  const [compResult,      setCompResult]       = useState({});
-  const [compLocked,      setCompLocked]       = useState(false);
-  const [ddIntroItem,     setDdIntroItem]      = useState(null);
-  const [ddPlaced,        setDdPlaced]         = useState({});
-  const [ddShake,         setDdShake]          = useState(null);
-  const [ddCompleted,     setDdCompleted]      = useState(false);
-  const [draggingWord,    setDraggingWord]     = useState(null);
-  const [dropHover,       setDropHover]        = useState(null);
-  const [ddDropZones,     setDdDropZones]      = useState([]);
-  const [ddDropMode,      setDdDropMode]       = useState("equip");
-  const [ddDropZoneLabel, setDdDropZoneLabel]  = useState("");
-  const [gridMode,        setGridMode]         = useState(false);
-  const [hoverCell,       setHoverCell]        = useState(null);
+  const [compItems,       setCompItems]      = useState([]);
+  const [ddWordCards,     setDdWordCards]    = useState([]);
+  const [ddInstruction,   setDdInstruction]  = useState("");
+  const [branchKey,       setBranchKey]      = useState(null);
+  const [branchIdx,       setBranchIdx]      = useState(0);
+  const [feedbackKey,     setFeedbackKey]    = useState(null);
+  const [feedbackIdx,     setFeedbackIdx]    = useState(0);
+  const [compResult,      setCompResult]     = useState({});
+  const [compLocked,      setCompLocked]     = useState(false);
+  const [ddIntroItem,     setDdIntroItem]    = useState(null);
+  const [ddPlaced,        setDdPlaced]       = useState({});
+  const [ddShake,         setDdShake]        = useState(null);
+  const [ddCompleted,     setDdCompleted]    = useState(false);
+  const [draggingWord,    setDraggingWord]   = useState(null);
+  const [dropHover,       setDropHover]      = useState(null);
+  const [ddDropZones,     setDdDropZones]    = useState([]);
+  const [ddDropMode,      setDdDropMode]     = useState("equip");
+  const [ddDropZoneLabel, setDdDropZoneLabel]= useState("");
+  const [gridMode,        setGridMode]       = useState(false);
+  const [hoverCell,       setHoverCell]      = useState(null);
 
   // ── item_association state ────────────────────────────────────────────────
-  const [iaRounds,     setIaRounds]     = useState([]);
-  const [iaRound,      setIaRound]      = useState(0);
-  const [iaResult,     setIaResult]     = useState({});
-  const [iaLocked,     setIaLocked]     = useState(false);
-  const [iaBranchKey,  setIaBranchKey]  = useState(null);
-  const [iaBranchIdx,  setIaBranchIdx]  = useState(0);
-  const [iaIntroIdx,   setIaIntroIdx]   = useState(0);
+  const [iaRounds,    setIaRounds]    = useState([]);
+  const [iaRound,     setIaRound]     = useState(0);
+  const [iaResult,    setIaResult]    = useState({});
+  const [iaLocked,    setIaLocked]    = useState(false);
+  const [iaBranchKey, setIaBranchKey] = useState(null);
+  const [iaBranchIdx, setIaBranchIdx] = useState(0);
+  const [iaIntroIdx,  setIaIntroIdx]  = useState(0);
 
   const containerRef = useRef(null);
 
   // ── Derived ────────────────────────────────────────────────────────────────
   const currentRow = (() => {
-    if (phase === Phase.STORY)           return flowGroups.main?.[storyIdx]               ?? null;
-    if (phase === Phase.COMP_BRANCH)     return flowGroups[branchKey]?.[branchIdx]         ?? null;
-    if (phase === Phase.FEEDBACK)        return flowGroups[feedbackKey]?.[feedbackIdx]      ?? null;
+    if (phase === Phase.STORY)           return flowGroups.main?.[storyIdx]                    ?? null;
+    if (phase === Phase.COMP_BRANCH)     return flowGroups[branchKey]?.[branchIdx]              ?? null;
+    if (phase === Phase.FEEDBACK)        return flowGroups[feedbackKey]?.[feedbackIdx]           ?? null;
     if (phase === Phase.IA_ROUND_INTRO)  return flowGroups[`r${iaRound + 1}_intro`]?.[iaIntroIdx] ?? null;
-    if (phase === Phase.IA_ROUND_BRANCH) return flowGroups[iaBranchKey]?.[iaBranchIdx]     ?? null;
-    if (phase === Phase.IA_FINAL)        return flowGroups["final"]?.[iaBranchIdx]          ?? null;
+    if (phase === Phase.IA_ROUND_BRANCH) return flowGroups[iaBranchKey]?.[iaBranchIdx]          ?? null;
+    if (phase === Phase.IA_FINAL)        return flowGroups["final"]?.[iaBranchIdx]               ?? null;
     return null;
   })();
 
   const isLastStoryStep = flowGroups.main
     ? storyIdx === flowGroups.main.length - 1 : false;
 
-  // ── Derived: show customer sprite? ────────────────────────────────────────
-  // Customer sprite appears during IA rounds (not during the story intro)
   const showCustomer =
     mechanic === "item_association" &&
     phase !== Phase.STORY &&
     phase !== Phase.DONE;
 
-  // ── Derived: dialogue title ───────────────────────────────────────────────
-  // FIX: During IA_ROUND_INTRO, use the DB speaker field (Vicente, Narration, etc.)
-  // Only show "Customer N" label when the customer is actively speaking/reacting.
   const dialogueSpeaker = currentRow ? resolveSpeaker(currentRow.speaker, npcName) : npcName;
-
-  const dialogueTitle = (() => {
-    if (
-      mechanic === "item_association" &&
-      phase === Phase.IA_ROUND_BRANCH
-    ) {
-      // During branch feedback, use the DB speaker (Vicente, Narration, etc.)
-      return dialogueSpeaker;
-    }
-    if (
-      mechanic === "item_association" &&
-      phase === Phase.IA_FINAL
-    ) {
-      return dialogueSpeaker;
-    }
-    return dialogueSpeaker;
-  })();
 
   // ── Load ──────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -300,7 +279,6 @@ const MarketStallPage = () => {
           );
           setIaRounds(rounds);
           setIaRound(0);
-
         } else {
           setCompItems(sorted.filter(r => Number(r.round_number) === 0).map(r => ({
             id:        String(r.item_id),
@@ -564,10 +542,16 @@ const MarketStallPage = () => {
 
   // ── Submit + advance ──────────────────────────────────────────────────────
   const submitProgress = useCallback(() => {
-    saveNPCProgress("village", npcId, 1, true);
+    // ── KEY FIX: pass NPC_WORDS so only this NPC's words get stored ──────────
+    const words = NPC_WORDS[npcId] || [];
+    saveNPCProgress("village", npcId, 1, true, 3, words);
+
     const isNewPage = awardLibroPage("village", npcId);
     if (isNewPage) {
-      setCollectedPage({ pageNumber: getLibroPageCountForEnv("village"), totalCollected: getLibroPageCount() });
+      setCollectedPage({
+        pageNumber:     getLibroPageCountForEnv("village"),
+        totalCollected: getLibroPageCount(),
+      });
       setShowPageModal(true);
       return;
     }
@@ -597,21 +581,16 @@ const MarketStallPage = () => {
     if (currentRow) return currentRow.dialogue_text || "";
     if (phase === Phase.COMPREHENSION)
       return flowGroups.main?.[flowGroups.main.length - 2]?.dialogue_text || "Pilia ang husto!";
-    if (phase === Phase.IA_ROUND_PICK) {
-      const items = iaRounds[iaRound] || [];
-      return items.find(i => i.isCorrect)?.roundPrompt || "Pilia ang sakto nga prutas para sa customer!";
-    }
+    if (phase === Phase.IA_ROUND_PICK)
+      return "Pilia ang sakto nga prutas para sa customer!";
     if (phase === Phase.DRAG_DROP)
       return ddCompleted ? "Tama! Now click Complete!" : (ddInstruction || "Drag the correct word card!");
     return "";
   })();
 
-  // ── Derived: fruit image card shown during IA intro + pick phases ─────────
-  // Shows the correct fruit's image card so the player can visualize the fruit
-  // Vicente is describing before they need to pick it.
   const iaIntroItem = (() => {
     if (mechanic !== "item_association") return null;
-    if (phase !== Phase.IA_ROUND_INTRO) return null; // only show during intro, not during picking
+    if (phase !== Phase.IA_ROUND_INTRO) return null;
     const correctItem = (iaRounds[iaRound] || []).find(i => i.isCorrect);
     if (!correctItem) return null;
     return { id: correctItem.id, label: correctItem.label, imageKey: correctItem.imageKey };
@@ -670,7 +649,6 @@ const MarketStallPage = () => {
       <img src={marketBackground} alt="Market Stall" className="ms-background" draggable={false} />
       <Button variant="back" className="ms-back" onClick={handleBack}>← Back</Button>
 
-      {/* Grid debug toggle (drag_drop only) */}
       {mechanic === "drag_drop" && (
         <button className={`ms-grid-btn ${gridMode ? "ms-grid-btn--on" : ""}`} onClick={() => setGridMode(p => !p)}>
           {gridMode ? "📐 Grid ON" : "📐 Grid"}
@@ -689,7 +667,7 @@ const MarketStallPage = () => {
         {phase === Phase.IA_FINAL         && "All Done!"}
       </div>
 
-      {/* ── drag_drop: Phase 2 Comprehension ── */}
+      {/* drag_drop: Phase 2 Comprehension */}
       {phase === Phase.COMPREHENSION && (
         <div className="ms-comp-wrap">
           <div className="ms-comp-grid">
@@ -700,7 +678,7 @@ const MarketStallPage = () => {
         </div>
       )}
 
-      {/* ── drag_drop: Phase 3 Drag & Drop ── */}
+      {/* drag_drop: Phase 3 Drag & Drop */}
       {phase === Phase.DRAG_DROP && (
         <div className="ms-dd-scene" ref={containerRef}>
           {ddDropMode === "scene" && ddDropZones.map(zone => (
@@ -740,17 +718,12 @@ const MarketStallPage = () => {
         </div>
       )}
 
-      {/* ── item_association: fruit pick ── */}
+      {/* item_association: fruit pick */}
       {phase === Phase.IA_ROUND_PICK && (
         <div className="ms-comp-wrap">
           <div className="ms-comp-grid">
             {(iaRounds[iaRound] || []).map(item => (
-              <IACard
-                key={item.id} item={item}
-                onSelect={handleIAPick}
-                locked={iaLocked}
-                result={iaResult[item.id] || null}
-              />
+              <IACard key={item.id} item={item} onSelect={handleIAPick} locked={iaLocked} result={iaResult[item.id] || null} />
             ))}
           </div>
         </div>
@@ -767,29 +740,17 @@ const MarketStallPage = () => {
         </div>
       )}
 
-      {/* ── NPC / Customer ── */}
+      {/* NPC / Customer */}
       <div className="ms-npc-wrap">
         {showCustomer ? (
-          <img
-            key={`customer-${iaRound}`}
-            src={getCustomerForRound(iaRound)}
-            alt={`Customer ${iaRound + 1}`}
-            className="ms-customer-image"
-            draggable={false}
-          />
+          <img key={`customer-${iaRound}`} src={getCustomerForRound(iaRound)} alt={`Customer ${iaRound + 1}`} className="ms-customer-image" draggable={false} />
         ) : (
-          <img
-            src={NpcImage}
-            alt={npcName}
-            className="ms-npc-image"
-            draggable={false}
-          />
+          <img src={NpcImage} alt={npcName} className="ms-npc-image" draggable={false} />
         )}
       </div>
 
-      {/* ── DialogueBox — uses resolved dialogueTitle instead of raw showCustomer check ── */}
       <DialogueBox
-        title={dialogueTitle}
+        title={dialogueSpeaker}
         text={dialogueText}
         isNarration={isNarration(currentRow?.speaker)}
         isPlayer={isPlayer(currentRow?.speaker)}
@@ -797,11 +758,9 @@ const MarketStallPage = () => {
         onNext={handleNextUnified}
         rightSlot={rightSlot}
         introItem={
-          // drag_drop: show item card from step 3 onward in story
           (phase === Phase.STORY && ddIntroItem && Number(currentRow?.step_order) >= 3)
             ? ddIntroItem
-          // item_association: show correct fruit card during intro narration and pick phase
-          : iaIntroItem ?? null
+            : iaIntroItem ?? null
         }
       />
 

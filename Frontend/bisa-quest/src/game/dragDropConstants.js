@@ -45,6 +45,8 @@ import lansonsesImg       from "../assets/items/fruit_lansones.png";
 
 //Item images - Farm
 import WateringCanImg from "../assets/items/wateringCan.png";
+import shovelImg from "../assets/items/shovel.png";
+import kahoyImg from "../assets/items/kahoy.png";
 
 export const ITEM_IMAGE_MAP = {
   // Living room
@@ -109,6 +111,8 @@ export const ITEM_IMAGE_MAP = {
 
   // Farm
   regadera: WateringCanImg,
+  pala: shovelImg,
+  kahoy: kahoyImg,
 };
 
 // Scene backgrounds
