@@ -216,42 +216,50 @@ const DISTRACTOR_WORDS = [
     "MOP", "TRAPO", "RAG", "TIMBA", "BUCKET"
 ];
 
+const INTERNAL_NPC_META = {
+    village: {
+        village_npc_1: { name: "Vicente", fallbackWords: ["SANTOL", "COTTON FRUIT", "LANSONES", "LANZONES", "PAKWAN", "WATERMELON", "MANGGA", "MANGO", "SAGING", "BANANA"] },
+        village_npc_2: { name: "Ligaya", fallbackWords: ["WALIS", "BROOM", "TRAPO", "RAG", "MOP", "TIMBA", "BUCKET"] },
+        village_npc_3: { name: "Nando", fallbackWords: ["PALA", "SHOVEL", "REGADERA", "WATERING CAN"] },
+    }
+};
+
 export const getLearnedWords = (environmentName) => {
     try {
-        const key = getPlayerId() ? `progress_v2_${getPlayerId()}` : 'quest_progress_v2';
-        const progress = JSON.parse(localStorage.getItem(key)) || {};
+        const progress = getProgress();
+        const npcKey = `${environmentName}_npcs`;
+        const npcData = progress[npcKey] || {};
 
-        if (!progress[environmentName] || !progress[environmentName].npcs) {
-            return [];
-        }
+        const results = [];
+        const envMeta = INTERNAL_NPC_META[environmentName] || {};
 
-        const npcs = progress[environmentName].npcs;
-        const allWords = [];
+        Object.keys(npcData).forEach(npcId => {
+            const data = npcData[npcId];
+            if (data.completed) { // Notice v1 uses `completed` instead of `isCompleted`
+                const meta = envMeta[npcId] || { name: "UnknownNPC", fallbackWords: [] };
 
-        // Distractor filter logic remains to clean up any past bad data the player saved
-        const isDistractorWord = (word) => {
-            if (!word) return true;
-            const upper = word.toUpperCase();
-            return DISTRACTOR_WORDS.includes(upper);
-        };
+                // If the player played the new patched version, `words` is present in their save
+                let rawWords = [];
+                if (data.words && data.words.length > 0) {
+                    rawWords = data.words;
+                } else {
+                    // Backwards fallback for players who beat it before the patch
+                    rawWords = meta.fallbackWords;
+                }
 
-        Object.keys(npcs).forEach(npcId => {
-            const data = npcs[npcId];
-            if (data.isCompleted) {
-                // We now strictly trust the array that is passed during saveNPCProgress!
-                // We no longer rely on a hardcoded VILLAGE_NPC_META block.
-                const storedWords = data.learned_words || [];
+                const filteredWords = rawWords.filter(w => {
+                    const upper = (typeof w === 'string' ? w : String(w)).toUpperCase();
+                    return !DISTRACTOR_WORDS.includes(upper);
+                });
 
-                storedWords.forEach(w => {
-                    const upperWord = (typeof w === 'string' ? w : String(w)).toUpperCase();
-                    if (!isDistractorWord(upperWord) && !allWords.includes(upperWord)) {
-                        allWords.push(upperWord);
-                    }
+                results.push({
+                    npcName: meta.name,
+                    words: filteredWords
                 });
             }
         });
 
-        return allWords;
+        return results;
     } catch (e) {
         console.warn('Failed to retrieve learned words:', e);
         return [];
