@@ -75,7 +75,7 @@ const CharacterSelectionPage = () => {
                 </Button>
 
                 <div className="selection-content">
-                    <h2 className="selection-prompt">Please Choose a Character</h2>
+                    <h2 className="selection-prompt">Pagpili ug Character</h2>
 
                     <div className="characters-container">
                         {characters.map((character) => (
