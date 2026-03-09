@@ -2,15 +2,15 @@
 // Centralized localStorage management for BisaQuest player data
 
 const KEYS = {
-    PLAYER_ID:          'bisaquest_player_id',
-    NICKNAME:           'bisaquest_nickname',
-    CHARACTER:          'bisaquest_character',
-    PROGRESS:           'bisaquest_progress',
-    PREFERENCES:        'bisaquest_preferences',
-    UNLOCKS:            'bisaquest_unlocks',
-    CUTSCENE_SEEN:      'bisaquest_cutscene_seen',
-    CUTSCENES:          'bisaquest_cutscenes',
-    LIBRO_PAGES:        'bisaquest_libro_pages',
+    PLAYER_ID: 'bisaquest_player_id',
+    NICKNAME: 'bisaquest_nickname',
+    CHARACTER: 'bisaquest_character',
+    PROGRESS: 'bisaquest_progress',
+    PREFERENCES: 'bisaquest_preferences',
+    UNLOCKS: 'bisaquest_unlocks',
+    CUTSCENE_SEEN: 'bisaquest_cutscene_seen',
+    CUTSCENES: 'bisaquest_cutscenes',
+    LIBRO_PAGES: 'bisaquest_libro_pages',
     COMPLETE_DISMISSED: 'bisaquest_complete_dismissed',
 };
 
@@ -18,7 +18,7 @@ const KEYS = {
 
 export const savePlayer = ({ player_id, nickname }) => {
     localStorage.setItem(KEYS.PLAYER_ID, player_id);
-    localStorage.setItem(KEYS.NICKNAME,   nickname);
+    localStorage.setItem(KEYS.NICKNAME, nickname);
 };
 
 export const saveCharacter = (character) => {
@@ -47,21 +47,21 @@ export const savePreferences = (preferences) => {
  */
 export const saveNPCProgress = (environment, npcId, score, passed, npcCount = 3, words = []) => {
     const progress = getProgress();
-    const npcKey   = `${environment}_npcs`;
-    const prev     = progress[npcKey]?.[npcId] || {
-        completed:  false,
-        score:      0,
+    const npcKey = `${environment}_npcs`;
+    const prev = progress[npcKey]?.[npcId] || {
+        completed: false,
+        score: 0,
         encounters: 0,
-        words:      [],
+        words: [],
     };
 
     progress[npcKey] = {
         ...progress[npcKey],
         [npcId]: {
-            completed:  passed || prev.completed,
-            score:      Math.max(score, prev.score),
+            completed: passed || prev.completed,
+            score: Math.max(score, prev.score),
             encounters: prev.encounters + 1,
-            words:      passed
+            words: passed
                 ? [...new Set([...(prev.words || []), ...words])]
                 : (prev.words || []),
         },
@@ -102,9 +102,9 @@ export const getUnlocks = () => {
 
 // ─── Get ─────────────────────────────────────────────────────────────────────
 
-export const getPlayerId   = () => localStorage.getItem(KEYS.PLAYER_ID);
-export const getNickname   = () => localStorage.getItem(KEYS.NICKNAME);
-export const getCharacter  = () => localStorage.getItem(KEYS.CHARACTER);
+export const getPlayerId = () => localStorage.getItem(KEYS.PLAYER_ID);
+export const getNickname = () => localStorage.getItem(KEYS.NICKNAME);
+export const getCharacter = () => localStorage.getItem(KEYS.CHARACTER);
 
 export const getProgress = () => {
     const raw = localStorage.getItem(KEYS.PROGRESS);
@@ -125,9 +125,9 @@ export const getSavedPlayer = () => {
     if (!player_id) return null;
     return {
         player_id,
-        nickname:    getNickname(),
-        character:   getCharacter(),
-        progress:    getProgress(),
+        nickname: getNickname(),
+        character: getCharacter(),
+        progress: getProgress(),
         preferences: getPreferences(),
     };
 };
@@ -138,7 +138,7 @@ export const hasCutsceneSeen = (key) => {
     if (!key) {
         return localStorage.getItem(KEYS.CUTSCENE_SEEN) === 'true';
     }
-    const raw  = localStorage.getItem(KEYS.CUTSCENES);
+    const raw = localStorage.getItem(KEYS.CUTSCENES);
     const seen = raw ? JSON.parse(raw) : {};
     return !!seen[key];
 };
@@ -148,9 +148,9 @@ export const markCutsceneSeen = (key) => {
         localStorage.setItem(KEYS.CUTSCENE_SEEN, 'true');
         return;
     }
-    const raw  = localStorage.getItem(KEYS.CUTSCENES);
+    const raw = localStorage.getItem(KEYS.CUTSCENES);
     const seen = raw ? JSON.parse(raw) : {};
-    seen[key]  = true;
+    seen[key] = true;
     localStorage.setItem(KEYS.CUTSCENES, JSON.stringify(seen));
 };
 
@@ -162,7 +162,7 @@ export const markCutsceneSeen = (key) => {
  * @param {string} environment  'village' | 'forest' | 'castle'
  */
 export const markCompleteDismissed = (environment) => {
-    const raw  = localStorage.getItem(KEYS.COMPLETE_DISMISSED);
+    const raw = localStorage.getItem(KEYS.COMPLETE_DISMISSED);
     const data = raw ? JSON.parse(raw) : {};
     data[environment] = true;
     localStorage.setItem(KEYS.COMPLETE_DISMISSED, JSON.stringify(data));
@@ -173,7 +173,7 @@ export const markCompleteDismissed = (environment) => {
  * @param {string} environment  'village' | 'forest' | 'castle'
  */
 export const isCompleteDismissed = (environment) => {
-    const raw  = localStorage.getItem(KEYS.COMPLETE_DISMISSED);
+    const raw = localStorage.getItem(KEYS.COMPLETE_DISMISSED);
     const data = raw ? JSON.parse(raw) : {};
     return !!data[environment];
 };
@@ -209,10 +209,17 @@ export const hasLibroPage = (environment, npcId) => {
 
 // ─── Word summary helper ──────────────────────────────────────────────────────
 
+// Words that act as distractors in quests and shouldn't count towards the learned vocab
+const DISTRACTOR_WORDS = [
+    "SAGING", "BANANA",
+    "MOP", "TRAPO", "RAG", "TIMBA", "BUCKET"
+];
+
 /**
  * getLearnedWords
  * Returns words actually learned (stored in progress) for completed NPCs.
  * Falls back to npcMeta words if no stored words found.
+ * Filters out distractor words so they don't appear in the summary.
  *
  * @param {string} environment   'village' | 'forest' | 'castle'
  * @param {Array}  npcMeta       [{ npcId, npcName, words }]
@@ -220,17 +227,24 @@ export const hasLibroPage = (environment, npcId) => {
  */
 export const getLearnedWords = (environment, npcMeta = []) => {
     const progress = getProgress();
-    const npcKey   = `${environment}_npcs`;
-    const npcData  = progress[npcKey] || {};
+    const npcKey = `${environment}_npcs`;
+    const npcData = progress[npcKey] || {};
 
     return npcMeta
         .filter(n => npcData[n.npcId]?.completed)
-        .map(n => ({
-            npcName: n.npcName,
-            words: npcData[n.npcId]?.words?.length
+        .map(n => {
+            let rawWords = npcData[n.npcId]?.words?.length
                 ? npcData[n.npcId].words
-                : n.words,
-        }));
+                : n.words;
+
+            // Filter out distractors
+            const filteredWords = rawWords.filter(w => !DISTRACTOR_WORDS.includes(w.toUpperCase()));
+
+            return {
+                npcName: n.npcName,
+                words: filteredWords,
+            };
+        });
 };
 
 // ─── Clear ───────────────────────────────────────────────────────────────────
