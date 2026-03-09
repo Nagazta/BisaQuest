@@ -13,6 +13,7 @@ import BookCollectModal from "../../game/components/BookCollectModal";
 
 import LigayaCharacter    from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
 import LigayaSweating     from "../../assets/images/characters/Ligaya_gealimut-an.png";
+import LigayaWorried      from "../../assets/images/characters/Ligaya_worried.png";
 import houseBackground    from "../../assets/images/environments/scenario/house.jpg";
 import dirtyLivingRoom    from "../../assets/images/environments/scenario/dirtyLivingRoom.PNG";
 
@@ -165,12 +166,20 @@ const HousePage = () => {
     : false;
 
   // ── Derived: which NPC sprite to show ────────────────────────────────────
-  const npcSprite = (() => {
-    if (isPaypayQuest && npcId === "village_npc_2" && !ligayaCool) {
-      return LigayaSweating;
+    const npcSprite = (() => {
+
+      // Show worried Ligaya during dusty floor narration
+        if (currentRow?.dialogue_id === 138) {
+      return LigayaWorried;
     }
-    return NpcImage;
-  })();
+
+      // Existing sweating logic
+      if (isPaypayQuest && npcId === "village_npc_2" && !ligayaCool) {
+        return LigayaSweating;
+      }
+
+      return NpcImage;
+    })();
 
   // ── Load quest data ────────────────────────────────────────────────────────
   useEffect(() => {
