@@ -3,6 +3,9 @@
   publish = "Frontend/bisa-quest/dist"
   functions = "Backend/netlify/functions"
 
+[functions]
+  node_bundler = "esbuild"
+
 [dev]
   framework = "vite"
   command = "npm run dev"
