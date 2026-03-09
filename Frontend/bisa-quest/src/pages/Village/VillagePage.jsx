@@ -25,15 +25,9 @@ import ProgressBar from "../../components/ProgressBar";
 import EnvironmentCompleteModal from "../../components/EnvironmentCompleteModal";
 import FogTransition from "../../components/FogTransition";
 
-const VILLAGE_NPC_META = [
-    { npcId: "village_npc_2", npcName: "Ligaya",  words: ["WALIS","BROOM","TRAPO","RAG","MOP","TIMBA","BUCKET"] },
-    { npcId: "village_npc_3", npcName: "Nando",   words: ["PALA","SHOVEL","REGADERA","WATERING CAN"] },
-    { npcId: "village_npc_1", npcName: "Vicente", words: ["SANTOL","COTTON FRUIT","LANSONES","LANZONES","PAKWAN","WATERMELON","MANGGA","MANGO","SAGING","BANANA"] },
-];
-
 const NPC_DB_ID = {
-    ligaya:  "village_npc_2",
-    nando:   "village_npc_3",
+    ligaya: "village_npc_2",
+    nando: "village_npc_3",
     vicente: "village_npc_1",
 };
 
@@ -43,26 +37,26 @@ const randomPick = (arr) => {
 };
 
 const VillagePage = () => {
-    const navigate  = useNavigate();
-    const location  = useLocation();
-    const audioRef  = useRef(null);
-    const playerId  = getPlayerId();
-    const API       = import.meta.env.VITE_API_URL || "";
-    const language  = "en";
+    const navigate = useNavigate();
+    const location = useLocation();
+    const audioRef = useRef(null);
+    const playerId = getPlayerId();
+    const API = import.meta.env.VITE_API_URL || "";
+    const language = "en";
 
     const { character, loading: charLoading } = useCharacterPreference();
 
-    const [villageNPCs,       setVillageNPCs]       = useState([]);
-    const [refreshKey,        setRefreshKey]         = useState(0);
-    const [selectedNPC,       setSelectedNPC]        = useState(null);
-    const [showModal,         setShowModal]          = useState(false);
-    const [showExitConfirm,   setShowExitConfirm]    = useState(false);
-    const [isMuted,           setIsMuted]            = useState(false);
-    const [questLoading,      setQuestLoading]       = useState(false);
-    const [villageProgress,   setVillageProgress]    = useState(0);
-    const [showCompleteModal, setShowCompleteModal]  = useState(false);
-    const [fogActive,         setFogActive]          = useState(false);
-    const [learnedWords,      setLearnedWords]       = useState([]);
+    const [villageNPCs, setVillageNPCs] = useState([]);
+    const [refreshKey, setRefreshKey] = useState(0);
+    const [selectedNPC, setSelectedNPC] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+    const [showExitConfirm, setShowExitConfirm] = useState(false);
+    const [isMuted, setIsMuted] = useState(false);
+    const [questLoading, setQuestLoading] = useState(false);
+    const [villageProgress, setVillageProgress] = useState(0);
+    const [showCompleteModal, setShowCompleteModal] = useState(false);
+    const [fogActive, setFogActive] = useState(false);
+    const [learnedWords, setLearnedWords] = useState([]);
 
     const PlayerCharacter = character === "roberta" ? GirlCharacter : BoyCharacter;
 
@@ -71,20 +65,20 @@ const VillagePage = () => {
         const play = () => {
             if (audioRef.current) {
                 audioRef.current.volume = 0.3;
-                audioRef.current.play().catch(() => {});
+                audioRef.current.play().catch(() => { });
             }
         };
         play();
         const onInteract = () => {
             play();
-            document.removeEventListener("click",   onInteract);
+            document.removeEventListener("click", onInteract);
             document.removeEventListener("keydown", onInteract);
         };
-        document.addEventListener("click",   onInteract);
+        document.addEventListener("click", onInteract);
         document.addEventListener("keydown", onInteract);
         return () => {
             if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0; }
-            document.removeEventListener("click",   onInteract);
+            document.removeEventListener("click", onInteract);
             document.removeEventListener("keydown", onInteract);
         };
     }, []);
@@ -101,7 +95,7 @@ const VillagePage = () => {
 
         // Only show the modal if at 100% AND the player hasn't dismissed it yet
         if (pct >= 100 && !isCompleteDismissed("village")) {
-            const words = getLearnedWords("village", VILLAGE_NPC_META);
+            const words = getLearnedWords("village");
             setLearnedWords(words);
             setShowCompleteModal(true);
         }
@@ -112,9 +106,9 @@ const VillagePage = () => {
 
     const initializeVillage = () => {
         setVillageNPCs([
-            { npcId: "ligaya",  dbNpcId: "village_npc_2", name: "Ligaya",  x: 40, y: 41, character: LigayaCharacter,  showName: true, quest: "word_association" },
-            { npcId: "nando",   dbNpcId: "village_npc_3", name: "Nando",   x: 80, y: 41, character: NandoCharacter,   showName: true, quest: "farm"             },
-            { npcId: "vicente", dbNpcId: "village_npc_1", name: "Vicente", x: 20, y: 60, character: VicenteCharacter, showName: true, quest: "market_stall"     },
+            { npcId: "ligaya", dbNpcId: "village_npc_2", name: "Ligaya", x: 40, y: 41, character: LigayaCharacter, showName: true, quest: "word_association" },
+            { npcId: "nando", dbNpcId: "village_npc_3", name: "Nando", x: 80, y: 41, character: NandoCharacter, showName: true, quest: "farm" },
+            { npcId: "vicente", dbNpcId: "village_npc_1", name: "Vicente", x: 20, y: 60, character: VicenteCharacter, showName: true, quest: "market_stall" },
         ]);
         loadVillageProgress();
     };
@@ -143,25 +137,25 @@ const VillagePage = () => {
     };
 
     // ── NPC / modal handlers ──────────────────────────────────────────────────
-    const handleNPCClick    = (npc) => { setSelectedNPC(npc); setShowModal(true); };
-    const handleCloseModal  = ()    => { setShowModal(false); setSelectedNPC(null); };
-    const handleBackClick   = ()    => setShowExitConfirm(true);
-    const handleConfirmExit = ()    => { setShowExitConfirm(false); navigate("/dashboard"); };
-    const handleCancelExit  = ()    => setShowExitConfirm(false);
+    const handleNPCClick = (npc) => { setSelectedNPC(npc); setShowModal(true); };
+    const handleCloseModal = () => { setShowModal(false); setSelectedNPC(null); };
+    const handleBackClick = () => setShowExitConfirm(true);
+    const handleConfirmExit = () => { setShowExitConfirm(false); navigate("/dashboard"); };
+    const handleCancelExit = () => setShowExitConfirm(false);
 
     // ── Start quest ───────────────────────────────────────────────────────────
     const handleStartQuest = async () => {
         if (!selectedNPC || !playerId) return;
         setQuestLoading(true);
 
-        const dbNpcId  = selectedNPC.dbNpcId || NPC_DB_ID[selectedNPC.npcId] || selectedNPC.npcId;
+        const dbNpcId = selectedNPC.dbNpcId || NPC_DB_ID[selectedNPC.npcId] || selectedNPC.npcId;
         const isMarket = selectedNPC.quest === "market_stall";
-        const isFarm   = selectedNPC.quest === "farm";
+        const isFarm = selectedNPC.quest === "farm";
 
-        let resolvedQuestId          = null;
-        let resolvedKitchenQuestId   = null;
-        let resolvedBedroomQuestId   = null;
-        let resolvedIaLivingQuestId  = null;
+        let resolvedQuestId = null;
+        let resolvedKitchenQuestId = null;
+        let resolvedBedroomQuestId = null;
+        let resolvedIaLivingQuestId = null;
         let resolvedIaKitchenQuestId = null;
         let resolvedIaBedroomQuestId = null;
 
@@ -180,23 +174,23 @@ const VillagePage = () => {
                         resolvedQuestId = randomPick(pool)?.quest_id ?? null;
 
                     } else {
-                        const livingPool    = data.filter(q =>
+                        const livingPool = data.filter(q =>
                             q.game_mechanic === "drag_drop" &&
                             (q.scene_type === "living_room" || q.scene_type === "living_room_dirty")
                         );
-                        const kitchenPool   = data.filter(q => q.game_mechanic === "drag_drop"        && q.scene_type === "kitchen");
-                        const bedroomPool   = data.filter(q => q.game_mechanic === "drag_drop"        && q.scene_type === "bedroom");
-                        const iaLivingPool  = data.filter(q =>
+                        const kitchenPool = data.filter(q => q.game_mechanic === "drag_drop" && q.scene_type === "kitchen");
+                        const bedroomPool = data.filter(q => q.game_mechanic === "drag_drop" && q.scene_type === "bedroom");
+                        const iaLivingPool = data.filter(q =>
                             q.game_mechanic === "item_association" &&
                             (q.scene_type === "living_room" || q.scene_type === "living_room_dirty")
                         );
                         const iaKitchenPool = data.filter(q => q.game_mechanic === "item_association" && q.scene_type === "kitchen");
                         const iaBedroomPool = data.filter(q => q.game_mechanic === "item_association" && q.scene_type === "bedroom");
 
-                        resolvedQuestId          = randomPick(livingPool)?.quest_id    ?? null;
-                        resolvedKitchenQuestId   = randomPick(kitchenPool)?.quest_id   ?? null;
-                        resolvedBedroomQuestId   = randomPick(bedroomPool)?.quest_id   ?? null;
-                        resolvedIaLivingQuestId  = randomPick(iaLivingPool)?.quest_id  ?? null;
+                        resolvedQuestId = randomPick(livingPool)?.quest_id ?? null;
+                        resolvedKitchenQuestId = randomPick(kitchenPool)?.quest_id ?? null;
+                        resolvedBedroomQuestId = randomPick(bedroomPool)?.quest_id ?? null;
+                        resolvedIaLivingQuestId = randomPick(iaLivingPool)?.quest_id ?? null;
                         resolvedIaKitchenQuestId = randomPick(iaKitchenPool)?.quest_id ?? null;
                         resolvedIaBedroomQuestId = randomPick(iaBedroomPool)?.quest_id ?? null;
                     }
@@ -209,28 +203,28 @@ const VillagePage = () => {
         }
 
         const state = {
-            questId:               resolvedQuestId,
-            kitchenQuestId:        resolvedKitchenQuestId,
-            bedroomQuestId:        resolvedBedroomQuestId,
-            iaQuestId:             resolvedIaLivingQuestId,
-            iaKitchenQuestId:      resolvedIaKitchenQuestId,
-            iaBedroomQuestId:      resolvedIaBedroomQuestId,
-            npcId:                 dbNpcId,
-            npcName:               selectedNPC.name,
-            returnTo:              "/student/village",
-            sceneType:             isMarket ? "market_stall" : isFarm ? "farm" : "living_room",
-            questSequence:         isMarket ? [{ type: "any", sceneType: "market_stall", questId: resolvedQuestId }]
-                                : isFarm   ? [{ type: "any", sceneType: "farm",         questId: resolvedQuestId }]
-                                            : [
-                                                resolvedQuestId         && { type: "drag_drop",        sceneType: "living_room", questId: resolvedQuestId },
-                                                resolvedIaLivingQuestId && { type: "item_association", sceneType: "living_room", questId: resolvedIaLivingQuestId },
-                                              ].filter(Boolean),
+            questId: resolvedQuestId,
+            kitchenQuestId: resolvedKitchenQuestId,
+            bedroomQuestId: resolvedBedroomQuestId,
+            iaQuestId: resolvedIaLivingQuestId,
+            iaKitchenQuestId: resolvedIaKitchenQuestId,
+            iaBedroomQuestId: resolvedIaBedroomQuestId,
+            npcId: dbNpcId,
+            npcName: selectedNPC.name,
+            returnTo: "/student/village",
+            sceneType: isMarket ? "market_stall" : isFarm ? "farm" : "living_room",
+            questSequence: isMarket ? [{ type: "any", sceneType: "market_stall", questId: resolvedQuestId }]
+                : isFarm ? [{ type: "any", sceneType: "farm", questId: resolvedQuestId }]
+                    : [
+                        resolvedQuestId && { type: "drag_drop", sceneType: "living_room", questId: resolvedQuestId },
+                        resolvedIaLivingQuestId && { type: "item_association", sceneType: "living_room", questId: resolvedIaLivingQuestId },
+                    ].filter(Boolean),
             sequenceIndex: 0,
         };
 
-        if      (selectedNPC.quest === "market_stall")     navigate("/student/market", { state });
-        else if (selectedNPC.quest === "farm")             navigate("/student/farm",   { state });
-        else if (selectedNPC.quest === "word_association") navigate("/student/house",  { state });
+        if (selectedNPC.quest === "market_stall") navigate("/student/market", { state });
+        else if (selectedNPC.quest === "farm") navigate("/student/farm", { state });
+        else if (selectedNPC.quest === "word_association") navigate("/student/house", { state });
     };
 
     if (charLoading) return (

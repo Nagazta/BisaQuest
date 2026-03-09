@@ -216,36 +216,46 @@ const DISTRACTOR_WORDS = [
     "MOP", "TRAPO", "RAG", "TIMBA", "BUCKET"
 ];
 
-/**
- * getLearnedWords
- * Returns words actually learned (stored in progress) for completed NPCs.
- * Falls back to npcMeta words if no stored words found.
- * Filters out distractor words so they don't appear in the summary.
- *
- * @param {string} environment   'village' | 'forest' | 'castle'
- * @param {Array}  npcMeta       [{ npcId, npcName, words }]
- * @returns {Array}  [{ npcName, words }]  — only for completed NPCs
- */
-export const getLearnedWords = (environment, npcMeta = []) => {
-    const progress = getProgress();
-    const npcKey = `${environment}_npcs`;
-    const npcData = progress[npcKey] || {};
+export const getLearnedWords = (environmentName) => {
+    try {
+        const key = getPlayerId() ? `progress_v2_${getPlayerId()}` : 'quest_progress_v2';
+        const progress = JSON.parse(localStorage.getItem(key)) || {};
 
-    return npcMeta
-        .filter(n => npcData[n.npcId]?.completed)
-        .map(n => {
-            let rawWords = npcData[n.npcId]?.words?.length
-                ? npcData[n.npcId].words
-                : n.words;
+        if (!progress[environmentName] || !progress[environmentName].npcs) {
+            return [];
+        }
 
-            // Filter out distractors
-            const filteredWords = rawWords.filter(w => !DISTRACTOR_WORDS.includes(w.toUpperCase()));
+        const npcs = progress[environmentName].npcs;
+        const allWords = [];
 
-            return {
-                npcName: n.npcName,
-                words: filteredWords,
-            };
+        // Distractor filter logic remains to clean up any past bad data the player saved
+        const isDistractorWord = (word) => {
+            if (!word) return true;
+            const upper = word.toUpperCase();
+            return DISTRACTOR_WORDS.includes(upper);
+        };
+
+        Object.keys(npcs).forEach(npcId => {
+            const data = npcs[npcId];
+            if (data.isCompleted) {
+                // We now strictly trust the array that is passed during saveNPCProgress!
+                // We no longer rely on a hardcoded VILLAGE_NPC_META block.
+                const storedWords = data.learned_words || [];
+
+                storedWords.forEach(w => {
+                    const upperWord = (typeof w === 'string' ? w : String(w)).toUpperCase();
+                    if (!isDistractorWord(upperWord) && !allWords.includes(upperWord)) {
+                        allWords.push(upperWord);
+                    }
+                });
+            }
         });
+
+        return allWords;
+    } catch (e) {
+        console.warn('Failed to retrieve learned words:', e);
+        return [];
+    }
 };
 
 // ─── Clear ───────────────────────────────────────────────────────────────────
