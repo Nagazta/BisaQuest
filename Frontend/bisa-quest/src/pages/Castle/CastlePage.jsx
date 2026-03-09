@@ -10,45 +10,46 @@ import CastleBackground from "../../assets/images/environments/castle.png";
 import BoyCharacter from "../../assets/images/characters/Boy.png";
 import GirlCharacter from "../../assets/images/characters/Girl.png";
 import ManongKwillImg from "../../assets/images/characters/castle-manong-kwill.png";
-import GuloImg        from "../../assets/images/characters/gulo.png";
+import GuloImg from "../../assets/images/characters/gulo.png";
 import PrincessHaraImg from "../../assets/images/characters/castle-princess-hara.png";
 import bgMusic from "../../assets/music/bg-music.mp3";
 import QuestStartModal from "../../components/QuestStartModal";
 import "./CastlePage.css";
 
+const API = import.meta.env.VITE_API_URL !== undefined ? import.meta.env.VITE_API_URL : (import.meta.env.PROD ? '' : 'http://localhost:5000');
 const CASTLE_HINT = "Enter the Castle! Complete all tasks to master compound words";
 
 const CASTLE_NPCS = [
-    { npcId: "castle_npc_3", name: "Gulo",          x: 28, y: 60, character: GuloImg,       showName: true, quest: "compound_words", scenePath: "/student/library"          },
-    { npcId: "castle_npc_1", name: "Princess Hara", x: 50, y: 45, character: PrincessHaraImg, showName: true, quest: "compound_words", scenePath: "/student/library"          },
-    { npcId: "castle_npc_2", name: "Manong Kwill",  x: 72, y: 55, character: ManongKwillImg, showName: true, quest: "compound_words", scenePath: "/student/library" },
+    { npcId: "castle_npc_3", name: "Gulo", x: 28, y: 60, character: GuloImg, showName: true, quest: "compound_words", scenePath: "/student/library" },
+    { npcId: "castle_npc_1", name: "Princess Hara", x: 50, y: 45, character: PrincessHaraImg, showName: true, quest: "compound_words", scenePath: "/student/library" },
+    { npcId: "castle_npc_2", name: "Manong Kwill", x: 72, y: 55, character: ManongKwillImg, showName: true, quest: "compound_words", scenePath: "/student/library" },
 ];
 
 const CastlePage = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const questId  = location.state?.questId || 3;
+    const questId = location.state?.questId || 3;
     const audioRef = useRef(null);
     const playerId = getPlayerId();
 
     const { character, loading: charLoading } = useCharacterPreference();
 
-    const [castleNPCs,        setCastleNPCs]        = useState([]);
-    const [refreshKey,        setRefreshKey]         = useState(0);
-    const [selectedNPC,       setSelectedNPC]        = useState(null);
-    const [showModal,         setShowModal]          = useState(false);
-    const [showExitConfirm,   setShowExitConfirm]    = useState(false);
-    const [showSummaryButton, setShowSummaryButton]  = useState(false);
-    const [isMuted,           setIsMuted]            = useState(false);
+    const [castleNPCs, setCastleNPCs] = useState([]);
+    const [refreshKey, setRefreshKey] = useState(0);
+    const [selectedNPC, setSelectedNPC] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+    const [showExitConfirm, setShowExitConfirm] = useState(false);
+    const [showSummaryButton, setShowSummaryButton] = useState(false);
+    const [isMuted, setIsMuted] = useState(false);
 
     // ── NPC position editor (dev tool) ────────────────────────────────────────
-    const [npcEditMode,  setNpcEditMode]  = useState(false);
-    const [npcEditIdx,   setNpcEditIdx]   = useState(0);
+    const [npcEditMode, setNpcEditMode] = useState(false);
+    const [npcEditIdx, setNpcEditIdx] = useState(0);
     const npcEditModeRef = useRef(false);
-    const npcEditIdxRef  = useRef(0);
+    const npcEditIdxRef = useRef(0);
 
     useEffect(() => { npcEditModeRef.current = npcEditMode; }, [npcEditMode]);
-    useEffect(() => { npcEditIdxRef.current  = npcEditIdx;  }, [npcEditIdx]);
+    useEffect(() => { npcEditIdxRef.current = npcEditIdx; }, [npcEditIdx]);
 
     useEffect(() => {
         const onKey = (e) => {
@@ -77,9 +78,9 @@ const CastlePage = () => {
             setCastleNPCs(prev => prev.map((npc, i) => {
                 if (i !== npcEditIdxRef.current) return npc;
                 let { x, y } = npc;
-                if (k === 'w') y = Math.max(0,   y - 1);
+                if (k === 'w') y = Math.max(0, y - 1);
                 if (k === 's') y = Math.min(100, y + 1);
-                if (k === 'a') x = Math.max(0,   x - 1);
+                if (k === 'a') x = Math.max(0, x - 1);
                 if (k === 'd') x = Math.min(100, x + 1);
                 console.log(`[NPC Pos] ${npc.name}: x=${x}, y=${y}`);
                 return { ...npc, x, y };
@@ -95,7 +96,7 @@ const CastlePage = () => {
 
     // ── Music ─────────────────────────────────────────────────────────────────
     useEffect(() => {
-        const play = () => { if (audioRef.current) { audioRef.current.volume = 0.3; audioRef.current.play().catch(() => {}); } };
+        const play = () => { if (audioRef.current) { audioRef.current.volume = 0.3; audioRef.current.play().catch(() => { }); } };
         play();
         const onInteract = () => { play(); document.removeEventListener("click", onInteract); };
         document.addEventListener("click", onInteract);
@@ -122,7 +123,7 @@ const CastlePage = () => {
     const checkEnvironmentProgress = async () => {
         if (!playerId) return;
         try {
-            const res    = await fetch(`${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=castle&playerId=${playerId}`);
+            const res = await fetch(`${API}/api/npc/environment-progress?environmentType=castle&playerId=${playerId}`);
             const result = await res.json();
             if (result.success && (result.data.progress ?? 0) >= 75) setShowSummaryButton(true);
         } catch (e) { console.error(e); }
@@ -131,7 +132,7 @@ const CastlePage = () => {
     const checkAndShowSummary = async () => {
         if (!playerId) return;
         try {
-            const res    = await fetch(`${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=castle&playerId=${playerId}`);
+            const res = await fetch(`${API}/api/npc/environment-progress?environmentType=castle&playerId=${playerId}`);
             const result = await res.json();
             if (result.success && (result.data.progress ?? 0) >= 100) {
                 navigate("/student/viewCompletion", { state: { showSummary: true, environmentProgress: result.data.progress, summaryData: result.data, returnTo: "/student/castle", questId } });
@@ -147,16 +148,16 @@ const CastlePage = () => {
         }
     }, [location.state]);
 
-    const handleNPCClick    = (npc) => { setSelectedNPC(npc); setShowModal(true); };
-    const handleCloseModal  = ()    => { setShowModal(false); setSelectedNPC(null); };
-    const handleBackClick   = ()    => setShowExitConfirm(true);
-    const handleConfirmExit = ()    => { setShowExitConfirm(false); navigate("/dashboard"); };
-    const handleCancelExit  = ()    => setShowExitConfirm(false);
+    const handleNPCClick = (npc) => { setSelectedNPC(npc); setShowModal(true); };
+    const handleCloseModal = () => { setShowModal(false); setSelectedNPC(null); };
+    const handleBackClick = () => setShowExitConfirm(true);
+    const handleConfirmExit = () => { setShowExitConfirm(false); navigate("/dashboard"); };
+    const handleCancelExit = () => setShowExitConfirm(false);
 
     const handleViewSummary = async () => {
         if (!playerId) return;
         try {
-            const res    = await fetch(`${import.meta.env.VITE_API_URL}/api/npc/environment-progress?environmentType=castle&playerId=${playerId}`);
+            const res = await fetch(`${API}/api/npc/environment-progress?environmentType=castle&playerId=${playerId}`);
             const result = await res.json();
             if (result.success) navigate("/student/summary", { state: { showSummary: true, environmentProgress: result.data.progress, summaryData: result.data, returnTo: "/student/castle", questId } });
         } catch (e) { console.error(e); }
@@ -172,7 +173,7 @@ const CastlePage = () => {
         // Fetch the actual quest_id for this NPC from the DB
         let npcQuestId = questId;
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/challenge/npc/${selectedNPC.npcId}/quest`);
+            const res = await fetch(`${API}/api/challenge/npc/${selectedNPC.npcId}/quest`);
             const result = await res.json();
             if (result.data?.length) npcQuestId = result.data[0].quest_id;
         } catch (err) { console.warn("[CastlePage] quest lookup failed, using default:", err); }

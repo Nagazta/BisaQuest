@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react';
 import { updateCharacter as updateCharacterAPI } from '../services/playerServices';
 import { getPlayerId, getCharacter, saveCharacter } from '../utils/playerStorage';
 
+const API = import.meta.env.VITE_API_URL !== undefined ? import.meta.env.VITE_API_URL : (import.meta.env.PROD ? '' : 'http://localhost:5000');
+
 /**
  * Hook to manage a player's character selection
  * Reads from localStorage first, falls back to DB
@@ -12,7 +14,7 @@ import { getPlayerId, getCharacter, saveCharacter } from '../utils/playerStorage
 export const useCharacterPreference = () => {
     const [character, setCharacterState] = useState('male');
     const [loading, setLoading] = useState(true);
-    const [error, setError]     = useState(null);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const load = async () => {
@@ -36,7 +38,7 @@ export const useCharacterPreference = () => {
                 }
 
                 const response = await fetch(
-                    `${import.meta.env.VITE_API_URL}/api/player/${playerId}`
+                    `${API}/api/player/${playerId}`
                 );
                 const result = await response.json();
                 const preferred = result.data?.character || 'male';

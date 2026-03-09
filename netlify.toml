@@ -1,0 +1,21 @@
+[build]
+  command = "npm install --prefix Backend && npm install --prefix Frontend/bisa-quest && npm run build --prefix Frontend/bisa-quest"
+  publish = "Frontend/bisa-quest/dist"
+  functions = "Backend/netlify/functions"
+
+[dev]
+  framework = "vite"
+  command = "npm run dev"
+  targetPort = 5173
+  port = 8888
+  publish = "Frontend/bisa-quest"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
