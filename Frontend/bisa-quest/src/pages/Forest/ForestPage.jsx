@@ -6,7 +6,7 @@ import Button from "../../components/Button";
 import ParticleEffects from "../../components/ParticleEffects";
 import { environmentApi } from "../../services/environmentServices.js";
 import { getPlayerId } from "../../utils/playerStorage";
-import ForestBackground from "../../assets/images/environments/forest.png";
+import ForestBackground from "../../assets/images/environments/Forest.png";
 import BoyCharacter from "../../assets/images/characters/Boy.png";
 import GirlCharacter from "../../assets/images/characters/Girl.png";
 import DeerCharacter from "../../assets/images/characters/deer.png";

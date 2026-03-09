@@ -5,13 +5,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-import Button           from "../../components/Button";
-import DialogueBox      from "../../components/instructions/DialogueBox";
+import Button from "../../components/Button";
+import DialogueBox from "../../components/instructions/DialogueBox";
 import BookCollectModal from "../../game/components/BookCollectModal";
 
 import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_1.png";
-import NandoCharacter   from "../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
-import LigayaCharacter  from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
+import NandoCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
+import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
 import marketBackground from "../../assets/images/environments/scenario/market_stall.png";
 
 import { ITEM_IMAGE_MAP } from "../../game/dragDropConstants";
@@ -42,15 +42,15 @@ const NPC_WORDS = {
 // ── Scene drop zone registry ──────────────────────────────────────────────────
 const SCENE_DROP_ZONES = {
   market_stall: {
-    stall_left:      { x: 18, y: 48 },
-    stall_center:    { x: 50, y: 48 },
-    stall_right:     { x: 78, y: 48 },
+    stall_left: { x: 18, y: 48 },
+    stall_center: { x: 50, y: 48 },
+    stall_right: { x: 78, y: 48 },
     basket_saging_1: { x: 37, y: 74 },
     basket_saging_2: { x: 23, y: 74 },
-    basket_manga_1:  { x: 65, y: 95 },
-    basket_manga_2:  { x: 85, y: 95 },
-    tray:            { x: 62, y: 60 },
-    counter:         { x: 50, y: 55 },
+    basket_manga_1: { x: 65, y: 95 },
+    basket_manga_2: { x: 85, y: 95 },
+    tray: { x: 62, y: 60 },
+    counter: { x: 50, y: 55 },
   },
 };
 
@@ -63,27 +63,27 @@ const resolveDropZones = (zoneKey, sceneZones) => {
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-const isNarration    = (s) => typeof s === "string" && s.toLowerCase() === "narration";
-const isPlayer       = (s) => typeof s === "string" && s.toLowerCase() === "player";
+const isNarration = (s) => typeof s === "string" && s.toLowerCase() === "narration";
+const isPlayer = (s) => typeof s === "string" && s.toLowerCase() === "player";
 const resolveSpeaker = (speaker, fallback) => {
-  if (!speaker)             return fallback;
+  if (!speaker) return fallback;
   if (isNarration(speaker)) return "Narration";
-  if (isPlayer(speaker))    return "Player";
+  if (isPlayer(speaker)) return "Player";
   return speaker;
 };
 
 // ── Phase enums ───────────────────────────────────────────────────────────────
 const Phase = {
-  STORY:            "story",
-  DONE:             "done",
-  COMPREHENSION:    "comprehension",
-  COMP_BRANCH:      "comp_branch",
-  DRAG_DROP:        "drag_drop",
-  FEEDBACK:         "feedback",
-  IA_ROUND_INTRO:   "ia_round_intro",
-  IA_ROUND_PICK:    "ia_round_pick",
-  IA_ROUND_BRANCH:  "ia_round_branch",
-  IA_FINAL:         "ia_final",
+  STORY: "story",
+  DONE: "done",
+  COMPREHENSION: "comprehension",
+  COMP_BRANCH: "comp_branch",
+  DRAG_DROP: "drag_drop",
+  FEEDBACK: "feedback",
+  IA_ROUND_INTRO: "ia_round_intro",
+  IA_ROUND_PICK: "ia_round_pick",
+  IA_ROUND_BRANCH: "ia_round_branch",
+  IA_FINAL: "ia_final",
 };
 
 const groupByFlow = (rows) => {
@@ -104,7 +104,7 @@ const CompCard = ({ item, onSelect, locked, result }) => {
   const img = item.imageKey && ITEM_IMAGE_MAP[item.imageKey]
     ? ITEM_IMAGE_MAP[item.imageKey] : null;
   const stateClass = result === "correct" ? "ms-comp-card--correct"
-                   : result === "wrong"   ? "ms-comp-card--wrong" : "";
+    : result === "wrong" ? "ms-comp-card--wrong" : "";
   return (
     <div
       className={`ms-comp-card ${img ? "ms-comp-card--has-img" : "ms-comp-card--text-only"} ${stateClass} ${locked ? "ms-comp-card--locked" : ""}`}
@@ -121,7 +121,7 @@ const CompCard = ({ item, onSelect, locked, result }) => {
         <span className="ms-comp-card-text">{item.label}</span>
       )}
       {result === "correct" && <div className="ms-comp-card-badge ms-comp-card-badge--correct">✓</div>}
-      {result === "wrong"   && <div className="ms-comp-card-badge ms-comp-card-badge--wrong">✗</div>}
+      {result === "wrong" && <div className="ms-comp-card-badge ms-comp-card-badge--wrong">✗</div>}
     </div>
   );
 };
@@ -131,7 +131,7 @@ const IACard = ({ item, onSelect, locked, result }) => {
   const img = item.imageKey && ITEM_IMAGE_MAP[item.imageKey]
     ? ITEM_IMAGE_MAP[item.imageKey] : null;
   const stateClass = result === "correct" ? "ms-comp-card--correct"
-                   : result === "wrong"   ? "ms-comp-card--wrong" : "";
+    : result === "wrong" ? "ms-comp-card--wrong" : "";
   return (
     <div
       className={`ms-comp-card ms-ia-card ${stateClass} ${locked ? "ms-comp-card--locked" : ""}`}
@@ -145,7 +145,7 @@ const IACard = ({ item, onSelect, locked, result }) => {
       }
       <span className="ms-comp-card-label">{item.label}</span>
       {result === "correct" && <div className="ms-comp-card-badge ms-comp-card-badge--correct">✓</div>}
-      {result === "wrong"   && <div className="ms-comp-card-badge ms-comp-card-badge--wrong">✗</div>}
+      {result === "wrong" && <div className="ms-comp-card-badge ms-comp-card-badge--wrong">✗</div>}
     </div>
   );
 };
@@ -157,68 +157,68 @@ const MarketStallPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const playerId = getPlayerId();
-  const API      = import.meta.env.VITE_API_URL || "";
+  const API = import.meta.env.VITE_API_URL || "";
 
-  const questId       = location.state?.questId       || null;
-  const npcId         = location.state?.npcId         || "village_npc_3";
-  const npcName       = location.state?.npcName       || "Vicente";
-  const returnTo      = location.state?.returnTo      || "/student/village";
+  const questId = location.state?.questId || null;
+  const npcId = location.state?.npcId || "village_npc_3";
+  const npcName = location.state?.npcName || "Vicente";
+  const returnTo = location.state?.returnTo || "/student/village";
   const questSequence = location.state?.questSequence || [];
-  const seqIndex      = location.state?.sequenceIndex ?? 0;
+  const seqIndex = location.state?.sequenceIndex ?? 0;
 
   const NpcImage = NPC_IMAGES[npcId] || VicenteCharacter;
 
   // ── Shared state ──────────────────────────────────────────────────────────
-  const [loading,       setLoading]       = useState(true);
-  const [fetchError,    setFetchError]    = useState(null);
-  const [mechanic,      setMechanic]      = useState(null);
-  const [flowGroups,    setFlowGroups]    = useState({});
-  const [phase,         setPhase]         = useState(Phase.STORY);
-  const [storyIdx,      setStoryIdx]      = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
+  const [mechanic, setMechanic] = useState(null);
+  const [flowGroups, setFlowGroups] = useState({});
+  const [phase, setPhase] = useState(Phase.STORY);
+  const [storyIdx, setStoryIdx] = useState(0);
   const [showPageModal, setShowPageModal] = useState(false);
   const [collectedPage, setCollectedPage] = useState(null);
 
   // ── drag_drop state ───────────────────────────────────────────────────────
-  const [compItems,       setCompItems]      = useState([]);
-  const [ddWordCards,     setDdWordCards]    = useState([]);
-  const [ddInstruction,   setDdInstruction]  = useState("");
-  const [branchKey,       setBranchKey]      = useState(null);
-  const [branchIdx,       setBranchIdx]      = useState(0);
-  const [feedbackKey,     setFeedbackKey]    = useState(null);
-  const [feedbackIdx,     setFeedbackIdx]    = useState(0);
-  const [compResult,      setCompResult]     = useState({});
-  const [compLocked,      setCompLocked]     = useState(false);
-  const [ddIntroItem,     setDdIntroItem]    = useState(null);
-  const [ddPlaced,        setDdPlaced]       = useState({});
-  const [ddShake,         setDdShake]        = useState(null);
-  const [ddCompleted,     setDdCompleted]    = useState(false);
-  const [draggingWord,    setDraggingWord]   = useState(null);
-  const [dropHover,       setDropHover]      = useState(null);
-  const [ddDropZones,     setDdDropZones]    = useState([]);
-  const [ddDropMode,      setDdDropMode]     = useState("equip");
-  const [ddDropZoneLabel, setDdDropZoneLabel]= useState("");
-  const [gridMode,        setGridMode]       = useState(false);
-  const [hoverCell,       setHoverCell]      = useState(null);
+  const [compItems, setCompItems] = useState([]);
+  const [ddWordCards, setDdWordCards] = useState([]);
+  const [ddInstruction, setDdInstruction] = useState("");
+  const [branchKey, setBranchKey] = useState(null);
+  const [branchIdx, setBranchIdx] = useState(0);
+  const [feedbackKey, setFeedbackKey] = useState(null);
+  const [feedbackIdx, setFeedbackIdx] = useState(0);
+  const [compResult, setCompResult] = useState({});
+  const [compLocked, setCompLocked] = useState(false);
+  const [ddIntroItem, setDdIntroItem] = useState(null);
+  const [ddPlaced, setDdPlaced] = useState({});
+  const [ddShake, setDdShake] = useState(null);
+  const [ddCompleted, setDdCompleted] = useState(false);
+  const [draggingWord, setDraggingWord] = useState(null);
+  const [dropHover, setDropHover] = useState(null);
+  const [ddDropZones, setDdDropZones] = useState([]);
+  const [ddDropMode, setDdDropMode] = useState("equip");
+  const [ddDropZoneLabel, setDdDropZoneLabel] = useState("");
+  const [gridMode, setGridMode] = useState(false);
+  const [hoverCell, setHoverCell] = useState(null);
 
   // ── item_association state ────────────────────────────────────────────────
-  const [iaRounds,    setIaRounds]    = useState([]);
-  const [iaRound,     setIaRound]     = useState(0);
-  const [iaResult,    setIaResult]    = useState({});
-  const [iaLocked,    setIaLocked]    = useState(false);
+  const [iaRounds, setIaRounds] = useState([]);
+  const [iaRound, setIaRound] = useState(0);
+  const [iaResult, setIaResult] = useState({});
+  const [iaLocked, setIaLocked] = useState(false);
   const [iaBranchKey, setIaBranchKey] = useState(null);
   const [iaBranchIdx, setIaBranchIdx] = useState(0);
-  const [iaIntroIdx,  setIaIntroIdx]  = useState(0);
+  const [iaIntroIdx, setIaIntroIdx] = useState(0);
 
   const containerRef = useRef(null);
 
   // ── Derived ────────────────────────────────────────────────────────────────
   const currentRow = (() => {
-    if (phase === Phase.STORY)           return flowGroups.main?.[storyIdx]                    ?? null;
-    if (phase === Phase.COMP_BRANCH)     return flowGroups[branchKey]?.[branchIdx]              ?? null;
-    if (phase === Phase.FEEDBACK)        return flowGroups[feedbackKey]?.[feedbackIdx]           ?? null;
-    if (phase === Phase.IA_ROUND_INTRO)  return flowGroups[`r${iaRound + 1}_intro`]?.[iaIntroIdx] ?? null;
-    if (phase === Phase.IA_ROUND_BRANCH) return flowGroups[iaBranchKey]?.[iaBranchIdx]          ?? null;
-    if (phase === Phase.IA_FINAL)        return flowGroups["final"]?.[iaBranchIdx]               ?? null;
+    if (phase === Phase.STORY) return flowGroups.main?.[storyIdx] ?? null;
+    if (phase === Phase.COMP_BRANCH) return flowGroups[branchKey]?.[branchIdx] ?? null;
+    if (phase === Phase.FEEDBACK) return flowGroups[feedbackKey]?.[feedbackIdx] ?? null;
+    if (phase === Phase.IA_ROUND_INTRO) return flowGroups[`r${iaRound + 1}_intro`]?.[iaIntroIdx] ?? null;
+    if (phase === Phase.IA_ROUND_BRANCH) return flowGroups[iaBranchKey]?.[iaBranchIdx] ?? null;
+    if (phase === Phase.IA_FINAL) return flowGroups["final"]?.[iaBranchIdx] ?? null;
     return null;
   })();
 
@@ -247,9 +247,9 @@ const MarketStallPage = () => {
         if (!metaRes.ok || !dialoguesRes.ok || !itemsRes.ok)
           throw new Error("Failed to load quest data.");
 
-        const { data: meta }      = await metaRes.json();
+        const { data: meta } = await metaRes.json();
         const { data: dialogues } = await dialoguesRes.json();
-        const { data: rawItems }  = await itemsRes.json();
+        const { data: rawItems } = await itemsRes.json();
         if (cancelled) return;
 
         const qMechanic = meta?.game_mechanic || "drag_drop";
@@ -268,49 +268,49 @@ const MarketStallPage = () => {
             sorted
               .filter(r => Number(r.round_number) === i + 1)
               .map(r => ({
-                id:        String(r.item_id),
-                label:     r.label,
-                imageKey:  r.image_key  || null,
+                id: String(r.item_id),
+                label: r.label,
+                imageKey: r.image_key || null,
                 isCorrect: Boolean(r.is_correct),
                 belongsTo: r.belongs_to || null,
-                x:         Number(r.position_x ?? 33),
-                y:         Number(r.position_y ?? 60),
+                x: Number(r.position_x ?? 33),
+                y: Number(r.position_y ?? 60),
               }))
           );
           setIaRounds(rounds);
           setIaRound(0);
         } else {
           setCompItems(sorted.filter(r => Number(r.round_number) === 0).map(r => ({
-            id:        String(r.item_id),
-            label:     r.label,
-            imageKey:  r.image_key  || null,
+            id: String(r.item_id),
+            label: r.label,
+            imageKey: r.image_key || null,
             isCorrect: Boolean(r.is_correct),
             belongsTo: r.belongs_to || null,
-            x:         Number(r.position_x ?? 30),
-            y:         Number(r.position_y ?? 30),
+            x: Number(r.position_x ?? 30),
+            y: Number(r.position_y ?? 30),
           })));
 
-          const ddRaw         = sorted.filter(r => Number(r.round_number) === 1);
+          const ddRaw = sorted.filter(r => Number(r.round_number) === 1);
           const correctDDItem = ddRaw.find(r => Boolean(r.is_correct));
           setDdDropZoneLabel(correctDDItem?.label || "");
           setDdIntroItem(correctDDItem
             ? { id: String(correctDDItem.item_id), label: correctDDItem.label, imageKey: correctDDItem.image_key || null }
             : null
           );
-          const scene      = meta?.scene_type || "market_stall";
-          const zoneKey    = correctDDItem?.correct_zone || null;
+          const scene = meta?.scene_type || "market_stall";
+          const zoneKey = correctDDItem?.correct_zone || null;
           const sceneZones = SCENE_DROP_ZONES[scene] || SCENE_DROP_ZONES["market_stall"];
-          const zones      = resolveDropZones(zoneKey, sceneZones);
+          const zones = resolveDropZones(zoneKey, sceneZones);
           setDdDropMode(zones.length > 0 ? "scene" : "equip");
           setDdDropZones(zones);
           setDdWordCards(ddRaw.map(r => ({
-            id:        String(r.item_id),
-            label:     r.label,
-            imageKey:  r.image_key  || null,
+            id: String(r.item_id),
+            label: r.label,
+            imageKey: r.image_key || null,
             isCorrect: Boolean(r.is_correct),
             belongsTo: r.belongs_to || null,
-            x:         Number(r.position_x ?? 50),
-            y:         Number(r.position_y ?? 55),
+            x: Number(r.position_x ?? 50),
+            y: Number(r.position_y ?? 55),
           })));
           setDdPlaced({});
         }
@@ -450,8 +450,8 @@ const MarketStallPage = () => {
       const wrongKey = (item.belongsTo && flowGroups[item.belongsTo])
         ? item.belongsTo
         : Object.keys(flowGroups).find(k =>
-            k.startsWith(`r${iaRound + 1}_wrong`) && flowGroups[k]
-          ) || null;
+          k.startsWith(`r${iaRound + 1}_wrong`) && flowGroups[k]
+        ) || null;
 
       if (wrongKey) {
         setIaBranchKey(wrongKey);
@@ -479,30 +479,30 @@ const MarketStallPage = () => {
       const target = (item.belongsTo && flowGroups[item.belongsTo])
         ? item.belongsTo
         : (() => {
-            const words = item.label.toLowerCase().split(/[\s/,_-]+/);
-            const match = wrongKeys.find(k => words.some(w => w.length > 2 && k.includes(w)));
-            return (match && flowGroups[match]) ? match : wrongKeys[0] || null;
-          })();
+          const words = item.label.toLowerCase().split(/[\s/,_-]+/);
+          const match = wrongKeys.find(k => words.some(w => w.length > 2 && k.includes(w)));
+          return (match && flowGroups[match]) ? match : wrongKeys[0] || null;
+        })();
       if (!target) { setCompLocked(false); setCompResult({}); return; }
       setBranchKey(target); setBranchIdx(0); setPhase(Phase.COMP_BRANCH);
     }
   }, [compLocked, flowGroups]);
 
   // ── drag_drop: Phase 3 ────────────────────────────────────────────────────
-  const handleWordDragStart    = (card, e) => { if (ddPlaced[card.id] !== undefined) return; e.dataTransfer.setData("cardId", card.id); setDraggingWord(card.id); };
+  const handleWordDragStart = (card, e) => { if (ddPlaced[card.id] !== undefined) return; e.dataTransfer.setData("cardId", card.id); setDraggingWord(card.id); };
   const handleDropZoneDragOver = (e) => { e.preventDefault(); };
-  const makeZoneDragEnter      = (zk) => () => setDropHover(zk);
-  const makeZoneDragLeave      = (zk) => () => setDropHover(prev => prev === zk ? null : prev);
+  const makeZoneDragEnter = (zk) => () => setDropHover(zk);
+  const makeZoneDragLeave = (zk) => () => setDropHover(prev => prev === zk ? null : prev);
 
   const resolveWrongFeedbackKey = (card) => {
     const wrongKeys = Object.keys(flowGroups).filter(k => k.startsWith("wrong_"));
     return (card.belongsTo && flowGroups[card.belongsTo])
       ? card.belongsTo
       : (() => {
-          const words = (card.label || "").toLowerCase().split(/[\s/,_-]+/);
-          const match = wrongKeys.find(k => words.some(w => w.length > 2 && k.includes(w)));
-          return (match && flowGroups[match]) ? match : wrongKeys[0] || null;
-        })();
+        const words = (card.label || "").toLowerCase().split(/[\s/,_-]+/);
+        const match = wrongKeys.find(k => words.some(w => w.length > 2 && k.includes(w)));
+        return (match && flowGroups[match]) ? match : wrongKeys[0] || null;
+      })();
   };
 
   const makeZoneDrop = useCallback((zoneKey) => (e) => {
@@ -542,14 +542,32 @@ const MarketStallPage = () => {
 
   // ── Submit + advance ──────────────────────────────────────────────────────
   const submitProgress = useCallback(() => {
-    // ── KEY FIX: pass NPC_WORDS so only this NPC's words get stored ──────────
-    const words = NPC_WORDS[npcId] || [];
+    const correctWords = new Set();
+
+    // Round 0 (Comprehension)
+    compItems.forEach(c => {
+      if (c.isCorrect) correctWords.add(c.label.toUpperCase());
+    });
+
+    // Round 1 (Drag and Drop)
+    ddWordCards.forEach(c => {
+      if (c.isCorrect) correctWords.add(c.label.toUpperCase());
+    });
+
+    // Round 2+ (Item Association)
+    iaRounds.forEach(round => {
+      round.forEach(item => {
+        if (item.isCorrect) correctWords.add(item.label.toUpperCase());
+      });
+    });
+
+    const words = Array.from(correctWords);
     saveNPCProgress("village", npcId, 1, true, 3, words);
 
     const isNewPage = awardLibroPage("village", npcId);
     if (isNewPage) {
       setCollectedPage({
-        pageNumber:     getLibroPageCountForEnv("village"),
+        pageNumber: getLibroPageCountForEnv("village"),
         totalCollected: getLibroPageCount(),
       });
       setShowPageModal(true);
@@ -566,7 +584,7 @@ const MarketStallPage = () => {
 
   const advanceSequence = useCallback(() => {
     const nextIndex = seqIndex + 1;
-    const nextStep  = questSequence[nextIndex];
+    const nextStep = questSequence[nextIndex];
     if (!nextStep) { navigate(returnTo, { state: { completed: true } }); return; }
     navigate("/student/market", {
       state: { questId: nextStep.questId, npcId, npcName, returnTo, questSequence, sequenceIndex: nextIndex, sceneType: nextStep.sceneType },
@@ -598,8 +616,8 @@ const MarketStallPage = () => {
 
   const handleNextUnified = (() => {
     if (phase === Phase.IA_ROUND_INTRO ||
-        phase === Phase.IA_ROUND_BRANCH ||
-        phase === Phase.IA_FINAL) return handleIANext;
+      phase === Phase.IA_ROUND_BRANCH ||
+      phase === Phase.IA_FINAL) return handleIANext;
     return handleNext;
   })();
 
@@ -656,15 +674,15 @@ const MarketStallPage = () => {
       )}
 
       <div className="ms-scene-label">
-        {phase === Phase.STORY            && "Story Introduction"}
-        {phase === Phase.COMPREHENSION    && "Comprehension Check"}
-        {phase === Phase.COMP_BRANCH      && "Comprehension Check"}
-        {phase === Phase.DRAG_DROP        && "Drag & Drop Activity"}
-        {phase === Phase.FEEDBACK         && "Feedback"}
-        {phase === Phase.IA_ROUND_INTRO   && `Customer ${iaRound + 1} of ${iaRounds.length}`}
-        {phase === Phase.IA_ROUND_PICK    && `Pick the Fruit — Round ${iaRound + 1}`}
-        {phase === Phase.IA_ROUND_BRANCH  && `Feedback — Round ${iaRound + 1}`}
-        {phase === Phase.IA_FINAL         && "All Done!"}
+        {phase === Phase.STORY && "Story Introduction"}
+        {phase === Phase.COMPREHENSION && "Comprehension Check"}
+        {phase === Phase.COMP_BRANCH && "Comprehension Check"}
+        {phase === Phase.DRAG_DROP && "Drag & Drop Activity"}
+        {phase === Phase.FEEDBACK && "Feedback"}
+        {phase === Phase.IA_ROUND_INTRO && `Customer ${iaRound + 1} of ${iaRounds.length}`}
+        {phase === Phase.IA_ROUND_PICK && `Pick the Fruit — Round ${iaRound + 1}`}
+        {phase === Phase.IA_ROUND_BRANCH && `Feedback — Round ${iaRound + 1}`}
+        {phase === Phase.IA_FINAL && "All Done!"}
       </div>
 
       {/* drag_drop: Phase 2 Comprehension */}
@@ -733,7 +751,7 @@ const MarketStallPage = () => {
       {gridMode && mechanic === "drag_drop" && (
         <div className="ms-grid-overlay" onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); setHoverCell({ x: Math.round(((e.clientX - r.left) / r.width) * 100), y: Math.round(((e.clientY - r.top) / r.height) * 100) }); }} onMouseLeave={() => setHoverCell(null)}>
           {Array.from({ length: 11 }, (_, i) => <div key={`v${i}`} className="ms-grid-line ms-grid-line--v" style={{ left: `${i * 10}%` }} />)}
-          {Array.from({ length: 11 }, (_, i) => <div key={`h${i}`} className="ms-grid-line ms-grid-line--h" style={{ top:  `${i * 10}%` }} />)}
+          {Array.from({ length: 11 }, (_, i) => <div key={`h${i}`} className="ms-grid-line ms-grid-line--h" style={{ top: `${i * 10}%` }} />)}
           {Array.from({ length: 10 }, (_, i) => <span key={`xl${i}`} className="ms-grid-label ms-grid-label--x" style={{ left: `${i * 10 + 5}%`, top: 2 }}>{i * 10 + 5}</span>)}
           {Array.from({ length: 10 }, (_, i) => <span key={`yl${i}`} className="ms-grid-label ms-grid-label--y" style={{ top: `${i * 10 + 5}%`, left: 4 }}>{i * 10 + 5}</span>)}
           {hoverCell && (<><div className="ms-grid-crosshair ms-grid-crosshair--v" style={{ left: `${hoverCell.x}%` }} /><div className="ms-grid-crosshair ms-grid-crosshair--h" style={{ top: `${hoverCell.y}%` }} /><div className="ms-grid-coord" style={{ left: `${Math.min(hoverCell.x + 1, 72)}%`, top: `${Math.max(hoverCell.y - 6, 2)}%` }}>x: {hoverCell.x}, y: {hoverCell.y}</div></>)}

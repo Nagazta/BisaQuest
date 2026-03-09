@@ -2,15 +2,15 @@
 // Centralized localStorage management for BisaQuest player data
 
 const KEYS = {
-    PLAYER_ID:          'bisaquest_player_id',
-    NICKNAME:           'bisaquest_nickname',
-    CHARACTER:          'bisaquest_character',
-    PROGRESS:           'bisaquest_progress',
-    PREFERENCES:        'bisaquest_preferences',
-    UNLOCKS:            'bisaquest_unlocks',
-    CUTSCENE_SEEN:      'bisaquest_cutscene_seen',
-    CUTSCENES:          'bisaquest_cutscenes',
-    LIBRO_PAGES:        'bisaquest_libro_pages',
+    PLAYER_ID: 'bisaquest_player_id',
+    NICKNAME: 'bisaquest_nickname',
+    CHARACTER: 'bisaquest_character',
+    PROGRESS: 'bisaquest_progress',
+    PREFERENCES: 'bisaquest_preferences',
+    UNLOCKS: 'bisaquest_unlocks',
+    CUTSCENE_SEEN: 'bisaquest_cutscene_seen',
+    CUTSCENES: 'bisaquest_cutscenes',
+    LIBRO_PAGES: 'bisaquest_libro_pages',
     COMPLETE_DISMISSED: 'bisaquest_complete_dismissed',
 };
 
@@ -18,7 +18,7 @@ const KEYS = {
 
 export const savePlayer = ({ player_id, nickname }) => {
     localStorage.setItem(KEYS.PLAYER_ID, player_id);
-    localStorage.setItem(KEYS.NICKNAME,   nickname);
+    localStorage.setItem(KEYS.NICKNAME, nickname);
 };
 
 export const saveCharacter = (character) => {
@@ -47,21 +47,21 @@ export const savePreferences = (preferences) => {
  */
 export const saveNPCProgress = (environment, npcId, score, passed, npcCount = 3, words = []) => {
     const progress = getProgress();
-    const npcKey   = `${environment}_npcs`;
-    const prev     = progress[npcKey]?.[npcId] || {
-        completed:  false,
-        score:      0,
+    const npcKey = `${environment}_npcs`;
+    const prev = progress[npcKey]?.[npcId] || {
+        completed: false,
+        score: 0,
         encounters: 0,
-        words:      [],
+        words: [],
     };
 
     progress[npcKey] = {
         ...progress[npcKey],
         [npcId]: {
-            completed:  passed || prev.completed,
-            score:      Math.max(score, prev.score),
+            completed: passed || prev.completed,
+            score: Math.max(score, prev.score),
             encounters: prev.encounters + 1,
-            words:      passed
+            words: passed
                 ? [...new Set([...(prev.words || []), ...words])]
                 : (prev.words || []),
         },
@@ -102,9 +102,9 @@ export const getUnlocks = () => {
 
 // ─── Get ─────────────────────────────────────────────────────────────────────
 
-export const getPlayerId   = () => localStorage.getItem(KEYS.PLAYER_ID);
-export const getNickname   = () => localStorage.getItem(KEYS.NICKNAME);
-export const getCharacter  = () => localStorage.getItem(KEYS.CHARACTER);
+export const getPlayerId = () => localStorage.getItem(KEYS.PLAYER_ID);
+export const getNickname = () => localStorage.getItem(KEYS.NICKNAME);
+export const getCharacter = () => localStorage.getItem(KEYS.CHARACTER);
 
 export const getProgress = () => {
     const raw = localStorage.getItem(KEYS.PROGRESS);
@@ -125,9 +125,9 @@ export const getSavedPlayer = () => {
     if (!player_id) return null;
     return {
         player_id,
-        nickname:    getNickname(),
-        character:   getCharacter(),
-        progress:    getProgress(),
+        nickname: getNickname(),
+        character: getCharacter(),
+        progress: getProgress(),
         preferences: getPreferences(),
     };
 };
@@ -138,7 +138,7 @@ export const hasCutsceneSeen = (key) => {
     if (!key) {
         return localStorage.getItem(KEYS.CUTSCENE_SEEN) === 'true';
     }
-    const raw  = localStorage.getItem(KEYS.CUTSCENES);
+    const raw = localStorage.getItem(KEYS.CUTSCENES);
     const seen = raw ? JSON.parse(raw) : {};
     return !!seen[key];
 };
@@ -148,9 +148,9 @@ export const markCutsceneSeen = (key) => {
         localStorage.setItem(KEYS.CUTSCENE_SEEN, 'true');
         return;
     }
-    const raw  = localStorage.getItem(KEYS.CUTSCENES);
+    const raw = localStorage.getItem(KEYS.CUTSCENES);
     const seen = raw ? JSON.parse(raw) : {};
-    seen[key]  = true;
+    seen[key] = true;
     localStorage.setItem(KEYS.CUTSCENES, JSON.stringify(seen));
 };
 
@@ -162,7 +162,7 @@ export const markCutsceneSeen = (key) => {
  * @param {string} environment  'village' | 'forest' | 'castle'
  */
 export const markCompleteDismissed = (environment) => {
-    const raw  = localStorage.getItem(KEYS.COMPLETE_DISMISSED);
+    const raw = localStorage.getItem(KEYS.COMPLETE_DISMISSED);
     const data = raw ? JSON.parse(raw) : {};
     data[environment] = true;
     localStorage.setItem(KEYS.COMPLETE_DISMISSED, JSON.stringify(data));
@@ -173,7 +173,7 @@ export const markCompleteDismissed = (environment) => {
  * @param {string} environment  'village' | 'forest' | 'castle'
  */
 export const isCompleteDismissed = (environment) => {
-    const raw  = localStorage.getItem(KEYS.COMPLETE_DISMISSED);
+    const raw = localStorage.getItem(KEYS.COMPLETE_DISMISSED);
     const data = raw ? JSON.parse(raw) : {};
     return !!data[environment];
 };
@@ -209,28 +209,61 @@ export const hasLibroPage = (environment, npcId) => {
 
 // ─── Word summary helper ──────────────────────────────────────────────────────
 
-/**
- * getLearnedWords
- * Returns words actually learned (stored in progress) for completed NPCs.
- * Falls back to npcMeta words if no stored words found.
- *
- * @param {string} environment   'village' | 'forest' | 'castle'
- * @param {Array}  npcMeta       [{ npcId, npcName, words }]
- * @returns {Array}  [{ npcName, words }]  — only for completed NPCs
- */
-export const getLearnedWords = (environment, npcMeta = []) => {
-    const progress = getProgress();
-    const npcKey   = `${environment}_npcs`;
-    const npcData  = progress[npcKey] || {};
+// Words that act as distractors in quests and shouldn't count towards the learned vocab
+const DISTRACTOR_WORDS = [
+    "SAGING", "BANANA",
+    "MANGGA", "MANGO",
+    "MOP", "TRAPO", "RAG", "TIMBA", "BUCKET"
+];
 
-    return npcMeta
-        .filter(n => npcData[n.npcId]?.completed)
-        .map(n => ({
-            npcName: n.npcName,
-            words: npcData[n.npcId]?.words?.length
-                ? npcData[n.npcId].words
-                : n.words,
-        }));
+const INTERNAL_NPC_META = {
+    village: {
+        village_npc_1: { name: "Vicente", fallbackWords: ["SANTOL", "COTTON FRUIT", "LANSONES", "LANZONES", "PAKWAN", "WATERMELON", "MANGGA", "MANGO", "SAGING", "BANANA"] },
+        village_npc_2: { name: "Ligaya", fallbackWords: ["WALIS", "BROOM", "TRAPO", "RAG", "MOP", "TIMBA", "BUCKET"] },
+        village_npc_3: { name: "Nando", fallbackWords: ["PALA", "SHOVEL", "REGADERA", "WATERING CAN"] },
+    }
+};
+
+export const getLearnedWords = (environmentName) => {
+    try {
+        const progress = getProgress();
+        const npcKey = `${environmentName}_npcs`;
+        const npcData = progress[npcKey] || {};
+
+        const results = [];
+        const envMeta = INTERNAL_NPC_META[environmentName] || {};
+
+        Object.keys(npcData).forEach(npcId => {
+            const data = npcData[npcId];
+            if (data.completed) { // Notice v1 uses `completed` instead of `isCompleted`
+                const meta = envMeta[npcId] || { name: "UnknownNPC", fallbackWords: [] };
+
+                // If the player played the new patched version, `words` is present in their save
+                let rawWords = [];
+                if (data.words && data.words.length > 0) {
+                    rawWords = data.words;
+                } else {
+                    // Backwards fallback for players who beat it before the patch
+                    rawWords = meta.fallbackWords;
+                }
+
+                const filteredWords = rawWords.filter(w => {
+                    const upper = (typeof w === 'string' ? w : String(w)).toUpperCase();
+                    return !DISTRACTOR_WORDS.includes(upper);
+                });
+
+                results.push({
+                    npcName: meta.name,
+                    words: filteredWords
+                });
+            }
+        });
+
+        return results;
+    } catch (e) {
+        console.warn('Failed to retrieve learned words:', e);
+        return [];
+    }
 };
 
 // ─── Clear ───────────────────────────────────────────────────────────────────

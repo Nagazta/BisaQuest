@@ -9,18 +9,18 @@ import ParticleEffects from "../../components/ParticleEffects";
 import FogTransition from "../../components/FogTransition";
 import Boy from "../../assets/images/characters/Boy.png";
 import Girl from "../../assets/images/characters/Girl.png";
-import "../../pages/Student/CharacterSelectionPage.css";
+import "./CharacterSelectionPage.css";
 
 const CharacterSelectionPage = () => {
-    const navigate  = useNavigate();
+    const navigate = useNavigate();
     const { setCharacter } = useAuth();
 
-    const [fogActive,      setFogActive]      = useState(false);
-    const [nextRoute,      setNextRoute]       = useState(null);
-    const [loadingCharId,  setLoadingCharId]  = useState(null);
+    const [fogActive, setFogActive] = useState(false);
+    const [nextRoute, setNextRoute] = useState(null);
+    const [loadingCharId, setLoadingCharId] = useState(null);
 
     const characters = [
-        { id: "roberto", gender: "Roberto", image: Boy  },
+        { id: "roberto", gender: "Roberto", image: Boy },
         { id: "roberta", gender: "Roberta", image: Girl },
     ];
 
