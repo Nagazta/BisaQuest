@@ -212,6 +212,7 @@ export const hasLibroPage = (environment, npcId) => {
 // Words that act as distractors in quests and shouldn't count towards the learned vocab
 const DISTRACTOR_WORDS = [
     "SAGING", "BANANA",
+    "MANGGA", "MANGO",
     "MOP", "TRAPO", "RAG", "TIMBA", "BUCKET"
 ];
 
