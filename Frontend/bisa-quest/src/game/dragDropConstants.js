@@ -134,6 +134,7 @@ export const SCENE_BACKGROUNDS = {
   bedroom: bedroomBackground,
   farm: farmBackground,
   empty_farm: emptyFarmBackground,
+  living_room_spill: null,  // imported directly in HousePage
 };
 
 export const DEFAULT_BACKGROUND = houseBackground;

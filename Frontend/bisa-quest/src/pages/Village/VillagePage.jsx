@@ -36,7 +36,7 @@ const NPC_DB_ID = {
 // Set to null to use the normal random logic.
 const DEBUG_QUEST_OVERRIDE = {
     village_npc_1: null,   // Vicente
-    village_npc_2: null,   // Ligaya
+    village_npc_2: 59,   // Ligaya
     village_npc_3: null,   // Nando
 };
 
@@ -206,13 +206,13 @@ const VillagePage = () => {
                     } else {
                         const livingPool = data.filter(q =>
                             q.game_mechanic === "drag_drop" &&
-                            (q.scene_type === "living_room" || q.scene_type === "living_room_dirty")
+                            (q.scene_type === "living_room" || q.scene_type === "living_room_dirty" || q.scene_type === "living_room_spill")
                         );
                         const kitchenPool = data.filter(q => q.game_mechanic === "drag_drop" && q.scene_type === "kitchen");
                         const bedroomPool = data.filter(q => q.game_mechanic === "drag_drop" && q.scene_type === "bedroom");
                         const iaLivingPool = data.filter(q =>
                             q.game_mechanic === "item_association" &&
-                            (q.scene_type === "living_room" || q.scene_type === "living_room_dirty")
+                            (q.scene_type === "living_room" || q.scene_type === "living_room_dirty" || q.scene_type === "living_room_spill")
                         );
                         const iaKitchenPool = data.filter(q => q.game_mechanic === "item_association" && q.scene_type === "kitchen");
                         const iaBedroomPool = data.filter(q => q.game_mechanic === "item_association" && q.scene_type === "bedroom");
