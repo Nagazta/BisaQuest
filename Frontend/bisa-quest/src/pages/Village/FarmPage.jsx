@@ -13,7 +13,9 @@ import NandoCharacter from "../../assets/images/characters/vocabulary/Village_Qu
 import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_1.png";
 import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
 import farmBackground from "../../assets/images/environments/scenario/farm.png";
+import emptyFarmBg from "../../assets/items/emptyFarm.png";
 import wateringCanWater from "../../assets/items/wateringCan-water.png";
+import carabaoPlowImg from "../../assets/items/carabao_nag-araro.png";
 
 import { ITEM_IMAGE_MAP } from "../../game/dragDropConstants";
 import {
@@ -39,11 +41,23 @@ const ZONE_PLACED_IMAGES = {
     wateringcan: wateringCanWater,
     watering_can: wateringCanWater,
     regadera: wateringCanWater,
+    kabaw: carabaoPlowImg,
+    carabao: carabaoPlowImg,
 };
 
 // ── Farm drop zone registry ───────────────────────────────────────────────────
 const SCENE_DROP_ZONES = {
     farm: {
+        soil_patch_1: { x: 13, y: 50 },
+        soil_patch_2: { x: 95, y: 50 },
+        soil_patch_3: { x: 60, y: 50 },
+        basket_farm: { x: 75, y: 55 },
+        water_trough: { x: 50, y: 40 },
+        barn_door: { x: 82, y: 38 },
+        fence_left: { x: 15, y: 42 },
+        fence_right: { x: 85, y: 42 },
+    },
+    empty_farm: {
         soil_patch_1: { x: 13, y: 50 },
         soil_patch_2: { x: 95, y: 50 },
         soil_patch_3: { x: 60, y: 50 },
@@ -252,6 +266,14 @@ const FarmPage = () => {
                 );
 
                 setDdPlaced({});
+
+                // ── Set background based on scene_type ──
+                if (scene === "empty_farm") {
+                    setBackground(emptyFarmBg);
+                } else {
+                    setBackground(farmBackground);
+                }
+
                 setLoading(false);
             } catch (err) {
                 if (!cancelled) { setFetchError(err.message); setLoading(false); }
