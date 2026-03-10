@@ -20,6 +20,7 @@ import CastleScenePage from "./pages/Castle/CastleScenePage";
 
 import { useAuth } from "./context/AuthContext";
 import DragAndDrop from "./game/DragAndDrop";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 import "./App.css";
 
@@ -33,32 +34,27 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<Login />} />
 
-            {/* ── Player setup flow ──────────────────────────────────────── */}
+            {/* ── Player setup flow (public) ───────────────────────────── */}
             <Route path="/student/characterSelection" element={<CharacterSelection />} />
-
-            {/* Old route kept as alias — explicitly passes type="story" */}
             <Route path="/student/cutscene" element={<StoryCutscene type="story" />} />
-
-            {/* All cutscenes go through here: /cutscene/story, /cutscene/village_entry, etc. */}
             <Route path="/cutscene/:type" element={<StoryCutscene />} />
 
-            {/* ── Environment pages ──────────────────────────────────────── */}
-            <Route path="/student/village" element={<VillagePage />} />
-            <Route path="/student/forest"  element={<ForestPage />} />
-            <Route path="/student/castle"  element={<CastlePage />} />
+            {/* ── Protected routes ─────────────────────────────────────── */}
+            <Route path="/student/village" element={<ProtectedRoute><VillagePage /></ProtectedRoute>} />
+            <Route path="/student/forest" element={<ProtectedRoute><ForestPage /></ProtectedRoute>} />
+            <Route path="/student/castle" element={<ProtectedRoute><CastlePage /></ProtectedRoute>} />
 
-            {/* ── Game / challenge pages ─────────────────────────────────── */}
-            <Route path="/student/house" element={<HousePage />} />
-            <Route path="/forest/scene" element={<ForestScenePage />} />
-            <Route path="/castle/scene" element={<CastleScenePage />} />
-            <Route path="/student/library" element={<CastleScenePage />} />
+            <Route path="/student/house" element={<ProtectedRoute><HousePage /></ProtectedRoute>} />
+            <Route path="/forest/scene" element={<ProtectedRoute><ForestScenePage /></ProtectedRoute>} />
+            <Route path="/castle/scene" element={<ProtectedRoute><CastleScenePage /></ProtectedRoute>} />
+            <Route path="/student/library" element={<ProtectedRoute><CastleScenePage /></ProtectedRoute>} />
 
-            <Route path="/student/dragAndDrop"       element={<DragAndDrop />} />
-            <Route path="/student/item-association"  element={<ItemAssociation />} />
-            <Route path="/student/market"            element={<MarketStallPage />} />
-            <Route path="/student/farm"              element={<FarmPage />} />
+            <Route path="/student/dragAndDrop" element={<ProtectedRoute><DragAndDrop /></ProtectedRoute>} />
+            <Route path="/student/item-association" element={<ProtectedRoute><ItemAssociation /></ProtectedRoute>} />
+            <Route path="/student/market" element={<ProtectedRoute><MarketStallPage /></ProtectedRoute>} />
+            <Route path="/student/farm" element={<ProtectedRoute><FarmPage /></ProtectedRoute>} />
 
-            {/* ── Dashboard ─────────────────────────────────────────────── */}
+            {/* ── Dashboard ────────────────────────────────────────────── */}
             <Route
                 path="/dashboard"
                 element={player ? <StudentDashboard /> : <Navigate to="/login" replace />}
