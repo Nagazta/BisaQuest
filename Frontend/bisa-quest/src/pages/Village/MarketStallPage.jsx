@@ -32,12 +32,7 @@ const NPC_IMAGES = {
   village_npc_2: LigayaCharacter,
 };
 
-// ── Words awarded per NPC on completion ──────────────────────────────────────
-const NPC_WORDS = {
-  village_npc_1: ["SANTOL", "COTTON FRUIT", "LANSONES", "LANZONES", "PAKWAN", "WATERMELON", "MANGGA", "MANGO", "SAGING", "BANANA"],
-  village_npc_3: ["PALA", "SHOVEL", "REGADERA", "WATERING CAN"],
-  village_npc_2: ["WALIS", "BROOM", "TRAPO", "RAG", "MOP", "TIMBA", "BUCKET"],
-};
+
 
 // ── Scene drop zone registry ──────────────────────────────────────────────────
 const SCENE_DROP_ZONES = {
@@ -542,24 +537,26 @@ const MarketStallPage = () => {
 
   // ── Submit + advance ──────────────────────────────────────────────────────
   const submitProgress = useCallback(() => {
+    // Collect vocabulary words from drag-drop / item_association items only.
+    // Comprehension items (round 0) have scenario descriptions, not vocab words.
     const correctWords = new Set();
 
-    // Round 0 (Comprehension)
-    compItems.forEach(c => {
-      if (c.isCorrect) correctWords.add(c.label.toUpperCase());
-    });
-
-    // Round 1 (Drag and Drop)
+    // Drag and Drop (round 1)
     ddWordCards.forEach(c => {
+      console.log('[DD card]', c.label, 'isCorrect:', c.isCorrect); // ← add this
       if (c.isCorrect) correctWords.add(c.label.toUpperCase());
     });
 
-    // Round 2+ (Item Association)
+
+    // Item Association (round 1+)
     iaRounds.forEach(round => {
       round.forEach(item => {
+        console.log('[IA item]', item.label, 'isCorrect:', item.isCorrect); // ← add this
         if (item.isCorrect) correctWords.add(item.label.toUpperCase());
       });
     });
+    console.log('[submitProgress] words to save:', Array.from(correctWords));
+
 
     const words = Array.from(correctWords);
     saveNPCProgress("village", npcId, 1, true, 3, words);
@@ -580,7 +577,7 @@ const MarketStallPage = () => {
       }).catch(err => console.warn("[MarketStallPage] submit failed:", err));
     }
     advanceSequence();
-  }, [npcId, playerId, questId, API]);
+  }, [npcId, playerId, questId, API, ddWordCards, iaRounds]);
 
   const advanceSequence = useCallback(() => {
     const nextIndex = seqIndex + 1;
