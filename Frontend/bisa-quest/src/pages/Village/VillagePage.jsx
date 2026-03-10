@@ -31,6 +31,15 @@ const NPC_DB_ID = {
     vicente: "village_npc_1",
 };
 
+// ── DEBUG: Hardcode a quest_id to skip random selection ───────────────────
+// Set the value to a quest_id number (e.g. 42) to force that quest.
+// Set to null to use the normal random logic.
+const DEBUG_QUEST_OVERRIDE = {
+    village_npc_1: null,   // Vicente
+    village_npc_2: null,   // Ligaya
+    village_npc_3: null,   // Nando
+};
+
 const randomPick = (arr) => {
     if (!arr || arr.length === 0) return null;
     return arr[Math.floor(Math.random() * arr.length)];
@@ -159,19 +168,40 @@ const VillagePage = () => {
         let resolvedIaKitchenQuestId = null;
         let resolvedIaBedroomQuestId = null;
 
-        try {
+        // ── DEBUG override: skip random selection if a quest_id is hardcoded ──
+        const debugOverride = DEBUG_QUEST_OVERRIDE[dbNpcId] ?? null;
+        if (debugOverride) {
+            console.warn(`[Village] ⚠️ DEBUG OVERRIDE: forcing quest_id=${debugOverride} for ${selectedNPC.name}`);
+            resolvedQuestId = debugOverride;
+            setQuestLoading(false);
+        }
+
+        if (!debugOverride) try {
             const res = await fetch(`${API}/api/challenge/npc/${dbNpcId}/quest`);
             if (res.ok) {
                 const { data } = await res.json();
                 if (Array.isArray(data) && data.length) {
 
+                    // ── DEBUG: Log all quests for this NPC ──
+                    console.group(`[Village] 📋 ${selectedNPC.name} (${dbNpcId}) — ${data.length} quest(s)`);
+                    data.forEach((q, i) => {
+                        console.log(
+                            `  Quest #${i + 1}: id=${q.quest_id}, title="${q.title}", ` +
+                            `scene_type="${q.scene_type}", mechanic="${q.game_mechanic}", ` +
+                            `content_type="${q.content_type}"`
+                        );
+                    });
+                    console.groupEnd();
+
                     if (isMarket) {
                         const pool = data.filter(q => q.scene_type === "market_stall");
                         resolvedQuestId = randomPick(pool)?.quest_id ?? null;
+                        console.log(`[Village] 🎯 ${selectedNPC.name} (market) — pool size: ${pool.length}, selected quest_id: ${resolvedQuestId}`);
 
                     } else if (isFarm) {
-                        const pool = data.filter(q => q.scene_type === "farm");
+                        const pool = data.filter(q => q.scene_type === "farm" || q.scene_type === "empty_farm");
                         resolvedQuestId = randomPick(pool)?.quest_id ?? null;
+                        console.log(`[Village] 🎯 ${selectedNPC.name} (farm) — pool size: ${pool.length}, selected quest_id: ${resolvedQuestId}`);
 
                     } else {
                         const livingPool = data.filter(q =>
@@ -193,6 +223,9 @@ const VillagePage = () => {
                         resolvedIaLivingQuestId = randomPick(iaLivingPool)?.quest_id ?? null;
                         resolvedIaKitchenQuestId = randomPick(iaKitchenPool)?.quest_id ?? null;
                         resolvedIaBedroomQuestId = randomPick(iaBedroomPool)?.quest_id ?? null;
+
+                        console.log(`[Village] 🎯 ${selectedNPC.name} (house) — DD: living=${resolvedQuestId}, kitchen=${resolvedKitchenQuestId}, bedroom=${resolvedBedroomQuestId}`);
+                        console.log(`[Village] 🎯 ${selectedNPC.name} (house) — IA: living=${resolvedIaLivingQuestId}, kitchen=${resolvedIaKitchenQuestId}, bedroom=${resolvedIaBedroomQuestId}`);
                     }
                 }
             }
@@ -221,6 +254,8 @@ const VillagePage = () => {
                     ].filter(Boolean),
             sequenceIndex: 0,
         };
+
+        console.log(`[Village] 🚀 Navigating for ${selectedNPC.name} →`, state);
 
         if (selectedNPC.quest === "market_stall") navigate("/student/market", { state });
         else if (selectedNPC.quest === "farm") navigate("/student/farm", { state });
