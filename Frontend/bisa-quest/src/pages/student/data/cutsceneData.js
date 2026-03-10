@@ -31,6 +31,9 @@ import villageEntry8 from "../../../assets/images/cutscene/village/village_8.png
 import villageEntry9 from "../../../assets/images/cutscene/village/village_9.png";
 import villageEntry10 from "../../../assets/images/cutscene/village/village_10.png";
 
+// ── Forest artwork ────────────────────────────────────────────────────────────
+import guloHideout from "../../../assets/images/cutscene/forest/gulo-hideout.png";
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  CUTSCENES map
@@ -126,6 +129,21 @@ export const CUTSCENES = {
             {
                 image: villageEntry10,
                 text: 'He points toward the dark tree line. "Ang Forest Fragment nagpaabut. The path is open now — but only para sa mga brave enough to follow." Nabuak ang mga kahoy. A soft light beckons from within.',
+            },
+        ],
+    },
+
+
+    // ── Forest complete (all 4 NPCs done → /student/castle) ──────────────────
+    forest_complete: {
+        key: "forest_complete",
+        destination: "/student/castle",
+        finalLabel: "Enter the Castle →",
+        fogColor: "#a8d5e2",
+        slides: [
+            {
+                image: guloHideout,
+                text: "As you collected those book fragments in the forest and continued on your journey, you find a messy little hideout... [TBA]",
             },
         ],
     },

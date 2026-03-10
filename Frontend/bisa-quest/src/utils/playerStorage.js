@@ -215,7 +215,13 @@ const INTERNAL_NPC_META = {
         village_npc_1: { name: "Vicente" },
         village_npc_2: { name: "Ligaya" },
         village_npc_3: { name: "Nando" },
-    }
+    },
+    forest: {
+        forest_npc_1: { name: "Lunti" },
+        forest_npc_2: { name: "Ronaldo" },
+        forest_npc_3: { name: "Diwata" },
+        forest_npc_4: { name: "Deer" },
+    },
 };
 
 /**
@@ -251,6 +257,22 @@ export const getLearnedWords = (environmentName) => {
         console.warn('Failed to retrieve learned words:', e);
         return [];
     }
+};
+
+// ─── Forest fragment award condition ────────────────────────────────────────
+
+/**
+ * shouldAwardForestFragment
+ * Returns true when an NPC qualifies for a Forest Fragment award:
+ *   - The player has completed ≥ 4 quest encounters with this NPC, OR
+ *   - The NPC is marked as completed (handles NPCs with fewer than 4 quests).
+ * @param {string} npcId  e.g. 'forest_npc_1'
+ */
+export const shouldAwardForestFragment = (npcId) => {
+    const progress = getProgress();
+    const npcData = progress['forest_npcs']?.[npcId];
+    if (!npcData) return false;
+    return (npcData.encounters >= 4) || (npcData.completed === true);
 };
 
 // ─── Clear ───────────────────────────────────────────────────────────────────
