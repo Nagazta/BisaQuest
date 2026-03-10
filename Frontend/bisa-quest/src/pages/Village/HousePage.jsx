@@ -16,6 +16,7 @@ import LigayaSweating from "../../assets/images/characters/Ligaya_gealimut-an.pn
 import LigayaWorried from "../../assets/images/characters/Ligaya_worried.png";
 import houseBackground from "../../assets/images/environments/scenario/house.jpg";
 import dirtyLivingRoom from "../../assets/images/environments/scenario/dirtyLivingRoom.PNG";
+import livingRoomSpill from "../../assets/images/environments/scenario/living_room_spill.png";
 
 import {
   SCENE_BACKGROUNDS,
@@ -44,10 +45,12 @@ const NPC_IMAGES = {
 const SCENE_BG = {
   living_room: houseBackground,
   living_room_dirty: dirtyLivingRoom,
+  living_room_spill: livingRoomSpill,
 };
 
 const CLEAN_BG_FOR = {
   living_room_dirty: houseBackground,
+  living_room_spill: houseBackground,
 };
 
 // ── Speaker classifiers ───────────────────────────────────────────────────────
@@ -207,7 +210,7 @@ const HousePage = () => {
         setBackground(SCENE_BG[scene] || houseBackground);
         setDdInstruction(meta?.instructions || "");
 
-        const dirty = scene === "living_room_dirty";
+        const dirty = scene === "living_room_dirty" || scene === "living_room_spill";
         const paypay = (meta?.title || "").toLowerCase().includes("paypay") ||
           (meta?.instructions || "").toLowerCase().includes("paypay") ||
           (meta?.title || "").toLowerCase().includes("electric fan");
@@ -262,6 +265,14 @@ const HousePage = () => {
             lamesa: { x: 53, y: 64 },
             sulok: { x: 42, y: 40 },
             planggana: { x: 35, y: 62 },
+          },
+          living_room_spill: {
+            bookshelf: { x: 83, y: 40 },
+            sofa: { x: 50, y: 48 },
+            aparador: { x: 73, y: 48 },
+            lamesa: { x: 62, y: 64 },
+            sulok: { x: 42, y: 40 },
+            planggana: { x: 35, y: 68 },
           },
           kitchen: {
             stove: { x: 57, y: 55 },
