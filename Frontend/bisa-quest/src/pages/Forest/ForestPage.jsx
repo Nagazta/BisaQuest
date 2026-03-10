@@ -4,51 +4,67 @@ import { useCharacterPreference } from "../../hooks/useCharacterPreference";
 import EnvironmentPage from "../../components/EnvironmentPage";
 import Button from "../../components/Button";
 import ParticleEffects from "../../components/ParticleEffects";
-import { environmentApi } from "../../services/environmentServices.js";
-import { getPlayerId } from "../../utils/playerStorage";
+import {
+    getPlayerId,
+    getProgress,
+    getLearnedWords,
+    hasCutsceneSeen,
+    markCompleteDismissed,
+    isCompleteDismissed,
+} from "../../utils/playerStorage";
 import ForestBackground from "../../assets/images/environments/Forest.png";
 import BoyCharacter from "../../assets/images/characters/Boy.png";
 import GirlCharacter from "../../assets/images/characters/Girl.png";
+import DiwataCharacter from "../../assets/images/characters/diwata.png";
+import ForestGuardianCharacter from "../../assets/images/characters/forest_guardian.png";
+import WanderingBardCharacter from "../../assets/images/characters/wandering_bard.png";
 import DeerCharacter from "../../assets/images/characters/deer.png";
 import bgMusic from "../../assets/music/bg-music.mp3";
 import QuestStartModal from "../../components/QuestStartModal";
+import ProgressBar from "../../components/ProgressBar";
+import EnvironmentCompleteModal from "../../components/EnvironmentCompleteModal";
+import FogTransition from "../../components/FogTransition";
 import "./ForestPage.css";
 
 const FOREST_NPCS = [
-    { npcId: "forest_npc_1", name: "Kumo", x: 25, y: 35, character: BoyCharacter, showName: true, quest: "synonym_antonym" },
-    { npcId: "forest_npc_2", name: "Mang Kanor", x: 65, y: 45, character: BoyCharacter, showName: true, quest: "synonym_antonym" },
-    { npcId: "forest_npc_3", name: "Diwata", x: 50, y: 70, character: GirlCharacter, showName: true, quest: "synonym_antonym" },
-    { npcId: "forest_npc_4", name: "Deer", x: 40, y: 50, character: DeerCharacter, showName: true, quest: "drag_drop" },
+    { npcId: "forest_npc_1", name: "Lunti",   x: 25, y: 35, character: ForestGuardianCharacter, showName: true, quest: "synonym_antonym" },
+    // { npcId: "forest_npc_2", name: "Ronaldo", x: 65, y: 45, character: WanderingBardCharacter,   showName: true, quest: "synonym_antonym" }, // TODO: no quests yet
+    { npcId: "forest_npc_3", name: "Diwata",  x: 50, y: 70, character: DiwataCharacter,           showName: true, quest: "synonym_antonym" },
+    { npcId: "forest_npc_4", name: "Deer",    x: 40, y: 50, character: DeerCharacter,             showName: true, quest: "drag_drop" },
 ];
 
 const shuffleFirst = (arr) => {
     const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[a[i], a[j]] = [a[j], a[i]]; }
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
     return a[0];
 };
 
 const ForestPage = () => {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const audioRef = useRef(null);
-    const playerId = getPlayerId();
-    const API = import.meta.env.VITE_API_URL || "";
+    const navigate  = useNavigate();
+    const location  = useLocation();
+    const audioRef  = useRef(null);
+    const playerId  = getPlayerId();
+    const API       = import.meta.env.VITE_API_URL || "";
 
     const { character, loading: charLoading } = useCharacterPreference();
 
-    const [forestNPCs, setForestNPCs] = useState([]);
-    const [refreshKey, setRefreshKey] = useState(0);
-    const [selectedNPC, setSelectedNPC] = useState(null);
-    const [showModal, setShowModal] = useState(false);
-    const [showExitConfirm, setShowExitConfirm] = useState(false);
-    const [showSummaryButton, setShowSummaryButton] = useState(false);
-    const [isMuted, setIsMuted] = useState(false);
-    const [questLoading, setQuestLoading] = useState(false);
+    const [forestNPCs,       setForestNPCs]       = useState([]);
+    const [refreshKey,       setRefreshKey]        = useState(0);
+    const [selectedNPC,      setSelectedNPC]       = useState(null);
+    const [showModal,        setShowModal]         = useState(false);
+    const [showExitConfirm,  setShowExitConfirm]   = useState(false);
+    const [isMuted,          setIsMuted]           = useState(false);
+    const [questLoading,     setQuestLoading]      = useState(false);
+    const [forestProgress,   setForestProgress]    = useState(0);
+    const [showCompleteModal,setShowCompleteModal] = useState(false);
+    const [fogActive,        setFogActive]         = useState(false);
+    const [learnedWords,     setLearnedWords]      = useState([]);
 
     const PlayerCharacter = character === "roberta" ? GirlCharacter : BoyCharacter;
 
+    // ── Background music ──────────────────────────────────────────────────────
     useEffect(() => {
-        const play = () => { if (audioRef.current) { audioRef.current.volume = 0.3; audioRef.current.play().catch(() => { }); } };
+        const play = () => { if (audioRef.current) { audioRef.current.volume = 0.3; audioRef.current.play().catch(() => {}); } };
         play();
         const onInteract = () => { play(); document.removeEventListener("click", onInteract); };
         document.addEventListener("click", onInteract);
@@ -60,68 +76,62 @@ const ForestPage = () => {
 
     const toggleMute = () => { if (audioRef.current) { audioRef.current.muted = !isMuted; setIsMuted(p => !p); } };
 
+    // ── Load forest progress (localStorage, mirrors VillagePage) ──────────────
+    const loadForestProgress = () => {
+        const progress = getProgress();
+        const pct = progress.forest_progress || 0;
+        setForestProgress(pct);
+
+        if (pct >= 100 && !isCompleteDismissed("forest")) {
+            const words = getLearnedWords("forest");
+            setLearnedWords(words);
+            setShowCompleteModal(true);
+        }
+    };
+
+    // ── Initialize ────────────────────────────────────────────────────────────
     useEffect(() => { initializeForest(); }, [refreshKey]);
 
-    const initializeForest = async () => {
-        if (!playerId) return;
+    const initializeForest = () => {
         setForestNPCs(FOREST_NPCS);
-        try {
-            await environmentApi.initializeEnvironment("forest", playerId);
-            await checkEnvironmentProgress();
-        } catch (err) { console.error("Error initializing forest:", err); }
+        loadForestProgress();
     };
 
-    const checkEnvironmentProgress = async () => {
-        if (!playerId) return;
-        try {
-            const res = await fetch(`${API}/api/npc/environment-progress?environmentType=forest&playerId=${playerId}`);
-            const result = await res.json();
-            if (result.success && (result.data.progress ?? 0) >= 75) setShowSummaryButton(true);
-        } catch (e) { console.error(e); }
-    };
-
-    const checkAndShowSummary = async () => {
-        if (!playerId) return;
-        try {
-            const res = await fetch(`${API}/api/npc/environment-progress?environmentType=forest&playerId=${playerId}`);
-            const result = await res.json();
-            if (result.success && (result.data.progress ?? 0) >= 100) {
-                navigate("/student/viewCompletion", { state: { showSummary: true, environmentProgress: result.data.progress, summaryData: result.data, returnTo: "/student/forest" } });
-            }
-        } catch (e) { console.error(e); }
-    };
-
+    // ── Refresh on return from quest ──────────────────────────────────────────
     useEffect(() => {
         if (location.state?.completed) {
             setRefreshKey(p => p + 1);
-            checkAndShowSummary();
             navigate(location.pathname, { replace: true, state: {} });
         }
     }, [location.state]);
 
-    const handleNPCClick = (npc) => { setSelectedNPC(npc); setShowModal(true); };
-    const handleCloseModal = () => { setShowModal(false); setSelectedNPC(null); };
-    const handleBackClick = () => setShowExitConfirm(true);
-    const handleConfirmExit = () => { setShowExitConfirm(false); navigate("/dashboard"); };
-    const handleCancelExit = () => setShowExitConfirm(false);
-
-    const handleViewSummary = async () => {
-        if (!playerId) return;
-        try {
-            const res = await fetch(`${API}/api/npc/environment-progress?environmentType=forest&playerId=${playerId}`);
-            const result = await res.json();
-            if (result.success) navigate("/student/summary", { state: { showSummary: true, environmentProgress: result.data.progress, summaryData: result.data, returnTo: "/student/forest" } });
-        } catch (e) { console.error(e); }
+    // ── "Adto sa Castle!" button handler ─────────────────────────────────────
+    const handleGoToCastle = () => {
+        markCompleteDismissed("forest");
+        setShowCompleteModal(false);
+        setFogActive(true);
     };
 
+    const handleFogDone = () => {
+        if (!hasCutsceneSeen("forest_complete")) {
+            navigate("/cutscene/forest_complete", { replace: true });
+        } else {
+            navigate("/student/castle", { replace: true });
+        }
+    };
+
+    // ── NPC / modal handlers ──────────────────────────────────────────────────
+    const handleNPCClick     = (npc) => { setSelectedNPC(npc); setShowModal(true); };
+    const handleCloseModal   = () => { setShowModal(false); setSelectedNPC(null); };
+    const handleBackClick    = () => setShowExitConfirm(true);
+    const handleConfirmExit  = () => { setShowExitConfirm(false); navigate("/dashboard"); };
+    const handleCancelExit   = () => setShowExitConfirm(false);
+
+    // ── Start quest ───────────────────────────────────────────────────────────
     const handleStartQuest = async () => {
         if (!selectedNPC || !playerId) return;
         setQuestLoading(true);
 
-        try { await environmentApi.logNPCInteraction({ playerId, npcName: selectedNPC.name }); }
-        catch (err) { console.error(err); }
-
-        // Resolve a random quest that belongs to THIS npcId from the DB
         let resolvedQuestId = null;
         try {
             const res = await fetch(`${API}/api/challenge/npc/${selectedNPC.npcId}/quest`);
@@ -134,9 +144,7 @@ const ForestPage = () => {
 
         setQuestLoading(false);
         const state = { questId: resolvedQuestId, npcId: selectedNPC.npcId, npcName: selectedNPC.name, returnTo: "/student/forest" };
-
-        if (selectedNPC.npcId === "forest_npc_4") navigate("/forest/scene", { state });
-        else navigate("/student/synonymAntonym", { state });
+        navigate("/forest/scene", { state });
     };
 
     if (charLoading) return <div className="forest-page-wrapper"><div className="loading-message">Loading...</div></div>;
@@ -145,10 +153,28 @@ const ForestPage = () => {
         <div className="forest-page-wrapper">
             <audio ref={audioRef} loop><source src={bgMusic} type="audio/mpeg" /></audio>
             <ParticleEffects enableMouseTrail={false} />
+
+            <div className="village-progress-bar-wrap">
+                <ProgressBar progress={forestProgress} variant="forest" showLabel={true} />
+            </div>
+
+            <EnvironmentCompleteModal
+                isOpen={showCompleteModal}
+                environment="forest"
+                learnedWords={learnedWords}
+                nextEnv="Castle"
+                onStay={() => {
+                    markCompleteDismissed("forest");
+                    setShowCompleteModal(false);
+                }}
+                onAdvance={handleGoToCastle}
+            />
+
+            <FogTransition active={fogActive} onDone={handleFogDone} label="🏰 Entering the Castle..." />
+
             <button className="music-toggle-button" onClick={toggleMute}>{isMuted ? "🔇" : "🔊"}</button>
 
             <Button variant="back" className="back-button-forest-overlay" onClick={handleBackClick}>← Back</Button>
-            {showSummaryButton && <Button variant="primary" className="view-summary-button" onClick={handleViewSummary}>View Summary</Button>}
 
             <EnvironmentPage
                 key={refreshKey}
@@ -169,7 +195,7 @@ const ForestPage = () => {
                 <QuestStartModal
                     npcName={selectedNPC.name}
                     npcImage={selectedNPC.character}
-                    npcId={selectedNPC.dbNpcId}
+                    npcId={selectedNPC.npcId}
                     questType={selectedNPC.quest}
                     onStart={handleStartQuest}
                     onClose={handleCloseModal}

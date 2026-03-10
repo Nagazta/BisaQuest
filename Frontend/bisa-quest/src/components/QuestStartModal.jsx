@@ -71,49 +71,52 @@ const QuestStartModal = ({
   }
 
   // NPC specific instructions
-const getInstructions = (npcId) => {
-  switch (npcId) {
+  const getInstructions = (npcId) => {
+    switch (npcId) {
 
-    // =====================
-    // VILLAGE NPCS
-    // =====================
-    case "village_npc_1":
-      return "Learn more about fruits and the market with Vicente!";
+      // =====================
+      // VILLAGE NPCS
+      // =====================
+      case "village_npc_1":
+        return "Learn more about fruits and the market with Vicente!";
 
-    case "village_npc_2":
-      return "Help Ligaya clean the house while learning Bisaya house vocabulary!";
+      case "village_npc_2":
+        return "Help Ligaya clean the house while learning Bisaya house vocabulary!";
 
-    case "village_npc_3":
-      return "Learn farm vocabulary with Nando while helping him with his farming tasks!";
+      case "village_npc_3":
+        return "Learn farm vocabulary with Nando while helping him with his farming tasks!";
 
-    // =====================
-    // FOREST NPCS
-    // =====================
-    case "forest_npc_1":
-      return "*to edit (forest npc 1)";
+      // =====================
+      // FOREST NPCS
+      // =====================
+      case "forest_npc_1":
+        return "Tabangi si Lunti para magkasinabot ang uban animals!";
 
-    case "forest_npc_2":
-      return "*to edit (forest npc 2)";
+      case "forest_npc_2":
+        return "Naghimo siya ug istorya pero dili niya mahimo tungod sa lost words.";
 
-    case "forest_npc_3":
-      return "*to edit (forest npc 3)";
+      case "forest_npc_3":
+        return "Ganahan siya ug riddles, pero wala na nagkadimao tungod sa kagubot.";
 
-    // =====================
-    // CASTLE NPCS
-    // =====================
-    case "castle_npc_1":
-      return "*to edit (castle npc 1)";
+      case "forest_npc_4":
+        return "This magical deer looks lost. Tabangi siya!";
 
-    case "castle_npc_2":
-      return "*to edit (castle npc 2)";
+      // =====================
+      // CASTLE NPCS
+      // =====================
+      case "castle_npc_1":
+        return "*to edit (castle npc 1)";
 
-    case "castle_npc_3":
-      return "*to edit (castle npc 3)";
+      case "castle_npc_2":
+        return "*to edit (castle npc 2)";
 
-    default:
-      return "Complete the challenge to help the village!";
-  }
-};
+      case "castle_npc_3":
+        return "*to edit (castle npc 3)";
+
+      default:
+        return "Complete the challenge to help the village!";
+    }
+  };
 
   return (
     <div className="quest-modal-overlay" onClick={onClose}>

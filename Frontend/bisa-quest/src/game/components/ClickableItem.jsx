@@ -7,7 +7,7 @@ import "./ClickableItem.css";
  * mode="grid"      — sits inside a CSS grid, no absolute positioning (HousePage IA)
  */
 const ClickableItem = ({ item, onClick, locked, mode = "absolute" }) => {
-  const [state,    setState]    = useState("idle");
+  const [state, setState] = useState("idle");
   const [showAnim, setShowAnim] = useState(false);
 
   useEffect(() => {

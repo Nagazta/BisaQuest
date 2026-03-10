@@ -247,6 +247,14 @@
   border: 2px solid rgba(255, 255, 255, 0.15);
   text-align: center;
   white-space: nowrap;
+  animation: fadeOutHint 3s ease-in-out forwards;
+  pointer-events: auto;
+}
+
+@keyframes fadeOutHint {
+  0%   { opacity: 1; }
+  66%  { opacity: 1; }
+  100% { opacity: 0; pointer-events: none; }
 }
 
 /* Dialogue Overlay and Box */

@@ -70,7 +70,8 @@ class ChallengeService {
         'item_id, quest_id, label, image_key, word_left, word_right,' +
         'correct_zone, is_correct, display_order,' +
         'hint, round_number, round_prompt, round_reprompt,' +
-        'position_x, position_y, belongs_to'   // ← added belongs_to
+        'position_x, position_y, belongs_to,' +
+        'width_percent, height_percent'
       )
       .eq('quest_id', questId)
       .order('display_order');
