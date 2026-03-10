@@ -75,27 +75,27 @@ export const CUTSCENES = {
         key: "village_entry",
         destination: "/student/village",
         finalLabel: "Enter Village →",
-        fogColor: "#e8d5a3",   // warm golden dust
+        fogColor: "#e8d5a3",
         slides: [
             {
                 image: villageEntry1,
-                text: "Welcome to Baryo Bulawan — a small, cheerful village nestled between golden fields and the edge of the ancient forest.",
+                text: "Welcome to Baryo Bulawan — usa ka gamay, masayanong village nestled between golden fields ug sa daplin sa karaang forest.",
             },
             {
                 image: villageEntry2,
-                text: "But something is wrong. The village is in gentle chaos. Houses are cluttered, market stalls are in disarray, and tools lie scattered everywhere.",
+                text: "But something is wrong. Ang baryo kay gubot. Houses are cluttered, ang mga tindahan kay nagkagubot, ug ang mga tools kay nagkatag bisan asa.",
             },
             {
                 image: villageEntry3,
-                text: '"Anak," says Lolo Tasyo, stepping out from the shade of the acacia tree. "Pages from the ancient Libro have been scattered across the village. The words are lost — and with them, order itself."',
+                text: '"Anak," says Lolo Tasyo, stepping out from the shade of the acacia tree. "Ang mga pahina sa karaang Libro kay nagkatibulaag across the village. The words are lost — ug uban niini, ang kahusay mismo."',
             },
             {
                 image: villageEntry4,
-                text: '"Three of your neighbors need your help — Ligaya, Nando, and Vicente. Help them restore their places, and you will find the scattered pages of the Libro."',
+                text: '"Tulo sa imong mga silingan ang nagkinahanglan sa imong tabang — si Ligaya, Nando, and Vicente. Help them restore their places, ug makita nimo ang mga nangawala nga pages sa Libro."',
             },
             {
                 image: villageEntry5,
-                text: "The journey begins here, in the familiar streets of home. Talk to your neighbors, learn the words, and bring back the knowledge that was lost.",
+                text: "The journey begins here, sa pamilyar nga karsada sa balay. Talk to your neighbors, tun-i ang mga pulong, and bring back the knowledge that was lost.",
             },
         ],
     },
@@ -105,27 +105,27 @@ export const CUTSCENES = {
         key: "village_complete",
         destination: "/student/forest",
         finalLabel: "Enter the Forest →",
-        fogColor: "#c8e6c9",   // soft forest green
+        fogColor: "#c8e6c9",
         slides: [
             {
                 image: villageEntry6,
-                text: "The last of the scattered pages flutters down from Nando's barn roof. You catch it gently. Something ancient stirs in the air.",
+                text: "Ang kataposang scattered page kay nahulog gikan sa atop sa kamalig ni Nando. You catch it gently. May nagtangdog sa hangin — something ancient stirs.",
             },
             {
                 image: villageEntry7,
-                text: '"Salamat, Bayani! The house is clean, the stall is sorted, and the farm is ready. We couldn\'t have done it without you."',
+                text: '"Salamat, Bayani! Limpyo na ang balay, ang tindahan is sorted, ug andam na ang uma. We couldn\'t have done it without you."',
             },
             {
                 image: villageEntry8,
-                text: 'Lolo Tasyo emerges from the shade of the old acacia tree, eyes twinkling. "You have done it, anak. The Village Fragment of the Libro — it\'s whole again."',
+                text: 'Migawas si Lolo Tasyo gikan sa landong sa karaang akasya, nagkidlap ang iyang mga mata. "You have done it, anak. Ang Village Fragment sa Libro — whole again."',
             },
             {
                 image: villageEntry9,
-                text: '"Nando says, beyond the tree line lies a deeper mystery. In the enchanted Forest, the words grow twisted — words that look alike but mean different things."',
+                text: '"Ingon ni Nando, beyond the tree line naa pay mas lawom nga mystery. Sa Enchanted Forest, ang mga pulong kay naglibog — words that look alike but lain ang buot ipasabot."',
             },
             {
                 image: villageEntry10,
-                text: 'He points toward the dark tree line. "The Forest Fragment awaits. The path is open now — but only for those brave enough to follow." The trees part. A soft light beckons from within.',
+                text: 'He points toward the dark tree line. "Ang Forest Fragment nagpaabut. The path is open now — but only para sa mga brave enough to follow." Nabuak ang mga kahoy. A soft light beckons from within.',
             },
         ],
     },
