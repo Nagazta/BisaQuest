@@ -32,12 +32,7 @@ const NPC_IMAGES = {
     village_npc_2: LigayaCharacter,
 };
 
-// ── Words awarded per NPC on completion ──────────────────────────────────────
-const NPC_WORDS = {
-    village_npc_3: ["PALA", "SHOVEL", "REGADERA", "WATERING CAN"],
-    village_npc_2: ["WALIS", "BROOM", "TRAPO", "RAG", "MOP", "TIMBA", "BUCKET"],
-    village_npc_1: ["SANTOL", "COTTON FRUIT", "LANSONES", "LANZONES", "PAKWAN", "WATERMELON", "MANGGA", "MANGO", "SAGING", "BANANA"],
-};
+
 
 // ── Placed-state image overrides (imageKey → active asset) ───────────────────
 const ZONE_PLACED_IMAGES = {
@@ -414,17 +409,10 @@ const FarmPage = () => {
 
     // ── Submit + advance ──────────────────────────────────────────────────────
     const submitProgress = () => {
-        // Collect all dynamically fetched correct items from the quest itself
+        // Collect vocabulary words from drag-drop items only (round 1+).
+        // Comprehension items (round 0) have scenario descriptions, not vocab words.
         const correctWords = new Set();
 
-        // Round 0 (Comprehension)
-        compItems.forEach(c => {
-            if (c.isCorrect) {
-                correctWords.add(c.label.toUpperCase());
-            }
-        });
-
-        // Round 1 (Drag and Drop)
         ddWordCards.forEach(c => {
             if (c.isCorrect) {
                 correctWords.add(c.label.toUpperCase());
