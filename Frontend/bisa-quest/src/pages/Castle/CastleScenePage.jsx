@@ -14,7 +14,8 @@ import castleFirewoodImg    from "../../assets/images/environments/scenario/cast
 import castleFireworkImg      from "../../assets/images/environments/scenario/castle-firework.png";
 import castleMoonlightRoomImg from "../../assets/images/environments/scenario/castle-moonlight-room.png";
 import castleRainbowImg       from "../../assets/images/environments/scenario/castle-rainbow.png";
-import { getPlayerId, saveNPCProgress } from "../../utils/playerStorage";
+import { getPlayerId, saveNPCProgress, awardLibroPage, getLibroPageCount, getLibroPageCountForEnv } from "../../utils/playerStorage";
+import BookCollectModal from "../../game/components/BookCollectModal";
 import "./CastleScenePage.css";
 
 const SCENE_BG = {
@@ -33,6 +34,12 @@ const NPC_CHARACTER = {
     "castle_npc_1": PrincessHara,
     "castle_npc_2": ManongKwill,
     "castle_npc_3": GuloImg,
+};
+
+const NPC_NAME = {
+    "castle_npc_1": "Princess Hara",
+    "castle_npc_2": "Manong Kwill",
+    "castle_npc_3": "Gulo",
 };
 const DEFAULT_BG = castleLibraryImg;
 
@@ -105,7 +112,7 @@ const CastleScenePage = () => {
     const [error, setError]           = useState(null);
 
     // Quest chaining
-    const [npcQuests, setNpcQuests]         = useState([]);
+    const [npcQuests, setNpcQuests]           = useState([]);
     const [currentQuestId, setCurrentQuestId] = useState(null);
 
     // Phase: "dialogue" | "combine" | "branch" | "done"
@@ -121,6 +128,10 @@ const CastleScenePage = () => {
     const [combineRound, setCombineRound] = useState(0);
     const [showTryAgain, setShowTryAgain] = useState(false);
     const [isLit, setIsLit]               = useState(false);
+
+    // Libro fragment modal
+    const [showPageModal, setShowPageModal]   = useState(false);
+    const [collectedPage, setCollectedPage]   = useState(null);
 
     const currentRow =
         phase === "dialogue" ? (flowGroups.main?.[mainIdx] ?? null) :
@@ -306,9 +317,8 @@ const CastleScenePage = () => {
     }, [slots, combining, items, flowGroups]);
 
     // ── Submit progress ────────────────────────────────────────────────────────
-    const submitProgress = () => {
+    const doBackendSubmit = () => {
         if (!playerId || !currentQuestId) return;
-        saveNPCProgress?.("castle", npcId, items.length, true);
         fetch(`${API}/api/challenge/quest/submit`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -319,6 +329,40 @@ const CastleScenePage = () => {
         }).catch(err => console.warn("[CastleScenePage] submit failed:", err));
     };
 
+    const submitProgress = () => {
+        if (!playerId || !currentQuestId) return;
+        // Derive the compound word from the two correct items (e.g. "Sun"+"Light" → "SUNLIGHT")
+        const correctItems = items.filter(i => i.isCorrect);
+        const compoundWord = correctItems.map(i => i.label).join("").toUpperCase();
+        const words = compoundWord ? [compoundWord] : [];
+        saveNPCProgress("castle", npcId, items.length, true, 3, words);
+        awardLibroPage("castle", npcId);
+
+        const pageNumber     = getLibroPageCountForEnv("castle");
+        const totalCollected = getLibroPageCount();
+        setCollectedPage({ pageNumber, totalCollected });
+        setShowPageModal(true);
+    };
+
+    const handleDoneClose = () => {
+        const idx  = npcQuests.findIndex(q => String(q.quest_id) === String(currentQuestId));
+        const next = npcQuests[idx + 1];
+        if (next) {
+            navigate("/castle/scene", {
+                state: { npcId, npcName, questId: next.quest_id, returnTo },
+            });
+        } else {
+            navigate(returnTo, { state: { completed: true } });
+        }
+    };
+
+    const handleFragmentModalClose = () => {
+        setShowPageModal(false);
+        setCollectedPage(null);
+        doBackendSubmit();
+        handleDoneClose();
+    };
+
     const handleTryAgain = () => {
         setShowTryAgain(false);
         setSlots([null, null]);
@@ -327,19 +371,6 @@ const CastleScenePage = () => {
     };
 
     const handleBack = () => navigate(returnTo);
-
-    const handleDoneClose = () => {
-        const idx  = npcQuests.findIndex(q => String(q.quest_id) === String(currentQuestId));
-        const next = npcQuests[idx + 1];
-        if (next) {
-            // Chain to next quest for same NPC — navigate pushes new location.state
-            navigate("/student/library", {
-                state: { npcId, npcName, questId: next.quest_id, returnTo },
-            });
-        } else {
-            navigate(returnTo, { state: { completed: true } });
-        }
-    };
 
     // ── Loading / error states ─────────────────────────────────────────────────
     if (loading) return (
@@ -479,18 +510,15 @@ const CastleScenePage = () => {
                 </div>
             )}
 
-            {/* Quest complete */}
-            {phase === "done" && (
-                <div className="csp-complete-overlay">
-                    <div className="csp-complete-card">
-                        <div className="csp-libro-fragment">📖</div>
-                        <div className="csp-complete-stars">✨✨✨</div>
-                        <h2>Quest Complete!</h2>
-                        <p>A Libro fragment floats into your hands!</p>
-                        <Button variant="primary" onClick={handleDoneClose}>Continue →</Button>
-                    </div>
-                </div>
-            )}
+            {/* Quest complete — Libro fragment modal */}
+            <BookCollectModal
+                isOpen={showPageModal}
+                npcName={NPC_NAME[npcId] ?? npcName}
+                pageNumber={collectedPage?.pageNumber}
+                totalPages={collectedPage?.totalCollected}
+                environment="castle"
+                onClose={handleFragmentModalClose}
+            />
         </div>
     );
 };
