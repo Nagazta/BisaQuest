@@ -1,6 +1,6 @@
 import { useRef, useEffect, useLayoutEffect, useCallback, useState } from "react";
 import Button from "../Button";
-import Arrow from "../../assets/images/signs/arrow.png";
+import AssetManifest from "../../services/AssetManifest";
 import { ITEM_IMAGE_MAP } from "../../game/dragDropConstants";
 import "./DialogueBox.css";
 
@@ -160,7 +160,7 @@ const DialogueBox = ({
             disabled={!atBottom}
             title={!atBottom ? "Scroll down to continue" : "Next"}
           >
-            <img src={Arrow} alt="Next" className="arrow-icon" />
+            <img src={AssetManifest.ui.arrow} alt="Next" className="arrow-icon" />
           </Button>
         ) : null}
 

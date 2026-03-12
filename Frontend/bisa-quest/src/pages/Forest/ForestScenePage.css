@@ -7,7 +7,7 @@
 }
 
 .fsp-bg {
-  position: absolute;
+  position: contain;
   inset: 0;
   width: 100%;
   height: 100%;
@@ -15,6 +15,28 @@
   object-position: center;
   user-select: none;
 }
+
+/* ── Scene canvas — mirrors object-fit: cover coordinate space ── */
+/*    Assumes background images are 16:9. Adjust ratio if needed.  */
+.fsp-scene-canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  aspect-ratio: 1329 / 752;
+
+  width: 100%;
+  height: 100%;
+
+  max-width: calc(100vh * 1329 / 752);
+  max-height: calc(100vw * 752 / 1329);
+
+  pointer-events: none;
+  /* canvas itself is transparent to clicks */
+  z-index: 15;
+}
+
 
 /* ── Back button ──────────────────────────────────────────────── */
 .fsp-back {
@@ -24,7 +46,43 @@
   z-index: 50;
 }
 
-/* ── Deer — centered on screen ────────────────────────────────── */
+/* ── NPC character — centered on screen ──────────────────────── */
+.fsp-npc-wrap {
+  position: absolute;
+  left: 50%;
+  top: 70%;
+  transform: translate(-50%, -60%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  z-index: 20;
+  transition: filter 0.2s ease;
+}
+
+.fsp-npc-wrap--target {
+  filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+}
+
+.fsp-npc-img {
+  height: 340px;
+  object-fit: contain;
+  animation: npc-bob 3s ease-in-out infinite;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
+}
+
+.fsp-npc-hint {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 16px;
+  color: #FCD765;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 2px solid #FCD765;
+  animation: hint-pulse 1.4s ease-in-out infinite;
+}
+
+/* ── Legacy aliases (keep old class names working) ───────────── */
 .fsp-deer-wrap {
   position: absolute;
   left: 50%;
@@ -45,7 +103,7 @@
 .fsp-deer-img {
   height: 340px;
   object-fit: contain;
-  animation: deer-bob 3s ease-in-out infinite;
+  animation: npc-bob 3s ease-in-out infinite;
   filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
 }
 
@@ -60,7 +118,62 @@
   animation: hint-pulse 1.4s ease-in-out infinite;
 }
 
-/* ── Dialogue bar now comes from shared DialogueBox.css ────────── */
+/* ── On-screen draggable item cards ──────────────────────────── */
+.fsp-scene-item {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: grab;
+  z-index: 30;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 3px solid #6b8e5a;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+}
+
+.fsp-scene-item:hover {
+  transform: translate(-50%, -50%) scale(1.08);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45);
+  border-color: #4a7a3c;
+}
+
+.fsp-scene-item:active {
+  cursor: grabbing;
+  transform: translate(-50%, -50%) scale(1.02);
+}
+
+.fsp-scene-item-img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.fsp-scene-item-emoji {
+  font-size: 36px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.fsp-scene-item-label {
+  font-family: 'Fredoka One', 'Pixelify Sans', cursive;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2d4a1e;
+  text-align: center;
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+}
 
 /* ── Quest complete overlay ───────────────────────────────────── */
 .fsp-complete-overlay {
@@ -121,21 +234,60 @@
 }
 
 /* ── Keyframes ────────────────────────────────────────────────── */
+@keyframes npc-bob {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
 @keyframes deer-bob {
-  0%, 100% { transform: translateY(0);    }
-  50%       { transform: translateY(-8px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 @keyframes hint-pulse {
-  0%, 100% { opacity: 1;   }
-  50%       { opacity: 0.5; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
 }
 
 @keyframes overlay-in {
-  from { opacity: 0; } to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes card-pop {
-  from { transform: scale(0.6); opacity: 0; }
-  to   { transform: scale(1);   opacity: 1; }
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }

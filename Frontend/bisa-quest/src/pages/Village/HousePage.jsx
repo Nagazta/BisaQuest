@@ -11,11 +11,7 @@ import ClickableItem from "../../game/components/ClickableItem";
 import ZoneDebugOverlay from "../../game/components/ZoneDebugOverlay";
 import BookCollectModal from "../../game/components/BookCollectModal";
 
-import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
-import LigayaSweating from "../../assets/images/characters/Ligaya_gealimut-an.png";
-import LigayaWorried from "../../assets/images/characters/Ligaya_worried.png";
-import houseBackground from "../../assets/images/environments/scenario/house.jpg";
-import dirtyLivingRoom from "../../assets/images/environments/scenario/dirtyLivingRoom.PNG";
+import AssetManifest from "../../services/AssetManifest";
 
 import {
   SCENE_BACKGROUNDS,
@@ -35,24 +31,21 @@ import "./HousePage.css";
 
 // ── NPC image map ─────────────────────────────────────────────────────────────
 const NPC_IMAGES = {
-  village_npc_2: LigayaCharacter,
+  village_npc_2: AssetManifest.village.npcs.ligaya,
 };
 
-// ── Words awarded per NPC on completion ──────────────────────────────────────
-const NPC_WORDS = {
-  village_npc_2: ["WALIS", "BROOM", "TRAPO", "RAG", "MOP", "TIMBA", "BUCKET"],
-  village_npc_3: ["PALA", "SHOVEL", "REGADERA", "WATERING CAN"],
-  village_npc_1: ["SANTOL", "COTTON FRUIT", "LANSONES", "LANZONES", "PAKWAN", "WATERMELON", "MANGGA", "MANGO", "SAGING", "BANANA"],
-};
+
 
 // ── Background map ────────────────────────────────────────────────────────────
 const SCENE_BG = {
-  living_room: houseBackground,
-  living_room_dirty: dirtyLivingRoom,
+  living_room: AssetManifest.village.scenarios.house,
+  living_room_dirty: AssetManifest.village.scenarios.house, // TODO: Missing dirty image, using default house
+  living_room_spill: AssetManifest.village.scenarios.livingRoomSpill,
 };
 
 const CLEAN_BG_FOR = {
-  living_room_dirty: houseBackground,
+  living_room_dirty: AssetManifest.village.scenarios.house,
+  living_room_spill: AssetManifest.village.scenarios.house,
 };
 
 // ── Speaker classifiers ───────────────────────────────────────────────────────
@@ -107,13 +100,13 @@ const HousePage = () => {
   const questSequence = location.state?.questSequence || [];
   const seqIndex = location.state?.sequenceIndex ?? 0;
 
-  const NpcImage = NPC_IMAGES[npcId] || LigayaCharacter;
+  const NpcImage = NPC_IMAGES[npcId] || AssetManifest.village.npcs.ligaya;
 
   // ── Data state ─────────────────────────────────────────────────────────────
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
   const [sceneType, setSceneType] = useState("living_room");
-  const [background, setBackground] = useState(houseBackground);
+  const [background, setBackground] = useState(AssetManifest.village.scenarios.house);
   const [flowGroups, setFlowGroups] = useState({});
   const [compItems, setCompItems] = useState([]);
   const [ddWordCards, setDdWordCards] = useState([]);
@@ -170,12 +163,12 @@ const HousePage = () => {
 
     // Show worried Ligaya during dusty floor narration
     if (currentRow?.dialogue_id === 138) {
-      return LigayaWorried;
+      return AssetManifest.village.npcs.ligaya_worried;
     }
 
     // Existing sweating logic
     if (isPaypayQuest && npcId === "village_npc_2" && !ligayaCool) {
-      return LigayaSweating;
+      return AssetManifest.village.npcs.ligaya_sweating;
     }
 
     return NpcImage;
@@ -209,10 +202,10 @@ const HousePage = () => {
 
         const scene = meta?.scene_type || "living_room";
         setSceneType(scene);
-        setBackground(SCENE_BG[scene] || houseBackground);
+        setBackground(SCENE_BG[scene] || AssetManifest.village.scenarios.house);
         setDdInstruction(meta?.instructions || "");
 
-        const dirty = scene === "living_room_dirty";
+        const dirty = scene === "living_room_dirty" || scene === "living_room_spill";
         const paypay = (meta?.title || "").toLowerCase().includes("paypay") ||
           (meta?.instructions || "").toLowerCase().includes("paypay") ||
           (meta?.title || "").toLowerCase().includes("electric fan");
@@ -267,6 +260,14 @@ const HousePage = () => {
             lamesa: { x: 53, y: 64 },
             sulok: { x: 42, y: 40 },
             planggana: { x: 35, y: 62 },
+          },
+          living_room_spill: {
+            bookshelf: { x: 83, y: 40 },
+            sofa: { x: 50, y: 48 },
+            aparador: { x: 73, y: 48 },
+            lamesa: { x: 62, y: 64 },
+            sulok: { x: 42, y: 40 },
+            planggana: { x: 35, y: 68 },
           },
           kitchen: {
             stove: { x: 57, y: 55 },
@@ -461,17 +462,10 @@ const HousePage = () => {
   }, [seqIndex, questSequence, navigate, returnTo, npcId, npcName]);
 
   const submitProgress = useCallback(() => {
-    // Collect all dynamically fetched correct items from the quest itself
+    // Collect vocabulary words from drag-drop items only (round 1+).
+    // Comprehension items (round 0) have scenario descriptions, not vocab words.
     const correctWords = new Set();
 
-    // Round 0 (Comprehension)
-    compItems.forEach(c => {
-      if (c.isCorrect) {
-        correctWords.add(c.label.toUpperCase());
-      }
-    });
-
-    // Round 1 (Drag and Drop)
     ddWordCards.forEach(c => {
       if (c.isCorrect) {
         correctWords.add(c.label.toUpperCase());
@@ -506,7 +500,7 @@ const HousePage = () => {
     }
 
     advanceSequence();
-  }, [npcId, playerId, questId, API, isDirtyRoomQuest, sceneType, advanceSequence]);
+  }, [npcId, playerId, questId, API, isDirtyRoomQuest, sceneType, advanceSequence, ddWordCards]);
 
   const handleBack = () => navigate(returnTo);
 
@@ -567,7 +561,7 @@ const HousePage = () => {
   // ── Render ─────────────────────────────────────────────────────────────────
   if (loading) return (
     <div className="house-container">
-      <img src={houseBackground} alt="" className="house-background" draggable={false} />
+      <img src={AssetManifest.village.scenarios.house} alt="" className="house-background" draggable={false} />
       <div className="house-loading"><span>Gi-load ang dula...</span></div>
     </div>
   );

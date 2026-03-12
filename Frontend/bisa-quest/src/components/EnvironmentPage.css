@@ -47,9 +47,12 @@
 }
 
 @keyframes pulse-nearby {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translate(-50%, -50%) scale(1);
   }
+
   50% {
     transform: translate(-50%, -50%) scale(1.05);
   }
@@ -105,9 +108,12 @@
 }
 
 @keyframes bounce-prompt {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateX(-50%) translateY(0);
   }
+
   50% {
     transform: translateX(-50%) translateY(-8px);
   }
@@ -151,6 +157,7 @@
   from {
     transform: translate(-50%, -50%) rotate(0deg);
   }
+
   to {
     transform: translate(-50%, -50%) rotate(360deg);
   }
@@ -159,7 +166,7 @@
 /* Player Character */
 .player-character {
   position: absolute;
-  width: 100px;
+  width: 280px;
   height: 400px;
   transform: translate(-50%, -50%);
   z-index: 50;
@@ -247,6 +254,23 @@
   border: 2px solid rgba(255, 255, 255, 0.15);
   text-align: center;
   white-space: nowrap;
+  animation: fadeOutHint 3s ease-in-out forwards;
+  pointer-events: auto;
+}
+
+@keyframes fadeOutHint {
+  0% {
+    opacity: 1;
+  }
+
+  66% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 /* Dialogue Overlay and Box */
@@ -394,11 +418,11 @@
     background: transparent;
     box-shadow: none;
   }
-  
+
   .interaction-prompt {
     font-size: 13px;
   }
-  
+
   .controls-hint {
     display: none;
   }
@@ -422,8 +446,8 @@
   }
 
   .player-character {
-    width: 80px;
-    height: 320px;
+    width: 140px;
+    height: 360px;
   }
 
   .npc-on-map {
@@ -484,8 +508,8 @@
 
 @media (max-width: 480px) {
   .player-character {
-    width: 60px;
-    height: 240px;
+    width: 120px;
+    height: 300px;
   }
 
   .npc-on-map {

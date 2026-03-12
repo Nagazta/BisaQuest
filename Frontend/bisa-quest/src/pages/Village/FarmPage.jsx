@@ -9,11 +9,7 @@ import Button from "../../components/Button";
 import DialogueBox from "../../components/instructions/DialogueBox";
 import BookCollectModal from "../../game/components/BookCollectModal";
 
-import NandoCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
-import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_1.png";
-import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
-import farmBackground from "../../assets/images/environments/scenario/farm.png";
-import wateringCanWater from "../../assets/items/wateringCan-water.png";
+import AssetManifest from "../../services/AssetManifest";
 
 import { ITEM_IMAGE_MAP } from "../../game/dragDropConstants";
 import {
@@ -27,28 +23,35 @@ import "./FarmPage.css";
 
 // ── NPC map ───────────────────────────────────────────────────────────────────
 const NPC_IMAGES = {
-    village_npc_3: NandoCharacter,
-    village_npc_1: VicenteCharacter,
-    village_npc_2: LigayaCharacter,
+    village_npc_3: AssetManifest.village.npcs.nando,
+    village_npc_1: AssetManifest.village.npcs.vicente,
+    village_npc_2: AssetManifest.village.npcs.ligaya,
 };
 
-// ── Words awarded per NPC on completion ──────────────────────────────────────
-const NPC_WORDS = {
-    village_npc_3: ["PALA", "SHOVEL", "REGADERA", "WATERING CAN"],
-    village_npc_2: ["WALIS", "BROOM", "TRAPO", "RAG", "MOP", "TIMBA", "BUCKET"],
-    village_npc_1: ["SANTOL", "COTTON FRUIT", "LANSONES", "LANZONES", "PAKWAN", "WATERMELON", "MANGGA", "MANGO", "SAGING", "BANANA"],
-};
+
 
 // ── Placed-state image overrides (imageKey → active asset) ───────────────────
 const ZONE_PLACED_IMAGES = {
-    wateringcan: wateringCanWater,
-    watering_can: wateringCanWater,
-    regadera: wateringCanWater,
+    wateringcan: AssetManifest.village.wateringCanWater, // Fallback if added later, else undefined
+    watering_can: AssetManifest.village.wateringCanWater, 
+    regadera: AssetManifest.village.wateringCanWater,
+    kabaw: AssetManifest.village.carabaoPlowImg,
+    carabao: AssetManifest.village.carabaoPlowImg,
 };
 
 // ── Farm drop zone registry ───────────────────────────────────────────────────
 const SCENE_DROP_ZONES = {
     farm: {
+        soil_patch_1: { x: 13, y: 50 },
+        soil_patch_2: { x: 95, y: 50 },
+        soil_patch_3: { x: 60, y: 50 },
+        basket_farm: { x: 75, y: 55 },
+        water_trough: { x: 50, y: 40 },
+        barn_door: { x: 82, y: 38 },
+        fence_left: { x: 15, y: 42 },
+        fence_right: { x: 85, y: 42 },
+    },
+    empty_farm: {
         soil_patch_1: { x: 13, y: 50 },
         soil_patch_2: { x: 95, y: 50 },
         soil_patch_3: { x: 60, y: 50 },
@@ -135,12 +138,12 @@ const FarmPage = () => {
     const questSequence = location.state?.questSequence || [];
     const seqIndex = location.state?.sequenceIndex ?? 0;
 
-    const NpcImage = NPC_IMAGES[npcId] || NandoCharacter;
+    const NpcImage = NPC_IMAGES[npcId] || AssetManifest.village.npcs.nando;
 
     // ── State ──────────────────────────────────────────────────────────────────
     const [loading, setLoading] = useState(true);
     const [fetchError, setFetchError] = useState(null);
-    const [background, setBackground] = useState(farmBackground);
+    const [background, setBackground] = useState(AssetManifest.village.scenarios.farm);
     const [flowGroups, setFlowGroups] = useState({});
     const [compItems, setCompItems] = useState([]);
     const [ddWordCards, setDdWordCards] = useState([]);
@@ -257,6 +260,14 @@ const FarmPage = () => {
                 );
 
                 setDdPlaced({});
+
+                // ── Set background based on scene_type ──
+                if (scene === "empty_farm") {
+                    setBackground(AssetManifest.village.scenarios.emptyFarm);
+                } else {
+                    setBackground(AssetManifest.village.scenarios.farm);
+                }
+
                 setLoading(false);
             } catch (err) {
                 if (!cancelled) { setFetchError(err.message); setLoading(false); }
@@ -414,17 +425,10 @@ const FarmPage = () => {
 
     // ── Submit + advance ──────────────────────────────────────────────────────
     const submitProgress = () => {
-        // Collect all dynamically fetched correct items from the quest itself
+        // Collect vocabulary words from drag-drop items only (round 1+).
+        // Comprehension items (round 0) have scenario descriptions, not vocab words.
         const correctWords = new Set();
 
-        // Round 0 (Comprehension)
-        compItems.forEach(c => {
-            if (c.isCorrect) {
-                correctWords.add(c.label.toUpperCase());
-            }
-        });
-
-        // Round 1 (Drag and Drop)
         ddWordCards.forEach(c => {
             if (c.isCorrect) {
                 correctWords.add(c.label.toUpperCase());
@@ -536,14 +540,14 @@ const FarmPage = () => {
     // ── Render ────────────────────────────────────────────────────────────────
     if (loading) return (
         <div className="fp-container">
-            <img src={farmBackground} alt="" className="fp-background" draggable={false} />
+            <img src={AssetManifest.village.scenarios.farm} alt="" className="fp-background" draggable={false} />
             <div className="fp-loading"><span>Gi-load ang dula...</span></div>
         </div>
     );
 
     if (fetchError) return (
         <div className="fp-container">
-            <img src={farmBackground} alt="" className="fp-background" draggable={false} />
+            <img src={AssetManifest.village.scenarios.farm} alt="" className="fp-background" draggable={false} />
             <div className="fp-loading">
                 <p style={{ color: "#fff", fontFamily: "'Fredoka One', cursive", fontSize: 18 }}>{fetchError}</p>
                 <Button variant="back" onClick={handleBack}>← Back</Button>

@@ -12,23 +12,27 @@ import {
     markCompleteDismissed,
     isCompleteDismissed,
 } from "../../utils/playerStorage";
-import VillageBackground from "../../assets/images/environments/Vocabulary/village-bg.png";
-import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
-import BoyCharacter from "../../assets/images/characters/Boy.png";
-import GirlCharacter from "../../assets/images/characters/Girl.png";
-import bgMusic from "../../assets/music/bg-music.mp3";
-import QuestStartModal from "../../components/QuestStartModal";
-import NandoCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
-import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_1.png";
+import AssetManifest from "../../services/AssetManifest";
 import "./VillagePage.css";
 import ProgressBar from "../../components/ProgressBar";
 import EnvironmentCompleteModal from "../../components/EnvironmentCompleteModal";
 import FogTransition from "../../components/FogTransition";
+import bgMusic from "../../assets/music/bg-music.mp3";
+import QuestStartModal from "../../components/QuestStartModal";
 
 const NPC_DB_ID = {
     ligaya: "village_npc_2",
     nando: "village_npc_3",
     vicente: "village_npc_1",
+};
+
+// ── DEBUG: Hardcode a quest_id to skip random selection ───────────────────
+// Set the value to a quest_id number (e.g. 42) to force that quest.
+// Set to null to use the normal random logic.
+const DEBUG_QUEST_OVERRIDE = {
+    village_npc_1: null,   // Vicente
+    village_npc_2: null,   // Ligaya
+    village_npc_3: null,   // Nando
 };
 
 const randomPick = (arr) => {
@@ -58,7 +62,7 @@ const VillagePage = () => {
     const [fogActive, setFogActive] = useState(false);
     const [learnedWords, setLearnedWords] = useState([]);
 
-    const PlayerCharacter = character === "roberta" ? GirlCharacter : BoyCharacter;
+    const PlayerCharacter = character === "roberta" ? AssetManifest.characters.girl : AssetManifest.characters.boy;
 
     // ── Background music ──────────────────────────────────────────────────────
     useEffect(() => {
@@ -106,9 +110,9 @@ const VillagePage = () => {
 
     const initializeVillage = () => {
         setVillageNPCs([
-            { npcId: "ligaya", dbNpcId: "village_npc_2", name: "Ligaya", x: 40, y: 41, character: LigayaCharacter, showName: true, quest: "word_association" },
-            { npcId: "nando", dbNpcId: "village_npc_3", name: "Nando", x: 80, y: 41, character: NandoCharacter, showName: true, quest: "farm" },
-            { npcId: "vicente", dbNpcId: "village_npc_1", name: "Vicente", x: 20, y: 60, character: VicenteCharacter, showName: true, quest: "market_stall" },
+            { npcId: "ligaya", dbNpcId: "village_npc_2", name: "Ligaya", x: 35, y: 30, character: AssetManifest.village.npcs.ligaya, showName: true, quest: "word_association" },
+            { npcId: "nando", dbNpcId: "village_npc_3", name: "Nando", x: 80, y: 41, character: AssetManifest.village.npcs.nando, showName: true, quest: "farm" },
+            { npcId: "vicente", dbNpcId: "village_npc_1", name: "Vicente", x: 20, y: 60, character: AssetManifest.village.npcs.vicente, showName: true, quest: "market_stall" },
         ]);
         loadVillageProgress();
     };
@@ -159,30 +163,51 @@ const VillagePage = () => {
         let resolvedIaKitchenQuestId = null;
         let resolvedIaBedroomQuestId = null;
 
-        try {
+        // ── DEBUG override: skip random selection if a quest_id is hardcoded ──
+        const debugOverride = DEBUG_QUEST_OVERRIDE[dbNpcId] ?? null;
+        if (debugOverride) {
+            console.warn(`[Village] ⚠️ DEBUG OVERRIDE: forcing quest_id=${debugOverride} for ${selectedNPC.name}`);
+            resolvedQuestId = debugOverride;
+            setQuestLoading(false);
+        }
+
+        if (!debugOverride) try {
             const res = await fetch(`${API}/api/challenge/npc/${dbNpcId}/quest`);
             if (res.ok) {
                 const { data } = await res.json();
                 if (Array.isArray(data) && data.length) {
 
+                    // ── DEBUG: Log all quests for this NPC ──
+                    console.group(`[Village] 📋 ${selectedNPC.name} (${dbNpcId}) — ${data.length} quest(s)`);
+                    data.forEach((q, i) => {
+                        console.log(
+                            `  Quest #${i + 1}: id=${q.quest_id}, title="${q.title}", ` +
+                            `scene_type="${q.scene_type}", mechanic="${q.game_mechanic}", ` +
+                            `content_type="${q.content_type}"`
+                        );
+                    });
+                    console.groupEnd();
+
                     if (isMarket) {
                         const pool = data.filter(q => q.scene_type === "market_stall");
                         resolvedQuestId = randomPick(pool)?.quest_id ?? null;
+                        console.log(`[Village] 🎯 ${selectedNPC.name} (market) — pool size: ${pool.length}, selected quest_id: ${resolvedQuestId}`);
 
                     } else if (isFarm) {
-                        const pool = data.filter(q => q.scene_type === "farm");
+                        const pool = data.filter(q => q.scene_type === "farm" || q.scene_type === "empty_farm");
                         resolvedQuestId = randomPick(pool)?.quest_id ?? null;
+                        console.log(`[Village] 🎯 ${selectedNPC.name} (farm) — pool size: ${pool.length}, selected quest_id: ${resolvedQuestId}`);
 
                     } else {
                         const livingPool = data.filter(q =>
                             q.game_mechanic === "drag_drop" &&
-                            (q.scene_type === "living_room" || q.scene_type === "living_room_dirty")
+                            (q.scene_type === "living_room" || q.scene_type === "living_room_dirty" || q.scene_type === "living_room_spill")
                         );
                         const kitchenPool = data.filter(q => q.game_mechanic === "drag_drop" && q.scene_type === "kitchen");
                         const bedroomPool = data.filter(q => q.game_mechanic === "drag_drop" && q.scene_type === "bedroom");
                         const iaLivingPool = data.filter(q =>
                             q.game_mechanic === "item_association" &&
-                            (q.scene_type === "living_room" || q.scene_type === "living_room_dirty")
+                            (q.scene_type === "living_room" || q.scene_type === "living_room_dirty" || q.scene_type === "living_room_spill")
                         );
                         const iaKitchenPool = data.filter(q => q.game_mechanic === "item_association" && q.scene_type === "kitchen");
                         const iaBedroomPool = data.filter(q => q.game_mechanic === "item_association" && q.scene_type === "bedroom");
@@ -193,6 +218,9 @@ const VillagePage = () => {
                         resolvedIaLivingQuestId = randomPick(iaLivingPool)?.quest_id ?? null;
                         resolvedIaKitchenQuestId = randomPick(iaKitchenPool)?.quest_id ?? null;
                         resolvedIaBedroomQuestId = randomPick(iaBedroomPool)?.quest_id ?? null;
+
+                        console.log(`[Village] 🎯 ${selectedNPC.name} (house) — DD: living=${resolvedQuestId}, kitchen=${resolvedKitchenQuestId}, bedroom=${resolvedBedroomQuestId}`);
+                        console.log(`[Village] 🎯 ${selectedNPC.name} (house) — IA: living=${resolvedIaLivingQuestId}, kitchen=${resolvedIaKitchenQuestId}, bedroom=${resolvedIaBedroomQuestId}`);
                     }
                 }
             }
@@ -221,6 +249,8 @@ const VillagePage = () => {
                     ].filter(Boolean),
             sequenceIndex: 0,
         };
+
+        console.log(`[Village] 🚀 Navigating for ${selectedNPC.name} →`, state);
 
         if (selectedNPC.quest === "market_stall") navigate("/student/market", { state });
         else if (selectedNPC.quest === "farm") navigate("/student/farm", { state });
@@ -267,10 +297,11 @@ const VillagePage = () => {
             <EnvironmentPage
                 key={refreshKey}
                 environmentType="village"
-                backgroundImage={VillageBackground}
+                backgroundImage={AssetManifest.village.background}
                 npcs={villageNPCs}
                 onNPCClick={handleNPCClick}
                 playerCharacter={PlayerCharacter}
+                characterType={character === "roberta" ? "girl" : "boy"}
                 debugMode={false}
                 playerId={playerId}
             />

@@ -1,8 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import "./HeroSection.css";
-import bgImage from "../assets/images/bg-dashboard.png";
-import ParticleEffects from "../components/ParticleEffects";
-import titleImage from "../assets/images/bisaquest-title.png";
+import AssetManifest from "../services/AssetManifest";
 
 const HeroSection = () => {
   const navigate = useNavigate();
@@ -18,7 +16,7 @@ const HeroSection = () => {
       className="hero-section game-environment"
       style={{
         backgroundImage: `
-          url(${bgImage}),
+          url(${AssetManifest.ui.dashboardBg}),
           radial-gradient(circle at 20% 30%, rgba(255, 220, 117, 0.2) 0%, transparent 100%),
           radial-gradient(circle at 80% 70%, rgba(251, 189, 132, 0.2) 0%, transparent 100%),
           linear-gradient(180deg, #3a322d 0%, #5c4a3f 50%, #3a322d 100%)
@@ -37,7 +35,7 @@ const HeroSection = () => {
       <div className="hero-content-game fade-in">
         <div className="game-title-container">
           <img 
-            src={titleImage} 
+            src={AssetManifest.ui.title} 
             alt="Bisa Quest - Basaha, Tun-i, Daoga - A Journey of Learning and Adventure" 
             className="game-title-image"
           />

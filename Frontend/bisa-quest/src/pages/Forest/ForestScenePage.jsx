@@ -3,36 +3,71 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Button from "../../components/Button";
 import DialogueBox from "../../components/instructions/DialogueBox";
 import BackpackItems from "../../components/BackpackItems";
-import ClickableItem from "../../game/components/ClickableItem";
-import DeerCharacter from "../../assets/images/characters/deer.png";
-import forestSceneImg from "../../assets/images/environments/scenario/forest-scene.png";
-import forkedPathImg from "../../assets/images/environments/scenario/forked-path.png";
-import forestRiverImg from "../../assets/images/environments/scenario/forest-river.png";
-import { getPlayerId, saveNPCProgress } from "../../utils/playerStorage";
+import SceneItem from "../../game/components/SceneItem";
+import { ITEM_IMAGE_MAP } from "../../game/dragDropConstants";
+import AssetManifest from "../../services/AssetManifest";
+import {
+    getPlayerId,
+    saveNPCProgress,
+    shouldAwardForestFragment,
+    awardLibroPage,
+    getLibroPageCount,
+    getLibroPageCountForEnv,
+} from "../../utils/playerStorage";
+import BookCollectModal from "../../game/components/BookCollectModal";
 import "./ForestScenePage.css";
 
-const SCENE_BG = {
-    "forest-scene": forestSceneImg,
-    "forked-path": forkedPathImg,
-    "forest-river": forestRiverImg,
+// ── Eager-load every image in assets/items/ so we can resolve by key ────────
+const itemModules = {
+    ...import.meta.glob("../../assets/items/*.png", { eager: true }),
+    ...import.meta.glob("../../assets/items/*.jpg", { eager: true }),
+    ...import.meta.glob("../../assets/items/*.jpeg", { eager: true }),
+    ...import.meta.glob("../../assets/items/*.webp", { eager: true }),
 };
-const DEFAULT_BG = forestSceneImg;
 
-// Matches both "item_association" and "item_association1" (or any variant)
+const resolveItemImage = (key) => {
+    if (!key) return null;
+    if (ITEM_IMAGE_MAP[key]) return ITEM_IMAGE_MAP[key];
+    const normalizedKey = key.split("/").pop().replace(/\.[^.]+$/, "").toLowerCase();
+    for (const [path, mod] of Object.entries(itemModules)) {
+        const filename = path.split("/").pop().replace(/\.[^.]+$/, "").toLowerCase();
+        if (filename === normalizedKey) return mod.default;
+    }
+    return null;
+};
+
+// ── NPC image map ───────────────────────────────────────────────────────────
+const NPC_IMAGES = {
+    forest_npc_1: AssetManifest.forest.npcs.forest_guardian,
+    forest_npc_2: AssetManifest.forest.npcs.wandering_bard,
+    forest_npc_3: AssetManifest.forest.npcs.diwata,
+    forest_npc_4: AssetManifest.forest.npcs.deer,
+};
+
+const SCENE_BG = {
+    "forest-scene": AssetManifest.forest.scenarios.forestScene,
+    "forked-path": AssetManifest.forest.scenarios.forkedPath,
+    "forest-river": AssetManifest.forest.scenarios.river,
+    "forest-pond": AssetManifest.forest.scenarios.pond,
+    "forest-glow": AssetManifest.forest.scenarios.glow,
+};
+const DEFAULT_BG = AssetManifest.forest.scenarios.forestScene;
+
+const isDeerNpc = (id) => id === "forest_npc_4";
+
 const isIAMechanic = (m) => typeof m === "string" && m.startsWith("item_association");
 
-// ── Speaker classifiers (same pattern as HousePage) ───────────────────────────
 const isNarration = (speaker) =>
-  typeof speaker === "string" && speaker.toLowerCase() === "narration";
+    typeof speaker === "string" && speaker.toLowerCase() === "narration";
 
 const isPlayer = (speaker) =>
-  typeof speaker === "string" && speaker.toLowerCase() === "player";
+    typeof speaker === "string" && speaker.toLowerCase() === "player";
 
 const resolveSpeaker = (speaker, fallback) => {
-  if (!speaker) return fallback;
-  if (isNarration(speaker)) return "Narration";
-  if (isPlayer(speaker))    return "Player";
-  return speaker;
+    if (!speaker) return fallback;
+    if (isNarration(speaker)) return "Narration";
+    if (isPlayer(speaker)) return "Player";
+    return speaker;
 };
 
 const groupByFlow = (rows) => {
@@ -68,6 +103,9 @@ const ForestScenePage = () => {
     const npcName = location.state?.npcName ?? "Deer";
     const returnTo = location.state?.returnTo ?? "/student/forest";
 
+    const NpcImage = NPC_IMAGES[npcId] || AssetManifest.forest.npcs.deer;
+    const useBackpack = isDeerNpc(npcId);
+
     const [gameMechanic, setGameMechanic] = useState(null);
     const [background, setBackground] = useState(DEFAULT_BG);
     const [flowGroups, setFlowGroups] = useState({});
@@ -80,9 +118,13 @@ const ForestScenePage = () => {
     const [branchKey, setBranchKey] = useState(null);
     const [branchIdx, setBranchIdx] = useState(0);
 
-    const [isDeerTarget, setIsDeerTarget] = useState(false);
+    const [isNpcDropTarget, setIsNpcDropTarget] = useState(false);
     const [iaLockedId, setIaLockedId] = useState(null);
     const [iaRoundKey, setIaRoundKey] = useState(0);
+
+    // ── Fragment modal state ──────────────────────────────────────────────────
+    const [showPageModal, setShowPageModal] = useState(false);
+    const [collectedPage, setCollectedPage] = useState(null);
 
     const currentRow =
         phase === "dialogue" ? (flowGroups.main?.[mainIdx] ?? null) :
@@ -92,7 +134,7 @@ const ForestScenePage = () => {
 
     useEffect(() => {
         if (!questId) {
-            setError("No quest was selected. Please go back and talk to the deer again.");
+            setError("No quest was selected. Please go back and talk to the NPC again.");
             setLoading(false);
             return;
         }
@@ -131,9 +173,6 @@ const ForestScenePage = () => {
                 const groups = groupByFlow(dialogues);
                 setFlowGroups(groups);
 
-                console.log("[FSP] mechanic:", mechanic, "| isIA:", isIAMechanic(mechanic));
-                console.log("[FSP] flow keys:", Object.keys(groups));
-
                 const mapped = (rawItems ?? []).map(r => ({
                     ...r,
                     id: String(r.item_id),
@@ -142,8 +181,15 @@ const ForestScenePage = () => {
                     hint: r.hint ?? null,
                     x: r.position_x ?? 50,
                     y: r.position_y ?? 50,
+                    widthPercent: r.width_percent ?? null,
+                    heightPercent: r.height_percent ?? null,
                     emoji: toEmoji(r.label),
+                    imageKey: r.image_key || null,
+                    resolvedImage: resolveItemImage(r.image_key),
                 }));
+
+                console.log("[DEBUG] raw item sample:", rawItems?.[0]);
+                console.log("[DEBUG] mapped item sample:", mapped?.[0]);
 
                 setItems(mapped);
                 setLoading(false);
@@ -163,9 +209,9 @@ const ForestScenePage = () => {
             if (mainIdx < max) {
                 setMainIdx(i => i + 1);
             } else {
-                // Use isIAMechanic() so "item_association1" and "item_association" both work
                 if (isIAMechanic(gameMechanic)) setPhase("ia_scene");
-                else setPhase("backpack");
+                else if (useBackpack) setPhase("backpack");
+                else setPhase("items_on_screen");
             }
         } else if (phase === "branch" || phase === "ia_branch") {
             const max = (flowGroups[branchKey]?.length ?? 0) - 1;
@@ -181,12 +227,14 @@ const ForestScenePage = () => {
                     setIaLockedId(null);
                     setIaRoundKey(k => k + 1);
                     setPhase("ia_scene");
-                } else {
+                } else if (useBackpack) {
                     setPhase("backpack");
+                } else {
+                    setPhase("items_on_screen");
                 }
             }
         }
-    }, [phase, mainIdx, branchIdx, branchKey, flowGroups, gameMechanic]);
+    }, [phase, mainIdx, branchIdx, branchKey, flowGroups, gameMechanic, useBackpack]);
 
     const handleIAItemClick = useCallback((item, isCorrect) => {
         if (phase !== "ia_scene") return;
@@ -209,12 +257,12 @@ const ForestScenePage = () => {
         }
     }, [phase, flowGroups]);
 
-    const onDragOver = (e) => { e.preventDefault(); setIsDeerTarget(true); };
-    const onDragLeave = () => setIsDeerTarget(false);
+    const onDragOver = (e) => { e.preventDefault(); setIsNpcDropTarget(true); };
+    const onDragLeave = () => setIsNpcDropTarget(false);
 
     const onDrop = useCallback((e) => {
         e.preventDefault();
-        setIsDeerTarget(false);
+        setIsNpcDropTarget(false);
         const dropped = items.find(i => String(i.item_id) === e.dataTransfer.getData("item_id"));
         if (!dropped) return;
         const wrongKeys = Object.keys(flowGroups).filter(k => k.startsWith("wrong_"));
@@ -227,9 +275,8 @@ const ForestScenePage = () => {
         setPhase("branch");
     }, [items, flowGroups]);
 
-    const submitProgress = () => {
+    const doBackendSubmit = () => {
         if (!playerId || !questId) return;
-        saveNPCProgress?.("forest", npcId, items.length, true);
         fetch(`${API}/api/challenge/quest/submit`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -237,19 +284,46 @@ const ForestScenePage = () => {
         }).catch(err => console.warn("[ForestScenePage] submit failed:", err));
     };
 
+    const submitProgress = () => {
+        if (!playerId || !questId) return;
+
+        // Save NPC progress — npcCount=3 (Ronaldo excluded until quests are ready)
+        saveNPCProgress("forest", npcId, items.length, true, 3);
+
+        // Award a Forest Fragment if the player qualifies (≥4 encounters OR NPC fully completed)
+        if (shouldAwardForestFragment(npcId)) {
+            const isNewPage = awardLibroPage("forest", npcId);
+            if (isNewPage) {
+                const pageNumber = getLibroPageCountForEnv("forest");
+                const totalCollected = getLibroPageCount();
+                setCollectedPage({ pageNumber, totalCollected });
+                setShowPageModal(true);
+                return; // Wait for modal close before navigating
+            }
+        }
+
+        // No new fragment — submit and continue immediately
+        doBackendSubmit();
+        navigate(returnTo, { state: { completed: true } });
+    };
+
     const handleBack = () => navigate(returnTo);
     const handleDoneClose = () => navigate(returnTo, { state: { completed: true } });
+    const handleFragmentModalClose = () => {
+        setShowPageModal(false);
+        setCollectedPage(null);
+        doBackendSubmit();
+        navigate(returnTo, { state: { completed: true } });
+    };
 
     if (loading) return (
         <div className="fsp-wrapper">
-            <img src={DEFAULT_BG} alt="" className="fsp-bg" />
             <div className="fsp-loading">Loading quest...</div>
         </div>
     );
 
     if (error) return (
         <div className="fsp-wrapper">
-            <img src={DEFAULT_BG} alt="" className="fsp-bg" />
             <div className="fsp-loading fsp-error">
                 <p>{error}</p>
                 <Button variant="back" onClick={handleBack}>← Back</Button>
@@ -259,10 +333,10 @@ const ForestScenePage = () => {
 
     const showDialogueBar = (phase === "dialogue" || phase === "branch" || phase === "ia_branch") && currentRow;
     const showIAItems = isIAMechanic(gameMechanic) && phase === "ia_scene";
-    const showBackpack = !isIAMechanic(gameMechanic) && phase === "backpack";
-    const deerIsDropTarget = !isIAMechanic(gameMechanic) && phase === "backpack";
+    const showBackpack = useBackpack && !isIAMechanic(gameMechanic) && phase === "backpack";
+    const showOnScreenItems = !useBackpack && !isIAMechanic(gameMechanic) && phase === "items_on_screen";
+    const npcIsDropTarget = !isIAMechanic(gameMechanic) && (phase === "backpack" || phase === "items_on_screen");
 
-    // ── Derived dialogue values (same pattern as HousePage) ───────────────────
     const currentSpeaker = currentRow?.speaker || null;
     const dialogueSpeaker = currentRow
         ? resolveSpeaker(currentSpeaker, npcName)
@@ -275,28 +349,30 @@ const ForestScenePage = () => {
 
             <Button variant="back" className="fsp-back" onClick={handleBack}>← Back</Button>
 
-            {/* Deer — drag_drop phases */}
+            {/* NPC character — drag_drop / items_on_screen phases */}
             {!isIAMechanic(gameMechanic) && (
                 <div
-                    className={["fsp-deer-wrap", isDeerTarget ? "fsp-deer-wrap--target" : ""].filter(Boolean).join(" ")}
-                    onDragOver={deerIsDropTarget ? onDragOver : undefined}
-                    onDragLeave={deerIsDropTarget ? onDragLeave : undefined}
-                    onDrop={deerIsDropTarget ? onDrop : undefined}
+                    className={["fsp-npc-wrap", isNpcDropTarget ? "fsp-npc-wrap--target" : ""].filter(Boolean).join(" ")}
+                    onDragOver={npcIsDropTarget ? onDragOver : undefined}
+                    onDragLeave={npcIsDropTarget ? onDragLeave : undefined}
+                    onDrop={npcIsDropTarget ? onDrop : undefined}
                 >
-                    <img src={DeerCharacter} alt={npcName} className="fsp-deer-img" draggable={false} />
-                    {phase === "backpack" && <div className="fsp-deer-hint">Drop an item here</div>}
+                    <img src={NpcImage} alt={npcName} className="fsp-npc-img" draggable={false} />
+                    {(phase === "backpack" || phase === "items_on_screen") && (
+                        <div className="fsp-npc-hint">Drop an item here</div>
+                    )}
                 </div>
             )}
 
-            {/* Deer — IA dialogue phases only (hidden during ia_scene) */}
+            {/* NPC character — IA dialogue phases only (hidden during ia_scene) */}
             {isIAMechanic(gameMechanic) && phase !== "ia_scene" && (
-                <div className="fsp-deer-wrap">
-                    <img src={DeerCharacter} alt={npcName} className="fsp-deer-img" draggable={false} />
+                <div className="fsp-npc-wrap">
+                    <img src={NpcImage} alt={npcName} className="fsp-npc-img" draggable={false} />
                 </div>
             )}
 
-            {/* Item Association: clickable items placed on background */}
-            {showIAItems && (
+            {/* On-screen draggable items (for NPCs 1–3 drag_drop, no backpack) */}
+            {showOnScreenItems && (
                 <>
                     {items.length === 0 && (
                         <div style={{
@@ -308,17 +384,55 @@ const ForestScenePage = () => {
                         </div>
                     )}
                     {items.map(item => (
-                        <ClickableItem
+                        <div
+                            key={`dd-${item.id}`}
+                            className="fsp-scene-item"
+                            style={{ left: `${item.x}%`, top: `${item.y}%` }}
+                            draggable
+                            onDragStart={e => {
+                                e.dataTransfer.setData("item_id", String(item.item_id));
+                            }}
+                        >
+                            {item.resolvedImage ? (
+                                <img
+                                    src={item.resolvedImage}
+                                    alt={item.label}
+                                    className="fsp-scene-item-img"
+                                    draggable={false}
+                                />
+                            ) : (
+                                <span className="fsp-scene-item-emoji">{item.emoji}</span>
+                            )}
+                            <span className="fsp-scene-item-label">{item.label}</span>
+                        </div>
+                    ))}
+                </>
+            )}
+
+            {/* Item Association: clickable items inside scene canvas for correct scaling */}
+            {showIAItems && (
+                <div className="fsp-scene-canvas">
+                    {items.length === 0 && (
+                        <div style={{
+                            position: "absolute", top: "40%", left: "50%", transform: "translate(-50%,-50%)",
+                            background: "rgba(200,0,0,0.85)", color: "#fff", padding: "12px 24px",
+                            borderRadius: 8, zIndex: 100, fontSize: 13, textAlign: "center",
+                        }}>
+                            ⚠️ No items found for quest {questId}.
+                        </div>
+                    )}
+                    {items.map(item => (
+                        <SceneItem
                             key={`ia-${iaRoundKey}-${item.id}`}
                             item={item}
                             onClick={handleIAItemClick}
                             locked={iaLockedId === item.id}
                         />
                     ))}
-                </>
+                </div>
             )}
 
-            {/* Dialogue bar — shared DialogueBox with full speaker support */}
+            {/* Dialogue bar */}
             {showDialogueBar && (
                 <DialogueBox
                     title={dialogueSpeaker}
@@ -330,7 +444,7 @@ const ForestScenePage = () => {
                 />
             )}
 
-            {/* Drag & Drop backpack */}
+            {/* Drag & Drop backpack (Deer only) */}
             {showBackpack && <BackpackItems items={items} />}
 
             {/* Quest complete */}
@@ -344,6 +458,16 @@ const ForestScenePage = () => {
                     </div>
                 </div>
             )}
+
+            {/* Forest Fragment collect modal */}
+            <BookCollectModal
+                isOpen={showPageModal}
+                npcName={npcName}
+                pageNumber={collectedPage?.pageNumber}
+                totalPages={collectedPage?.totalCollected}
+                environment="forest"
+                onClose={handleFragmentModalClose}
+            />
         </div>
     );
 };

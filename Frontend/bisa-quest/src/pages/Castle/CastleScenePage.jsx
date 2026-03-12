@@ -2,39 +2,28 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Button from "../../components/Button";
 import DialogueBox from "../../components/instructions/DialogueBox";
-import PrincessHara  from "../../assets/images/characters/princess-hara.png";
-import ManongKwill   from "../../assets/images/characters/castle-manong-kwill.png";
-import GuloImg       from "../../assets/images/characters/gulo.png";
-import castleLibraryImg from "../../assets/images/environments/scenario/castle-library.png";
-import castleLibraryLitImg from "../../assets/images/environments/scenario/castle-library-light.png";
-import castleGardenImg    from "../../assets/images/environments/scenario/castle-garden.fountain.png";
-import castleNightGardenImg from "../../assets/images/environments/scenario/castle-night-garden.png";
-import castleCourtyardImg   from "../../assets/images/environments/scenario/castle-courtyard.png";
-import castleFirewoodImg    from "../../assets/images/environments/scenario/castle-firewood.png";
-import castleFireworkImg      from "../../assets/images/environments/scenario/castle-firework.png";
-import castleMoonlightRoomImg from "../../assets/images/environments/scenario/castle-moonlight-room.png";
-import castleRainbowImg       from "../../assets/images/environments/scenario/castle-rainbow.png";
+import AssetManifest from "../../services/AssetManifest";
 import { getPlayerId, saveNPCProgress } from "../../utils/playerStorage";
 import "./CastleScenePage.css";
 
 const SCENE_BG = {
-    "castle-library":  castleLibraryImg,
-    "garden-fountain": castleGardenImg,
-    "night-garden":    castleNightGardenImg,
-    "castle-courtyard": castleCourtyardImg,
-    "castle-firewood":  castleFirewoodImg,
-    "castle-firework":      castleFireworkImg,
-    "castle-moonlight-room": castleMoonlightRoomImg,
-    "castle-rainbow":        castleRainbowImg,
+    "castle-library":  AssetManifest.castle.scenarios.library,
+    "garden-fountain": AssetManifest.castle.scenarios.garden,
+    "night-garden":    AssetManifest.castle.scenarios.nightGarden,
+    "castle-courtyard": AssetManifest.castle.scenarios.courtyard,
+    "castle-firewood":  AssetManifest.castle.scenarios.firewood,
+    "castle-firework":      AssetManifest.castle.scenarios.firework,
+    "castle-moonlight-room": AssetManifest.castle.scenarios.moonlightRoom,
+    "castle-rainbow":        AssetManifest.castle.scenarios.rainbow,
 };
 
 // NPC character sprites (null = no character shown)
 const NPC_CHARACTER = {
-    "castle_npc_1": PrincessHara,
-    "castle_npc_2": ManongKwill,
-    "castle_npc_3": GuloImg,
+    "castle_npc_1": AssetManifest.castle.npcs.princess_hara,
+    "castle_npc_2": AssetManifest.castle.npcs.manong_kwill,
+    "castle_npc_3": AssetManifest.castle.npcs.gulo,
 };
-const DEFAULT_BG = castleLibraryImg;
+const DEFAULT_BG = AssetManifest.castle.scenarios.library;
 
 // ── Speaker classifiers ────────────────────────────────────────────────────────
 const isNarration = (speaker) =>
@@ -284,7 +273,7 @@ const CastleScenePage = () => {
         setTimeout(() => {
             if (allCorrect) {
                 setIsLit(true);
-                setBackground(prev => prev === castleLibraryImg ? castleLibraryLitImg : prev);
+                setBackground(prev => prev === AssetManifest.castle.scenarios.library ? AssetManifest.castle.scenarios.libraryLit : prev);
                 const target = flowGroups["correct"] ? "correct" : null;
                 if (!target) { setPhase("done"); submitProgress(); return; }
                 setBranchKey("correct");

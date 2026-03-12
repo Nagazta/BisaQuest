@@ -4,6 +4,8 @@ import DialogueBox from "../components/instructions/DialogueBox";
 import CollisionDebugger from "../config/CollisionDebugger";
 import { getCollisionZones, checkCollisionWithZones } from "../config/environmentCollisions";
 import { getProgress } from "../utils/playerStorage";
+import { useWalkingAnimation } from "../hooks/useWalkingAnimation";
+import LazyImage from "./LazyImage";
 import "./EnvironmentPage.css";
 
 const EnvironmentPage = ({
@@ -12,18 +14,22 @@ const EnvironmentPage = ({
     npcs = [],
     onNPCClick,
     playerCharacter,
+    characterType,
     debugMode = false,
     playerId,
     hintMessage,
 }) => {
-    const [playerPosition,     setPlayerPosition]     = useState({ x: 50, y: 50 });
-    const [keysPressed,        setKeysPressed]        = useState({});
-    const [npcCompletionStatus,setNpcCompletionStatus]= useState({});
-    const [nearbyNPC,          setNearbyNPC]          = useState(null);
-    const [interactionRange]                          = useState(8);
-    const [hintVisible,        setHintVisible]        = useState(true);
+    const [playerPosition, setPlayerPosition] = useState({ x: 50, y: 50 });
+    const [keysPressed, setKeysPressed] = useState({});
+    const [npcCompletionStatus, setNpcCompletionStatus] = useState({});
+    const [nearbyNPC, setNearbyNPC] = useState(null);
+    const [interactionRange] = useState(8);
+    const [hintVisible, setHintVisible] = useState(true);
 
     const collisionConfig = useMemo(() => getCollisionZones(environmentType), [environmentType]);
+
+    // ── Walking animation sprite ──────────────────────────────────────────────
+    const walkingSprite = useWalkingAnimation(characterType, keysPressed);
 
     const calculateDistance = useCallback((npc) => {
         const dx = playerPosition.x - npc.x;
@@ -39,15 +45,15 @@ const EnvironmentPage = ({
 
     const loadNpcStatus = () => {
         const progress = getProgress();
-        const npcKey   = `${environmentType}_npcs`;
-        const npcData  = progress[npcKey] || {};
+        const npcKey = `${environmentType}_npcs`;
+        const npcData = progress[npcKey] || {};
 
         const statusMap = {};
         Object.entries(npcData).forEach(([npcId, data]) => {
             statusMap[npcId] = {
-                completed:  data.completed  || false,
+                completed: data.completed || false,
                 encounters: data.encounters || 0,
-                bestScore:  data.score      || 0,
+                bestScore: data.score || 0,
             };
         });
         setNpcCompletionStatus(statusMap);
@@ -63,13 +69,13 @@ const EnvironmentPage = ({
 
     // ── Nearby NPC detection ──────────────────────────────────────────────────
     useEffect(() => {
-        let closestNPC      = null;
+        let closestNPC = null;
         let closestDistance = Infinity;
         npcs.forEach((npc) => {
             const distance = calculateDistance(npc);
             if (distance < interactionRange && distance < closestDistance) {
                 closestDistance = distance;
-                closestNPC      = npc;
+                closestNPC = npc;
             }
         });
         setNearbyNPC(closestNPC);
@@ -109,7 +115,7 @@ const EnvironmentPage = ({
             if (["w", "a", "s", "d"].includes(key)) setKeysPressed(prev => ({ ...prev, [key]: false }));
         };
         window.addEventListener("keydown", handleKeyDown);
-        window.addEventListener("keyup",   handleKeyUp);
+        window.addEventListener("keyup", handleKeyUp);
         return () => { window.removeEventListener("keydown", handleKeyDown); window.removeEventListener("keyup", handleKeyUp); };
     }, []);
 
@@ -127,7 +133,7 @@ const EnvironmentPage = ({
                 if (checkCollision(newX, newY)) {
                     if (checkCollision(newX, prev.y)) newX = prev.x;
                     if (checkCollision(prev.x, newY)) newY = prev.y;
-                    if (checkCollision(newX, newY))   return prev;
+                    if (checkCollision(newX, newY)) return prev;
                 }
                 return { x: newX, y: newY };
             });
@@ -150,10 +156,10 @@ const EnvironmentPage = ({
             {/* NPCs */}
             {npcs.map((npc, index) => {
                 // Look up by dbNpcId first (what's stored in localStorage), fall back to npcId
-                const statusKey  = npc.dbNpcId || npc.npcId;
-                const status     = npcCompletionStatus[statusKey];
+                const statusKey = npc.dbNpcId || npc.npcId;
+                const status = npcCompletionStatus[statusKey];
                 const isCompleted = status?.completed || false;
-                const isNearby   = nearbyNPC?.npcId === npc.npcId;
+                const isNearby = nearbyNPC?.npcId === npc.npcId;
                 return (
                     <div
                         key={npc.npcId || index}
@@ -161,14 +167,14 @@ const EnvironmentPage = ({
                         style={{ left: `${npc.x}%`, top: `${npc.y}%` }}
                         onClick={() => handleNPCClick(npc)}
                     >
-                        <img src={npc.character} alt={npc.name} className="npc-image" />
+                        <LazyImage src={npc.character} alt={npc.name} className="npc-image" />
                         {npc.showName && (
                             <div className="npc-name-tag">
                                 {npc.name}
                                 {isCompleted && <span className="completion-badge">✓</span>}
                             </div>
                         )}
-                 
+
                         {isNearby && <div className="interaction-prompt">Press E to interact</div>}
                     </div>
                 );
@@ -176,9 +182,11 @@ const EnvironmentPage = ({
 
             {/* Player */}
             <div className="player-character" style={{ left: `${playerPosition.x}%`, top: `${playerPosition.y}%` }}>
-                {playerCharacter
-                    ? <img src={playerCharacter} alt="Player" className="player-image" />
-                    : <div className="player-placeholder">👤</div>
+                {characterType
+                    ? <LazyImage src={walkingSprite} alt="Player" className="player-image" showShimmer={false} />
+                    : playerCharacter
+                        ? <LazyImage src={playerCharacter} alt="Player" className="player-image" showShimmer={false} />
+                        : <div className="player-placeholder">👤</div>
                 }
             </div>
 

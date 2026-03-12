@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './InteractiveMap.css';
 import './MapDebug.css';
-import DashboardMap from '../../src/assets/images/environments/Dashboard.png';
+import AssetManifest from "../services/AssetManifest";
 import { isEnvironmentUnlocked } from '../../src/utils/playerStorage';
 
 // Quest ID → environment key
@@ -218,7 +218,7 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
             transition: isPanning ? 'none' : 'transform 0.3s ease',
           }}
         >
-          <img src={DashboardMap} alt="Quest Map" className="map-image" draggable={false} />
+          <img src={AssetManifest.ui.dashboardMap} alt="Quest Map" className="map-image" draggable={false} />
 
           {/* Clickable area polygons */}
           <svg className="map-overlay" viewBox="0 0 100 100" preserveAspectRatio="none">

@@ -9,10 +9,7 @@ import Button from "../../components/Button";
 import DialogueBox from "../../components/instructions/DialogueBox";
 import BookCollectModal from "../../game/components/BookCollectModal";
 
-import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_1.png";
-import NandoCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
-import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
-import marketBackground from "../../assets/images/environments/scenario/market_stall.png";
+import AssetManifest from "../../services/AssetManifest";
 
 import { ITEM_IMAGE_MAP } from "../../game/dragDropConstants";
 import { getCustomerForRound } from "../../game/customerConstrants";
@@ -25,19 +22,13 @@ import {
 } from "../../utils/playerStorage";
 import "./MarketStallPage.css";
 
-// ── NPC map ───────────────────────────────────────────────────────────────────
 const NPC_IMAGES = {
-  village_npc_1: VicenteCharacter,
-  village_npc_3: NandoCharacter,
-  village_npc_2: LigayaCharacter,
+  village_npc_1: AssetManifest.village.npcs.vicente,
+  village_npc_3: AssetManifest.village.npcs.nando,
+  village_npc_2: AssetManifest.village.npcs.ligaya,
 };
 
-// ── Words awarded per NPC on completion ──────────────────────────────────────
-const NPC_WORDS = {
-  village_npc_1: ["SANTOL", "COTTON FRUIT", "LANSONES", "LANZONES", "PAKWAN", "WATERMELON", "MANGGA", "MANGO", "SAGING", "BANANA"],
-  village_npc_3: ["PALA", "SHOVEL", "REGADERA", "WATERING CAN"],
-  village_npc_2: ["WALIS", "BROOM", "TRAPO", "RAG", "MOP", "TIMBA", "BUCKET"],
-};
+
 
 // ── Scene drop zone registry ──────────────────────────────────────────────────
 const SCENE_DROP_ZONES = {
@@ -166,7 +157,7 @@ const MarketStallPage = () => {
   const questSequence = location.state?.questSequence || [];
   const seqIndex = location.state?.sequenceIndex ?? 0;
 
-  const NpcImage = NPC_IMAGES[npcId] || VicenteCharacter;
+  const NpcImage = NPC_IMAGES[npcId] || AssetManifest.village.npcs.vicente;
 
   // ── Shared state ──────────────────────────────────────────────────────────
   const [loading, setLoading] = useState(true);
@@ -542,24 +533,26 @@ const MarketStallPage = () => {
 
   // ── Submit + advance ──────────────────────────────────────────────────────
   const submitProgress = useCallback(() => {
+    // Collect vocabulary words from drag-drop / item_association items only.
+    // Comprehension items (round 0) have scenario descriptions, not vocab words.
     const correctWords = new Set();
 
-    // Round 0 (Comprehension)
-    compItems.forEach(c => {
-      if (c.isCorrect) correctWords.add(c.label.toUpperCase());
-    });
-
-    // Round 1 (Drag and Drop)
+    // Drag and Drop (round 1)
     ddWordCards.forEach(c => {
+      console.log('[DD card]', c.label, 'isCorrect:', c.isCorrect); // ← add this
       if (c.isCorrect) correctWords.add(c.label.toUpperCase());
     });
 
-    // Round 2+ (Item Association)
+
+    // Item Association (round 1+)
     iaRounds.forEach(round => {
       round.forEach(item => {
+        console.log('[IA item]', item.label, 'isCorrect:', item.isCorrect); // ← add this
         if (item.isCorrect) correctWords.add(item.label.toUpperCase());
       });
     });
+    console.log('[submitProgress] words to save:', Array.from(correctWords));
+
 
     const words = Array.from(correctWords);
     saveNPCProgress("village", npcId, 1, true, 3, words);
@@ -580,7 +573,7 @@ const MarketStallPage = () => {
       }).catch(err => console.warn("[MarketStallPage] submit failed:", err));
     }
     advanceSequence();
-  }, [npcId, playerId, questId, API]);
+  }, [npcId, playerId, questId, API, ddWordCards, iaRounds]);
 
   const advanceSequence = useCallback(() => {
     const nextIndex = seqIndex + 1;
@@ -648,13 +641,13 @@ const MarketStallPage = () => {
   // ── Render ────────────────────────────────────────────────────────────────
   if (loading) return (
     <div className="ms-container">
-      <img src={marketBackground} alt="" className="ms-background" draggable={false} />
+      <img src={AssetManifest.village.scenarios.market} alt="" className="ms-background" draggable={false} />
       <div className="ms-loading"><span>Gi-load ang dula...</span></div>
     </div>
   );
   if (fetchError) return (
     <div className="ms-container">
-      <img src={marketBackground} alt="" className="ms-background" draggable={false} />
+      <img src={AssetManifest.village.scenarios.market} alt="" className="ms-background" draggable={false} />
       <div className="ms-loading">
         <p style={{ color: "#fff", fontFamily: "'Fredoka One', cursive", fontSize: 18 }}>{fetchError}</p>
         <Button variant="back" onClick={handleBack}>← Back</Button>
@@ -664,7 +657,7 @@ const MarketStallPage = () => {
 
   return (
     <div className="ms-container">
-      <img src={marketBackground} alt="Market Stall" className="ms-background" draggable={false} />
+      <img src={AssetManifest.village.scenarios.market} alt="Market Stall" className="ms-background" draggable={false} />
       <Button variant="back" className="ms-back" onClick={handleBack}>← Back</Button>
 
       {mechanic === "drag_drop" && (

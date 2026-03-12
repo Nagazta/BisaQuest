@@ -209,21 +209,27 @@ export const hasLibroPage = (environment, npcId) => {
 
 // ─── Word summary helper ──────────────────────────────────────────────────────
 
-// Words that act as distractors in quests and shouldn't count towards the learned vocab
-const DISTRACTOR_WORDS = [
-    "SAGING", "BANANA",
-    "MANGGA", "MANGO",
-    "MOP", "TRAPO", "RAG", "TIMBA", "BUCKET"
-];
-
+// NPC display-name lookup per environment
 const INTERNAL_NPC_META = {
     village: {
-        village_npc_1: { name: "Vicente", fallbackWords: ["SANTOL", "COTTON FRUIT", "LANSONES", "LANZONES", "PAKWAN", "WATERMELON", "MANGGA", "MANGO", "SAGING", "BANANA"] },
-        village_npc_2: { name: "Ligaya", fallbackWords: ["WALIS", "BROOM", "TRAPO", "RAG", "MOP", "TIMBA", "BUCKET"] },
-        village_npc_3: { name: "Nando", fallbackWords: ["PALA", "SHOVEL", "REGADERA", "WATERING CAN"] },
-    }
+        village_npc_1: { name: "Vicente" },
+        village_npc_2: { name: "Ligaya" },
+        village_npc_3: { name: "Nando" },
+    },
+    forest: {
+        forest_npc_1: { name: "Lunti" },
+        forest_npc_2: { name: "Ronaldo" },
+        forest_npc_3: { name: "Diwata" },
+        forest_npc_4: { name: "Deer" },
+    },
 };
 
+/**
+ * getLearnedWords
+ * Returns an array of { npcName, words[] } for the completion modal.
+ * Words are stored by saveNPCProgress at quest-completion time;
+ * only drag-drop / item-association correct items are recorded.
+ */
 export const getLearnedWords = (environmentName) => {
     try {
         const progress = getProgress();
@@ -235,26 +241,13 @@ export const getLearnedWords = (environmentName) => {
 
         Object.keys(npcData).forEach(npcId => {
             const data = npcData[npcId];
-            if (data.completed) { // Notice v1 uses `completed` instead of `isCompleted`
-                const meta = envMeta[npcId] || { name: "UnknownNPC", fallbackWords: [] };
-
-                // If the player played the new patched version, `words` is present in their save
-                let rawWords = [];
-                if (data.words && data.words.length > 0) {
-                    rawWords = data.words;
-                } else {
-                    // Backwards fallback for players who beat it before the patch
-                    rawWords = meta.fallbackWords;
-                }
-
-                const filteredWords = rawWords.filter(w => {
-                    const upper = (typeof w === 'string' ? w : String(w)).toUpperCase();
-                    return !DISTRACTOR_WORDS.includes(upper);
-                });
+            if (data.completed) {
+                const meta = envMeta[npcId] || { name: "UnknownNPC" };
+                const words = (data.words && data.words.length > 0) ? data.words : [];
 
                 results.push({
                     npcName: meta.name,
-                    words: filteredWords
+                    words,
                 });
             }
         });
@@ -264,6 +257,22 @@ export const getLearnedWords = (environmentName) => {
         console.warn('Failed to retrieve learned words:', e);
         return [];
     }
+};
+
+// ─── Forest fragment award condition ────────────────────────────────────────
+
+/**
+ * shouldAwardForestFragment
+ * Returns true when an NPC qualifies for a Forest Fragment award:
+ *   - The player has completed ≥ 4 quest encounters with this NPC, OR
+ *   - The NPC is marked as completed (handles NPCs with fewer than 4 quests).
+ * @param {string} npcId  e.g. 'forest_npc_1'
+ */
+export const shouldAwardForestFragment = (npcId) => {
+    const progress = getProgress();
+    const npcData = progress['forest_npcs']?.[npcId];
+    if (!npcData) return false;
+    return (npcData.encounters >= 4) || (npcData.completed === true);
 };
 
 // ─── Clear ───────────────────────────────────────────────────────────────────
