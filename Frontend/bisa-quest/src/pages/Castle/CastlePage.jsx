@@ -199,7 +199,8 @@ const CastlePage = () => {
                 npcs={castleNPCs}
                 onNPCClick={handleNPCClick}
                 playerCharacter={PlayerCharacter}
-                debugMode={false}
+                characterType={character === "roberta" ? "girl" : "boy"}
+                debugMode={true}
                 playerId={playerId}
             />
 

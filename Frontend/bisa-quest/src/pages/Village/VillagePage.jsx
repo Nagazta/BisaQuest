@@ -115,7 +115,7 @@ const VillagePage = () => {
 
     const initializeVillage = () => {
         setVillageNPCs([
-            { npcId: "ligaya", dbNpcId: "village_npc_2", name: "Ligaya", x: 40, y: 41, character: LigayaCharacter, showName: true, quest: "word_association" },
+            { npcId: "ligaya", dbNpcId: "village_npc_2", name: "Ligaya", x: 35, y: 30, character: LigayaCharacter, showName: true, quest: "word_association" },
             { npcId: "nando", dbNpcId: "village_npc_3", name: "Nando", x: 80, y: 41, character: NandoCharacter, showName: true, quest: "farm" },
             { npcId: "vicente", dbNpcId: "village_npc_1", name: "Vicente", x: 20, y: 60, character: VicenteCharacter, showName: true, quest: "market_stall" },
         ]);
@@ -306,6 +306,7 @@ const VillagePage = () => {
                 npcs={villageNPCs}
                 onNPCClick={handleNPCClick}
                 playerCharacter={PlayerCharacter}
+                characterType={character === "roberta" ? "girl" : "boy"}
                 debugMode={false}
                 playerId={playerId}
             />
