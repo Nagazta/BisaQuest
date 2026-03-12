@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import './CollisionDebugger.css';
 
-const CollisionDebugger = ({ 
-  collisionZones, 
-  playerPosition, 
-  environmentType 
+const CollisionDebugger = ({
+  collisionZones,
+  playerPosition,
+  environmentType
 }) => {
   const [isVisible, setIsVisible] = useState(true);
   const [opacity, setOpacity] = useState(0.3);
@@ -12,7 +12,7 @@ const CollisionDebugger = ({
 
   if (!isVisible) {
     return (
-      <button 
+      <button
         onClick={() => setIsVisible(true)}
         style={{
           position: 'fixed',
@@ -41,7 +41,7 @@ const CollisionDebugger = ({
           <h3>🐛 Collision Debugger</h3>
           <button onClick={() => setIsVisible(false)}>✕</button>
         </div>
-        
+
         <div className="debug-info">
           <div className="info-row">
             <span className="label">Environment:</span>
@@ -64,10 +64,10 @@ const CollisionDebugger = ({
         <div className="debug-controls">
           <label>
             Opacity:
-            <input 
-              type="range" 
-              min="0" 
-              max="1" 
+            <input
+              type="range"
+              min="0"
+              max="1"
               step="0.1"
               value={opacity}
               onChange={(e) => setOpacity(parseFloat(e.target.value))}
@@ -76,8 +76,8 @@ const CollisionDebugger = ({
           </label>
 
           <label className="checkbox-label">
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               checked={showGrid}
               onChange={(e) => setShowGrid(e.target.checked)}
             />
@@ -105,10 +105,10 @@ const CollisionDebugger = ({
                   {i + 1}. {zone.name || 'Unnamed'}
                 </div>
                 <div className="zone-coords">
-                  x: {zone.x}%, y: {zone.y}%<br/>
+                  x: {zone.x}%, y: {zone.y}%<br />
                   w: {zone.width}%, h: {zone.height}%
                 </div>
-                <button 
+                <button
                   className="copy-btn"
                   onClick={() => {
                     const coords = `{ x: ${zone.x}, y: ${zone.y}, width: ${zone.width}, height: ${zone.height}, name: "${zone.name || 'Zone'}" }`;
