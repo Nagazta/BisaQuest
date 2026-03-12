@@ -5,6 +5,7 @@ import CollisionDebugger from "../config/CollisionDebugger";
 import { getCollisionZones, checkCollisionWithZones } from "../config/environmentCollisions";
 import { getProgress } from "../utils/playerStorage";
 import { useWalkingAnimation } from "../hooks/useWalkingAnimation";
+import LazyImage from "./LazyImage";
 import "./EnvironmentPage.css";
 
 const EnvironmentPage = ({
@@ -166,7 +167,7 @@ const EnvironmentPage = ({
                         style={{ left: `${npc.x}%`, top: `${npc.y}%` }}
                         onClick={() => handleNPCClick(npc)}
                     >
-                        <img src={npc.character} alt={npc.name} className="npc-image" />
+                        <LazyImage src={npc.character} alt={npc.name} className="npc-image" />
                         {npc.showName && (
                             <div className="npc-name-tag">
                                 {npc.name}
@@ -182,9 +183,9 @@ const EnvironmentPage = ({
             {/* Player */}
             <div className="player-character" style={{ left: `${playerPosition.x}%`, top: `${playerPosition.y}%` }}>
                 {characterType
-                    ? <img src={walkingSprite} alt="Player" className="player-image" />
+                    ? <LazyImage src={walkingSprite} alt="Player" className="player-image" showShimmer={false} />
                     : playerCharacter
-                        ? <img src={playerCharacter} alt="Player" className="player-image" />
+                        ? <LazyImage src={playerCharacter} alt="Player" className="player-image" showShimmer={false} />
                         : <div className="player-placeholder">👤</div>
                 }
             </div>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import LoadingBoy from "../../assets/images/characters/loading_screen_boy.png";
+import AssetManifest from "../../services/AssetManifest";
 import ConfirmationDialog from "./ConfirmationDIalog";
 import Button from "../Button";
 import "./SaveProgressModal.css";
@@ -62,7 +62,7 @@ const SaveProgressModal = ({
               </h2>
 
               <div className="modal-character-container">
-                <img src={LoadingBoy} alt="Your Character" className="modal-character-image" />
+                <img src={AssetManifest.ui.loadingBoy} alt="Your Character" className="modal-character-image" />
               </div>
 
               <div className="modal-actions">

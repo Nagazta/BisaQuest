@@ -4,7 +4,7 @@
 
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import securityImg from "../assets/images/environments/scenario/security.png";
+import AssetManifest from "../services/AssetManifest";
 import "./ProtectedRoute.css";
 
 const ProtectedRoute = ({ children }) => {
@@ -16,7 +16,7 @@ const ProtectedRoute = ({ children }) => {
         return (
             <div className="guard-container">
                 <img
-                    src={securityImg}
+                    src={AssetManifest.ui.guard}
                     alt="Guard"
                     className="guard-bg"
                     draggable={false}

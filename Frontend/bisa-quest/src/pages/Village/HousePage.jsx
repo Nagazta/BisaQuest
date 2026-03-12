@@ -11,12 +11,7 @@ import ClickableItem from "../../game/components/ClickableItem";
 import ZoneDebugOverlay from "../../game/components/ZoneDebugOverlay";
 import BookCollectModal from "../../game/components/BookCollectModal";
 
-import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
-import LigayaSweating from "../../assets/images/characters/Ligaya_gealimut-an.png";
-import LigayaWorried from "../../assets/images/characters/Ligaya_worried.png";
-import houseBackground from "../../assets/images/environments/scenario/house.jpg";
-import dirtyLivingRoom from "../../assets/images/environments/scenario/dirtyLivingRoom.PNG";
-import livingRoomSpill from "../../assets/images/environments/scenario/living_room_spill.png";
+import AssetManifest from "../../services/AssetManifest";
 
 import {
   SCENE_BACKGROUNDS,
@@ -36,21 +31,21 @@ import "./HousePage.css";
 
 // ── NPC image map ─────────────────────────────────────────────────────────────
 const NPC_IMAGES = {
-  village_npc_2: LigayaCharacter,
+  village_npc_2: AssetManifest.village.npcs.ligaya,
 };
 
 
 
 // ── Background map ────────────────────────────────────────────────────────────
 const SCENE_BG = {
-  living_room: houseBackground,
-  living_room_dirty: dirtyLivingRoom,
-  living_room_spill: livingRoomSpill,
+  living_room: AssetManifest.village.scenarios.house,
+  living_room_dirty: AssetManifest.village.scenarios.house, // TODO: Missing dirty image, using default house
+  living_room_spill: AssetManifest.village.scenarios.livingRoomSpill,
 };
 
 const CLEAN_BG_FOR = {
-  living_room_dirty: houseBackground,
-  living_room_spill: houseBackground,
+  living_room_dirty: AssetManifest.village.scenarios.house,
+  living_room_spill: AssetManifest.village.scenarios.house,
 };
 
 // ── Speaker classifiers ───────────────────────────────────────────────────────
@@ -105,13 +100,13 @@ const HousePage = () => {
   const questSequence = location.state?.questSequence || [];
   const seqIndex = location.state?.sequenceIndex ?? 0;
 
-  const NpcImage = NPC_IMAGES[npcId] || LigayaCharacter;
+  const NpcImage = NPC_IMAGES[npcId] || AssetManifest.village.npcs.ligaya;
 
   // ── Data state ─────────────────────────────────────────────────────────────
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
   const [sceneType, setSceneType] = useState("living_room");
-  const [background, setBackground] = useState(houseBackground);
+  const [background, setBackground] = useState(AssetManifest.village.scenarios.house);
   const [flowGroups, setFlowGroups] = useState({});
   const [compItems, setCompItems] = useState([]);
   const [ddWordCards, setDdWordCards] = useState([]);
@@ -168,12 +163,12 @@ const HousePage = () => {
 
     // Show worried Ligaya during dusty floor narration
     if (currentRow?.dialogue_id === 138) {
-      return LigayaWorried;
+      return AssetManifest.village.npcs.ligaya_worried;
     }
 
     // Existing sweating logic
     if (isPaypayQuest && npcId === "village_npc_2" && !ligayaCool) {
-      return LigayaSweating;
+      return AssetManifest.village.npcs.ligaya_sweating;
     }
 
     return NpcImage;
@@ -207,7 +202,7 @@ const HousePage = () => {
 
         const scene = meta?.scene_type || "living_room";
         setSceneType(scene);
-        setBackground(SCENE_BG[scene] || houseBackground);
+        setBackground(SCENE_BG[scene] || AssetManifest.village.scenarios.house);
         setDdInstruction(meta?.instructions || "");
 
         const dirty = scene === "living_room_dirty" || scene === "living_room_spill";
@@ -566,7 +561,7 @@ const HousePage = () => {
   // ── Render ─────────────────────────────────────────────────────────────────
   if (loading) return (
     <div className="house-container">
-      <img src={houseBackground} alt="" className="house-background" draggable={false} />
+      <img src={AssetManifest.village.scenarios.house} alt="" className="house-background" draggable={false} />
       <div className="house-loading"><span>Gi-load ang dula...</span></div>
     </div>
   );

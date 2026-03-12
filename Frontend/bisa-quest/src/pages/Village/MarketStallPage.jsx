@@ -9,10 +9,7 @@ import Button from "../../components/Button";
 import DialogueBox from "../../components/instructions/DialogueBox";
 import BookCollectModal from "../../game/components/BookCollectModal";
 
-import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_1.png";
-import NandoCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
-import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
-import marketBackground from "../../assets/images/environments/scenario/market_stall.png";
+import AssetManifest from "../../services/AssetManifest";
 
 import { ITEM_IMAGE_MAP } from "../../game/dragDropConstants";
 import { getCustomerForRound } from "../../game/customerConstrants";
@@ -25,11 +22,10 @@ import {
 } from "../../utils/playerStorage";
 import "./MarketStallPage.css";
 
-// ── NPC map ───────────────────────────────────────────────────────────────────
 const NPC_IMAGES = {
-  village_npc_1: VicenteCharacter,
-  village_npc_3: NandoCharacter,
-  village_npc_2: LigayaCharacter,
+  village_npc_1: AssetManifest.village.npcs.vicente,
+  village_npc_3: AssetManifest.village.npcs.nando,
+  village_npc_2: AssetManifest.village.npcs.ligaya,
 };
 
 
@@ -161,7 +157,7 @@ const MarketStallPage = () => {
   const questSequence = location.state?.questSequence || [];
   const seqIndex = location.state?.sequenceIndex ?? 0;
 
-  const NpcImage = NPC_IMAGES[npcId] || VicenteCharacter;
+  const NpcImage = NPC_IMAGES[npcId] || AssetManifest.village.npcs.vicente;
 
   // ── Shared state ──────────────────────────────────────────────────────────
   const [loading, setLoading] = useState(true);
@@ -645,13 +641,13 @@ const MarketStallPage = () => {
   // ── Render ────────────────────────────────────────────────────────────────
   if (loading) return (
     <div className="ms-container">
-      <img src={marketBackground} alt="" className="ms-background" draggable={false} />
+      <img src={AssetManifest.village.scenarios.market} alt="" className="ms-background" draggable={false} />
       <div className="ms-loading"><span>Gi-load ang dula...</span></div>
     </div>
   );
   if (fetchError) return (
     <div className="ms-container">
-      <img src={marketBackground} alt="" className="ms-background" draggable={false} />
+      <img src={AssetManifest.village.scenarios.market} alt="" className="ms-background" draggable={false} />
       <div className="ms-loading">
         <p style={{ color: "#fff", fontFamily: "'Fredoka One', cursive", fontSize: 18 }}>{fetchError}</p>
         <Button variant="back" onClick={handleBack}>← Back</Button>
@@ -661,7 +657,7 @@ const MarketStallPage = () => {
 
   return (
     <div className="ms-container">
-      <img src={marketBackground} alt="Market Stall" className="ms-background" draggable={false} />
+      <img src={AssetManifest.village.scenarios.market} alt="Market Stall" className="ms-background" draggable={false} />
       <Button variant="back" className="ms-back" onClick={handleBack}>← Back</Button>
 
       {mechanic === "drag_drop" && (

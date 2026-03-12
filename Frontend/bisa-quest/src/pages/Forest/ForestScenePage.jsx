@@ -5,15 +5,7 @@ import DialogueBox from "../../components/instructions/DialogueBox";
 import BackpackItems from "../../components/BackpackItems";
 import SceneItem from "../../game/components/SceneItem";
 import { ITEM_IMAGE_MAP } from "../../game/dragDropConstants";
-import DeerCharacter from "../../assets/images/characters/deer.png";
-import ForestGuardianCharacter from "../../assets/images/characters/forest_guardian.png";
-import WanderingBardCharacter from "../../assets/images/characters/wandering_bard.png";
-import DiwataCharacter from "../../assets/images/characters/diwata.png";
-import forestSceneImg from "../../assets/images/environments/scenario/forest-scene.png";
-import forkedPathImg from "../../assets/images/environments/scenario/forked-path.png";
-import forestRiverImg from "../../assets/images/environments/scenario/forest-river.png";
-import forestPondImg from "../../assets/images/environments/scenario/forest-pond.png";
-import forestGlowImg from "../../assets/images/environments/scenario/forest-glow.png";
+import AssetManifest from "../../services/AssetManifest";
 import {
     getPlayerId,
     saveNPCProgress,
@@ -46,20 +38,20 @@ const resolveItemImage = (key) => {
 
 // ── NPC image map ───────────────────────────────────────────────────────────
 const NPC_IMAGES = {
-    forest_npc_1: ForestGuardianCharacter,
-    forest_npc_2: WanderingBardCharacter,
-    forest_npc_3: DiwataCharacter,
-    forest_npc_4: DeerCharacter,
+    forest_npc_1: AssetManifest.forest.npcs.forest_guardian,
+    forest_npc_2: AssetManifest.forest.npcs.wandering_bard,
+    forest_npc_3: AssetManifest.forest.npcs.diwata,
+    forest_npc_4: AssetManifest.forest.npcs.deer,
 };
 
 const SCENE_BG = {
-    "forest-scene": forestSceneImg,
-    "forked-path": forkedPathImg,
-    "forest-river": forestRiverImg,
-    "forest-pond": forestPondImg,
-    "forest-glow": forestGlowImg,
+    "forest-scene": AssetManifest.forest.scenarios.forestScene,
+    "forked-path": AssetManifest.forest.scenarios.forkedPath,
+    "forest-river": AssetManifest.forest.scenarios.river,
+    "forest-pond": AssetManifest.forest.scenarios.pond,
+    "forest-glow": AssetManifest.forest.scenarios.glow,
 };
-const DEFAULT_BG = forestSceneImg;
+const DEFAULT_BG = AssetManifest.forest.scenarios.forestScene;
 
 const isDeerNpc = (id) => id === "forest_npc_4";
 
@@ -111,7 +103,7 @@ const ForestScenePage = () => {
     const npcName = location.state?.npcName ?? "Deer";
     const returnTo = location.state?.returnTo ?? "/student/forest";
 
-    const NpcImage = NPC_IMAGES[npcId] || DeerCharacter;
+    const NpcImage = NPC_IMAGES[npcId] || AssetManifest.forest.npcs.deer;
     const useBackpack = isDeerNpc(npcId);
 
     const [gameMechanic, setGameMechanic] = useState(null);

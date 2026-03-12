@@ -12,18 +12,13 @@ import {
     markCompleteDismissed,
     isCompleteDismissed,
 } from "../../utils/playerStorage";
-import VillageBackground from "../../assets/images/environments/Vocabulary/village-bg.png";
-import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
-import BoyCharacter from "../../assets/images/characters/Boy.png";
-import GirlCharacter from "../../assets/images/characters/Girl.png";
-import bgMusic from "../../assets/music/bg-music.mp3";
-import QuestStartModal from "../../components/QuestStartModal";
-import NandoCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
-import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_1.png";
+import AssetManifest from "../../services/AssetManifest";
 import "./VillagePage.css";
 import ProgressBar from "../../components/ProgressBar";
 import EnvironmentCompleteModal from "../../components/EnvironmentCompleteModal";
 import FogTransition from "../../components/FogTransition";
+import bgMusic from "../../assets/music/bg-music.mp3";
+import QuestStartModal from "../../components/QuestStartModal";
 
 const NPC_DB_ID = {
     ligaya: "village_npc_2",
@@ -36,7 +31,7 @@ const NPC_DB_ID = {
 // Set to null to use the normal random logic.
 const DEBUG_QUEST_OVERRIDE = {
     village_npc_1: null,   // Vicente
-    village_npc_2: 59,   // Ligaya
+    village_npc_2: null,   // Ligaya
     village_npc_3: null,   // Nando
 };
 
@@ -67,7 +62,7 @@ const VillagePage = () => {
     const [fogActive, setFogActive] = useState(false);
     const [learnedWords, setLearnedWords] = useState([]);
 
-    const PlayerCharacter = character === "roberta" ? GirlCharacter : BoyCharacter;
+    const PlayerCharacter = character === "roberta" ? AssetManifest.characters.girl : AssetManifest.characters.boy;
 
     // ── Background music ──────────────────────────────────────────────────────
     useEffect(() => {
@@ -115,9 +110,9 @@ const VillagePage = () => {
 
     const initializeVillage = () => {
         setVillageNPCs([
-            { npcId: "ligaya", dbNpcId: "village_npc_2", name: "Ligaya", x: 35, y: 30, character: LigayaCharacter, showName: true, quest: "word_association" },
-            { npcId: "nando", dbNpcId: "village_npc_3", name: "Nando", x: 80, y: 41, character: NandoCharacter, showName: true, quest: "farm" },
-            { npcId: "vicente", dbNpcId: "village_npc_1", name: "Vicente", x: 20, y: 60, character: VicenteCharacter, showName: true, quest: "market_stall" },
+            { npcId: "ligaya", dbNpcId: "village_npc_2", name: "Ligaya", x: 35, y: 30, character: AssetManifest.village.npcs.ligaya, showName: true, quest: "word_association" },
+            { npcId: "nando", dbNpcId: "village_npc_3", name: "Nando", x: 80, y: 41, character: AssetManifest.village.npcs.nando, showName: true, quest: "farm" },
+            { npcId: "vicente", dbNpcId: "village_npc_1", name: "Vicente", x: 20, y: 60, character: AssetManifest.village.npcs.vicente, showName: true, quest: "market_stall" },
         ]);
         loadVillageProgress();
     };
@@ -302,7 +297,7 @@ const VillagePage = () => {
             <EnvironmentPage
                 key={refreshKey}
                 environmentType="village"
-                backgroundImage={VillageBackground}
+                backgroundImage={AssetManifest.village.background}
                 npcs={villageNPCs}
                 onNPCClick={handleNPCClick}
                 playerCharacter={PlayerCharacter}

@@ -1,0 +1,64 @@
+/* components/LazyImage.css */
+.lazy-image-wrapper {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    background-color: transparent;
+}
+
+/* Shimmer placeholder effect */
+.lazy-image-wrapper.shimmer {
+    background: #f6f7f8;
+    background-image: linear-gradient(
+        to right,
+        #f6f7f8 0%,
+        #edeef1 20%,
+        #f6f7f8 40%,
+        #f6f7f8 100%
+    );
+    background-repeat: no-repeat;
+    background-size: 800px 100%;
+    animation-duration: 1.5s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-name: placeholderShimmer;
+    animation-timing-function: linear;
+}
+
+@keyframes placeholderShimmer {
+    0% {
+        background-position: -468px 0;
+    }
+    100% {
+        background-position: 468px 0;
+    }
+}
+
+/* The actual image */
+.lazy-image-content {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: inherit;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Fade in when loaded */
+.lazy-image-content.loaded {
+    opacity: 1;
+}
+
+/* Error state UI */
+.lazy-image-wrapper.error {
+    background-color: #ffebee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed #ffcdd2;
+}
+
+.lazy-image-error {
+    font-size: 1.5rem;
+    color: #f44336;
+}

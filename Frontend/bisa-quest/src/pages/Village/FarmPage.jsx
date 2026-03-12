@@ -9,13 +9,7 @@ import Button from "../../components/Button";
 import DialogueBox from "../../components/instructions/DialogueBox";
 import BookCollectModal from "../../game/components/BookCollectModal";
 
-import NandoCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
-import VicenteCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_1.png";
-import LigayaCharacter from "../../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
-import farmBackground from "../../assets/images/environments/scenario/farm.png";
-import emptyFarmBg from "../../assets/items/emptyFarm.png";
-import wateringCanWater from "../../assets/items/wateringCan-water.png";
-import carabaoPlowImg from "../../assets/items/carabao_nag-araro.png";
+import AssetManifest from "../../services/AssetManifest";
 
 import { ITEM_IMAGE_MAP } from "../../game/dragDropConstants";
 import {
@@ -29,20 +23,20 @@ import "./FarmPage.css";
 
 // ── NPC map ───────────────────────────────────────────────────────────────────
 const NPC_IMAGES = {
-    village_npc_3: NandoCharacter,
-    village_npc_1: VicenteCharacter,
-    village_npc_2: LigayaCharacter,
+    village_npc_3: AssetManifest.village.npcs.nando,
+    village_npc_1: AssetManifest.village.npcs.vicente,
+    village_npc_2: AssetManifest.village.npcs.ligaya,
 };
 
 
 
 // ── Placed-state image overrides (imageKey → active asset) ───────────────────
 const ZONE_PLACED_IMAGES = {
-    wateringcan: wateringCanWater,
-    watering_can: wateringCanWater,
-    regadera: wateringCanWater,
-    kabaw: carabaoPlowImg,
-    carabao: carabaoPlowImg,
+    wateringcan: AssetManifest.village.wateringCanWater, // Fallback if added later, else undefined
+    watering_can: AssetManifest.village.wateringCanWater, 
+    regadera: AssetManifest.village.wateringCanWater,
+    kabaw: AssetManifest.village.carabaoPlowImg,
+    carabao: AssetManifest.village.carabaoPlowImg,
 };
 
 // ── Farm drop zone registry ───────────────────────────────────────────────────
@@ -144,12 +138,12 @@ const FarmPage = () => {
     const questSequence = location.state?.questSequence || [];
     const seqIndex = location.state?.sequenceIndex ?? 0;
 
-    const NpcImage = NPC_IMAGES[npcId] || NandoCharacter;
+    const NpcImage = NPC_IMAGES[npcId] || AssetManifest.village.npcs.nando;
 
     // ── State ──────────────────────────────────────────────────────────────────
     const [loading, setLoading] = useState(true);
     const [fetchError, setFetchError] = useState(null);
-    const [background, setBackground] = useState(farmBackground);
+    const [background, setBackground] = useState(AssetManifest.village.scenarios.farm);
     const [flowGroups, setFlowGroups] = useState({});
     const [compItems, setCompItems] = useState([]);
     const [ddWordCards, setDdWordCards] = useState([]);
@@ -269,9 +263,9 @@ const FarmPage = () => {
 
                 // ── Set background based on scene_type ──
                 if (scene === "empty_farm") {
-                    setBackground(emptyFarmBg);
+                    setBackground(AssetManifest.village.scenarios.emptyFarm);
                 } else {
-                    setBackground(farmBackground);
+                    setBackground(AssetManifest.village.scenarios.farm);
                 }
 
                 setLoading(false);
@@ -546,14 +540,14 @@ const FarmPage = () => {
     // ── Render ────────────────────────────────────────────────────────────────
     if (loading) return (
         <div className="fp-container">
-            <img src={farmBackground} alt="" className="fp-background" draggable={false} />
+            <img src={AssetManifest.village.scenarios.farm} alt="" className="fp-background" draggable={false} />
             <div className="fp-loading"><span>Gi-load ang dula...</span></div>
         </div>
     );
 
     if (fetchError) return (
         <div className="fp-container">
-            <img src={farmBackground} alt="" className="fp-background" draggable={false} />
+            <img src={AssetManifest.village.scenarios.farm} alt="" className="fp-background" draggable={false} />
             <div className="fp-loading">
                 <p style={{ color: "#fff", fontFamily: "'Fredoka One', cursive", fontSize: 18 }}>{fetchError}</p>
                 <Button variant="back" onClick={handleBack}>← Back</Button>

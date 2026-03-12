@@ -7,8 +7,7 @@ import Button from "../../components/Button";
 import CharacterCard from "../../components/CharacterCard";
 import ParticleEffects from "../../components/ParticleEffects";
 import FogTransition from "../../components/FogTransition";
-import Boy from "../../assets/images/characters/Boy.png";
-import Girl from "../../assets/images/characters/Girl.png";
+import AssetManifest from "../../services/AssetManifest";
 import "./CharacterSelectionPage.css";
 
 const CharacterSelectionPage = () => {
@@ -20,8 +19,8 @@ const CharacterSelectionPage = () => {
     const [loadingCharId, setLoadingCharId] = useState(null);
 
     const characters = [
-        { id: "roberto", gender: "Roberto", image: Boy },
-        { id: "roberta", gender: "Roberta", image: Girl },
+        { id: "roberto", gender: "Roberto", image: AssetManifest.characters.boy },
+        { id: "roberta", gender: "Roberta", image: AssetManifest.characters.girl },
     ];
 
     const handleBack = () => navigate("/dashboard");

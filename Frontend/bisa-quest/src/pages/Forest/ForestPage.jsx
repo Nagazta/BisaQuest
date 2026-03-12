@@ -12,13 +12,7 @@ import {
     markCompleteDismissed,
     isCompleteDismissed,
 } from "../../utils/playerStorage";
-import ForestBackground from "../../assets/images/environments/Forest.png";
-import BoyCharacter from "../../assets/images/characters/Boy.png";
-import GirlCharacter from "../../assets/images/characters/Girl.png";
-import DiwataCharacter from "../../assets/images/characters/diwata.png";
-import ForestGuardianCharacter from "../../assets/images/characters/forest_guardian.png";
-import WanderingBardCharacter from "../../assets/images/characters/wandering_bard.png";
-import DeerCharacter from "../../assets/images/characters/deer.png";
+import AssetManifest from "../../services/AssetManifest";
 import bgMusic from "../../assets/music/bg-music.mp3";
 import QuestStartModal from "../../components/QuestStartModal";
 import ProgressBar from "../../components/ProgressBar";
@@ -27,10 +21,10 @@ import FogTransition from "../../components/FogTransition";
 import "./ForestPage.css";
 
 const FOREST_NPCS = [
-    { npcId: "forest_npc_1", name: "Lunti", x: 25, y: 35, character: ForestGuardianCharacter, showName: true, quest: "synonym_antonym" },
-    // { npcId: "forest_npc_2", name: "Ronaldo", x: 65, y: 45, character: WanderingBardCharacter,   showName: true, quest: "synonym_antonym" }, // TODO: no quests yet
-    { npcId: "forest_npc_3", name: "Diwata", x: 50, y: 70, character: DiwataCharacter, showName: true, quest: "synonym_antonym" },
-    { npcId: "forest_npc_4", name: "Deer", x: 40, y: 50, character: DeerCharacter, showName: true, quest: "drag_drop" },
+    { npcId: "forest_npc_1", name: "Lunti", x: 25, y: 35, character: AssetManifest.forest.npcs.forest_guardian, showName: true, quest: "synonym_antonym" },
+    // { npcId: "forest_npc_2", name: "Ronaldo", x: 65, y: 45, character: AssetManifest.forest.npcs.wandering_bard,   showName: true, quest: "synonym_antonym" }, // TODO: no quests yet
+    { npcId: "forest_npc_3", name: "Diwata", x: 50, y: 70, character: AssetManifest.forest.npcs.diwata, showName: true, quest: "synonym_antonym" },
+    { npcId: "forest_npc_4", name: "Deer", x: 40, y: 50, character: AssetManifest.forest.npcs.deer, showName: true, quest: "drag_drop" },
 ];
 
 const shuffleFirst = (arr) => {
@@ -60,7 +54,7 @@ const ForestPage = () => {
     const [fogActive, setFogActive] = useState(false);
     const [learnedWords, setLearnedWords] = useState([]);
 
-    const PlayerCharacter = character === "roberta" ? GirlCharacter : BoyCharacter;
+    const PlayerCharacter = character === "roberta" ? AssetManifest.characters.girl : AssetManifest.characters.boy;
 
     // ── Background music ──────────────────────────────────────────────────────
     useEffect(() => {
@@ -179,7 +173,7 @@ const ForestPage = () => {
             <EnvironmentPage
                 key={refreshKey}
                 environmentType="forest"
-                backgroundImage={ForestBackground}
+                backgroundImage={AssetManifest.forest.background}
                 npcs={forestNPCs}
                 onNPCClick={handleNPCClick}
                 playerCharacter={PlayerCharacter}

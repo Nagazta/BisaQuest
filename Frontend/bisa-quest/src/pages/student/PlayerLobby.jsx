@@ -2,9 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import InteractiveMap from "../../components/InteractiveMap";
-import Village from "../../assets/images/cardsImage/village.png";
-import Forest from "../../assets/images/cardsImage/forest.png";
-import Kingdom from "../../assets/images/cardsImage/kingdom.png";
+import AssetManifest from "../../services/AssetManifest";
 import QuestStartModal from "../../components/QuestStartModal";
 import SaveProgressModal from "../../components/progress/SaveProgressModal";
 import Notification from "../../components/Notification";
@@ -93,9 +91,9 @@ const PlayerLobby = () => {
     const handleSwitchPlayer = () => { setShowExitModal(false); startNewGame(); navigate("/login"); };
 
     const quests = [
-        { id: 1, title: "Vocabulary Quest",          subtitle: "Village Theme", description: "Explore the village and learn new words", progress: moduleProgress[1] || 0, image: Village },
-        { id: 2, title: "Synonyms & Antonyms Quest", subtitle: "Forest Theme",  description: "Journey through the magical forest",      progress: moduleProgress[2] || 0, image: Forest  },
-        { id: 3, title: "Compound Quest",            subtitle: "Castle Theme",  description: "Master word building in the Castle",      progress: moduleProgress[3] || 0, image: Kingdom },
+        { id: 1, title: "Vocabulary Quest",          subtitle: "Village Theme", description: "Explore the village and learn new words", progress: moduleProgress[1] || 0, image: AssetManifest.ui.villageCard },
+        { id: 2, title: "Synonyms & Antonyms Quest", subtitle: "Forest Theme",  description: "Journey through the magical forest",      progress: moduleProgress[2] || 0, image: AssetManifest.ui.forestCard  },
+        { id: 3, title: "Compound Quest",            subtitle: "Castle Theme",  description: "Master word building in the Castle",      progress: moduleProgress[3] || 0, image: AssetManifest.ui.kingdomCard },
     ];
 
     // ── Quest lock logic ──────────────────────────────────────────────────────

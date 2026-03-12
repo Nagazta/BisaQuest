@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import "./Login.css";
 import "./GlobalEffects.css";
-import boy from "../assets/images/characters/Boy.png";
-import girl from "../assets/images/characters/Girl.png";
+import AssetManifest from "../services/AssetManifest";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import ParticleEffects from "../components/ParticleEffects";
@@ -113,8 +112,8 @@ const Login = () => {
             <ParticleEffects enableMouseTrail={true} />
 
             <div className="character-container">
-                <img src={boy}  alt="Boy Character"  className="character boy-character" />
-                <img src={girl} alt="Girl Character" className="character girl-character" />
+                <img src={AssetManifest.characters.boy}  alt="Boy Character"  className="character boy-character" />
+                <img src={AssetManifest.characters.girl} alt="Girl Character" className="character girl-character" />
             </div>
 
             <div className="login-card-wrapper">

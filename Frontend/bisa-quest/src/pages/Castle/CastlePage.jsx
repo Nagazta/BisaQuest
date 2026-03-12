@@ -6,12 +6,7 @@ import Button from "../../components/Button";
 import ParticleEffects from "../../components/ParticleEffects";
 import { environmentApi } from "../../services/environmentServices.js";
 import { getPlayerId } from "../../utils/playerStorage";
-import CastleBackground from "../../assets/images/environments/castle.png";
-import BoyCharacter from "../../assets/images/characters/Boy.png";
-import GirlCharacter from "../../assets/images/characters/Girl.png";
-import ManongKwillImg from "../../assets/images/characters/castle-manong-kwill.png";
-import GuloImg from "../../assets/images/characters/gulo.png";
-import PrincessHaraImg from "../../assets/images/characters/castle-princess-hara.png";
+import AssetManifest from "../../services/AssetManifest";
 import bgMusic from "../../assets/music/bg-music.mp3";
 import QuestStartModal from "../../components/QuestStartModal";
 import "./CastlePage.css";
@@ -20,9 +15,9 @@ const API = import.meta.env.VITE_API_URL !== undefined ? import.meta.env.VITE_AP
 const CASTLE_HINT = "Enter the Castle! Complete all tasks to master compound words";
 
 const CASTLE_NPCS = [
-    { npcId: "castle_npc_3", name: "Gulo", x: 28, y: 60, character: GuloImg, showName: true, quest: "compound_words", scenePath: "/student/library" },
-    { npcId: "castle_npc_1", name: "Princess Hara", x: 50, y: 45, character: PrincessHaraImg, showName: true, quest: "compound_words", scenePath: "/student/library" },
-    { npcId: "castle_npc_2", name: "Manong Kwill", x: 72, y: 55, character: ManongKwillImg, showName: true, quest: "compound_words", scenePath: "/student/library" },
+    { npcId: "castle_npc_3", name: "Gulo", x: 28, y: 60, character: AssetManifest.castle.npcs.gulo, showName: true, quest: "compound_words", scenePath: "/student/library" },
+    { npcId: "castle_npc_1", name: "Princess Hara", x: 50, y: 45, character: AssetManifest.castle.npcs.princess_hara, showName: true, quest: "compound_words", scenePath: "/student/library" },
+    { npcId: "castle_npc_2", name: "Manong Kwill", x: 72, y: 55, character: AssetManifest.castle.npcs.manong_kwill, showName: true, quest: "compound_words", scenePath: "/student/library" },
 ];
 
 const CastlePage = () => {
@@ -92,7 +87,7 @@ const CastlePage = () => {
         return () => window.removeEventListener('keydown', onKey, true);
     }, []);
 
-    const PlayerCharacter = character === "roberta" ? GirlCharacter : BoyCharacter;
+    const PlayerCharacter = character === "roberta" ? AssetManifest.characters.girl : AssetManifest.characters.boy;
 
     // ── Music ─────────────────────────────────────────────────────────────────
     useEffect(() => {
@@ -195,12 +190,12 @@ const CastlePage = () => {
             <EnvironmentPage
                 key={refreshKey}
                 environmentType="castle"
-                backgroundImage={CastleBackground}
+                backgroundImage={AssetManifest.castle.background}
                 npcs={castleNPCs}
                 onNPCClick={handleNPCClick}
                 playerCharacter={PlayerCharacter}
                 characterType={character === "roberta" ? "girl" : "boy"}
-                debugMode={true}
+                debugMode={false}
                 playerId={playerId}
                 hintMessage={CASTLE_HINT}
             />
