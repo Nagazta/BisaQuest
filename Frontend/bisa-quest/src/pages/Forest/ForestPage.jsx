@@ -27,44 +27,44 @@ import FogTransition from "../../components/FogTransition";
 import "./ForestPage.css";
 
 const FOREST_NPCS = [
-    { npcId: "forest_npc_1", name: "Lunti",   x: 25, y: 35, character: ForestGuardianCharacter, showName: true, quest: "synonym_antonym" },
+    { npcId: "forest_npc_1", name: "Lunti", x: 25, y: 35, character: ForestGuardianCharacter, showName: true, quest: "synonym_antonym" },
     // { npcId: "forest_npc_2", name: "Ronaldo", x: 65, y: 45, character: WanderingBardCharacter,   showName: true, quest: "synonym_antonym" }, // TODO: no quests yet
-    { npcId: "forest_npc_3", name: "Diwata",  x: 50, y: 70, character: DiwataCharacter,           showName: true, quest: "synonym_antonym" },
-    { npcId: "forest_npc_4", name: "Deer",    x: 40, y: 50, character: DeerCharacter,             showName: true, quest: "drag_drop" },
+    { npcId: "forest_npc_3", name: "Diwata", x: 50, y: 70, character: DiwataCharacter, showName: true, quest: "synonym_antonym" },
+    { npcId: "forest_npc_4", name: "Deer", x: 40, y: 50, character: DeerCharacter, showName: true, quest: "drag_drop" },
 ];
 
 const shuffleFirst = (arr) => {
     const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[a[i], a[j]] = [a[j], a[i]]; }
     return a[0];
 };
 
 const ForestPage = () => {
-    const navigate  = useNavigate();
-    const location  = useLocation();
-    const audioRef  = useRef(null);
-    const playerId  = getPlayerId();
-    const API       = import.meta.env.VITE_API_URL || "";
+    const navigate = useNavigate();
+    const location = useLocation();
+    const audioRef = useRef(null);
+    const playerId = getPlayerId();
+    const API = import.meta.env.VITE_API_URL || "";
 
     const { character, loading: charLoading } = useCharacterPreference();
 
-    const [forestNPCs,       setForestNPCs]       = useState([]);
-    const [refreshKey,       setRefreshKey]        = useState(0);
-    const [selectedNPC,      setSelectedNPC]       = useState(null);
-    const [showModal,        setShowModal]         = useState(false);
-    const [showExitConfirm,  setShowExitConfirm]   = useState(false);
-    const [isMuted,          setIsMuted]           = useState(false);
-    const [questLoading,     setQuestLoading]      = useState(false);
-    const [forestProgress,   setForestProgress]    = useState(0);
-    const [showCompleteModal,setShowCompleteModal] = useState(false);
-    const [fogActive,        setFogActive]         = useState(false);
-    const [learnedWords,     setLearnedWords]      = useState([]);
+    const [forestNPCs, setForestNPCs] = useState([]);
+    const [refreshKey, setRefreshKey] = useState(0);
+    const [selectedNPC, setSelectedNPC] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+    const [showExitConfirm, setShowExitConfirm] = useState(false);
+    const [isMuted, setIsMuted] = useState(false);
+    const [questLoading, setQuestLoading] = useState(false);
+    const [forestProgress, setForestProgress] = useState(0);
+    const [showCompleteModal, setShowCompleteModal] = useState(false);
+    const [fogActive, setFogActive] = useState(false);
+    const [learnedWords, setLearnedWords] = useState([]);
 
     const PlayerCharacter = character === "roberta" ? GirlCharacter : BoyCharacter;
 
     // ── Background music ──────────────────────────────────────────────────────
     useEffect(() => {
-        const play = () => { if (audioRef.current) { audioRef.current.volume = 0.3; audioRef.current.play().catch(() => {}); } };
+        const play = () => { if (audioRef.current) { audioRef.current.volume = 0.3; audioRef.current.play().catch(() => { }); } };
         play();
         const onInteract = () => { play(); document.removeEventListener("click", onInteract); };
         document.addEventListener("click", onInteract);
@@ -121,11 +121,11 @@ const ForestPage = () => {
     };
 
     // ── NPC / modal handlers ──────────────────────────────────────────────────
-    const handleNPCClick     = (npc) => { setSelectedNPC(npc); setShowModal(true); };
-    const handleCloseModal   = () => { setShowModal(false); setSelectedNPC(null); };
-    const handleBackClick    = () => setShowExitConfirm(true);
-    const handleConfirmExit  = () => { setShowExitConfirm(false); navigate("/dashboard"); };
-    const handleCancelExit   = () => setShowExitConfirm(false);
+    const handleNPCClick = (npc) => { setSelectedNPC(npc); setShowModal(true); };
+    const handleCloseModal = () => { setShowModal(false); setSelectedNPC(null); };
+    const handleBackClick = () => setShowExitConfirm(true);
+    const handleConfirmExit = () => { setShowExitConfirm(false); navigate("/dashboard"); };
+    const handleCancelExit = () => setShowExitConfirm(false);
 
     // ── Start quest ───────────────────────────────────────────────────────────
     const handleStartQuest = async () => {
@@ -183,6 +183,7 @@ const ForestPage = () => {
                 npcs={forestNPCs}
                 onNPCClick={handleNPCClick}
                 playerCharacter={PlayerCharacter}
+                characterType={character === "roberta" ? "girl" : "boy"}
                 debugMode={false}
                 playerId={playerId}
             />
