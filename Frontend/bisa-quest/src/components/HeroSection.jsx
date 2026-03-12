@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import "./HeroSection.css";
 import AssetManifest from "../services/AssetManifest";
+import ParticleEffects from "../components/ParticleEffects";
 
 const HeroSection = () => {
   const navigate = useNavigate();
