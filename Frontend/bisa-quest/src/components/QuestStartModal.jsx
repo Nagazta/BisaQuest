@@ -78,13 +78,13 @@ const QuestStartModal = ({
       // VILLAGE NPCS
       // =====================
       case "village_npc_1":
-        return "Learn more about fruits and the market with Vicente!";
+        return "Kuyogi si Vicente magkat-on og fruits and market vocabulary!";
 
       case "village_npc_2":
-        return "Help Ligaya clean the house while learning Bisaya house vocabulary!";
+        return "Tabangi si Ligaya sa paglimpyo sa balay while learning Bisaya house words!";
 
       case "village_npc_3":
-        return "Learn farm vocabulary with Nando while helping him with his farming tasks!";
+        return "Uban ta ni Nando while enjoying farming tasks and learning farm vocabulary!";
 
       // =====================
       // FOREST NPCS
