@@ -39,7 +39,7 @@ const NPC_IMAGES = {
 // ── Background map ────────────────────────────────────────────────────────────
 const SCENE_BG = {
   living_room: AssetManifest.village.scenarios.house,
-  living_room_dirty: AssetManifest.village.scenarios.house, // TODO: Missing dirty image, using default house
+  living_room_dirty: AssetManifest.village.scenarios.livingRoomDirty,
   living_room_spill: AssetManifest.village.scenarios.livingRoomSpill,
 };
 
