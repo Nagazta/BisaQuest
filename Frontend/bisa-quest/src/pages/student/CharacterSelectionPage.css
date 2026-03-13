@@ -27,10 +27,12 @@
 
 .selection-prompt {
     font-family: 'Pixelify Sans', sans-serif;
-    font-size: 42px;
+    font-size: 45px;
     font-weight: bold;
     color: #3a2008;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 2px 2px 0px rgba(255, 255, 255, 0.6);
+    text-shadow:
+        2px 2px 0 #FCD765,
+        3px 3px 8px rgba(252, 215, 101, 0.6);
     margin-bottom: 40px;
 }
 
