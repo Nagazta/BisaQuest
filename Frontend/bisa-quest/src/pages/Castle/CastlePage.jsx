@@ -3,16 +3,16 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useCharacterPreference } from "../../hooks/useCharacterPreference";
 import EnvironmentPage from "../../components/EnvironmentPage";
 import Button from "../../components/Button";
+import ProgressBar from "../../components/ProgressBar";
 import ParticleEffects from "../../components/ParticleEffects";
 import { environmentApi } from "../../services/environmentServices.js";
-import { getPlayerId } from "../../utils/playerStorage";
+import { getPlayerId, getProgress } from "../../utils/playerStorage";
 import AssetManifest from "../../services/AssetManifest";
 import bgMusic from "../../assets/music/bg-music.mp3";
 import QuestStartModal from "../../components/QuestStartModal";
 import "./CastlePage.css";
 
 const API = import.meta.env.VITE_API_URL !== undefined ? import.meta.env.VITE_API_URL : (import.meta.env.PROD ? '' : 'http://localhost:5000');
-const CASTLE_HINT = "Enter the Castle! Complete all tasks to master compound words";
 
 const CASTLE_NPCS = [
     { npcId: "castle_npc_3", name: "Gulo", x: 28, y: 60, character: AssetManifest.castle.npcs.gulo, showName: true, quest: "compound_words", scenePath: "/student/library" },
@@ -36,6 +36,7 @@ const CastlePage = () => {
     const [showExitConfirm, setShowExitConfirm] = useState(false);
     const [showSummaryButton, setShowSummaryButton] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
+    const [castleProgress, setCastleProgress] = useState(0);
 
     // ── NPC position editor (dev tool) ────────────────────────────────────────
     const [npcEditMode, setNpcEditMode] = useState(false);
@@ -109,6 +110,7 @@ const CastlePage = () => {
     const initializeCastle = async () => {
         if (!playerId) return;
         setCastleNPCs(CASTLE_NPCS);
+        loadCastleProgress();
         try {
             await environmentApi.initializeEnvironment("castle", playerId);
             await checkEnvironmentProgress();
@@ -122,6 +124,12 @@ const CastlePage = () => {
             const result = await res.json();
             if (result.success && (result.data.progress ?? 0) >= 75) setShowSummaryButton(true);
         } catch (e) { console.error(e); }
+    };
+
+    const loadCastleProgress = () => {
+        const progress = getProgress();
+        const pct = progress.castle_progress || 0;
+        setCastleProgress(pct);
     };
 
     const checkAndShowSummary = async () => {
@@ -182,6 +190,9 @@ const CastlePage = () => {
         <div className="castle-page-wrapper">
             <audio ref={audioRef} loop><source src={bgMusic} type="audio/mpeg" /></audio>
             <ParticleEffects enableMouseTrail={false} />
+            <div className="village-progress-bar-wrap">
+                <ProgressBar progress={castleProgress} variant="castle" showLabel={true} />
+            </div>
             <button className="music-toggle-button" onClick={toggleMute}>{isMuted ? "🔇" : "🔊"}</button>
 
             <Button variant="back" className="back-button-castle-overlay" onClick={handleBackClick}>← Back</Button>
@@ -197,7 +208,6 @@ const CastlePage = () => {
                 characterType={character === "roberta" ? "girl" : "boy"}
                 debugMode={false}
                 playerId={playerId}
-                hintMessage={CASTLE_HINT}
             />
 
             {/* NPC position editor overlay */}
