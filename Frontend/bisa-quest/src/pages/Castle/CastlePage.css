@@ -14,6 +14,15 @@
     z-index: 100;
 }
 
+.village-progress-bar-wrap {
+    position: fixed;
+    top: 70px;
+    left: 30px;
+    z-index: 50;
+    width: 200px;
+    pointer-events: none;
+}
+
 .environment-hint-box {
     position: absolute;
     bottom: 20px;
@@ -60,9 +69,53 @@
     color: white;
 }
 
-.decorative-clouds { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-.cloud { position: absolute; background: white; border-radius: 50px; opacity: 0.6; }
-.cloud-1 { width: 200px; height: 60px; top: 10%; left: -10%; animation: float-cloud 20s linear infinite; }
-.cloud-2 { width: 150px; height: 45px; top: 20%; left: -5%; animation: float-cloud 28s linear infinite 5s; }
-.cloud-3 { width: 180px; height: 55px; top: 8%; left: -15%; animation: float-cloud 35s linear infinite 10s; }
-@keyframes float-cloud { from { transform: translateX(-100%); } to { transform: translateX(110vw); } }
+.decorative-clouds {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.cloud {
+    position: absolute;
+    background: white;
+    border-radius: 50px;
+    opacity: 0.6;
+}
+
+.cloud-1 {
+    width: 200px;
+    height: 60px;
+    top: 10%;
+    left: -10%;
+    animation: float-cloud 20s linear infinite;
+}
+
+.cloud-2 {
+    width: 150px;
+    height: 45px;
+    top: 20%;
+    left: -5%;
+    animation: float-cloud 28s linear infinite 5s;
+}
+
+.cloud-3 {
+    width: 180px;
+    height: 55px;
+    top: 8%;
+    left: -15%;
+    animation: float-cloud 35s linear infinite 10s;
+}
+
+@keyframes float-cloud {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(110vw);
+    }
+}
