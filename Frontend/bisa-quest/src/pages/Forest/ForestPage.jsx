@@ -23,8 +23,8 @@ import "./ForestPage.css";
 const FOREST_NPCS = [
     { npcId: "forest_npc_1", name: "Lunti", x: 25, y: 35, character: AssetManifest.forest.npcs.forest_guardian, showName: true, quest: "synonym_antonym" },
     // { npcId: "forest_npc_2", name: "Ronaldo", x: 65, y: 45, character: AssetManifest.forest.npcs.wandering_bard,   showName: true, quest: "synonym_antonym" }, // TODO: no quests yet
-    { npcId: "forest_npc_3", name: "Diwata", x: 50, y: 70, character: AssetManifest.forest.npcs.diwata, showName: true, quest: "synonym_antonym" },
-    { npcId: "forest_npc_4", name: "Deer", x: 40, y: 50, character: AssetManifest.forest.npcs.deer, showName: true, quest: "drag_drop" },
+    { npcId: "forest_npc_3", name: "Diwata", x: 72, y: 35, character: AssetManifest.forest.npcs.diwata, showName: true, quest: "synonym_antonym" },
+    { npcId: "forest_npc_4", name: "Deer", x: 45, y: 45, character: AssetManifest.forest.npcs.deer, showName: true, quest: "drag_drop" },
 ];
 
 const shuffleFirst = (arr) => {
