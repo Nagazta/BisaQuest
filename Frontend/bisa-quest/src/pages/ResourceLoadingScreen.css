@@ -1,0 +1,194 @@
+/* pages/ResourceLoadingScreen.css */
+
+/* ── Root ────────────────────────────────── */
+.rls-root {
+    background: #2c1a0e;
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    overflow: hidden;
+    font-family: "Press Start 2P", "Courier New", monospace;
+}
+
+/* ── Background ──────────────────────────── */
+.rls-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: brightness(0.7);
+}
+
+.rls-bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(20, 10, 5, 0.45);
+}
+
+/* ── Logo ────────────────────────────────── */
+.rls-logo {
+    position: relative;
+    z-index: 2;
+    max-width: 220px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.8));
+    margin-bottom: 8px;
+}
+
+/* ── Ring wrapper ────────────────────────── */
+.rls-ring-wrapper {
+    position: relative;
+    z-index: 2;
+    width: 420px;
+    height: 420px;
+}
+
+.rls-ring-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Outer decorative ring */
+.rls-ring-deco {
+    fill: none;
+    stroke: rgba(180, 130, 60, 0.3);
+    stroke-width: 3;
+    stroke-dasharray: 6 4;
+}
+
+/* Track (background circle) */
+.rls-ring-track {
+    fill: none;
+    stroke: rgba(0, 0, 0, 0.5);
+    stroke-width: 14;
+}
+
+/* Progress fill */
+.rls-ring-fill {
+    fill: none;
+    stroke: url(#ringGradient);
+    stroke-width: 14;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.3s ease-out;
+    filter: drop-shadow(0 0 6px rgba(245, 180, 60, 0.8));
+}
+
+/* Inner content (character + %) */
+.rls-ring-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.rls-character {
+    width: 210px;
+    height: 210px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
+}
+
+.rls-pct {
+    font-size: 16px;
+    color: #f5c842;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+    letter-spacing: 0.05em;
+}
+
+/* ── Loading label ───────────────────────── */
+.rls-loading-label {
+    position: relative;
+    z-index: 2;
+    font-size: 16px;
+    color: #f5e6c0;
+    letter-spacing: 0.15em;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+    margin: 0;
+    animation: rls-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes rls-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.5; }
+}
+
+/* ── Asset name ──────────────────────────── */
+.rls-asset-name {
+    position: relative;
+    z-index: 2;
+    font-size: 6px;
+    color: rgba(245, 220, 160, 0.6);
+    text-align: center;
+    margin: 0;
+    max-width: 340px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ── Tip ribbon ──────────────────────────── */
+.rls-tip-ribbon {
+    position: relative;
+    z-index: 2;
+    margin-top: 20px;
+    padding: 10px 24px;
+    background: rgba(30, 18, 5, 0.75);
+    border-top: 2px solid rgba(180, 130, 60, 0.6);
+    border-bottom: 2px solid rgba(180, 130, 60, 0.6);
+    max-width: min(500px, 88vw);
+    text-align: center;
+}
+
+.rls-tip-ribbon::before,
+.rls-tip-ribbon::after {
+    content: "❖";
+    color: #c8922a;
+    margin: 0 8px;
+    font-style: normal;
+}
+
+.rls-tip {
+    display: inline;
+    font-size: 10px;
+    color: #f0d898;
+    line-height: 1.8;
+    margin: 0;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.rls-tip--visible {
+    opacity: 1;
+}
+
+/* ── SVG gradient def ────────────────────── */
+/* Injected inline via a hidden SVG so CSS can reference it */
+
+/* ── Responsive ──────────────────────────── */
+@media (max-width: 480px) {
+    .rls-ring-wrapper {
+        width: 180px;
+        height: 180px;
+    }
+
+    .rls-character {
+        width: 88px;
+        height: 88px;
+    }
+
+    .rls-logo {
+        max-width: 200px;
+    }
+}

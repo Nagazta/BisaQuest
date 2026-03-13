@@ -62,8 +62,8 @@ const Login = () => {
                 return;
             }
 
-            console.log('✅ Player created, navigating to character selection...');
-            navigate("/student/characterSelection");
+            console.log('✅ Player created, navigating to loading screen...');
+            navigate("/loading");
 
         } catch (err) {
             console.error("❌ Error starting game:", err);
@@ -78,7 +78,7 @@ const Login = () => {
     const handleContinueExisting = () => {
         console.log('✅ Continuing as:', savedPlayer?.nickname);
         setShowAccountModal(false);
-        navigate("/dashboard");
+        navigate("/loading", { state: { redirectTo: "/dashboard" } });
     };
 
     // ── UC-1.2: New Game — wipe everything, show nickname form ────────────────
@@ -125,7 +125,7 @@ const Login = () => {
                     )}
 
                     <p className="welcome-subtitle">
-                        Start your Cebuano learning adventure!
+                        Sugdi ang imong adventure!
                     </p>
 
                     <form onSubmit={handlePlayNow} className="login-form-container">
@@ -158,7 +158,7 @@ const Login = () => {
 
                     <div className="game-info">
                         <p className="info-text">
-                            Your progress will be saved automatically
+                            Ang imong progress ma-save automatically!
                         </p>
                     </div>
                 </div>

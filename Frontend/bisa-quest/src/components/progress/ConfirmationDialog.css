@@ -34,8 +34,8 @@
 }
 
 .confirmation-title {
-  font-family: 'Georgia', serif;
-  font-size: 24px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 16px;
   font-weight: bold;
   color: #b91c1c;
   text-align: center;
@@ -43,11 +43,11 @@
 }
 
 .confirmation-message {
-  font-family: 'Georgia', serif;
-  font-size: 16px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
   color: #5D4037;
   text-align: center;
-  line-height: 1.5;
+  line-height: 2;
   margin: 0;
 }
 
