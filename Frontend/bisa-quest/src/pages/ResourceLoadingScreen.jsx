@@ -7,14 +7,14 @@ import AssetManifest from "../services/AssetManifest";
 import "./ResourceLoadingScreen.css";
 
 const TIPS = [
-    "Pagkat-on og Cebuano samtang naglakaw sa kalibutan...",
-    "Bisitaha ang Baryo ug tabangan si Ligaya...",
-    "Ang Kagubatan nagtago og daghang mga sekreto...",
-    "Ang Kastilyo ni Hara nagahulat sa inyong pag-abot...",
-    "Basaha, Tun-i, Daoga — ang imong pakigsugal nagsugod na!",
-    "Pag-amping sa mga misteryo sa kagubatan...",
-    "Ang matinud-anon nga magtutuon makaabot sa Trono...",
+    "Welcome sa BisaQuest!",
+    "Sugdi na ang imong pakigsugal — Basaha, Tun-i, Daoga!",
+    "Tulo ka kalibutan ang nagahulat kanimo...",
+    "Pagkat-on og Cebuano samtang nagadula!",
+    "Ang Baryo, Kagubatan, ug Kastilyo naghulat...",
     "Sakay na, ang adventure nagsugod!",
+    "Pilion ang imong karakter ug sugdi!",
+    "Ang matinud-anon nga magtutuon makaabot sa Trono...",
 ];
 
 export default function ResourceLoadingScreen() {
