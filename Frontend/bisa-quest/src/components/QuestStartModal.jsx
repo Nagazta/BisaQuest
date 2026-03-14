@@ -105,13 +105,13 @@ const QuestStartModal = ({
       // CASTLE NPCS
       // =====================
       case "castle_npc_1":
-        return "*to edit (castle npc 1)";
+        return "Kuyugi si Princess Hara para ma pares ang words sa iyang garden ug library";
 
       case "castle_npc_2":
-        return "*to edit (castle npc 2)";
+        return "Tabangan si Manong Kwill sa gawas sa kastilyo para ma pares ang mga compound words";
 
       case "castle_npc_3":
-        return "*to edit (castle npc 3)";
+        return "Sulod sa kwarto ni Gulo, tabangan siya para ma pares ang mga pulong nga iyang gikuha";
 
       default:
         return "Complete the challenge to help the village!";
