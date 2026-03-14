@@ -40,6 +40,7 @@ const CastlePage = () => {
     const [showCompleteModal, setShowCompleteModal] = useState(false);
     const [learnedWords, setLearnedWords] = useState([]);
     const [fogActive, setFogActive] = useState(false);
+    const [castleProgress, setCastleProgress] = useState(getProgress().castle_progress || 0);
 
     // ── NPC position editor (dev tool) ────────────────────────────────────────
     const [npcEditMode, setNpcEditMode] = useState(false);
@@ -113,6 +114,7 @@ const CastlePage = () => {
     const loadCastleProgress = () => {
         const progress = getProgress();
         const pct = progress.castle_progress || 0;
+        setCastleProgress(pct);
         if (pct >= 100 && !isCompleteDismissed("castle")) {
             const words = getLearnedWords("castle");
             setLearnedWords(words);
@@ -138,12 +140,6 @@ const CastlePage = () => {
             if (result.success && (result.data.progress ?? 0) >= 75) setShowSummaryButton(true);
         } catch (e) { console.error(e); }
     };
-
-    // const loadCastleProgress = () => {
-    //     const progress = getProgress();
-    //     const pct = progress.castle_progress || 0;
-    //     setCastleProgress(pct);
-    // };
 
     const checkAndShowSummary = async () => {
         if (!playerId) return;
