@@ -34,6 +34,11 @@ import villageEntry10 from "../../../assets/images/cutscene/village/village_10.p
 // ── Forest artwork ────────────────────────────────────────────────────────────
 import guloHideout from "../../../assets/images/cutscene/forest/gulo-hideout.png";
 
+// ── Castle artwork ────────────────────────────────────────────────────────────
+import castle1 from "../../../assets/images/cutscene/castle/castle_1.png";
+import castle2 from "../../../assets/images/cutscene/castle/castle_2.png";
+import castle3 from "../../../assets/images/cutscene/castle/castle_3.png";
+import castle4 from "../../../assets/images/cutscene/castle/castle_4.png";
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  CUTSCENES map
@@ -130,6 +135,35 @@ export const CUTSCENES = {
                 image: villageEntry10,
                 text: 'He points toward the dark tree line. "Ang Forest Fragment nagpaabut. The path is open now — but only para sa mga brave enough to follow." Nabuak ang mga kahoy. A soft light beckons from within.',
             },
+        ],
+    },
+
+
+    // ── Castle entry (first visit → /student/castle) ─────────────────────────
+    castle_entry: {
+        key: "castle_entry",
+        destination: "/student/castle",
+        finalLabel: "Enter the Castle →",
+        fogColor: "#c8a96e",
+        slides: [
+            { image: castle4, text: "Miabot ka na sa Kastilyo — ang pinakamahal nga lugar sa Baryo Bulawan. Dako ug tag-as ang mga tore niini, ug ang bato nga pader kay nagpasiga sa kahayag sa gabii." },
+            { image: castle1, text: "Dinhi sa Kastilyo, gitipon ang labing bililhon nga mga pulong. Apan tungod ni Gulo, nagkatag ang mga pahina sa Libro — ang mga compound words kay nahisagol ug nawagtang." },
+            { image: castle3, text: "Ang mga pulong sa atong kastilyo kay nagkagubot. Kinahanglan nimo ipares ang mga pulong aron mabawi ang ilang kahulogan."},
+            { image: castle3, text: "Tulo ka tawo ang nanginahanglan sa imong tabang dinhi — si Princess Hara, Manong Kwill, ug si Gulo mismo. Tabangan sila ug sulbaron ang mga compound words aron mapugos ang mga pahina sa Libro nga mobalik." },
+        ],
+    },
+
+
+    // ── Castle complete (all 3 NPCs done → /dashboard) ───────────────────────
+    castle_complete: {
+        key: "castle_complete",
+        destination: "/dashboard",
+        finalLabel: "Return to Dashboard →",
+        fogColor: "#c8a96e",
+        slides: [
+            { image: castle1, text: "Nahuman na! Ang tanan nga mga compound words sa Kastilyo kay nabalik na sa Libro. Ang mga pahina kay nagtipon-tipon pag-usab." },
+            { image: castle2, text: "Ang Kastilyo kay malinaw na pag-usab — ang mga pulong kay buhi na."},
+            { image: castle3, text: "Ang Libro sa mga Pulong kay kumpleto na. Ang tanan nga fragments gikan sa Baryo, Kagubatan, ug Kastilyo kay natipon na, ug nalipay na usab ang mga tawo." },
         ],
     },
 

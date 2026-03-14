@@ -1,23 +1,24 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Navigate } from "react-router-dom";
 import { useCharacterPreference } from "../../hooks/useCharacterPreference";
 import EnvironmentPage from "../../components/EnvironmentPage";
 import Button from "../../components/Button";
 import ProgressBar from "../../components/ProgressBar";
 import ParticleEffects from "../../components/ParticleEffects";
 import { environmentApi } from "../../services/environmentServices.js";
-import { getPlayerId, getProgress } from "../../utils/playerStorage";
+import { getPlayerId, getProgress, getLearnedWords, markCompleteDismissed, isCompleteDismissed, hasCutsceneSeen } from "../../utils/playerStorage";
+import EnvironmentCompleteModal from "../../components/EnvironmentCompleteModal";
+import FogTransition from "../../components/FogTransition";
 import AssetManifest from "../../services/AssetManifest";
 import bgMusic from "../../assets/music/bg-music.mp3";
 import QuestStartModal from "../../components/QuestStartModal";
 import "./CastlePage.css";
 
 const API = import.meta.env.VITE_API_URL !== undefined ? import.meta.env.VITE_API_URL : (import.meta.env.PROD ? '' : 'http://localhost:5000');
-
 const CASTLE_NPCS = [
-    { npcId: "castle_npc_3", name: "Gulo", x: 28, y: 60, character: AssetManifest.castle.npcs.gulo, showName: true, quest: "compound_words", scenePath: "/student/library" },
-    { npcId: "castle_npc_1", name: "Princess Hara", x: 50, y: 45, character: AssetManifest.castle.npcs.princess_hara, showName: true, quest: "compound_words", scenePath: "/student/library" },
-    { npcId: "castle_npc_2", name: "Manong Kwill", x: 72, y: 55, character: AssetManifest.castle.npcs.manong_kwill, showName: true, quest: "compound_words", scenePath: "/student/library" },
+    { npcId: "castle_npc_3", name: "Gulo", x: 28, y: 60, character: AssetManifest.castle.npcs.gulo, showName: true, quest: "compound_words", scenePath: "/castle/scene" },
+    { npcId: "castle_npc_1", name: "Princess Hara", x: 50, y: 45, character: AssetManifest.castle.npcs.princess_hara, showName: true, quest: "compound_words", scenePath: "/castle/scene" },
+    { npcId: "castle_npc_2", name: "Manong Kwill", x: 72, y: 55, character: AssetManifest.castle.npcs.manong_kwill, showName: true, quest: "compound_words", scenePath: "/castle/scene" },
 ];
 
 const CastlePage = () => {
@@ -36,7 +37,9 @@ const CastlePage = () => {
     const [showExitConfirm, setShowExitConfirm] = useState(false);
     const [showSummaryButton, setShowSummaryButton] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
-    const [castleProgress, setCastleProgress] = useState(0);
+    const [showCompleteModal, setShowCompleteModal] = useState(false);
+    const [learnedWords, setLearnedWords] = useState([]);
+    const [fogActive, setFogActive] = useState(false);
 
     // ── NPC position editor (dev tool) ────────────────────────────────────────
     const [npcEditMode, setNpcEditMode] = useState(false);
@@ -107,6 +110,16 @@ const CastlePage = () => {
     // ── Init ──────────────────────────────────────────────────────────────────
     useEffect(() => { initializeCastle(); }, [refreshKey]);
 
+    const loadCastleProgress = () => {
+        const progress = getProgress();
+        const pct = progress.castle_progress || 0;
+        if (pct >= 100 && !isCompleteDismissed("castle")) {
+            const words = getLearnedWords("castle");
+            setLearnedWords(words);
+            setShowCompleteModal(true);
+        }
+    };
+
     const initializeCastle = async () => {
         if (!playerId) return;
         setCastleNPCs(CASTLE_NPCS);
@@ -126,11 +139,11 @@ const CastlePage = () => {
         } catch (e) { console.error(e); }
     };
 
-    const loadCastleProgress = () => {
-        const progress = getProgress();
-        const pct = progress.castle_progress || 0;
-        setCastleProgress(pct);
-    };
+    // const loadCastleProgress = () => {
+    //     const progress = getProgress();
+    //     const pct = progress.castle_progress || 0;
+    //     setCastleProgress(pct);
+    // };
 
     const checkAndShowSummary = async () => {
         if (!playerId) return;
@@ -156,6 +169,21 @@ const CastlePage = () => {
     const handleBackClick = () => setShowExitConfirm(true);
     const handleConfirmExit = () => { setShowExitConfirm(false); navigate("/dashboard"); };
     const handleCancelExit = () => setShowExitConfirm(false);
+
+    // ── "Adto sa Dashboard!" button handler ──────────────────────────────────
+    const handleGoToDashboard = () => {
+        markCompleteDismissed("castle");
+        setShowCompleteModal(false);
+        setFogActive(true);
+    };
+
+    const handleFogDone = () => {
+        if (!hasCutsceneSeen("castle_complete")) {
+            navigate("/cutscene/castle_complete", { replace: true });
+        } else {
+            navigate("/dashboard", { replace: true });
+        }
+    };
 
     const handleViewSummary = async () => {
         if (!playerId) return;
@@ -184,6 +212,7 @@ const CastlePage = () => {
         navigate(selectedNPC.scenePath, { state: { npcId: selectedNPC.npcId, npcName: selectedNPC.name, questId: npcQuestId, returnTo: "/student/castle" } });
     };
 
+    if (!hasCutsceneSeen("castle_entry")) return <Navigate to="/cutscene/castle_entry" replace />;
     if (charLoading) return <div className="castle-page-wrapper"><div className="loading-message">Loading...</div></div>;
 
     return (
@@ -197,6 +226,17 @@ const CastlePage = () => {
 
             <Button variant="back" className="back-button-castle-overlay" onClick={handleBackClick}>← Back</Button>
             {showSummaryButton && <Button variant="primary" className="view-summary-button" onClick={handleViewSummary}>View Summary</Button>}
+
+            <FogTransition active={fogActive} onDone={handleFogDone} label="✨ Quest Complete..." />
+
+            <EnvironmentCompleteModal
+                isOpen={showCompleteModal}
+                environment="castle"
+                learnedWords={learnedWords}
+                nextEnv="Dashboard"
+                onStay={() => { markCompleteDismissed("castle"); setShowCompleteModal(false); }}
+                onAdvance={handleGoToDashboard}
+            />
 
             <EnvironmentPage
                 key={refreshKey}
@@ -230,7 +270,7 @@ const CastlePage = () => {
             </div>
 
             {showModal && selectedNPC && (
-                <QuestStartModal npcName={selectedNPC.name} npcImage={selectedNPC.character} questType={selectedNPC.quest} onStart={handleStartQuest} onClose={handleCloseModal} />
+                <QuestStartModal npcName={selectedNPC.name} npcImage={selectedNPC.character} npcId={selectedNPC.npcId} questType={selectedNPC.quest} onStart={handleStartQuest} onClose={handleCloseModal} />
             )}
 
             {showExitConfirm && (
