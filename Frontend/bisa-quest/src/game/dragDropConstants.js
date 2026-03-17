@@ -19,6 +19,7 @@ import HandfanImg from "../assets/items/hand_fan.png";
 import electricFanImg from "../assets/items/electricfanRed.png";
 import bucketImg from "../assets/items/bucket.png";
 import lampImg from "../assets/items/lamp.png";
+import BookImg from "../assets/items/book.png";
 
 //Item images — Kitchen
 import PotImg from "../assets/items/pot.png";
@@ -77,6 +78,8 @@ export const ITEM_IMAGE_MAP = {
   Bentilador: electricFanImg,
   bucket: bucketImg,
   lamp: lampImg,
+  book: BookImg,
+  libro: BookImg,
 
   // Kitchen
   pot: PotImg,

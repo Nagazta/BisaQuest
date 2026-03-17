@@ -251,3 +251,91 @@
     transform: translateX(-50%) translateY(-5px);
   }
 }
+
+/* ── Completed item dot variant ──────────────────────────────── */
+.house-hover-region--done .house-item-dot,
+.house-item-dot--done {
+  background-color: #22c55e;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
+}
+
+/* ── Completed checkmark in tooltip ─────────────────────────── */
+.house-hover-tooltip-done {
+  display: block;
+  margin-top: 4px;
+  font-size: 10px;
+  color: #22c55e;
+  font-weight: bold;
+}
+
+/* ── Mini-game incoming hint (rightSlot of DialogueBox) ──────── */
+.house-quest-incoming {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 12px;
+  border: 1.5px solid rgba(252, 215, 101, 0.4);
+  border-radius: 10px;
+  background: rgba(252, 215, 101, 0.08);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.house-quest-incoming-bisaya {
+  font-family: 'Fredoka One', cursive;
+  font-size: 13px;
+  color: #fcd765;
+  line-height: 1.3;
+}
+
+.house-quest-incoming-english {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 10px;
+  color: #c8b99a;
+  font-style: italic;
+  line-height: 1.3;
+}
+
+/* ── Inline mini-game hint inside dialogue text ──────────────── */
+.house-quest-incoming-inline {
+  display: block;
+  margin-top: 8px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 12px;
+  color: #fcd765;
+  opacity: 0.85;
+  letter-spacing: 0.3px;
+  animation: house-loading-pulse 1.8s ease-in-out infinite;
+}
+
+/* ── Scene sprites (visible item images on background) ───────── */
+.house-scene-sprite {
+  position: absolute;
+  object-fit: contain;
+  z-index: 6;
+  cursor: pointer;
+  transform: translateX(-50%) translateY(-100%);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+  transition: transform 0.15s ease, filter 0.15s ease;
+  pointer-events: auto;
+}
+
+.house-scene-sprite:hover {
+  transform: translateX(-50%) translateY(-100%) scale(1.1);
+  filter: drop-shadow(0 6px 14px rgba(252, 215, 101, 0.55));
+}
+
+.house-scene-sprite--active {
+  filter: drop-shadow(0 6px 14px rgba(252, 215, 101, 0.8)) brightness(1.1);
+  transform: translateX(-50%) translateY(-100%) scale(1.05);
+}
+
+.house-scene-sprite--done {
+  filter: drop-shadow(0 4px 8px rgba(34, 197, 94, 0.55)) brightness(0.9);
+}
+
+.house-scene-sprite--debug {
+  outline: 2px solid #fcd765;
+  outline-offset: 2px;
+}
