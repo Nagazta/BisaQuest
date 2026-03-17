@@ -1,0 +1,22 @@
+/* ── Bilingual instruction in dialogue ──────────────────────── */
+.house-bilingual-instruction {
+  text-align: center;
+  line-height: 1.6;
+}
+
+.house-bilingual-bisaya {
+  display: block;
+  font-weight: 700;
+  color: #fcd765;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 16px;
+}
+
+.house-bilingual-english {
+  display: block;
+  font-weight: 400;
+  color: #e8e0d0;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 14px;
+  margin-top: 2px;
+}

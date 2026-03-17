@@ -1,0 +1,189 @@
+/* ── Dev grid overlay ────────────────────────────────────────── */
+.house-grid-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 200;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 6px 14px;
+  border-radius: 10px;
+  border: 2px solid #3a2008;
+  background: #fffef5;
+  color: #3a2008;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #3a2008;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.house-grid-btn--on {
+  background: #fcd765;
+  color: #3a2008;
+}
+
+.house-grid-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #3a2008;
+}
+
+.house-grid-overlay {
+  position: absolute;
+  inset: 0 0 90px 0;
+  /* stop at dialogue bar */
+  z-index: 90;
+  pointer-events: all;
+  cursor: crosshair;
+}
+
+/* Grid lines */
+.house-grid-line {
+  position: absolute;
+  background: rgba(252, 215, 101, 0.35);
+}
+
+.house-grid-line--v {
+  top: 0;
+  bottom: 0;
+  width: 1px;
+}
+
+.house-grid-line--h {
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+
+/* Axis labels */
+.house-grid-label {
+  position: absolute;
+  font-family: 'Pixelify Sans', monospace;
+  font-size: 10px;
+  color: rgba(255, 255, 220, 0.75);
+  pointer-events: none;
+  transform: translateX(-50%);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.house-grid-label--y {
+  transform: translateY(-50%);
+}
+
+/* Live crosshair */
+.house-grid-crosshair {
+  position: absolute;
+  background: rgba(255, 80, 80, 0.7);
+  pointer-events: none;
+}
+
+.house-grid-crosshair--v {
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateX(-50%);
+}
+
+.house-grid-crosshair--h {
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
+/* Coordinate tooltip */
+.house-grid-coord {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fcd765;
+  font-family: 'Pixelify Sans', monospace;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid #fcd765;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 99;
+}
+
+/* Debug inspector */
+.house-debug-inspector {
+  position: absolute;
+  bottom: 120px;
+  right: 20px;
+  background: rgba(15, 15, 15, 0.95);
+  border: 2px solid #555;
+  border-radius: 12px;
+  padding: 16px;
+  width: 260px;
+  color: #eee;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  z-index: 100;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.house-debug-inspector-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.house-debug-inspector-close:hover {
+  color: #fff;
+}
+
+.house-debug-inspector-title {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 18px;
+  color: #fcd765;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #444;
+}
+
+.house-debug-inspector-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.house-debug-inspector-key {
+  color: #888;
+}
+
+.house-debug-inspector-val {
+  font-weight: bold;
+  color: #fff;
+}
+
+.house-debug-inspector-val--code {
+  font-family: monospace;
+  color: #2ecc71;
+}
+
+.house-debug-inspector-divider {
+  height: 1px;
+  background: #444;
+  margin: 10px 0;
+}
+
+.house-debug-inspector-copy {
+  text-align: center;
+  color: #3498db;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.house-debug-inspector-copy:hover {
+  background: rgba(52, 152, 219, 0.2);
+}
