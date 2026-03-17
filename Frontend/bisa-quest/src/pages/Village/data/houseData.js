@@ -128,6 +128,14 @@ export const LIVING_ROOM_LABELS = [
     x: 51.5, y: 47, w: 18, h: 16,
   },
   {
+    id: "book",
+    labelBisaya: "Libro",
+    labelEnglish: "Book",
+    descriptionBisaya: "Gamiton sa pagbasa og mga istorya.",
+    descriptionEnglish: "Used for reading stories.",
+    x: 54, y: 56, w: 13, h: 8,
+  },
+  {
     id: "lamesa",
     labelBisaya: "Lamesa",
     labelEnglish: "Table",
@@ -156,9 +164,17 @@ export const LIVING_ROOM_LABELS = [
     id: "bookshelf",
     labelBisaya: "Estante",
     labelEnglish: "Bookshelf",
-    descriptionBisaya: "Gamiton sa pagbutang og libro ug uban pang butang.",
-    descriptionEnglish: "Used for storing books and other belongings.",
+    descriptionBisaya: "Gamiton sa pagbutang og libro",
+    descriptionEnglish: "Used for storing books",
     x: 85, y: 36, w: 14, h: 50,
+  },
+  {
+    id: "mop",
+    labelBisaya: "Mop",
+    labelEnglish: "Mop",
+    descriptionBisaya: "Gigamit sa paglimpyo sa salog gamit ang tubig. Mas epektibo sa silhig.",
+    descriptionEnglish: "Used to clean the floor with water. More effective than a dry broom.",
+    x: 45, y: 44, w: 4, h: 16,   // ← adjust this to wherever you want it
   },
   // ── Floor & ceiling ───────────────────────────────────────────────────────
   {
