@@ -72,15 +72,33 @@ const ITEM_QUESTS = {
 
     // ── Planggana ──────────────────────────────────────────────────────────────
     planggana: {
-        mechanic: "item_association",
-        instructionBisaya: "Unsay gigamit sa paglimpyo sa salog?",
-        instructionEnglish: "Which is used for cleaning the floor?",
-        items: [
-            { id: "q_mop", label: "Mop", imageKey: "mop", isCorrect: true },
-            { id: "q_pillow", label: "Unan", imageKey: "pillow", isCorrect: false },
-            { id: "q_pot", label: "Kaldero", imageKey: "kaldero", isCorrect: false },
-            { id: "q_towel", label: "Toalya", imageKey: "towel", isCorrect: true },
-        ],
+        mechanic: "wash_and_mop",
+        instructionBisaya: "Hugasi ug i-mop ang salog!",
+        instructionEnglish: "Wash the mop and clean the floor!",
+        washStage: {
+            background: "none",
+            basinImage: "plangganaWater",
+            basinX: 50,
+            basinY: 60,
+            basinW: 24,
+            basinH: 15,
+            mopStartX: 20,
+            mopStartY: 40,
+        },
+        mopStage: {
+            background: "spill",   // uses livingRoomSpill
+            dirtSpots: [
+                { id: "spill_1", x: 30, y: 85, w: 10, h: 8 },
+                { id: "spill_2", x: 45, y: 88, w: 12, h: 8 },
+                { id: "spill_3", x: 60, y: 85, w: 12, h: 8 },
+                { id: "spill_4", x: 75, y: 80, w: 10, h: 8 },
+                { id: "spill_5", x: 40, y: 75, w: 9, h: 6 },
+                { id: "spill_6", x: 52, y: 77, w: 9, h: 6 },
+                { id: "spill_7", x: 65, y: 71, w: 8, h: 6 },
+                { id: "spill_8", x: 35, y: 65, w: 8, h: 6 },
+                { id: "spill_9", x: 48, y: 64, w: 8, h: 6 }
+            ],
+        }
     },
 
     toalya: {
@@ -381,6 +399,257 @@ const SceneDragGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) 
                     </div>
                 </div>
 
+            </div>
+        </div>
+    );
+};
+
+// ── WashAndMopGame ───────────────────────────────────────────────────────────
+const WashAndMopGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) => {
+    const dialogue = buildQuestDialogue(quest, item);
+
+    const [introStep, setIntroStep] = useState(0);
+    const [stage, setStage] = useState("intro"); // intro | wash | mop | success
+    
+    // Wash stage
+    const [mopWashPos, setMopWashPos] = useState({ x: quest.washStage.mopStartX, y: quest.washStage.mopStartY });
+    const [washCount, setWashCount] = useState(0);
+    const [isInBasin, setIsInBasin] = useState(false);
+    
+    // Mop stage
+    const [swept, setSwept] = useState(new Set());
+    const [mopFloorPos, setMopFloorPos] = useState({ x: 20, y: 55 });
+    const [showClean, setShowClean] = useState(false);
+
+    // Shared
+    const [isDragging, setIsDragging] = useState(false);
+    const containerRef = useRef(null);
+    const dragOffset = useRef({ x: 0, y: 0 });
+
+    const basinImg = AssetManifest.village.items[quest.washStage.basinImage];
+    const mopImg = ITEM_IMAGE_MAP["mop"] || null;
+
+    // ── Pointer drag handlers ──────────────────────────────────────────────────
+    const handlePointerDown = (e, type) => {
+        if (stage !== "wash" && stage !== "mop") return;
+        e.preventDefault();
+        const rect = e.currentTarget.getBoundingClientRect();
+        dragOffset.current = {
+            x: e.clientX - rect.left - rect.width / 2,
+            y: e.clientY - rect.top - rect.height / 2,
+        };
+        setIsDragging(true);
+        e.currentTarget.setPointerCapture(e.pointerId);
+    };
+
+    const handlePointerMove = (e, type) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const container = containerRef.current;
+        if (!container) return;
+        const rect = container.getBoundingClientRect();
+        const x = ((e.clientX - dragOffset.current.x - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - dragOffset.current.y - rect.top) / rect.height) * 100;
+        
+        if (stage === "wash") {
+            const cx = Math.min(Math.max(x, 5), 95);
+            const cy = Math.min(Math.max(y, 5), 95);
+            setMopWashPos({ x: cx, y: cy });
+            
+            // Check overlap with basin 
+            const bX = 50;
+            const bY = 50;
+            const bW = 40; // reduced slightly to require actual dragging in and out
+            const bH = 40;
+            
+            const overlapping = cx > bX - bW/2 && cx < bX + bW/2 && cy > bY - bH/2 && cy < bY + bH/2;
+            
+            if (overlapping && !isInBasin) {
+                setIsInBasin(true);
+                setWashCount(prev => {
+                    const next = prev + 1;
+                    if (next >= 3) {
+                        setTimeout(() => {
+                            setIsDragging(false);
+                            setStage("mop");
+                        }, 200);
+                    }
+                    return next;
+                });
+            } else if (!overlapping && isInBasin) {
+                setIsInBasin(false);
+            }
+        } else if (stage === "mop") {
+            const cx = Math.min(Math.max(x, 5), 90);
+            const cy = Math.min(Math.max(y, 5), 85);
+            setMopFloorPos({ x: cx, y: cy });
+
+            // Check overlap with dirt/spills
+            quest.mopStage.dirtSpots.forEach(spot => {
+                if (swept.has(spot.id)) return;
+                const overlap =
+                    cx + 4 > spot.x && cx - 4 < spot.x + spot.w &&
+                    cy + 4 > spot.y && cy - 4 < spot.y + spot.h;
+                if (overlap) {
+                    setSwept(prev => {
+                        const next = new Set([...prev, spot.id]);
+                        if (next.size >= quest.mopStage.dirtSpots.length) {
+                            setTimeout(() => {
+                                setShowClean(true);
+                                setStage("success");
+                            }, 300);
+                        }
+                        return next;
+                    });
+                }
+            });
+        }
+    };
+
+    const handlePointerUp = (e) => {
+        setIsDragging(false);
+        if (e && e.currentTarget && e.pointerId) {
+            e.currentTarget.releasePointerCapture(e.pointerId);
+        }
+    };
+
+    const handleIntroNext = () => {
+        if (introStep < dialogue.length - 1) {
+            setIntroStep(prev => prev + 1);
+        } else {
+            setStage("wash");
+        }
+    };
+
+    const dialogueText = stage === "success"
+        ? { bisayaText: "Limpyo na ang salog! Maayong pagka-mop!", englishText: "The floor is clean! Well mopped!" }
+        : stage === "wash"
+            ? { bisayaText: `Hugasi ang mop sa planggana! (${washCount}/3)`, englishText: `Wash the mop in the basin! (${washCount}/3)` }
+            : dialogue[introStep];
+
+    const bgImage = (stage === "intro" || stage === "wash") ? basinImg : AssetManifest.village.scenarios.house;
+
+    return (
+        <div className="iqm-overlay">
+            <div className={`iqm-modal iqm-modal--scene`}>
+                <button className="iqm-close" onClick={onClose}>✕</button>
+
+                <div className="iqm-header">
+                    <div className="iqm-header-text">
+                        <div className="iqm-header-bisaya">{item.labelBisaya}</div>
+                        <div className="iqm-header-english">{item.labelEnglish}</div>
+                    </div>
+                </div>
+
+                <div className="iqm-scene-canvas" ref={containerRef}>
+                    {/* Background image always renders */}
+                    <img
+                        src={bgImage}
+                        alt="Background"
+                        className={`iqm-scene-bg ${showClean ? "iqm-scene-bg--reveal" : ""}`}
+                        draggable={false}
+                        style={{ objectFit: (stage === "intro" || stage === "wash") ? "contain" : "cover" }}
+                    />
+
+                    {/* Wash Stage Render */}
+                    {stage === "wash" && (
+                        <>
+                            <div
+                                className={`iqm-scene-broom ${isDragging ? "iqm-scene-broom--dragging" : ""}`}
+                                style={{
+                                    left: `${mopWashPos.x}%`,
+                                    top: `${mopWashPos.y}%`,
+                                    transform: "translate(-50%, -50%) scale(1.5)",
+                                    cursor: isDragging ? "grabbing" : "grab"
+                                }}
+                                onPointerDown={(e) => handlePointerDown(e, "wash")}
+                                onPointerMove={(e) => handlePointerMove(e, "wash")}
+                                onPointerUp={handlePointerUp}
+                                onPointerCancel={handlePointerUp}
+                            >
+                                {mopImg && <img src={mopImg} alt="Mop" className="iqm-scene-broom-img" style={{width: 180, height: 180}} draggable={false} />}
+                            </div>
+
+                            {!isDragging && (
+                                <div className="iqm-drag-indicator" style={{ top: "35%", left: "50%" }}>
+                                    <div className="iqm-drag-hand">👆</div>
+                                </div>
+                            )}
+                        </>
+                    )}
+
+                    {/* Mop Stage Render */}
+                    {stage === "mop" && !showClean && (
+                        <>
+                            {quest.mopStage.dirtSpots.map(spot => {
+                                const isSwept = swept.has(spot.id);
+                                return (
+                                    <div
+                                        key={spot.id}
+                                        className={`iqm-dirt-spot iqm-dirt-spot--spill ${isSwept ? "iqm-dirt-spot--swept" : ""}`}
+                                        style={{
+                                            left: `${spot.x}%`,
+                                            top: `${spot.y}%`,
+                                            width: `${spot.w}%`,
+                                            height: `${spot.h}%`
+                                        }}
+                                    />
+                                );
+                            })}
+                            <div className="iqm-sweep-progress">
+                                {quest.mopStage.dirtSpots.map((spot, i) => (
+                                    <div key={i} className={`iqm-sweep-pip ${swept.has(spot.id) ? "iqm-sweep-pip--done" : ""}`} />
+                                ))}
+                            </div>
+                            <div
+                                className={`iqm-scene-broom ${isDragging ? "iqm-scene-broom--dragging" : ""}`}
+                                style={{
+                                    left: `${mopFloorPos.x}%`, // using tip of broom
+                                    top: `${mopFloorPos.y}%`,
+                                    transform: "translate(-20%, -80%)", // offset so cursor is near mop head
+                                    cursor: isDragging ? "grabbing" : "grab"
+                                }}
+                                onPointerDown={(e) => handlePointerDown(e, "mop")}
+                                onPointerMove={(e) => handlePointerMove(e, "mop")}
+                                onPointerUp={handlePointerUp}
+                                onPointerCancel={handlePointerUp}
+                            >
+                                {mopImg && <img src={mopImg} alt="Mop" className="iqm-scene-broom-img" draggable={false} />}
+                            </div>
+                            {!isDragging && swept.size === 0 && (
+                                <div className="iqm-drag-indicator" style={{ top: "35%", left: "50%" }}>
+                                    <div className="iqm-drag-hand">👆</div>
+                                </div>
+                            )}
+                        </>
+                    )}
+
+                    {stage === "success" && showClean && (
+                        <div className="iqm-scene-success-overlay">
+                            <div className="iqm-scene-success-card">
+                                <div className="iqm-scene-success-stars">✨🎊✨</div>
+                                <div className="iqm-scene-success-text">Nasidlak Na!</div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                <div className="iqm-dialogue-row">
+                    <img src={npcImage} alt={npcName} className="iqm-npc-img" draggable={false} />
+                    <div className="iqm-dialogue-bubble">
+                        <div className="iqm-dialogue-speaker">{npcName}</div>
+                        <div className="iqm-dialogue-text">
+                            <span className="iqm-dialogue-bisaya">{dialogueText.bisayaText}</span>
+                            <span className="iqm-dialogue-english">{dialogueText.englishText}</span>
+                        </div>
+                        {stage === "intro" && (
+                            <button className="iqm-next-btn" onClick={handleIntroNext}>▶</button>
+                        )}
+                        {stage === "success" && (
+                            <button className="iqm-next-btn" onClick={() => onComplete(item)}>✓</button>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );
@@ -826,6 +1095,12 @@ const ItemQuestModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
     if (quest.mechanic === "alphabetical_sort") {
         return (
             <AlphabeticalSortGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />
+        );
+    }
+
+    if (quest.mechanic === "wash_and_mop") {
+        return (
+            <WashAndMopGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />
         );
     }
 
