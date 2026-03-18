@@ -612,13 +612,17 @@
 
 .iqm-drag-hand {
     font-size: 32px;
-    margin-top: 4px; /* Slight visual adjust for emoji center */
+    margin-top: 4px;
+    /* Slight visual adjust for emoji center */
 }
 
 @keyframes iqm-bounce-drag {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translate(-50%, -50%) scale(1);
     }
+
     50% {
         transform: translate(-50%, -50%) scale(1.15);
     }

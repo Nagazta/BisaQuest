@@ -34,6 +34,8 @@ import farmBackground from "../assets/images/environments/scenario/farm.png";
 import emptyFarmBg from "../assets/items/emptyFarm.png";
 import LigayaSweating from "../assets/images/characters/Ligaya_gealimut-an.png";
 import LigayaWorried from "../assets/images/characters/Ligaya_worried.png";
+import bookshelfBg from "../assets/images/environments/scenario/booksfelf.jpg";
+import plangganaWater from '../assets/items/planggana_water.png';
 
 // ── Forest assets ────────────────────────────────────────────────────────────
 import ForestBackground from "../assets/images/environments/Forest.png";
@@ -118,6 +120,10 @@ const AssetManifest = {
             farm: farmBackground,
             emptyFarm: emptyFarmBg,
             livingRoomDirty: livingRoomDirty,
+            bookshelf: bookshelfBg,
+        },
+        items: {
+            plangganaWater: plangganaWater,
         }
     },
 
