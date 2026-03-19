@@ -207,6 +207,14 @@ const HousePage = () => {
               )}
             </span>
           }
+          introItem={
+            dialogueStep === 0
+              ? {
+                  label: activeItem.labelBisaya,
+                  imageKey: activeItem.imageKey || activeItem.id,
+                }
+              : null
+          }
           isNarration={false}
           isPlayer={false}
           showNextButton={true}

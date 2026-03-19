@@ -1,3 +1,5 @@
+import AssetManifest from "../services/AssetManifest";
+
 //Scene backgrounds 
 import houseBackground from "../assets/images/environments/scenario/house.jpg";
 import kitchenBackground from "../assets/images/environments/scenario/kitchen.jpg";
@@ -80,6 +82,7 @@ export const ITEM_IMAGE_MAP = {
   lamp: lampImg,
   book: BookImg,
   libro: BookImg,
+  bag: AssetManifest.village.items.bag,
 
   // Kitchen
   pot: PotImg,
