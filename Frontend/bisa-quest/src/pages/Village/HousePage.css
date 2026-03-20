@@ -339,3 +339,100 @@
   outline: 2px solid #fcd765;
   outline-offset: 2px;
 }
+
+/* ── Door Choice Modal ────────────────────────────────────────── */
+.house-door-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+.house-door-modal {
+  background: #fff;
+  padding: 30px;
+  border-radius: 16px;
+  border: 4px solid #3a2010;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  position: relative;
+  min-width: 300px;
+  animation: house-door-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes house-door-pop {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.house-door-close {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  background: #e74c3c;
+  color: white;
+  border: 2px solid #3a2010;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 0 #c0392b;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.house-door-close:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 #c0392b;
+}
+
+.house-door-title {
+  color: #3a2010;
+  font-family: 'Fredoka One', cursive;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.house-door-subtitle {
+  font-family: 'Pixelify Sans', sans-serif;
+  color: #666;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.house-door-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.house-door-btn {
+  background: #fcd765;
+  border: 3px solid #3a2010;
+  border-radius: 12px;
+  padding: 15px 20px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 18px;
+  color: #3a2010;
+  cursor: pointer;
+  box-shadow: 0 6px 0 #d4a72c;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.house-door-btn:hover {
+  filter: brightness(1.05);
+}
+
+.house-door-btn:active {
+  transform: translateY(6px);
+  box-shadow: 0 0 0 #d4a72c;
+}
