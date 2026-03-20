@@ -57,6 +57,8 @@ import chickenImg from "../assets/items/chicken.jpg";
 // Scene backgrounds - Farm
 import farmBackground from "../assets/images/environments/scenario/farm.png";
 import emptyFarmBackground from "../assets/items/emptyFarm.png";
+import pottedPlantImg from "../assets/items/potted_plant.png";
+import matchstickImg from "../assets/items/matchstick.png";
 
 export const ITEM_IMAGE_MAP = {
   // Living room
@@ -131,6 +133,10 @@ export const ITEM_IMAGE_MAP = {
   kabaw_river: carabaoImg,
   manok: chickenImg,
   chicken: chickenImg,
+
+  // Generated items
+  potted_plant: pottedPlantImg,
+  matchstick: matchstickImg,
 };
 
 // Scene backgrounds

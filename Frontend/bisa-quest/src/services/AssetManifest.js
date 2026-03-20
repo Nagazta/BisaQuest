@@ -40,6 +40,9 @@ import bookshelfBg from "../assets/images/environments/scenario/booksfelf.jpg";
 import plangganaWater from '../assets/items/planggana_water.png';
 import bagPng from '../assets/images/environments/scenario/bag.png';
 import kitchenSinkImg from "../assets/images/environments/scenario/kitchen_sink.jpeg";
+import kitchenStoveBg from "../assets/images/environments/scenario/kitchen_stove.png";
+import barrelEmptyBg from "../assets/images/environments/scenario/kitchen_water_barell_empty.png";
+import barrelFillBg from "../assets/images/environments/scenario/kitchen_water_barell_fill.png";
 import basketBg from "../assets/images/environments/scenario/basket.png";
 import cauldronImg from "../assets/items/couldron.jpg";
 import plateWashImg from "../assets/items/plate.jpg";
@@ -132,6 +135,9 @@ const AssetManifest = {
             livingRoomDirty: livingRoomDirty,
             bookshelf: bookshelfBg,
             kitchenSink: kitchenSinkImg,
+            kitchenStove: kitchenStoveBg,
+            barrelEmpty: barrelEmptyBg,
+            barrelFill: barrelFillBg,
             basket: basketBg,
         },
         items: {

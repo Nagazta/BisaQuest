@@ -18,6 +18,11 @@ import CalendarView from "./minigames/CalendarView";
 import ScheduleEventGame from "./minigames/ScheduleEventGame";
 import WashDishesGame from "./minigames/WashDishesGame";
 import FillBasketGame from "./minigames/FillBasketGame";
+import DragToZoneGame from "./minigames/DragToZoneGame";
+import LightLampGame from "./minigames/LightLampGame";
+import FanSpeedGame from "./minigames/FanSpeedGame";
+import CookingGame from "./minigames/CookingGame";
+import WaterBarrelGame from "./minigames/WaterBarrelGame";
 
 const ITEM_QUESTS = {
     // ── Silhig — scene drag game ───────────────────────────────────────────────
@@ -155,6 +160,243 @@ const ITEM_QUESTS = {
         mechanic: "fill_basket",
         instructionBisaya: "Ibutang ang mga prutas sa basket!",
         instructionEnglish: "Put the fruits into the basket!",
+    },
+
+    // ── LIVING ROOM — drag-to-zone games ──────────────────────────────────────
+    estante_wall: {
+        mechanic: "drag_to_zone",
+        background: AssetManifest.village.scenarios.house,
+        instructionBisaya: "Ibutang ang mga gamit sa estante!",
+        instructionEnglish: "Put the items on the shelf!",
+        successText: "Napuno na ang Estante!",
+        draggableItems: [
+            { id: "dz_book", imageKey: "book", label: "Libro", startX: 20, startY: 80 },
+            { id: "dz_plant", imageKey: "potted_plant", label: "Tanum", startX: 75, startY: 82 },
+        ],
+        dropZone: { x: 12, y: 28, w: 20, h: 14, emoji: "📚", label: "Estante" },
+    },
+    aparador: {
+        mechanic: "drag_to_zone",
+        background: AssetManifest.village.scenarios.house,
+        instructionBisaya: "Ibutang ang sinina sa aparador!",
+        instructionEnglish: "Put the clothes in the cabinet!",
+        successText: "Napuno na ang Aparador!",
+        draggableItems: [
+            { id: "dz_shirt", imageKey: "baro", label: "Baro", startX: 15, startY: 80 },
+            { id: "dz_pants", imageKey: "sinina", label: "Sinina", startX: 50, startY: 82 },
+            { id: "dz_dress", imageKey: "dress", label: "Dress", startX: 85, startY: 78 },
+        ],
+        dropZone: { x: 75, y: 52, w: 14, h: 20, emoji: "🗄️", label: "Aparador" },
+    },
+    lamesa: {
+        mechanic: "drag_to_zone",
+        background: AssetManifest.village.scenarios.house,
+        instructionBisaya: "Andama ang pagkaon sa lamesa!",
+        instructionEnglish: "Set the table with food and dishes!",
+        successText: "Andam na ang Lamesa!",
+        draggableItems: [
+            { id: "dz_plate", imageKey: "plato", label: "Plato", startX: 15, startY: 80 },
+            { id: "dz_cup", imageKey: "tasa", label: "Tasa", startX: 50, startY: 82 },
+            { id: "dz_spoon", imageKey: "plate", label: "Kutsara", startX: 85, startY: 78 },
+        ],
+        dropZone: { x: 48, y: 56, w: 20, h: 14, emoji: "🍽️", label: "Lamesa" },
+    },
+    alfombra: {
+        mechanic: "wash_and_mop",
+        instructionBisaya: "Hugasi ang alfombra ug limpyohi ang salog!",
+        instructionEnglish: "Wash the rug and clean the floor!",
+        washStage: {
+            background: "none",
+            basinImage: "plangganaWater",
+            basinX: 50, basinY: 60, basinW: 24, basinH: 15,
+            mopStartX: 20, mopStartY: 40,
+        },
+        mopStage: {
+            background: "spill",
+            dirtSpots: [
+                { id: "rug_1", x: 35, y: 70, w: 12, h: 8 },
+                { id: "rug_2", x: 50, y: 75, w: 12, h: 8 },
+                { id: "rug_3", x: 65, y: 70, w: 12, h: 8 },
+                { id: "rug_4", x: 42, y: 82, w: 10, h: 7 },
+                { id: "rug_5", x: 58, y: 85, w: 10, h: 7 },
+            ],
+        },
+    },
+    trapo: {
+        mechanic: "wash_and_mop",
+        instructionBisaya: "Hugasi ang trapo ug limpyohi ang salog!",
+        instructionEnglish: "Wash the floor mat and clean the floor!",
+        washStage: {
+            background: "none",
+            basinImage: "plangganaWater",
+            basinX: 50, basinY: 60, basinW: 24, basinH: 15,
+            mopStartX: 20, mopStartY: 40,
+        },
+        mopStage: {
+            background: "spill",
+            dirtSpots: [
+                { id: "mat_1", x: 30, y: 78, w: 10, h: 7 },
+                { id: "mat_2", x: 45, y: 82, w: 12, h: 8 },
+                { id: "mat_3", x: 60, y: 78, w: 12, h: 8 },
+                { id: "mat_4", x: 38, y: 68, w: 8, h: 6 },
+                { id: "mat_5", x: 55, y: 72, w: 8, h: 6 },
+            ],
+        },
+    },
+    bulak: {
+        mechanic: "scene_drag",
+        background: "clean",
+        backgroundClean: "clean",
+        instructionBisaya: "Tubigi ang tanum gamit ang regadera!",
+        instructionEnglish: "Water the plant using the watering can!",
+        draggable: {
+            id: "watering_can_item",
+            label: "Regadera",
+            imageKey: "regadera",
+            startX: 75, startY: 70,
+        },
+        dirtSpots: [
+            { id: "plant_1", x: 13, y: 26, w: 6, h: 6 },
+            { id: "plant_2", x: 14, y: 30, w: 5, h: 4 },
+            { id: "plant_3", x: 16, y: 28, w: 4, h: 4 },
+        ],
+    },
+    litrato: {
+        mechanic: "wipe_character",
+        instructionBisaya: "Limpyohi ang litrato gamit ang trapo!",
+        instructionEnglish: "Clean the picture frame using the rag!",
+        draggable: {
+            id: "rag_item",
+            label: "Trapo",
+            imageKey: "rag",
+            startX: 20, startY: 60,
+        },
+        characterStage: {
+            dirtyImage: AssetManifest.village.scenarios.house,
+            cleanImage: AssetManifest.village.scenarios.house,
+            sweatSpots: [
+                { id: "dust_1", x: 44, y: 34, w: 8, h: 5 },
+                { id: "dust_2", x: 47, y: 37, w: 6, h: 4 },
+                { id: "dust_3", x: 45, y: 36, w: 7, h: 5 },
+            ],
+        },
+    },
+
+    // ── KITCHEN — drag-to-zone games ──────────────────────────────────────────
+    dapogan: {
+        mechanic: "cooking_game",
+        instructionBisaya: "Magluto ta sa dapogan!",
+        instructionEnglish: "Let's cook on the stove!",
+    },
+    drumin: {
+        mechanic: "water_barrel_game",
+        instructionBisaya: "Punoa ang drumin og tubig!",
+        instructionEnglish: "Fill the barrel with water!",
+    },
+    lamesa_kitchen: {
+        mechanic: "drag_to_zone",
+        background: AssetManifest.village.scenarios.kitchen,
+        instructionBisaya: "Andama ang plato sa lamesa!",
+        instructionEnglish: "Prepare the food on the plate!",
+        successText: "Andam na ang Pagkaon!",
+        draggableItems: [
+            { id: "dz_kplate", imageKey: "plato", label: "Plato", startX: 80, startY: 78 },
+            { id: "dz_kcup", imageKey: "tasa", label: "Tasa", startX: 85, startY: 40 },
+            { id: "dz_kladle", imageKey: "sandok", label: "Sandok", startX: 12, startY: 80 },
+        ],
+        dropZone: { x: 18, y: 50, w: 28, h: 22, emoji: "🍽️", label: "Lamesa" },
+    },
+    estante_wala: {
+        mechanic: "drag_to_zone",
+        background: AssetManifest.village.scenarios.kitchen,
+        instructionBisaya: "Ibutang ang mga plato sa estante!",
+        instructionEnglish: "Put the plates on the shelves!",
+        successText: "Napuno na ang Estante!",
+        draggableItems: [
+            { id: "dz_eplate", imageKey: "plato", label: "Plato", startX: 15, startY: 78 },
+            { id: "dz_ecup", imageKey: "tasa", label: "Tasa", startX: 50, startY: 82 },
+            { id: "dz_epot", imageKey: "kaldero", label: "Kaldero", startX: 85, startY: 75 },
+        ],
+        dropZone: { x: 23, y: 25, w: 22, h: 20, emoji: "🍽️", label: "Estante" },
+    },
+    estante_tuo: {
+        mechanic: "drag_to_zone",
+        background: AssetManifest.village.scenarios.kitchen,
+        instructionBisaya: "Ibutang ang mga dako nga gamit sa dakong estante!",
+        instructionEnglish: "Put the big items on the large shelf!",
+        successText: "Napuno na ang Estante!",
+        draggableItems: [
+            { id: "dz_tpot", imageKey: "kaldero", label: "Kaldero", startX: 15, startY: 78 },
+            { id: "dz_tpan", imageKey: "kawali", label: "Kawali", startX: 45, startY: 82 },
+        ],
+        dropZone: { x: 78, y: 22, w: 20, h: 38, emoji: "🗄️", label: "Estante" },
+    },
+
+    // ── BEDROOM — drag-to-zone games ──────────────────────────────────────────
+    katre: {
+        mechanic: "drag_to_zone",
+        background: AssetManifest.village.scenarios.bedroom,
+        instructionBisaya: "Ayoha ang katre! Ibutang ang unan ug habol!",
+        instructionEnglish: "Fix the bed! Place the pillow and blanket!",
+        successText: "Limpyo na ang Katre!",
+        draggableItems: [
+            { id: "dz_pillow", imageKey: "pillow", label: "Unan", startX: 15, startY: 80 },
+            { id: "dz_habol", imageKey: "habol", label: "Habol", startX: 75, startY: 82 },
+        ],
+        dropZone: { x: 22, y: 52, w: 36, h: 18, emoji: "🛏️", label: "Katre" },
+    },
+    lampara_bedroom: {
+        mechanic: "light_lamp",
+        instructionBisaya: "Sindihon ang lampara gamit ang posporo!",
+        instructionEnglish: "Light the lamp using a match!",
+    },
+    drawer_bedroom: {
+        mechanic: "drag_to_zone",
+        background: AssetManifest.village.scenarios.bedroom,
+        instructionBisaya: "Ibutang ang sinina sa kahon!",
+        instructionEnglish: "Put the clothes in the drawer!",
+        successText: "Napuno na ang Kahon!",
+        draggableItems: [
+            { id: "dz_dshirt", imageKey: "baro", label: "Baro", startX: 50, startY: 82 },
+            { id: "dz_dpants", imageKey: "sinina", label: "Sinina", startX: 80, startY: 78 },
+        ],
+        dropZone: { x: 15, y: 58, w: 12, h: 20, emoji: "🗄️", label: "Kahon" },
+    },
+    aparador_bedroom: {
+        mechanic: "drag_to_zone",
+        background: AssetManifest.village.scenarios.bedroom,
+        instructionBisaya: "Ibutang ang sinina sa aparador!",
+        instructionEnglish: "Put the clothes in the cabinet!",
+        successText: "Napuno na ang Aparador!",
+        draggableItems: [
+            { id: "dz_adress", imageKey: "dress", label: "Dress", startX: 15, startY: 80 },
+            { id: "dz_atowel", imageKey: "towel", label: "Tuwalya", startX: 50, startY: 82 },
+            { id: "dz_ashoes", imageKey: "shoes", label: "Sapatos", startX: 85, startY: 78 },
+        ],
+        dropZone: { x: 68, y: 50, w: 14, h: 24, emoji: "🗄️", label: "Aparador" },
+    },
+    bentilador_bedroom: {
+        mechanic: "fan_speed",
+        instructionBisaya: "Pilia ang husto nga speed sa bentilador!",
+        instructionEnglish: "Choose the correct fan speed!",
+        rounds: [
+            { target: 3, bisaya: "Pindota ang numero 3 — Kusog!", english: "Press number 3 — High speed!" },
+            { target: 1, bisaya: "Pindota ang numero 1 — Hinay!", english: "Press number 1 — Low speed!" },
+            { target: 0, bisaya: "Patya ang bentilador!", english: "Turn off the fan!" },
+        ],
+    },
+    bukag_bedroom: {
+        mechanic: "drag_to_zone",
+        background: AssetManifest.village.scenarios.bedroom,
+        instructionBisaya: "Ibutang ang hugaw nga sinina sa bukag!",
+        instructionEnglish: "Put the dirty clothes in the laundry basket!",
+        successText: "Napuno na ang Bukag!",
+        draggableItems: [
+            { id: "dz_lshirt", imageKey: "baro", label: "Baro", startX: 30, startY: 40 },
+            { id: "dz_lpants", imageKey: "sinina", label: "Sinina", startX: 55, startY: 35 },
+            { id: "dz_ltowel", imageKey: "towel", label: "Tuwalya", startX: 40, startY: 78 },
+        ],
+        dropZone: { x: 80, y: 62, w: 16, h: 24, emoji: "🧺", label: "Bukag" },
     },
 
     relo: {
@@ -450,6 +692,21 @@ const ItemQuestModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
     }
     if (quest.mechanic === "fill_basket") {
         return <FillBasketGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
+    }
+    if (quest.mechanic === "drag_to_zone") {
+        return <DragToZoneGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
+    }
+    if (quest.mechanic === "light_lamp") {
+        return <LightLampGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
+    }
+    if (quest.mechanic === "fan_speed") {
+        return <FanSpeedGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
+    }
+    if (quest.mechanic === "cooking_game") {
+        return <CookingGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
+    }
+    if (quest.mechanic === "water_barrel_game") {
+        return <WaterBarrelGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
     }
 
     return <StandardModalGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
