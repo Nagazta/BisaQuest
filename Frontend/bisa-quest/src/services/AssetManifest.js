@@ -28,6 +28,8 @@ import VicenteCharacter from "../assets/images/characters/vocabulary/Village_Que
 
 import marketBackground from "../assets/images/environments/scenario/market_stall.png";
 import houseBackground from "../assets/images/environments/scenario/house.jpg";
+import bedroomBackground from "../assets/images/environments/scenario/bedroom.jpg";
+import kitchenBackground from "../assets/images/environments/scenario/kitchen.jpg";
 import livingRoomSpill from "../assets/images/environments/scenario/living_room_spill.png";
 import livingRoomDirty from "../assets/images/environments/scenario/dirtyLivingRoom.PNG";
 import farmBackground from "../assets/images/environments/scenario/farm.png";
@@ -117,6 +119,8 @@ const AssetManifest = {
         scenarios: {
             market: marketBackground,
             house: houseBackground,
+            bedroom: bedroomBackground,
+            kitchen: kitchenBackground,
             livingRoomSpill: livingRoomSpill,
             farm: farmBackground,
             emptyFarm: emptyFarmBg,

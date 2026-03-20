@@ -1,6 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  HousePage.jsx
-// ─────────────────────────────────────────────────────────────────────────────
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Button from "../../components/Button";
@@ -9,10 +6,10 @@ import AssetManifest from "../../services/AssetManifest";
 import HouseDebugTools from "./components/HouseDebugTools";
 import BilingualText from "./components/BilingualText";
 import ItemQuestModal from "../../game/components/ItemQuestModal";
-import { NPC_IMAGES, LIVING_ROOM_LABELS, INTRO_DIALOGUE, buildDialogue } from "./data/houseData";
-import "./HousePage.css";
+import { NPC_IMAGES, KITCHEN_LABELS, INTRO_DIALOGUE, buildDialogue } from "./data/kitchenData";
+import "./HousePage.css"; // Reuse house CSS for now as the layout is identical
 
-const HousePage = () => {
+const KitchenPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -22,21 +19,17 @@ const HousePage = () => {
 
   const NpcImage = NPC_IMAGES[npcId] || AssetManifest.village.npcs.ligaya;
 
-  // ── State ─────────────────────────────────────────────────────────────────
   const [debugMode, setDebugMode] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState(null);
-  const [introStep, setIntroStep] = useState(0);       // null = intro done
+  const [introStep, setIntroStep] = useState(0);
   const [activeItem, setActiveItem] = useState(null);
   const [dialogueStep, setDialogueStep] = useState(0);
   const [questItem, setQuestItem] = useState(null);
   const [completedItems, setCompletedItems] = useState(new Set());
   const [showDoorChoice, setShowDoorChoice] = useState(false);
 
-  // pendingQuest holds the region we want to open a quest for
-  // after activeItem has been cleared in the same render cycle
   const pendingQuestRef = useRef(null);
 
-  // ── useEffect: open quest once activeItem is null and pendingQuest is set ──
   useEffect(() => {
     if (pendingQuestRef.current && !activeItem) {
       setQuestItem(pendingQuestRef.current);
@@ -44,7 +37,6 @@ const HousePage = () => {
     }
   }, [activeItem]);
 
-  // ── Derived ───────────────────────────────────────────────────────────────
   const introDone = introStep === null;
   const introLine = !introDone ? INTRO_DIALOGUE[introStep] : null;
   const currentLine = introDone && activeItem
@@ -54,7 +46,6 @@ const HousePage = () => {
     ? dialogueStep === buildDialogue(activeItem).length - 1
     : false;
 
-  // ── Handlers ──────────────────────────────────────────────────────────────
   const handleBack = () => navigate(returnTo);
 
   const handleIntroNext = () => {
@@ -83,7 +74,7 @@ const HousePage = () => {
     if (dialogueStep < lines.length - 1) {
       setDialogueStep(s => s + 1);
     } else {
-      if (activeItem.id === "purtahan") {
+      if (activeItem.id === "door_back_kitchen") {
         setShowDoorChoice(true);
       } else {
         pendingQuestRef.current = activeItem;
@@ -106,8 +97,8 @@ const HousePage = () => {
     <div className="house-container">
 
       <img
-        src={AssetManifest.village.scenarios.house}
-        alt="Living Room"
+        src={AssetManifest.village.scenarios.kitchen}
+        alt="Kitchen"
         className="house-background"
         draggable={false}
       />
@@ -117,7 +108,7 @@ const HousePage = () => {
       </Button>
 
       <div className="house-scene-label">
-        {!introDone ? "Story Introduction" : "Explore the Room"}
+        {!introDone ? "Story Introduction" : "Explore the Kitchen"}
       </div>
 
       <HouseDebugTools
@@ -127,8 +118,7 @@ const HousePage = () => {
         setSelectedRegion={setSelectedRegion}
       />
 
-      {/* ── Hover / clickable regions ─────────────────────────────────────── */}
-      {introDone && LIVING_ROOM_LABELS.map(region => {
+      {introDone && KITCHEN_LABELS.map(region => {
         const isDone = completedItems.has(region.id);
         return (
           <div
@@ -170,7 +160,6 @@ const HousePage = () => {
         );
       })}
 
-      {/* ── NPC sprite ────────────────────────────────────────────────────── */}
       <div className="house-npc-wrap">
         <img
           src={NpcImage}
@@ -183,7 +172,6 @@ const HousePage = () => {
         />
       </div>
 
-      {/* ── Intro DialogueBox ─────────────────────────────────────────────── */}
       {introLine && (
         <DialogueBox
           title={introLine.speaker}
@@ -195,8 +183,6 @@ const HousePage = () => {
         />
       )}
 
-      {/* ── Item description DialogueBox ──────────────────────────────────── */}
-      {/* ── Item description DialogueBox ──────────────────────────────────── */}
       {introDone && currentLine && (
         <DialogueBox
           title={currentLine.speaker}
@@ -204,7 +190,7 @@ const HousePage = () => {
             <span className="house-bilingual">
               <span className="house-bilingual-bisaya">{currentLine.bisayaText}</span>
               <span className="house-bilingual-english">{currentLine.englishText}</span>
-              {isLastDialogueLine && activeItem?.id !== "purtahan" && (
+              {isLastDialogueLine && activeItem?.id !== "door_back_kitchen" && (
                 <span className="house-quest-incoming-inline">
                   🎮 Mini-game sunod! · Mini-game coming up!
                 </span>
@@ -226,7 +212,6 @@ const HousePage = () => {
         />
       )}
 
-      {/* ── Idle hint ─────────────────────────────────────────────────────── */}
       {introDone && !activeItem && !questItem && !debugMode && (
         <div className="house-idle-hint">
           <span className="house-idle-hint-bisaya">
@@ -238,7 +223,6 @@ const HousePage = () => {
         </div>
       )}
 
-      {/* ── Item Quest Modal ──────────────────────────────────────────────── */}
       {questItem && (
         <ItemQuestModal
           item={questItem}
@@ -261,15 +245,15 @@ const HousePage = () => {
             <div className="house-door-options">
               <button 
                 className="house-door-btn" 
-                onClick={() => navigate("/student/bedroom", { state: { returnTo: "/student/house" } })}
+                onClick={() => navigate("/student/bedroom", { state: { returnTo: "/student/kitchen" } })}
               >
                 🛏️ Kwarto (Bedroom)
               </button>
               <button 
                 className="house-door-btn" 
-                onClick={() => navigate("/student/kitchen", { state: { returnTo: "/student/house" } })}
+                onClick={() => navigate("/student/house", { state: { returnTo: "/student/kitchen" } })}
               >
-                🍳 Kusina (Kitchen)
+                🛋️ Sala (Living Room)
               </button>
             </div>
           </div>
@@ -280,4 +264,4 @@ const HousePage = () => {
   );
 };
 
-export default HousePage;
+export default KitchenPage;
