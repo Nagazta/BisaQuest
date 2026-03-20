@@ -138,7 +138,13 @@ const ForestPage = () => {
 
         setQuestLoading(false);
         const state = { questId: resolvedQuestId, npcId: selectedNPC.npcId, npcName: selectedNPC.name, returnTo: "/student/forest" };
-        navigate("/forest/scene", { state });
+
+        // Lunti uses the new ForestPondPage (exploration-based); others use ForestScenePage
+        if (selectedNPC.npcId === "forest_npc_1") {
+            navigate("/student/forest-pond", { state });
+        } else {
+            navigate("/forest/scene", { state });
+        }
     };
 
     if (charLoading) return <div className="forest-page-wrapper"><div className="loading-message">Loading...</div></div>;
