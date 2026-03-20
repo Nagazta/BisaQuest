@@ -10,7 +10,7 @@ import { buildQuestDialogue } from "./questHelpers";
 import SceneDragGame from "./minigames/SceneDragGame";
 import WashAndMopGame from "./minigames/WashAndMopGame";
 import SceneDragDropGame from "./minigames/SceneDragDropGame";
-import WipeCharacterGame from "./minigames/WipeCharacterGame";
+import WipePlayerGame from "./minigames/WipePlayerGame";
 import AlphabeticalSortGame from "./minigames/AlphabeticalSortGame";
 import PackBagGame from "./minigames/PackBagGame";
 import AdjustClockGame from "./minigames/AdjustClockGame";
@@ -113,7 +113,7 @@ const ITEM_QUESTS = {
     },
 
     toalya: {
-        mechanic: "wipe_character",
+        mechanic: "wipe",
         instructionBisaya: "Pahiran ang singot ni Ligaya gamit ang toalya!",
         instructionEnglish: "Wipe Ligaya's sweat using the towel!",
         draggable: {
@@ -123,10 +123,16 @@ const ITEM_QUESTS = {
             startX: 20,
             startY: 50,
         },
-        characterStage: {
+        wipeStage: {
+            label: "Wipe the Sweat",
             dirtyImage: AssetManifest.village.npcs.ligaya_sweating,
             cleanImage: AssetManifest.village.npcs.ligaya,
-            sweatSpots: [
+            successLabel: "Presko Na!",
+            successBisaya: "Presko na siya! Maayo kaayo! 🎉",
+            successEnglish: "She's fresh now! Well done! 🎉",
+            remainingBisaya: (count) => `${count} ka singot pa ang nahibilin! Pahiri na!`,
+            remainingEnglish: (count) => `${count} more sweat spots to wipe!`,
+            dirtSpots: [
                 { id: "sweat_1", x: 45, y: 35, w: 10, h: 10 },
                 { id: "sweat_2", x: 55, y: 40, w: 10, h: 10 },
                 { id: "sweat_3", x: 40, y: 45, w: 10, h: 10 },
@@ -262,7 +268,7 @@ const ITEM_QUESTS = {
         ],
     },
     litrato: {
-        mechanic: "wipe_character",
+        mechanic: "wipe",
         instructionBisaya: "Limpyohi ang litrato gamit ang trapo!",
         instructionEnglish: "Clean the picture frame using the rag!",
         draggable: {
@@ -271,13 +277,25 @@ const ITEM_QUESTS = {
             imageKey: "rag",
             startX: 20, startY: 60,
         },
-        characterStage: {
-            dirtyImage: AssetManifest.village.scenarios.house,
-            cleanImage: AssetManifest.village.scenarios.house,
-            sweatSpots: [
-                { id: "dust_1", x: 44, y: 34, w: 8, h: 5 },
-                { id: "dust_2", x: 47, y: 37, w: 6, h: 4 },
-                { id: "dust_3", x: 45, y: 36, w: 7, h: 5 },
+        wipeStage: {
+            label: "Wipe the Dust",
+            hideBaseBackground: true,
+            dirtyImage: AssetManifest.village.scenarios.pictureFrame,
+            cleanImage: AssetManifest.village.scenarios.pictureFrame,
+            successLabel: "Limpyo Na!",
+            successBisaya: "Limpyo na ang litrato! Maayo kaayo! 🎉",
+            successEnglish: "The picture frame is clean! Well done! 🎉",
+            remainingBisaya: (count) => `${count} ka abog pa ang nahibilin! Pahiri na!`,
+            remainingEnglish: (count) => `${count} more dust spots to wipe!`,
+            dirtSpots: [
+                { id: "dust_1", x: 62, y: 48, w: 6, h: 4 },
+                { id: "dust_2", x: 68, y: 52, w: 6, h: 4 },
+                { id: "dust_3", x: 64, y: 55, w: 6, h: 4 },
+                { id: "dust_4", x: 58, y: 51, w: 6, h: 4 },
+                { id: "dust_5", x: 61, y: 53, w: 5, h: 3 },
+                { id: "dust_6", x: 66, y: 49, w: 6, h: 4 },
+                { id: "dust_7", x: 60, y: 56, w: 6, h: 4 },
+                { id: "dust_8", x: 70, y: 50, w: 6, h: 4 },
             ],
         },
     },
@@ -672,8 +690,8 @@ const ItemQuestModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
     if (quest.mechanic === "wash_and_mop") {
         return <WashAndMopGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
     }
-    if (quest.mechanic === "wipe_character") {
-        return <WipeCharacterGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
+    if (quest.mechanic === "wipe" || quest.mechanic === "wipe_character") {
+        return <WipePlayerGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
     }
     if (quest.mechanic === "pack_bag") {
         return <PackBagGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;

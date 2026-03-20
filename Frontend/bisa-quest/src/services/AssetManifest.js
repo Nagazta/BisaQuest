@@ -33,6 +33,7 @@ import kitchenBackground from "../assets/images/environments/scenario/kitchen.jp
 import livingRoomSpill from "../assets/images/environments/scenario/living_room_spill.png";
 import livingRoomDirty from "../assets/images/environments/scenario/dirtyLivingRoom.PNG";
 import farmBackground from "../assets/images/environments/scenario/farm.png";
+import pictureFrame from "../assets/images/environments/scenario/pciture_frame.jpeg";
 import emptyFarmBg from "../assets/items/emptyFarm.png";
 import LigayaSweating from "../assets/images/characters/Ligaya_gealimut-an.png";
 import LigayaWorried from "../assets/images/characters/Ligaya_worried.png";
@@ -133,6 +134,7 @@ const AssetManifest = {
             farm: farmBackground,
             emptyFarm: emptyFarmBg,
             livingRoomDirty: livingRoomDirty,
+            pictureFrame: pictureFrame,
             bookshelf: bookshelfBg,
             kitchenSink: kitchenSinkImg,
             kitchenStove: kitchenStoveBg,
