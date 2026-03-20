@@ -39,6 +39,10 @@ import LigayaWorried from "../assets/images/characters/Ligaya_worried.png";
 import bookshelfBg from "../assets/images/environments/scenario/booksfelf.jpg";
 import plangganaWater from '../assets/items/planggana_water.png';
 import bagPng from '../assets/images/environments/scenario/bag.png';
+import kitchenSinkImg from "../assets/images/environments/scenario/kitchen_sink.jpeg";
+import cauldronImg from "../assets/items/couldron.jpg";
+import plateWashImg from "../assets/items/plate.jpg";
+import spoonImg from "../assets/items/spoon.jpg";
 
 // ── Forest assets ────────────────────────────────────────────────────────────
 import ForestBackground from "../assets/images/environments/Forest.png";
@@ -126,10 +130,14 @@ const AssetManifest = {
             emptyFarm: emptyFarmBg,
             livingRoomDirty: livingRoomDirty,
             bookshelf: bookshelfBg,
+            kitchenSink: kitchenSinkImg,
         },
         items: {
             plangganaWater: plangganaWater,
             bag: bagPng,
+            cauldron: cauldronImg,
+            plateWashing: plateWashImg,
+            spoon: spoonImg,
         }
     },
 
