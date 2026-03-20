@@ -16,6 +16,7 @@ import PackBagGame from "./minigames/PackBagGame";
 import AdjustClockGame from "./minigames/AdjustClockGame";
 import CalendarView from "./minigames/CalendarView";
 import ScheduleEventGame from "./minigames/ScheduleEventGame";
+import WashDishesGame from "./minigames/WashDishesGame";
 
 const ITEM_QUESTS = {
     // ── Silhig — scene drag game ───────────────────────────────────────────────
@@ -141,6 +142,12 @@ const ITEM_QUESTS = {
             { id: "pack_banana", imageKey: "banana", startX: 85, startY: 20 },
         ],
         bagZone: { x: 25, y: 20, w: 50, h: 60 },
+    },
+
+    lababo: {
+        mechanic: "wash_dishes",
+        instructionBisaya: "Hugasan nato ang mga hugaw nga plato ug uban pa!",
+        instructionEnglish: "Let's wash the dirty dishes and other things!",
     },
 
     relo: {
@@ -430,6 +437,9 @@ const ItemQuestModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
     }
     if (quest.mechanic === "schedule_event") {
         return <ScheduleEventGame item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
+    }
+    if (quest.mechanic === "wash_dishes") {
+        return <WashDishesGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
     }
 
     return <StandardModalGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
