@@ -241,16 +241,16 @@ const WashDishesGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
                                     draggable={false}
                                 />
                                 <span style={{
-                                    position: "absolute", bottom: "-18px", left: "50%", transform: "translateX(-50%)",
+                                    position: "absolute", bottom: "13px", left: "50%", transform: "translateX(-50%)",
                                     fontSize: "12px", color: "#fff", background: "rgba(0,0,0,0.55)",
                                     padding: "2px 8px", borderRadius: "6px", whiteSpace: "nowrap"
-                                }}>{currentWashItem.labelBisaya}</span>
+                                }}>{currentWashItem.labelBisaya}/ {currentWashItem.labelEnglish}</span>
 
                                 {/* Bubble animation when scrubbing */}
                                 {washCount > 0 && washCount < 3 && (
                                     <div style={{
-                                        position: "absolute", top: "-10px", right: "-10px",
-                                        fontSize: "30px", pointerEvents: "none",
+                                        position: "absolute", top: "45px", right: "40px",
+                                        fontSize: "24px", pointerEvents: "none",
                                         animation: "iqm-float 1s ease-in-out infinite"
                                     }}>🫧</div>
                                 )}
