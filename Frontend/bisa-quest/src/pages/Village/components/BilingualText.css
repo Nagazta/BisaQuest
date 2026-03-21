@@ -6,7 +6,7 @@
 
 .house-bilingual-bisaya {
   display: block;
-  font-weight: 700;
+  font-weight: 300;
   color: #fcd765;
   font-family: 'Pixelify Sans', sans-serif;
   font-size: 20px;
@@ -14,7 +14,7 @@
 
 .house-bilingual-english {
   display: block;
-  font-weight: 400;
+  font-weight: 300;
   color: #e8e0d0;
   font-family: 'Pixelify Sans', sans-serif;
   font-size: 20px;

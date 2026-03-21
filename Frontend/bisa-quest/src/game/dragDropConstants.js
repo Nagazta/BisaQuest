@@ -1,9 +1,9 @@
 import AssetManifest from "../services/AssetManifest";
 
 //Scene backgrounds 
-import houseBackground from "../assets/images/environments/scenario/house.jpg";
-import kitchenBackground from "../assets/images/environments/scenario/kitchen.jpg";
-import bedroomBackground from "../assets/images/environments/scenario/bedroom.jpg";
+import houseBackground from "../assets/images/environments/scenario/house.png";
+import kitchenBackground from "../assets/images/environments/scenario/kitchen.png";
+import bedroomBackground from "../assets/images/environments/scenario/bedroom.png";
 
 //Item images — Living Room
 import BroomImg from "../assets/items/broom.png";
