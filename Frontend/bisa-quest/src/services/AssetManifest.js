@@ -65,15 +65,50 @@ import ManongKwillImg from "../assets/images/characters/castle-manong-kwill.png"
 import GuloImg from "../assets/images/characters/gulo.png";
 import PrincessHaraImg from "../assets/images/characters/castle-princess-hara.png";
 
+import castleGateImg from "../assets/images/environments/scenario/castle-gate.png";
 import castleLibraryImg from "../assets/images/environments/scenario/castle-library.png";
 import castleLibraryLitImg from "../assets/images/environments/scenario/castle-library-light.png";
 import castleGardenImg from "../assets/images/environments/scenario/castle-garden.fountain.png";
 import castleNightGardenImg from "../assets/images/environments/scenario/castle-night-garden.png";
-import castleCourtyardImg from "../assets/images/environments/scenario/castle-courtyard.png";
+import castleCourtyardImg from "../assets/images/environments/scenario/castle-courtyard-new.png";
 import castleFirewoodImg from "../assets/images/environments/scenario/castle-firewood.png";
 import castleFireworkImg from "../assets/images/environments/scenario/castle-firework.png";
 import castleMoonlightRoomImg from "../assets/images/environments/scenario/castle-moonlight-room.png";
 import castleRainbowImg from "../assets/images/environments/scenario/castle-rainbow.png";
+import castleLockedImg from "../assets/images/environments/scenario/castle-locked.png";
+import castleUnlockedImg from "../assets/images/environments/scenario/castle-unlocked.png";
+import castleKeyImg from "../assets/images/environments/scenario/castle-key.png";
+import castleStoneImg from "../assets/images/environments/scenario/castle-stone.png";
+import castleStoneworkImg from "../assets/images/environments/scenario/castle-stonework.png";
+import castleWaterImg from "../assets/images/environments/scenario/castle-water.png";
+import castleWayImg from "../assets/images/environments/scenario/castle-way.png";
+import castleWaterwayImg from "../assets/images/environments/scenario/castle-waterway.png";
+import castleFootprintImg from "../assets/images/environments/scenario/castle-footprint.png";
+import castlePathImg from "../assets/images/environments/scenario/castle-path.png";
+import castlePathwayImg from "../assets/images/environments/scenario/castle-pathway.png";
+import castleGrassImg from "../assets/images/environments/scenario/castle-grass.png";
+import castleLandImg from "../assets/images/environments/scenario/castle-land.png";
+import castleGrasslandImg from "../assets/images/environments/scenario/castle-grassland.png";
+import castleHammerImg from "../assets/images/environments/scenario/castle-hammer.png";
+import castleDrawImg from "../assets/images/environments/scenario/castle-draw.png";
+import castleBrokenBridgeImg from "../assets/images/environments/scenario/castle-broken-bridge.png";
+import castleFlagImg from "../assets/images/environments/scenario/castle-flag.png";
+import castleFlagPoleImg from "../assets/images/environments/scenario/castle-flag-pole.png";
+import castlePoleImg from "../assets/images/environments/scenario/castle-pole.png";
+import castleFlagpoleImg from "../assets/images/environments/scenario/castle-flagpole.png";
+import castleNoCourtyardImg from "../assets/images/environments/scenario/castle-no-courtyard.png";
+import castleRoofImg from "../assets/images/environments/scenario/castle-roof.png";
+import castleNoRooftopImg from "../assets/images/environments/scenario/castle-no-rooftop.png";
+import castleNoLightImg from "../assets/images/environments/scenario/castle-no-light.png";
+import castleSunlightImg from "../assets/images/environments/scenario/castle-sunlight.png";
+import castleArchImg from "../assets/images/environments/scenario/castle-arch.png";
+import castleArchWayImg from "../assets/images/environments/scenario/castle-arch-way.png";
+import castleCourtImg from "../assets/images/environments/scenario/castle-court.png";
+import castleYardImg from "../assets/images/environments/scenario/castle-yard.png";
+import castleSunImg from "../assets/images/environments/scenario/castle-sun.png";
+import castleDoorOpenImg from "../assets/images/environments/scenario/castle-door-open.png";
+import castleDoorImg from "../assets/images/environments/scenario/castle-door.png";
+import castleDoorwayImg from "../assets/images/environments/scenario/castle-doorway.png";
 
 // ── UI assets ────────────────────────────────────────────────────────────────
 import DashboardBg from "../assets/images/bg-dashboard.png";
@@ -172,6 +207,7 @@ const AssetManifest = {
             princess_hara: PrincessHaraImg,
         },
         scenarios: {
+            gate: castleGateImg,
             library: castleLibraryImg,
             libraryLit: castleLibraryLitImg,
             garden: castleGardenImg,
@@ -181,6 +217,40 @@ const AssetManifest = {
             firework: castleFireworkImg,
             moonlightRoom: castleMoonlightRoomImg,
             rainbow: castleRainbowImg,
+            locked: castleLockedImg,
+            unlocked: castleUnlockedImg,
+            key: castleKeyImg,
+            stone: castleStoneImg,
+            stonework: castleStoneworkImg,
+            water: castleWaterImg,
+            way: castleWayImg,
+            waterway: castleWaterwayImg,
+            footprint: castleFootprintImg,
+            path: castlePathImg,
+            pathway: castlePathwayImg,
+            grass: castleGrassImg,
+            land: castleLandImg,
+            grassland: castleGrasslandImg,
+            hammer: castleHammerImg,
+            draw: castleDrawImg,
+            brokenBridge: castleBrokenBridgeImg,
+            flag: castleFlagImg,
+            flagPole: castleFlagPoleImg,
+            pole: castlePoleImg,
+            flagpole: castleFlagpoleImg,
+            noCourtyard: castleNoCourtyardImg,
+            roof: castleRoofImg,
+            noRooftop: castleNoRooftopImg,
+            noLight: castleNoLightImg,
+            sunlight: castleSunlightImg,
+            arch: castleArchImg,
+            archWay: castleArchWayImg,
+            court: castleCourtImg,
+            yard: castleYardImg,
+            sun: castleSunImg,
+            doorOpen: castleDoorOpenImg,
+            door: castleDoorImg,
+            doorway: castleDoorwayImg,
         }
     },
 

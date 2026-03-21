@@ -1,0 +1,310 @@
+/* CastleImageCombineModal.css — image-based compound word drag game */
+
+/* ── Overlay ──────────────────────────────────────────────────────────────── */
+.cicm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 4, 28, 0.88);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  animation: cicm-fade-in 0.25s ease both;
+}
+
+/* ── Modal shell ──────────────────────────────────────────────────────────── */
+.cicm-modal {
+  position: relative;
+  background: #0d0a1a;
+  border: 3px solid #a855f7;
+  border-radius: 20px;
+  width: min(860px, 96vw);
+  overflow: hidden;
+  box-shadow: 0 8px 0 #6d28d9, 0 24px 60px rgba(168, 85, 247, 0.45);
+  display: flex;
+  flex-direction: column;
+  animation: cicm-card-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ── Close button ─────────────────────────────────────────────────────────── */
+.cicm-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 50;
+  background: none;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: #d1d5db;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.cicm-close:hover {
+  background: rgba(255, 80, 80, 0.2);
+  color: #f87171;
+  border-color: #f87171;
+}
+
+/* ── Scene canvas ─────────────────────────────────────────────────────────── */
+.cicm-canvas {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.cicm-scene-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  user-select: none;
+  filter: brightness(0.55);
+}
+
+/* ── Drop slots ───────────────────────────────────────────────────────────── */
+.cicm-slot {
+  position: absolute;
+  border: 3px dashed rgba(252, 215, 101, 0.55);
+  border-radius: 16px;
+  background: rgba(8, 4, 28, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.cicm-slot--filled {
+  border-style: solid;
+  border-color: #86efac;
+  background: rgba(134, 239, 172, 0.14);
+  box-shadow: 0 0 20px rgba(134, 239, 172, 0.3);
+}
+
+.cicm-slot--wrong {
+  border-color: #f87171 !important;
+  background: rgba(248, 113, 113, 0.18) !important;
+  animation: cicm-shake 0.45s ease;
+}
+
+.cicm-slot-placeholder {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: clamp(10px, 1.4vw, 14px);
+  color: rgba(252, 215, 101, 0.55);
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.cicm-slot-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  animation: cicm-land 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.cicm-slot-emoji {
+  font-size: clamp(22px, 4vw, 40px);
+  line-height: 1;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+}
+
+.cicm-slot-word {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(12px, 1.8vw, 18px);
+  color: #86efac;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px rgba(134, 239, 172, 0.6);
+}
+
+/* ── Equation bar ─────────────────────────────────────────────────────────── */
+.cicm-equation {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(8, 4, 28, 0.75);
+  border: 1.5px solid rgba(168, 85, 247, 0.45);
+  border-radius: 30px;
+  padding: 6px 20px;
+  backdrop-filter: blur(8px);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.cicm-eq-part {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(12px, 1.5vw, 16px);
+  color: rgba(252, 215, 101, 0.45);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.3s;
+}
+
+.cicm-eq-part--filled {
+  color: #fcd765;
+}
+
+.cicm-eq-op {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(14px, 1.8vw, 18px);
+  color: #c4b5fd;
+}
+
+.cicm-eq-result {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(12px, 1.6vw, 17px);
+  color: rgba(134, 239, 172, 0.35);
+  letter-spacing: 1px;
+  transition: color 0.3s, text-shadow 0.3s;
+}
+
+.cicm-eq-result--show {
+  color: #86efac;
+  text-shadow: 0 0 12px rgba(134, 239, 172, 0.7);
+  animation: cicm-result-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ── Draggable word cards ─────────────────────────────────────────────────── */
+.cicm-card {
+  position: absolute;
+  background: rgba(252, 215, 101, 0.93);
+  border: 3px solid #6d28d9;
+  border-radius: 14px;
+  padding: 8px 14px;
+  min-width: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  box-shadow: 0 5px 0 #6d28d9, 0 6px 14px rgba(0, 0, 0, 0.4);
+  user-select: none;
+  touch-action: none;
+}
+
+.cicm-card:not(.cicm-card--dragging):hover {
+  transform: translate(-50%, calc(-50% - 6px)) !important;
+  box-shadow: 0 11px 0 #6d28d9, 0 12px 20px rgba(0, 0, 0, 0.4);
+}
+
+.cicm-card--dragging {
+  box-shadow: 0 2px 0 #6d28d9, 0 12px 30px rgba(0, 0, 0, 0.6) !important;
+  transform: translate(-50%, -50%) scale(1.08) rotate(2deg) !important;
+}
+
+.cicm-card-emoji {
+  font-size: clamp(20px, 3.5vw, 34px);
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+}
+
+.cicm-card-word {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(11px, 1.5vw, 15px);
+  color: #3a1a6e;
+  letter-spacing: 0.5px;
+}
+
+/* ── Dialogue bar ─────────────────────────────────────────────────────────── */
+.cicm-dialogue {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  background: #120b2e;
+  border-top: 2px solid rgba(168, 85, 247, 0.3);
+}
+
+.cicm-npc-img {
+  height: 64px;
+  width: 64px;
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: drop-shadow(0 3px 8px rgba(168, 85, 247, 0.5));
+}
+
+.cicm-dialogue-bubble {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cicm-dialogue-name {
+  font-family: 'Fredoka One', cursive;
+  font-size: 15px;
+  color: #fcd765;
+}
+
+.cicm-dialogue-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cicm-text-bisaya {
+  font-family: 'Fredoka One', cursive;
+  font-size: 14px;
+  color: #f3f4f6;
+  line-height: 1.4;
+}
+
+.cicm-text-english {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 12px;
+  color: #9ca3af;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* ── Keyframes ────────────────────────────────────────────────────────────── */
+@keyframes cicm-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes cicm-card-pop {
+  from { transform: scale(0.65); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+@keyframes cicm-land {
+  from { transform: scale(0.5) translateY(-10px); opacity: 0; }
+  to   { transform: scale(1)   translateY(0);     opacity: 1; }
+}
+
+@keyframes cicm-result-pop {
+  from { transform: scale(0.5); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes cicm-shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-6px); }
+  40%       { transform: translateX(6px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 580px) {
+  .cicm-canvas { aspect-ratio: 4 / 3; }
+  .cicm-dialogue { padding: 10px 14px; gap: 10px; }
+  .cicm-npc-img { height: 50px; width: 50px; }
+  .cicm-card { padding: 6px 10px; min-width: 56px; }
+}
