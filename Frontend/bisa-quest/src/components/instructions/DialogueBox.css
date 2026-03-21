@@ -149,8 +149,8 @@
   flex-shrink: 0;
   align-self: center;
   margin-right: 20px;
-  width: 60px !important;
-  height: 60px !important;
+  width: 70px !important;
+  height: 70px !important;
   background: #FCD765 !important;
   border: 3px solid #3a2008 !important;
   border-radius: 50% !important;
@@ -191,8 +191,8 @@
 
 /* Normal arrow icon */
 .next-arrow-btn .arrow-icon {
-  width: 28px;
-  height: 28px;
+  width: 40px;
+  height: 40px;
   display: block;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }

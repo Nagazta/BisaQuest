@@ -155,7 +155,7 @@
 
 .house-hover-tooltip-bisaya {
   font-weight: 700;
-  font-size: 15px;
+  font-size: 17px;
   color: #fcd765;
   display: block;
 
@@ -164,7 +164,7 @@
 .house-hover-tooltip-english {
   font-weight: 400;
   color: #e0e0e0;
-  font-size: 15px;
+  font-size: 17px;
   display: block;
 }
 
@@ -227,7 +227,7 @@
 
 .house-idle-hint-bisaya {
   font-family: 'Pixelify Sans', sans-serif;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
   color: #fcd765;
   line-height: 1.3;
@@ -235,7 +235,7 @@
 
 .house-idle-hint-english {
   font-family: 'Pixelify Sans', sans-serif;
-  font-size: 14px;
+  font-size: 17px;
   font-weight: normal;
   color: #c8b99a;
   font-style: italic;
@@ -286,14 +286,14 @@
 
 .house-quest-incoming-bisaya {
   font-family: 'Pixelify Sans', sans-serif;
-  font-size: 18px;
+  font-size: 20px;
   color: #fcd765;
   line-height: 1.3;
 }
 
 .house-quest-incoming-english {
   font-family: 'Pixelify Sans', sans-serif;
-  font-size: 15px;
+  font-size: 18px;
   color: #c8b99a;
   font-style: italic;
   line-height: 1.3;
@@ -414,8 +414,8 @@
 .house-door-subtitle {
   font-family: 'Pixelify Sans', sans-serif;
   color: #666;
-  font-size: 14px;
-  font-weight: normal;
+  font-size: 16px;
+  font-weight: 500;
 }
 
 .house-door-options {
@@ -430,7 +430,8 @@
   border-radius: 12px;
   padding: 15px 20px;
   font-family: 'Pixelify Sans', sans-serif;
-  font-size: 18px;
+  font-size: 20px;
+  font-weight: 700;
   color: #3a2010;
   cursor: pointer;
   box-shadow: 0 6px 0 #d4a72c;
