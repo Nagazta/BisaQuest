@@ -37,12 +37,14 @@ import plangganaWater from '../assets/items/planggana_water.png';
 import bagPng from '../assets/images/environments/scenario/bag.png';
 import kitchenSinkImg from "../assets/images/environments/scenario/kitchen_sink.jpeg";
 import kitchenStoveBg from "../assets/images/environments/scenario/kitchen_stove.png";
+import kitchenStoveFireBg from "../assets/images/environments/scenario/kitchen_stove_fire.png";
 import barrelEmptyBg from "../assets/images/environments/scenario/kitchen_water_barrel_empty.png";
 import barrelFillBg from "../assets/images/environments/scenario/kitchen_water_barrel_fill.png";
 import basketBg from "../assets/images/environments/scenario/basket.png";
 import cauldronImg from "../assets/items/couldron.jpg";
 import plateWashImg from "../assets/items/plate.jpg";
 import spoonImg from "../assets/items/spoon.jpg";
+import kahoyImg from "../assets/items/kahoy.png";
 
 // ── Forest assets ────────────────────────────────────────────────────────────
 import ForestBackground from "../assets/images/environments/Forest.png";
@@ -163,6 +165,7 @@ const AssetManifest = {
             bookshelf: bookshelfBg,
             kitchenSink: kitchenSinkImg,
             kitchenStove: kitchenStoveBg,
+            kitchenStoveFire: kitchenStoveFireBg,
             barrelEmpty: barrelEmptyBg,
             barrelFill: barrelFillBg,
             basket: basketBg,
@@ -173,6 +176,7 @@ const AssetManifest = {
             cauldron: cauldronImg,
             plateWashing: plateWashImg,
             spoon: spoonImg,
+            kahoy: kahoyImg,
         }
     },
 

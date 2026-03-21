@@ -12,7 +12,7 @@ const TASKS = [
         successBisaya: "Nagdilaab na ang kalayo! Maayo!",
         successEnglish: "The fire is burning bright! Great!",
         draggableKey: "kahoy",
-        targetZone: { x: 50, y: 80, w: 20, h: 15 }, // Bottom of the stove
+        targetZone: { x: 50, y: 40, w: 30, h: 18 }, // Firebox opening
     },
     {
         id: "mix",
@@ -22,7 +22,7 @@ const TASKS = [
         successBisaya: "Humot na kaayo ang giluto!",
         successEnglish: "The food smells delicious!",
         draggableKey: "sandok",
-        targetZone: { x: 50, y: 55, w: 25, h: 20 }, // Inside/Above cauldron
+        targetZone: { x: 50, y: 18, w: 22, h: 16 }, // Inside/Above cauldron
         requiredMixCount: 5
     },
     {
@@ -33,10 +33,10 @@ const TASKS = [
         successBisaya: "Andam na ang tanan! Luto na!",
         successEnglish: "Everything is ready! It's cooking!",
         draggableItems: [
-            { id: "ing1", imageKey: "banana", label: "Saging", startX: 15, startY: 75 },
-            { id: "ing2", imageKey: "mango", label: "Mangga", startX: 85, startY: 75 },
+            { id: "ing1", imageKey: "carrot", label: "Karot", startX: 8, startY: 35 },
+            { id: "ing2", imageKey: "potato", label: "Patatas", startX: 15, startY: 35 },
         ],
-        targetZone: { x: 50, y: 55, w: 20, h: 15 }, // Inside cauldron
+        targetZone: { x: 50, y: 22, w: 20, h: 15 }, // Inside cauldron
     }
 ];
 
@@ -59,6 +59,7 @@ const CookingGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =>
     const [mixCount, setMixCount] = useState(0);
     const [isOverTarget, setIsOverTarget] = useState(false);
     const [showSuccessCard, setShowSuccessCard] = useState(false);
+    const [fireLit, setFireLit] = useState(false);
 
     const containerRef = useRef(null);
     const dragOffset = useRef({ x: 0, y: 0 });
@@ -71,8 +72,10 @@ const CookingGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =>
                 acc[it.id] = { x: it.startX, y: it.startY };
                 return acc;
             }, {}));
-        } else {
-            setPositions({ [task.id]: { x: 20, y: 70 } });
+        } else if (task.mechanic === "drag_to_heat") {
+            setPositions({ [task.id]: { x: 50, y: 78 } });
+         } else {
+            setPositions({ [task.id]: { x: 28, y: 28 } });
         }
     }, [task]);
 
@@ -154,6 +157,7 @@ const CookingGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =>
                         return next;
                     });
                 } else {
+                    if (task.mechanic === "drag_to_heat") setFireLit(true);
                     setTimeout(() => triggerSuccess(), 400);
                 }
             } else {
@@ -162,7 +166,7 @@ const CookingGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =>
                     const orig = task.draggableItems.find(i => i.id === id);
                     setPositions(p => ({ ...p, [id]: { x: orig.startX, y: orig.startY } }));
                 } else {
-                    setPositions({ [task.id]: { x: 20, y: 70 } });
+                    setPositions({ [task.id]: { x: task.mechanic === "drag_to_heat" ? 50 : 38, y: task.mechanic === "drag_to_heat" ? 78 : 28 } });
                 }
             }
         }
@@ -193,7 +197,7 @@ const CookingGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =>
                 </div>
 
                 <div className="iqm-scene-canvas" ref={containerRef}>
-                    <img src={AssetManifest.village.scenarios.kitchenStove} alt="Stove" className="iqm-scene-bg" draggable={false} />
+                    <img src={fireLit ? AssetManifest.village.scenarios.kitchenStoveFire : AssetManifest.village.scenarios.kitchenStove} alt="Stove" className="iqm-scene-bg" draggable={false} />
 
                     {/* Target Zone Debug/Hint */}
                     {stage === "playing" && (
@@ -222,7 +226,7 @@ const CookingGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =>
                                     left: `${positions[it.id]?.x}%`,
                                     top: `${positions[it.id]?.y}%`,
                                     transform: "translate(-50%, -50%)",
-                                    width: "80px", height: "80px",
+                                    width: "140px", height: "140px",
                                     zIndex: draggedId === it.id ? 20 : 10,
                                     opacity: placedItems.has(it.id) ? 0.7 : 1,
                                     cursor: placedItems.has(it.id) ? "default" : "grab"
@@ -244,7 +248,7 @@ const CookingGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =>
                                     left: `${positions[task.id]?.x}%`,
                                     top: `${positions[task.id]?.y}%`,
                                     transform: "translate(-50%, -50%)",
-                                    width: "100px", height: "100px",
+                                    width: "185px", height: "185px",
                                     zIndex: 20,
                                     cursor: "grab"
                                 }}
@@ -253,7 +257,7 @@ const CookingGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =>
                                 onPointerUp={(e) => handleUp(task.id, e)}
                             >
                                 <img src={ITEM_IMAGE_MAP[task.draggableKey]} alt={task.id} style={{ width: "100%", height: "100%", objectFit: "contain" }} draggable={false}/>
-                                {task.mechanic === "mix" && mixCount > 0 && <span style={{ position: "absolute", top: "-20px", left: "50%", transform: "translateX(-50%)", color: "white", textShadow: "1px 1px 2px black" }}>Stirring...</span>}
+                                {task.mechanic === "mix" && mixCount > 0 && <span style={{ position: "absolute", top: "30px", left: "50%", transform: "translateX(-50%)", color: "white", textShadow: "1px 1px 2px black", fontSize: "14px" }}>Stirring...</span>}
                             </div>
                         )
                     )}
