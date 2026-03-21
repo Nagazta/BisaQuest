@@ -99,7 +99,7 @@ export const CUTSCENES = {
             },
             {
                 image: villageEntry4,
-                text: '"Tulo sa imong mga silingan ang nagkinahanglan sa imong tabang — si Ligaya, Nando, and Vicente. Help them restore their places, ug makita nimo ang mga nangawala nga pages sa Libro."',
+                text: '"Ang imong silingan nga si Ligaya kay nagkinahanglan sa imong tabang. Help her restore her place, ug makita nimo ang mga nangawala nga pages sa Libro."',
             },
             {
                 image: villageEntry5,
@@ -117,7 +117,7 @@ export const CUTSCENES = {
         slides: [
             {
                 image: villageEntry6,
-                text: "Ang kataposang scattered page kay nahulog gikan sa atop sa kamalig ni Nando. You catch it gently. May nagtangdog sa hangin — something ancient stirs.",
+                text: "Ang kataposang scattered page kay nahulog gikan sa sulod sa balay ni Ligaya. You catch it gently. May nagtangdog sa hangin — something ancient stirs.",
             },
             {
                 image: villageEntry7,
@@ -129,7 +129,7 @@ export const CUTSCENES = {
             },
             {
                 image: villageEntry9,
-                text: '"Ingon ni Nando, beyond the tree line naa pay mas lawom nga mystery. Sa Enchanted Forest, ang mga pulong kay naglibog — words that look alike but lain ang buot ipasabot."',
+                text: '"Ingon ni Ligaya, beyond the tree line naa pay mas lawom nga mystery. Sa Enchanted Forest, ang mga pulong kay naglibog — words that look alike but lain ang buot ipasabot."',
             },
             {
                 image: villageEntry10,

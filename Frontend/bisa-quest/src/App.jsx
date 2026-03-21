@@ -12,8 +12,7 @@ import CastlePage from "./pages/Castle/CastlePage";
 import HousePage from "./pages/Village/HousePage";
 import BedroomPage from "./pages/Village/BedroomPage";
 import KitchenPage from "./pages/Village/KitchenPage";
-import MarketStallPage from "./pages/Village/MarketStallPage";
-import FarmPage from "./pages/Village/FarmPage";
+
 //Forest environment pages
 import ForestScenePage from "./pages/Forest/ForestScenePage";
 
@@ -59,8 +58,7 @@ function App() {
 
                 <Route path="/student/dragAndDrop" element={<ProtectedRoute><DragAndDrop /></ProtectedRoute>} />
                 <Route path="/student/item-association" element={<ProtectedRoute><ItemAssociation /></ProtectedRoute>} />
-                <Route path="/student/market" element={<ProtectedRoute><MarketStallPage /></ProtectedRoute>} />
-                <Route path="/student/farm" element={<ProtectedRoute><FarmPage /></ProtectedRoute>} />
+
 
                 {/* ── Dashboard ────────────────────────────────────────────── */}
                 <Route

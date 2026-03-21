@@ -77,14 +77,8 @@ const QuestStartModal = ({
       // =====================
       // VILLAGE NPCS
       // =====================
-      case "village_npc_1":
-        return "Kuyogi si Vicente magkat-on og fruits and market vocabulary!";
-
       case "village_npc_2":
         return "Tabangi si Ligaya sa paglimpyo sa balay while learning Bisaya house words!";
-
-      case "village_npc_3":
-        return "Uban ta ni Nando while enjoying farming tasks and learning farm vocabulary!";
 
       // =====================
       // FOREST NPCS

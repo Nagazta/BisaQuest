@@ -23,18 +23,13 @@ import GirlCharacter from "../assets/images/characters/Girl.png";
 // ── Village assets ───────────────────────────────────────────────────────────
 import VillageBackground from "../assets/images/environments/Vocabulary/village-bg.png";
 import LigayaCharacter from "../assets/images/characters/vocabulary/Village_Quest_NPC_2.png";
-import NandoCharacter from "../assets/images/characters/vocabulary/Village_Quest_NPC_3.png";
-import VicenteCharacter from "../assets/images/characters/vocabulary/Village_Quest_NPC_1.png";
 
-import marketBackground from "../assets/images/environments/scenario/market_stall.png";
 import houseBackground from "../assets/images/environments/scenario/house.jpg";
 import bedroomBackground from "../assets/images/environments/scenario/bedroom.jpg";
 import kitchenBackground from "../assets/images/environments/scenario/kitchen.jpg";
 import livingRoomSpill from "../assets/images/environments/scenario/living_room_spill.png";
 import livingRoomDirty from "../assets/images/environments/scenario/dirtyLivingRoom.PNG";
-import farmBackground from "../assets/images/environments/scenario/farm.png";
 import pictureFrame from "../assets/images/environments/scenario/pciture_frame.jpeg";
-import emptyFarmBg from "../assets/items/emptyFarm.png";
 import LigayaSweating from "../assets/images/characters/Ligaya_gealimut-an.png";
 import LigayaWorried from "../assets/images/characters/Ligaya_worried.png";
 import bookshelfBg from "../assets/images/environments/scenario/booksfelf.jpg";
@@ -122,17 +117,12 @@ const AssetManifest = {
             ligaya: LigayaCharacter,
             ligaya_sweating: LigayaSweating,
             ligaya_worried: LigayaWorried,
-            nando: NandoCharacter,
-            vicente: VicenteCharacter,
         },
         scenarios: {
-            market: marketBackground,
             house: houseBackground,
             bedroom: bedroomBackground,
             kitchen: kitchenBackground,
             livingRoomSpill: livingRoomSpill,
-            farm: farmBackground,
-            emptyFarm: emptyFarmBg,
             livingRoomDirty: livingRoomDirty,
             pictureFrame: pictureFrame,
             bookshelf: bookshelfBg,

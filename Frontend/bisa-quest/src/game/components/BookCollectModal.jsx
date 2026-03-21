@@ -1,7 +1,7 @@
 // src/components/BookCollectModal.jsx
 // ─────────────────────────────────────────────────────────────────────────────
 //  Shown for ~3 seconds when a player collects a Libro page fragment.
-//  Call it from HousePage / MarketStallPage / FarmPage after saveNPCProgress.
+//  Call it from HousePage after saveNPCProgress.
 //
 //  Usage:
 //    const [showPageModal, setShowPageModal] = useState(false);
