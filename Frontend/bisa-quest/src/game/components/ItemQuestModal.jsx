@@ -311,6 +311,19 @@ const ITEM_QUESTS = {
         ],
         dropZone: { x: 23, y: 25, w: 22, h: 20, emoji: "🍽️", label: "Estante" },
     },
+    basket_kitchen: {
+        mechanic: "drag_to_zone",
+        background: AssetManifest.village.scenarios.basket,
+        instructionBisaya: "Ibutang ang mga prutas ug gulay sa bukag!",
+        instructionEnglish: "Put the fruits and vegetables in the basket!",
+        successText: "Napuno na ang Bukag!",
+        draggableItems: [
+            { id: "dz_carrot", imageKey: "carrot", label: "Karot", startX: 15, startY: 80 },
+            { id: "dz_potato", imageKey: "potato", label: "Patatas", startX: 50, startY: 82 },
+            { id: "dz_onion", imageKey: "onion", label: "Sibuyas", startX: 85, startY: 78 },
+        ],
+        dropZone: { x: 50, y: 50, w: 40, h: 35, emoji: "🧺", label: "Bukag" },
+    },
     estante_tuo: {
         mechanic: "drag_to_zone",
         background: AssetManifest.village.scenarios.kitchen,

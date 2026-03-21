@@ -125,7 +125,7 @@ const WipeCharacterGame = ({ quest, npcName, npcImage, onComplete, onClose, item
                     {stage === "success" && showClean && (
                         <div className="iqm-scene-success-overlay">
                             <div className="iqm-scene-success-card">
-                                <div className="iqm-scene-success-stars">✨🎊✨</div>
+                                <div className="iqm-scene-success-stars">🧴💧🧴</div>
                                 <div className="iqm-scene-success-text">Presko Na!</div>
                             </div>
                         </div>

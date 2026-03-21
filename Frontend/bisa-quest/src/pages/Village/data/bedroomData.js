@@ -19,6 +19,7 @@ export const BEDROOM_LABELS = [
     labelEnglish: "Bed",
     descriptionBisaya: "Ang higdaanan para mupahulay og matulog.",
     descriptionEnglish: "The bed for resting and sleeping.",
+    imageKey: "katre",
     x: 25, y: 59, w: 33, h: 13,
   },
   {
@@ -51,6 +52,7 @@ export const BEDROOM_LABELS = [
     labelEnglish: "Calendar",
     descriptionBisaya: "Gipakita ang mga petsa ug buwan sa tuig.",
     descriptionEnglish: "Shows the dates and months of the year.",
+    imageKey: "kalendaryo",
     x: 63, y: 34, w: 7, h: 15,
   },
   {
@@ -59,6 +61,7 @@ export const BEDROOM_LABELS = [
     labelEnglish: "Cabinet",
     descriptionBisaya: "Sudlanan sa mga sinina o uban pang gamit.",
     descriptionEnglish: "Stores clothes or other things.",
+    imageKey: "aparador",
     x: 71, y: 55, w: 9, h: 18,
   },
   {
@@ -67,6 +70,7 @@ export const BEDROOM_LABELS = [
     labelEnglish: "Electric Fan",
     descriptionBisaya: "Gamit pampabugnaw kung puwerte kainit.",
     descriptionEnglish: "Used to cool down when it's very hot.",
+    imageKey: "Bentilador",
     x: 78, y: 51, w: 7, h: 27,
   },
   {
@@ -75,6 +79,7 @@ export const BEDROOM_LABELS = [
     labelEnglish: "Laundry Basket",
     descriptionBisaya: "Sudlanan sa mga bulingon nga sanina.",
     descriptionEnglish: "Container for dirty clothes.",
+    imageKey: "laundry_basket",
     x: 83, y: 68, w: 13, h: 19,
   }
 ];
