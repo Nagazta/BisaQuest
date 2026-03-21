@@ -223,7 +223,7 @@ const ITEM_QUESTS = {
     trapo: {
         mechanic: "wash_and_mop",
         instructionBisaya: "Hugasi ang trapo ug limpyohi ang salog!",
-        instructionEnglish: "Wash the floor mat and clean the floor!",
+        instructionEnglish: "Wash the door mat and clean the floor!",
         washStage: {
             background: "none",
             basinImage: "plangganaWater",

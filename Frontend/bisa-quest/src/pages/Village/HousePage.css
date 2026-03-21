@@ -446,3 +446,10 @@
   transform: translateY(6px);
   box-shadow: 0 0 0 #d4a72c;
 }
+
+.house-bilingual-english {
+  font-style: italic;
+  display: block;
+  color: #ebe0c9; /* optional: matches your other English text */
+  font-size: 18px;
+}

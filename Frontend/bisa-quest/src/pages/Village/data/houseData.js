@@ -8,26 +8,26 @@ export const LIVING_ROOM_LABELS = [
   // ── Left wall ─────────────────────────────────────────────────────────────
   {
     id: "purtahan",
-    labelBisaya: "Purtahan/Pultahan",
-    labelEnglish: "Door",
-    descriptionBisaya: "Usa ka nagtabayag o nag-aginod nga babag nga mosira sa agianan sa usa ka lawak, balay, o sakyanan.",
-    descriptionEnglish: "A swinging or sliding barrier that will close the entrance to a room or building or vehicle",
+    labelBisaya: "purtahan / pultahan",
+    labelEnglish: "door",
+    descriptionBisaya: "Ang pultahan kay maablihan ug masirad-an aron matabonan ang agianan sa kwarto, building, o sakyanan.",
+    descriptionEnglish: "A door opens and closes to cover the entrance of a room, building, or vehicle.",
     x: 1, y: 30, w: 8, h: 40,
   },
   {
     id: "estante_wall",
-    labelBisaya: "Estante sa Dingding",
-    labelEnglish: "Wall Shelf",
-    descriptionBisaya: "Gibitay sa dingding para sa mga gamit ug dekorasyon.",
-    descriptionEnglish: "Mounted on the wall to hold items and decorations.",
+    labelBisaya: "estante ",
+    labelEnglish: "shelf",
+    descriptionBisaya: "Ang estante kay nipis nga tabla nga gibutang sa bungbong diin nimo ibutang ang mga butang.",
+    descriptionEnglish: "A shelf is a thin, flat board attached to a wall where you can put things.",
     x: 12, y: 32, w: 15, h: 7,
   },
   {
     id: "bulak",
-    labelBisaya: "Bulak / Tanum",
-    labelEnglish: "Plant",
-    descriptionBisaya: "Tanum nga nagpaayos sa sulod sa balay ug naghatag og presko nga hangin.",
-    descriptionEnglish: "A plant that decorates the home and helps freshen the air.",
+    labelBisaya: "houseplant",
+    labelEnglish: "houseplant",
+    descriptionBisaya: "Ang houseplant kay tanom nga ibutang sulod sa balay para dekorasyon.",
+    descriptionEnglish: "A houseplant is a plant kept inside the house used mostly as decoration.",
     x: 13, y: 25, w: 6, h: 7,
   },
   {
@@ -145,8 +145,8 @@ export const LIVING_ROOM_LABELS = [
   },
   {
     id: "alfombra",
-    labelBisaya: "Alfombra / Banig",
-    labelEnglish: "Rug",
+    labelBisaya: "Alpombra / Karpet",
+    labelEnglish: "Carpet",
     descriptionBisaya: "Gibuklad sa salog para sa dekorasyon ug pagpahumok sa tiil.",
     descriptionEnglish: "Spread on the floor for decoration and to cushion your feet.",
     x: 39, y: 63, w: 42, h: 16,
@@ -179,10 +179,10 @@ export const LIVING_ROOM_LABELS = [
   // ── Floor & ceiling ───────────────────────────────────────────────────────
   {
     id: "trapo",
-    labelBisaya: "Trapo",
-    labelEnglish: "Floor Mat",
-    descriptionBisaya: "Himo sa mga dahon o buli, gamiton sa paghigda o paglingkod.",
-    descriptionEnglish: "Woven from leaves or palm, used for sleeping or sitting.",
+    labelBisaya: "Talamakan",
+    labelEnglish: "Doormat",
+    descriptionBisaya: "Ang talamakan kay makita sa pultahan aron ipahid ang hugaw sa sapatos.",
+    descriptionEnglish: "A doormat is a mat placed near a door where you wipe your shoes or feet.",
     x: -1, y: 82, w: 15, h: 12,
   },
   {
@@ -213,18 +213,18 @@ export const INTRO_DIALOGUE = [
   },
   {
     speaker: "Ligaya",
-    bisayaText: "Mao ni among Sala — ang living room sa balay.",
-    englishText: "This is our Sala — the living room of the house.",
+    bisayaText: "Mao ni among Sala.",
+    englishText: "This is our living area.",
   },
   {
     speaker: "Ligaya",
-    bisayaText: "Humana ang tulo ka challenges para maka-move sa next level.",
-    englishText: "Finish 3 challenges by helping clean the living room to reach the next level.",
+    bisayaText: "Itudlo ang mouse sa usa ka butang ug i-click aron makakat-on pa.",
+    englishText: "Point your mouse at an item and click it to learn more.",
   },
   {
     speaker: "Ligaya",
-    bisayaText: "I-pwesto imong mouse sa mga butang og i-click para makat-on!",
-    englishText: "Move your mouse over any item and click it to learn more!",
+    bisayaText: "Humana ang tulo ka challenges para ma-unlock ang sunod nga level.",
+    englishText: "Complete 3 challenges to unlock the next level!",
   },
 ];
 
@@ -235,7 +235,7 @@ export const buildDialogue = (region) => [
   {
     speaker: "Ligaya",
     bisayaText: `Kini ang "${region.labelBisaya}"!`,
-    englishText: `This is the "${region.labelEnglish}"!`,
+    englishText: `This object is called "${region.labelEnglish}"!`,
   },
   {
     speaker: "Ligaya",
