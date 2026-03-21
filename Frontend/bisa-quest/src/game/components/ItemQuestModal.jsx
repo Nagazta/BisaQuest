@@ -639,9 +639,9 @@ const StandardModalGame = ({ quest, item, npcName, npcImage, onClose, onComplete
                             <span className="iqm-dialogue-bisaya">{dialogueText.bisayaText}</span>
                             <span className="iqm-dialogue-english">{dialogueText.englishText}</span>
                         </div>
-                        {stage === "intro" && <button className="iqm-next-btn" onClick={handleIntroNext}>▶</button>}
-                        {stage === "success" && <button className="iqm-next-btn" onClick={() => onComplete(item)}>✓</button>}
                     </div>
+                    {stage === "intro" && <button className="iqm-next-btn" onClick={handleIntroNext}>▶</button>}
+                    {stage === "success" && <button className="iqm-next-btn" onClick={() => onComplete(item)}>✓</button>}
                 </div>
             </div>
         </div>

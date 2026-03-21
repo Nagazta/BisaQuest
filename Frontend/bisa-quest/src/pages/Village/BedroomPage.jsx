@@ -187,13 +187,16 @@ const BedroomPage = () => {
         <DialogueBox
           title={currentLine.speaker}
           text={
-            <span className="house-bilingual">
-              <span className="house-bilingual-bisaya">{currentLine.bisayaText}</span>
-              <span className="house-bilingual-english">{currentLine.englishText}</span>
+            <span className="house-bilingual" style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
+              <span style={{ flex: 'none' }}>
+                <span className="house-bilingual-bisaya">{currentLine.bisayaText}</span>
+                <span className="house-bilingual-english">{currentLine.englishText}</span>
+              </span>
               {isLastDialogueLine && activeItem?.id !== "door_back_bedroom" && (
-                <span className="house-quest-incoming-inline">
-                  🎮 Mini-game sunod! · Mini-game coming up!
-                </span>
+                <div className="house-quest-incoming" style={{ flexShrink: 0 }}>
+                  <span className="house-quest-incoming-bisaya">🎮 Mini-game sunod!</span>
+                  <span className="house-quest-incoming-english">Mini-game coming up!</span>
+                </div>
               )}
             </span>
           }
