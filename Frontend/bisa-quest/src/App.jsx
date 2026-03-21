@@ -19,6 +19,10 @@ import ForestPondPage from "./pages/Forest/ForestPondPage";
 
 //Castle environment pages
 import CastleScenePage from "./pages/Castle/CastleScenePage";
+import CastleRoomPage from "./pages/Castle/CastleRoomPage";
+import CastleGatePage from "./pages/Castle/CastleGatePage";
+import CastleCourtyardPage from "./pages/Castle/CastleCourtyardPage";
+import CastleLibraryPage from "./pages/Castle/CastleLibraryPage";
 
 import { useAuth } from "./context/AuthContext";
 import DragAndDrop from "./game/DragAndDrop";
@@ -56,6 +60,10 @@ function App() {
                 <Route path="/forest/scene" element={<ProtectedRoute><ForestScenePage /></ProtectedRoute>} />
                 <Route path="/student/forest-pond" element={<ProtectedRoute><ForestPondPage /></ProtectedRoute>} />
                 <Route path="/castle/scene" element={<ProtectedRoute><CastleScenePage /></ProtectedRoute>} />
+                <Route path="/castle/room" element={<ProtectedRoute><CastleRoomPage /></ProtectedRoute>} />
+                <Route path="/castle/gate" element={<ProtectedRoute><CastleGatePage /></ProtectedRoute>} />
+                <Route path="/castle/courtyard" element={<ProtectedRoute><CastleCourtyardPage /></ProtectedRoute>} />
+                <Route path="/castle/library" element={<ProtectedRoute><CastleLibraryPage /></ProtectedRoute>} />
                 <Route path="/student/library" element={<ProtectedRoute><CastleScenePage /></ProtectedRoute>} />
 
                 <Route path="/student/dragAndDrop" element={<ProtectedRoute><DragAndDrop /></ProtectedRoute>} />

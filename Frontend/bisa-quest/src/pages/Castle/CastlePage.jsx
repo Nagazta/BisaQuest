@@ -16,9 +16,7 @@ import "./CastlePage.css";
 
 const API = import.meta.env.VITE_API_URL !== undefined ? import.meta.env.VITE_API_URL : (import.meta.env.PROD ? '' : 'http://localhost:5000');
 const CASTLE_NPCS = [
-    { npcId: "castle_npc_3", name: "Gulo", x: 28, y: 60, character: AssetManifest.castle.npcs.gulo, showName: true, quest: "compound_words", scenePath: "/castle/scene" },
-    { npcId: "castle_npc_1", name: "Princess Hara", x: 50, y: 45, character: AssetManifest.castle.npcs.princess_hara, showName: true, quest: "compound_words", scenePath: "/castle/scene" },
-    { npcId: "castle_npc_2", name: "Manong Kwill", x: 72, y: 55, character: AssetManifest.castle.npcs.manong_kwill, showName: true, quest: "compound_words", scenePath: "/castle/scene" },
+    { npcId: "castle_npc_1", name: "Princess Hara", x: 50, y: 45, character: AssetManifest.castle.npcs.princess_hara, showName: true, quest: "compound_words", scenePath: "/castle/gate" },
 ];
 
 const CastlePage = () => {

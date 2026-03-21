@@ -1,5 +1,6 @@
 import AssetManifest from "../services/AssetManifest";
 
+
 //Scene backgrounds 
 import houseBackground from "../assets/images/environments/scenario/house.png";
 import kitchenBackground from "../assets/images/environments/scenario/kitchen.png";
