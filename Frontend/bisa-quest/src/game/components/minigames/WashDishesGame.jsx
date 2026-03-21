@@ -21,7 +21,7 @@ const WashDishesGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
     const [isOverItem, setIsOverItem] = useState(false);
 
     // Sponge position (draggable)
-    const [spongePos, setSpongePos] = useState({ x: 66, y: 40 });
+    const [spongePos, setSpongePos] = useState({ x: 65, y: 40 });
     const [isDragging, setIsDragging] = useState(false);
 
     // Place-stage drag position for the clean item
@@ -38,8 +38,8 @@ const WashDishesGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
     const bgImage = AssetManifest.village.scenarios.kitchenSink;
 
     // Item sits fixed in the sink area
-    const ITEM_CENTER = { x: 50, y: 65 };
-    const ITEM_RADIUS = 15; // % overlap threshold
+    const ITEM_CENTER = { x: 50, y: 55 };
+    const ITEM_RADIUS = 10; // % overlap threshold
 
     const handleIntroNext = () => {
         if (introStep < dialogue.length - 1) setIntroStep(prev => prev + 1);
@@ -84,7 +84,7 @@ const WashDishesGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
                     setTimeout(() => {
                         setIsDragging(false);
                         setStage("place");
-                        setCleanItemPos({ x: 50, y: 65 });
+                        setCleanItemPos({ x: 50, y: 55 });
                     }, 300);
                 }
                 return next;
@@ -153,7 +153,7 @@ const WashDishesGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
             setItemIndex(nextIndex);
             setWashCount(0);
             setIsOverItem(false);
-            setSpongePos({ x: 66, y: 40 });
+            setSpongePos({ x: 25, y: 40 });
             setStage("wash");
         }
     };
@@ -176,7 +176,7 @@ const WashDishesGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
 
     // Dirty filter to make the item look dirty until fully washed
     const dirtyFilter = washCount < 3
-        ? `brightness(${0.8 + washCount * 0.07}) sepia(${0.3 - washCount * 0.1})`
+        ? `brightness(${0.6 + washCount * 0.13}) sepia(${0.5 - washCount * 0.15})`
         : "none";
 
     return (
@@ -225,7 +225,7 @@ const WashDishesGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
                                 position: "absolute",
                                 left: `${ITEM_CENTER.x}%`, top: `${ITEM_CENTER.y}%`,
                                 transform: "translate(-50%, -50%)",
-                                width: "260px", height: "260px",
+                                width: "130px", height: "130px",
                                 display: "flex", justifyContent: "center", alignItems: "center",
                                 pointerEvents: "none",
                             }}>
@@ -244,13 +244,13 @@ const WashDishesGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
                                     position: "absolute", bottom: "13px", left: "50%", transform: "translateX(-50%)",
                                     fontSize: "12px", color: "#fff", background: "rgba(0,0,0,0.55)",
                                     padding: "2px 8px", borderRadius: "6px", whiteSpace: "nowrap"
-                                }}>{currentWashItem.labelBisaya}/ {currentWashItem.labelEnglish}</span>
+                                }}>{currentWashItem.labelBisaya} / {currentWashItem.labelEnglish}</span>
 
                                 {/* Bubble animation when scrubbing */}
                                 {washCount > 0 && washCount < 3 && (
                                     <div style={{
-                                        position: "absolute", top: "75px", right: "80px",
-                                        fontSize: "40px", pointerEvents: "none",
+                                        position: "absolute", top: "45px", right: "40px",
+                                        fontSize: "24px", pointerEvents: "none",
                                         animation: "iqm-float 1s ease-in-out infinite"
                                     }}>🫧</div>
                                 )}
@@ -279,7 +279,7 @@ const WashDishesGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
                                     left: `${spongePos.x}%`, top: `${spongePos.y}%`,
                                     transform: "translate(-50%, -50%)",
                                     cursor: isDragging ? "grabbing" : "grab",
-                                    width: "120px", height: "120px",
+                                    width: "100px", height: "100px",
                                     zIndex: 10,
                                 }}
                                 onPointerDown={handleSpongeDown}
@@ -335,7 +335,7 @@ const WashDishesGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
                                     left: `${cleanItemPos.x}%`, top: `${cleanItemPos.y}%`,
                                     transform: "translate(-50%, -50%)",
                                     cursor: isDraggingClean ? "grabbing" : "grab",
-                                    width: "260px", height: "260px",
+                                    width: "130px", height: "130px",
                                     display: "flex", justifyContent: "center", alignItems: "center",
                                     zIndex: 10,
                                 }}
@@ -367,7 +367,7 @@ const WashDishesGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
                     {stage === "success" && showSuccessCard && (
                         <div className="iqm-scene-success-overlay">
                             <div className="iqm-scene-success-card">
-                                 <div className="iqm-scene-success-stars">🧽🍽️🧽</div>
+                                <div className="iqm-scene-success-stars">✨🎊✨</div>
                                 <div className="iqm-scene-success-text">Nasidlak Na ang mga Plato!</div>
                             </div>
                         </div>

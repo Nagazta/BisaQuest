@@ -45,6 +45,11 @@ import cauldronImg from "../assets/items/couldron.jpg";
 import plateWashImg from "../assets/items/plate_new.png";
 import spoonImg from "../assets/items/spoon.jpg";
 import kahoyImg from "../assets/items/kahoy.png";
+import sugaOn from "../assets/images/environments/scenario/suga_on.jpeg";
+import sugaOff from "../assets/images/environments/scenario/suga_off.jpeg";
+import dustFeatherImg from "../assets/items/dust_feather.jpg";
+import ironBoardImg from "../assets/images/environments/scenario/iron_board.png";
+import ironImg from "../assets/items/iron.jpg";
 
 // ── Forest assets ────────────────────────────────────────────────────────────
 import ForestBackground from "../assets/images/environments/Forest.png";
@@ -169,6 +174,10 @@ const AssetManifest = {
             barrelEmpty: barrelEmptyBg,
             barrelFill: barrelFillBg,
             basket: basketBg,
+            sugaOn: sugaOn,
+            sugaOff: sugaOff,
+            dustFeather: dustFeatherImg,
+            ironBoard: ironBoardImg,
         },
         items: {
             plangganaWater: plangganaWater,
