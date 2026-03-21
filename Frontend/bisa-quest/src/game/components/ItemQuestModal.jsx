@@ -22,6 +22,8 @@ import LightLampGame from "./minigames/LightLampGame";
 import FanSpeedGame from "./minigames/FanSpeedGame";
 import CookingGame from "./minigames/CookingGame";
 import WaterBarrelGame from "./minigames/WaterBarrelGame";
+import ToggleLightGame from "./minigames/ToggleLightGame";
+import IroningGame from "./minigames/IroningGame";
 
 const ITEM_QUESTS = {
     // ── Silhig — scene drag game ───────────────────────────────────────────────
@@ -350,11 +352,6 @@ const ITEM_QUESTS = {
         ],
         dropZone: { x: 22, y: 52, w: 36, h: 18, emoji: "🛏️", label: "Katre" },
     },
-    lampara_bedroom: {
-        mechanic: "light_lamp",
-        instructionBisaya: "Sindihon ang lampara gamit ang posporo!",
-        instructionEnglish: "Light the lamp using a match!",
-    },
     drawer_bedroom: {
         mechanic: "drag_to_zone",
         background: AssetManifest.village.scenarios.bedroom,
@@ -393,7 +390,7 @@ const ITEM_QUESTS = {
     bukag_bedroom: {
         mechanic: "drag_to_zone",
         background: AssetManifest.village.scenarios.bedroom,
-        instructionBisaya: "Ibutang ang hugaw nga sinina sa bukag!",
+        instructionBisaya: "I-butang ang hugaw nga sinina sa bukag!",
         instructionEnglish: "Put the dirty clothes in the laundry basket!",
         successText: "Napuno na ang Bukag!",
         draggableItems: [
@@ -403,7 +400,75 @@ const ITEM_QUESTS = {
         ],
         dropZone: { x: 80, y: 62, w: 16, h: 24, emoji: "🧺", label: "Bukag" },
     },
+    paspas: {
+        mechanic: "wipe",
+        instructionBisaya: "Limpyohi ang mga souk2 sa kwarto!",
+        instructionEnglish: "Clean the corners of the room!",
+        draggable: {
+            id: "paspas_item",
+            label: "Paspas",
+            imageKey: "paspas",
+            startX: 20, startY: 60,
+        },
+        wipeStage: {
+            label: "Clean the Corners (Souk2)",
+            hideBaseBackground: true,
+            dirtyImage: AssetManifest.village.scenarios.bedroom,
+            cleanImage: AssetManifest.village.scenarios.bedroom,
+            successLabel: "Limpyo Na'ng Souk2!",
+            successBisaya: "Limpyo na ang mga souk2! Maayo kaayo! 🎉",
+            successEnglish: "The corners are clean! Well done! 🎉",
+            remainingBisaya: (count) => `${count} ka souk2 pa ang hugaw!`,
+            remainingEnglish: (count) => `${count} more corners to clean!`,
+            dirtSpots: [
+                { id: "souk_tl", x: 4, y: 15, w: 12, h: 12 },   // Top Left Corner
+                { id: "souk_tr", x: 88, y: 15, w: 10, h: 12 },  // Top Right Corner
+                { id: "souk_bl", x: 5, y: 80, w: 15, h: 15 },   // Bottom Left Corner
+                { id: "souk_br", x: 85, y: 80, w: 12, h: 15 },  // Bottom Right Corner
+                { id: "souk_under", x: 45, y: 75, w: 15, h: 10 }, // Area near floor/bed corner
+            ],
+        },
+    },
+    bintana_bedroom: {
+        mechanic: "wipe",
+        instructionBisaya: "Pahiran ang bintana aron malimpyo!",
+        instructionEnglish: "Wipe the window to clean it!",
+        draggable: {
+            id: "rag_item",
+            label: "Trapo",
+            imageKey: "rag",
+            startX: 20, startY: 60,
+        },
+        wipeStage: {
+            label: "Wipe the Window",
+            hideBaseBackground: true,
+            dirtyImage: AssetManifest.village.scenarios.bedroom,
+            cleanImage: AssetManifest.village.scenarios.bedroom,
+            successLabel: "Hayag Na!",
+            successBisaya: "Hayag na ang bintana! Maayo kaayo! 🎉",
+            successEnglish: "The window is bright now! Well done! 🎉",
+            remainingBisaya: (count) => `${count} ka spots pa ang nahibilin!`,
+            remainingEnglish: (count) => `${count} more spots to wipe!`,
+            dirtSpots: [
+                { id: "spot_1", x: 48, y: 35, w: 10, h: 18 }, // Window pane area
+                { id: "spot_2", x: 52, y: 40, w: 6, h: 10 },
+                { id: "spot_3", x: 45, y: 45, w: 8, h: 12 },
+                { id: "spot_4", x: 55, y: 30, w: 8, h: 12 },
+                { id: "spot_5", x: 50, y: 25, w: 10, h: 15 },
+            ],
+        },
+    },
 
+    suga_bedroom: {
+        mechanic: "toggle_light",
+        instructionBisaya: "I-test ang suga sa kisame!",
+        instructionEnglish: "Test the ceiling light!",
+    },
+    plantsa_bedroom: {
+        mechanic: "ironing_game",
+        instructionBisaya: "Plantsaha ang mga sinina aron mahapsay!",
+        instructionEnglish: "Iron the clothes to make them neat!",
+    },
     relo: {
         mechanic: "adjust_clock",
         targetTimes: [
@@ -710,6 +775,12 @@ const ItemQuestModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
     }
     if (quest.mechanic === "water_barrel_game") {
         return <WaterBarrelGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
+    }
+    if (quest.mechanic === "toggle_light") {
+        return <ToggleLightGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
+    }
+    if (quest.mechanic === "ironing_game") {
+        return <IroningGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
     }
 
     return <StandardModalGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;

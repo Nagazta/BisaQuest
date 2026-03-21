@@ -56,6 +56,8 @@ import electricFanImg from "../assets/items/electricfan.png";
 import LaundryBasketImg from "../assets/items/laundry_basket.png";
 import KatreImg from "../assets/items/katre.png";
 import AparadorImg from "../assets/items/aparador.png";
+import DustFeatherImg from "../assets/items/dust_feather.jpg";
+import IronImg from "../assets/items/iron.jpg";
 
 
 export const ITEM_IMAGE_MAP = {
@@ -128,6 +130,10 @@ export const ITEM_IMAGE_MAP = {
   katre: KatreImg,
   Bentilador: electricFanImg,
   aparador: AparadorImg,
+  paspas: DustFeatherImg,
+  dust_feather: DustFeatherImg,
+  iron: IronImg,
+  plantsa: IronImg,
 
 };
 
