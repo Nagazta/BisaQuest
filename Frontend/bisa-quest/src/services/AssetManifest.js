@@ -42,7 +42,7 @@ import barrelEmptyBg from "../assets/images/environments/scenario/kitchen_water_
 import barrelFillBg from "../assets/images/environments/scenario/kitchen_water_barrel_fill.png";
 import basketBg from "../assets/images/environments/scenario/basket.png";
 import cauldronImg from "../assets/items/couldron.jpg";
-import plateWashImg from "../assets/items/plate.jpg";
+import plateWashImg from "../assets/items/plate_new.png";
 import spoonImg from "../assets/items/spoon.jpg";
 import kahoyImg from "../assets/items/kahoy.png";
 

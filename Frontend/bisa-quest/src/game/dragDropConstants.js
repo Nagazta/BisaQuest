@@ -19,15 +19,14 @@ import TowelImg from "../assets/items/towel.png";
 import BedsheetImg from "../assets/items/bedsheet.png";
 import HabolImg from "../assets/items/habol.png";
 import HandfanImg from "../assets/items/hand_fan.png";
-import electricFanImg from "../assets/items/electricfanRed.png";
 import bucketImg from "../assets/items/bucket.png";
 import lampImg from "../assets/items/lamp.png";
 import BookImg from "../assets/items/book.png";
-import KahoyImg from "../assets/items/kahoy.png";
-import DruminImg from "../assets/items/drumin.png";
-import DapoganImg from "../assets/items/dapogan.png";
-import CarrotImg from "../assets/items/carrot.png";
-import PotatoImg from "../assets/items/potato.png";
+import KalendaryoImg from "../assets/items/kalendaryo.png";
+import PurtahanImg from "../assets/items/purtahan.png";
+import RugImg from "../assets/items/rug.png";
+import PlangganaImg from "../assets/items/planggana.png";
+import LamesaSalaImg from "../assets/items/lamesa_sala.png";
 
 //Item images — Kitchen
 import PotImg from "../assets/items/pot.png";
@@ -36,13 +35,27 @@ import LadleImg from "../assets/items/ladle.png";
 import KnifeImg from "../assets/items/knife.png";
 import PlateImg from "../assets/items/plate.png";
 import CupImg from "../assets/items/cup.png";
+import KahoyImg from "../assets/items/kahoy.png";
+import DruminImg from "../assets/items/drumin.png";
+import RedCrateImg from "../assets/items/red_crate.png";
+import Lababo from "../assets/items/lababo.png";
+import LamesaImg from "../assets/items/lamesa.png";
+import ShelfImg from "../assets/items/shelf.png";
+import BigShelfImg from "../assets/items/big_shelf.png";
+import DapoganImg from "../assets/items/dapogan.png";
+import CarrotImg from "../assets/items/carrot.png";
+import PotatoImg from "../assets/items/potato.png";
+import OnionImg from "../assets/items/onion.png";
 
 // Item images — Bedroom
 import ShirtImg from "../assets/items/shirts.png";
 import PantsImg from "../assets/items/pants.png";
 import DressImg from "../assets/items/dress.jpg";
 import ShoesImg from "../assets/items/shoes.png";
-
+import electricFanImg from "../assets/items/electricfan.png";
+import LaundryBasketImg from "../assets/items/laundry_basket.png";
+import KatreImg from "../assets/items/katre.png";
+import AparadorImg from "../assets/items/aparador.png";
 
 
 export const ITEM_IMAGE_MAP = {
@@ -64,16 +77,17 @@ export const ITEM_IMAGE_MAP = {
   slipper: SlipperImg,
   trash: TrashImg,
   basura: TrashImg,
-  Bentilador: electricFanImg,
   bucket: bucketImg,
   lamp: lampImg,
   book: BookImg,
   libro: BookImg,
+  kalendaryo: KalendaryoImg,
+  purtahan: PurtahanImg,
+  alfombra: RugImg,
+  planggana: PlangganaImg,
+  lamesa_sala: LamesaSalaImg,
   bag: AssetManifest.village.items.bag,
-  kahoy: KahoyImg,
-  drumin: DruminImg,
-  firewood: KahoyImg,
-  dapogan: DapoganImg,
+
 
   // Kitchen
   pot: PotImg,
@@ -90,6 +104,18 @@ export const ITEM_IMAGE_MAP = {
   tasa: CupImg,
   carrot: CarrotImg,
   potato: PotatoImg,
+  onion: OnionImg,
+  kahoy: KahoyImg,
+  drumin: DruminImg,
+  red_crate: RedCrateImg,
+  basket_kitchen: AssetManifest.village.scenarios.basket,
+  lababo: Lababo,
+  lamesa: LamesaImg,
+  shelf: ShelfImg,
+  big_shelf: BigShelfImg,
+  firewood: KahoyImg,
+  dapogan: DapoganImg,
+
   // Bedroom
   almohada: PillowImg,
   bedsheet: BedsheetImg,
@@ -98,6 +124,10 @@ export const ITEM_IMAGE_MAP = {
   tuwalya: TowelImg,
   dress: DressImg,
   shoes: ShoesImg,
+  laundry_basket: LaundryBasketImg,
+  katre: KatreImg,
+  Bentilador: electricFanImg,
+  aparador: AparadorImg,
 
 };
 

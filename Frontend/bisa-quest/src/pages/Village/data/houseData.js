@@ -12,6 +12,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Door",
     descriptionBisaya: "Usa ka nagtabayag o nag-aginod nga babag nga mosira sa agianan sa usa ka lawak, balay, o sakyanan.",
     descriptionEnglish: "A swinging or sliding barrier that will close the entrance to a room or building or vehicle",
+    imageKey: "purtahan",
     x: 1, y: 30, w: 8, h: 40,
   },
   {
@@ -44,6 +45,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Lamp / Lantern",
     descriptionBisaya: "Naghatag og suga sa gabii. Sa una, gamiton ang lana o kandila.",
     descriptionEnglish: "Provides light at night. In the past, oil or candles were used.",
+    imageKey: "lamp",
     x: 30.5, y: 28, w: 3, h: 8,
   },
   {
@@ -76,6 +78,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Broom",
     descriptionBisaya: "Gamiton sa pagsapu sa salog aron malimpyo ang balay.",
     descriptionEnglish: "Used to sweep the floor and keep the house clean.",
+    imageKey: "walis",
     x: 41, y: 44, w: 5, h: 16.5,
   },
   {
@@ -84,6 +87,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Basin",
     descriptionBisaya: "Sudlanan sa tubig para sa paglaba o paghilam-os.",
     descriptionEnglish: "A container for water used for washing or rinsing.",
+    imageKey: "planggana",
     x: 34, y: 60, w: 8, h: 6,
   },
   // ── Center ────────────────────────────────────────────────────────────────
@@ -141,6 +145,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Table",
     descriptionBisaya: "Gamit sa pagbutang og mga butang o pag-abot sa bisita.",
     descriptionEnglish: "Used for placing items or serving guests.",
+    imageKey: "lamesa_sala",
     x: 54, y: 61, w: 13, h: 8,
   },
   {
@@ -149,6 +154,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Rug",
     descriptionBisaya: "Gibuklad sa salog para sa dekorasyon ug pagpahumok sa tiil.",
     descriptionEnglish: "Spread on the floor for decoration and to cushion your feet.",
+    imageKey: "alfombra",
     x: 39, y: 63, w: 42, h: 16,
   },
   // ── Right wall ────────────────────────────────────────────────────────────
