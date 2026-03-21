@@ -35,6 +35,7 @@ export const KITCHEN_LABELS = [
     labelEnglish: "Water Barrel",
     descriptionBisaya: "Dako nga sudlanan sa tubig para panluto og panghugas.",
     descriptionEnglish: "Large barrel for storing water for cooking and washing.",
+    imageKey: "drumin",
     x: 68, y: 50, w: 9, h: 19,
   },
   {

@@ -22,6 +22,11 @@ import electricFanImg from "../assets/items/electricfanRed.png";
 import bucketImg from "../assets/items/bucket.png";
 import lampImg from "../assets/items/lamp.png";
 import BookImg from "../assets/items/book.png";
+import KahoyImg from "../assets/items/kahoy.png";
+import DruminImg from "../assets/items/drumin.png";
+import DapoganImg from "../assets/items/dapogan.png";
+import CarrotImg from "../assets/items/carrot.png";
+import PotatoImg from "../assets/items/potato.png";
 
 //Item images — Kitchen
 import PotImg from "../assets/items/pot.png";
@@ -64,6 +69,10 @@ export const ITEM_IMAGE_MAP = {
   book: BookImg,
   libro: BookImg,
   bag: AssetManifest.village.items.bag,
+  kahoy: KahoyImg,
+  drumin: DruminImg,
+  firewood: KahoyImg,
+  dapogan: DapoganImg,
 
   // Kitchen
   pot: PotImg,
@@ -78,6 +87,8 @@ export const ITEM_IMAGE_MAP = {
   plato: PlateImg,
   cup: CupImg,
   tasa: CupImg,
+  carrot: CarrotImg,
+  potato: PotatoImg,
   // Bedroom
   almohada: PillowImg,
   bedsheet: BedsheetImg,
