@@ -3,8 +3,7 @@ export const environmentCollisions = {
     village: {
         // Houses
         houses: [
-            { x: 5, y: 25, width: 15, height: 35, name: "Vicente's House" },
-            { x: 33, y: 0, width: 15, height: 35, name: "Nando's House" },
+
             { x: 50, y: 54, width: 15, height: 25, name: "Bottom Right House" },
             { x: 2, y: 75, width: 17, height: 25, name: "Market Stall" },
             { x: 81, y: 50, width: 17, height: 30, name: "Bottom right-right House" },

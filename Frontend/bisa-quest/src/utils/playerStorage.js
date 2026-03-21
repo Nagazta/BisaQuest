@@ -39,7 +39,7 @@ export const savePreferences = (preferences) => {
  * Also auto-unlocks the NEXT environment when this one hits 100%.
  *
  * @param {string}   environment  'village' | 'forest' | 'castle'
- * @param {string}   npcId        e.g. 'village_npc_1'
+ * @param {string}   npcId        e.g. 'village_npc_2'
  * @param {number}   score        items/words answered correctly
  * @param {boolean}  passed       whether the challenge counts as complete
  * @param {number}   npcCount     total NPCs in this environment (default 3)
@@ -212,9 +212,7 @@ export const hasLibroPage = (environment, npcId) => {
 // NPC display-name lookup per environment
 const INTERNAL_NPC_META = {
     village: {
-        village_npc_1: { name: "Vicente" },
         village_npc_2: { name: "Ligaya" },
-        village_npc_3: { name: "Nando" },
     },
     forest: {
         forest_npc_1: { name: "Lunti" },

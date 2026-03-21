@@ -155,14 +155,16 @@
 
 .house-hover-tooltip-bisaya {
   font-weight: 700;
+  font-size: 15px;
   color: #fcd765;
   display: block;
+
 }
 
 .house-hover-tooltip-english {
   font-weight: 400;
   color: #e0e0e0;
-  font-size: 11px;
+  font-size: 15px;
   display: block;
 }
 
@@ -225,7 +227,7 @@
 
 .house-idle-hint-bisaya {
   font-family: 'Pixelify Sans', sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
   color: #fcd765;
   line-height: 1.3;
@@ -233,7 +235,7 @@
 
 .house-idle-hint-english {
   font-family: 'Pixelify Sans', sans-serif;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: normal;
   color: #c8b99a;
   font-style: italic;
@@ -365,8 +367,15 @@
 }
 
 @keyframes house-door-pop {
-  0% { transform: scale(0.8); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .house-door-close {

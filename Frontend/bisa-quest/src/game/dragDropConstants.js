@@ -37,28 +37,7 @@ import PantsImg from "../assets/items/pants.png";
 import DressImg from "../assets/items/dress.jpg";
 import ShoesImg from "../assets/items/shoes.png";
 
-// Item images — Market Stall (fruits)
-import MangoRipeImg from "../assets/items/mango.jpg";
-import MangoUnripeImg from "../assets/items/mango_notripe.jpg";
-import BananaRipeImg from "../assets/items/banana.jpg";
-import BananaUnripeImg from "../assets/items/banana_notripe.jpg";
-import watermelonImg from "../assets/items/fruit_watermelon.png";
-import santolImg from "../assets/items/fruit_santol.png";
-import lansonsesImg from "../assets/items/fruit_lansones.png";
 
-//Item images - Farm
-import WateringCanImg from "../assets/items/wateringCan.png";
-import shovelImg from "../assets/items/shovel.png";
-import kahoyImg from "../assets/items/kahoy.png";
-import carabaoImg from "../assets/items/carabao.png";
-import carabaoPlowImg from "../assets/items/carabao_nag-araro.png";
-import chickenImg from "../assets/items/chicken.jpg";
-
-// Scene backgrounds - Farm
-import farmBackground from "../assets/images/environments/scenario/farm.png";
-import emptyFarmBackground from "../assets/items/emptyFarm.png";
-import pottedPlantImg from "../assets/items/potted_plant.png";
-import matchstickImg from "../assets/items/matchstick.png";
 
 export const ITEM_IMAGE_MAP = {
   // Living room
@@ -107,36 +86,7 @@ export const ITEM_IMAGE_MAP = {
   tuwalya: TowelImg,
   dress: DressImg,
   shoes: ShoesImg,
-  // Market Stall — fruits
-  mangga: MangoRipeImg,
-  mango: MangoRipeImg,
-  mangga_ripe: MangoRipeImg,
-  mangga_unripe: MangoUnripeImg,
-  mango_notripe: MangoUnripeImg,
-  fruit_sour: MangoUnripeImg,   // comprehension wrong choice (sour/unripe)
-  saging: BananaRipeImg,
-  banana: BananaRipeImg,
-  saging_ripe: BananaRipeImg,
-  saging_unripe: BananaUnripeImg,
-  banana_notripe: BananaUnripeImg,
-  fruit_round: BananaUnripeImg,  // comprehension wrong choice (round/unripe)
-  pakwan: watermelonImg,
-  santol: santolImg,
-  lansones: lansonsesImg,
 
-  // Farm
-  regadera: WateringCanImg,
-  pala: shovelImg,
-  kahoy: kahoyImg,
-  kabaw: carabaoImg,
-  carabao: carabaoImg,
-  kabaw_river: carabaoImg,
-  manok: chickenImg,
-  chicken: chickenImg,
-
-  // Generated items
-  potted_plant: pottedPlantImg,
-  matchstick: matchstickImg,
 };
 
 // Scene backgrounds
@@ -144,8 +94,7 @@ export const SCENE_BACKGROUNDS = {
   living_room: houseBackground,
   kitchen: kitchenBackground,
   bedroom: bedroomBackground,
-  farm: farmBackground,
-  empty_farm: emptyFarmBackground,
+
   living_room_spill: null,  // imported directly in HousePage
 };
 

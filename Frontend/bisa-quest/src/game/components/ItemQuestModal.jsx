@@ -17,7 +17,6 @@ import AdjustClockGame from "./minigames/AdjustClockGame";
 import CalendarView from "./minigames/CalendarView";
 import ScheduleEventGame from "./minigames/ScheduleEventGame";
 import WashDishesGame from "./minigames/WashDishesGame";
-import FillBasketGame from "./minigames/FillBasketGame";
 import DragToZoneGame from "./minigames/DragToZoneGame";
 import LightLampGame from "./minigames/LightLampGame";
 import FanSpeedGame from "./minigames/FanSpeedGame";
@@ -151,7 +150,6 @@ const ITEM_QUESTS = {
             { id: "pack_book", imageKey: "book", startX: 15, startY: 80 },
             { id: "pack_towel", imageKey: "towel", startX: 85, startY: 80 },
             { id: "pack_shirt", imageKey: "baro", startX: 15, startY: 20 },
-            { id: "pack_banana", imageKey: "banana", startX: 85, startY: 20 },
         ],
         bagZone: { x: 25, y: 20, w: 50, h: 60 },
     },
@@ -160,12 +158,6 @@ const ITEM_QUESTS = {
         mechanic: "wash_dishes",
         instructionBisaya: "Hugasan nato ang mga hugaw nga plato ug uban pa!",
         instructionEnglish: "Let's wash the dirty dishes and other things!",
-    },
-
-    basket_kitchen: {
-        mechanic: "fill_basket",
-        instructionBisaya: "Ibutang ang mga prutas sa basket!",
-        instructionEnglish: "Put the fruits into the basket!",
     },
 
     // ── LIVING ROOM — drag-to-zone games ──────────────────────────────────────
@@ -248,24 +240,6 @@ const ITEM_QUESTS = {
                 { id: "mat_5", x: 55, y: 72, w: 8, h: 6 },
             ],
         },
-    },
-    bulak: {
-        mechanic: "scene_drag",
-        background: "clean",
-        backgroundClean: "clean",
-        instructionBisaya: "Tubigi ang tanum gamit ang regadera!",
-        instructionEnglish: "Water the plant using the watering can!",
-        draggable: {
-            id: "watering_can_item",
-            label: "Regadera",
-            imageKey: "regadera",
-            startX: 75, startY: 70,
-        },
-        dirtSpots: [
-            { id: "plant_1", x: 13, y: 26, w: 6, h: 6 },
-            { id: "plant_2", x: 14, y: 30, w: 5, h: 4 },
-            { id: "plant_3", x: 16, y: 28, w: 4, h: 4 },
-        ],
     },
     litrato: {
         mechanic: "wipe",
@@ -708,9 +682,7 @@ const ItemQuestModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
     if (quest.mechanic === "wash_dishes") {
         return <WashDishesGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
     }
-    if (quest.mechanic === "fill_basket") {
-        return <FillBasketGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
-    }
+
     if (quest.mechanic === "drag_to_zone") {
         return <DragToZoneGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
     }
