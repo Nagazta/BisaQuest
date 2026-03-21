@@ -147,12 +147,13 @@ const DialogueBox = ({
           )}
         </div>
 
-        {/* Right — custom slot OR arrow */}
-        {rightSlot ? (
-          <div style={{ flexShrink: 0, marginRight: 24 }}>
+        {/* Right — custom slot AND arrow */}
+        {rightSlot && (
+          <div style={{ flexShrink: 0, marginRight: 12 }}>
             {rightSlot}
           </div>
-        ) : showNextButton ? (
+        )}
+        {showNextButton && (
           <Button
             variant="arrow"
             className={arrowClass}
@@ -162,7 +163,7 @@ const DialogueBox = ({
           >
             <img src={AssetManifest.ui.arrow} alt="Next" className="arrow-icon" />
           </Button>
-        ) : null}
+        )}
 
       </div>
     </>
