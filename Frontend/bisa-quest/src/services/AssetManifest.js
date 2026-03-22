@@ -138,6 +138,7 @@ import forestRiverImg from "../assets/images/environments/scenario/forest-river.
 import forestPondImg from "../assets/images/environments/scenario/forest-pond.png";
 import forestGlowImg from "../assets/images/environments/scenario/forest-glow.png";
 import pondUnderwaterImg from "../assets/images/environments/scenario/pond-underwater.png";
+import forestCampFire from "../assets/images/environments/scenario/forest-camp-fire.png";
 import forestGuardianHungry from "../assets/images/characters/forest-guardian-hungry.png";
 import fish1 from "../assets/items/fish-1.jpg";
 import fish2 from "../assets/items/fish-2.jpg";
@@ -368,6 +369,7 @@ const AssetManifest = {
             pond: forestPondImg,
             glow: forestGlowImg,
             pondUnderwater: pondUnderwaterImg,
+            campFire: forestCampFire,
         },
         items: {
             fish1: fish1,

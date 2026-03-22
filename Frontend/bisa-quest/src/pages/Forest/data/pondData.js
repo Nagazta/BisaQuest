@@ -87,7 +87,77 @@ export const POND_ITEMS = [
     w: 14,
     h: 18,
   },
+  {
+    id: "kalayo",
+    labelBisaya: "Ang Kalayo",
+    labelEnglish: "The Campfire",
+    descriptionBisaya: "Nagpalami si Lunti og isda sa kalayo.",
+    descriptionEnglish: "Lunti is cooking some delicious fish over the fire.",
+    x: 48,
+    y: 38,
+    w: 10,
+    h: 10,
+  },
 ];
+
+export const CAMPFIRE_GAME_DATA = {
+  rounds: [
+    {
+      id: 1,
+      introDialogue: {
+        speaker: "Lunti",
+        bisayaText: "Gigutom na gyud ko! Mag-luto ta aning hilaw nga isda.",
+        englishText: "I'm so hungry! Let's cook this raw fish."
+      },
+      cookingDialogue: {
+        speaker: "Lunti",
+        bisayaText: "Dugay-dugay gyud ang pag-luto, lipong na ko sa kaguol!",
+        englishText: "It took so long, I'm famished!"
+      },
+      eatingDialogue: {
+        speaker: "Lunti",
+        bisayaText: "LAMI kaayo!",
+        englishText: "DELICIOUS!"
+      }
+    },
+    {
+      id: 2,
+      introDialogue: {
+        speaker: "Lunti",
+        bisayaText: "Luto pa ta og usa.",
+        englishText: "Let's cook another one."
+      },
+      cookingDialogue: {
+        speaker: "Lunti",
+        bisayaText: "Gigutom pa gihapon ko pag-ayo!",
+        englishText: "I'm still starving!"
+      },
+      eatingDialogue: {
+        speaker: "Lunti",
+        bisayaText: "LAMI-A oy!",
+        englishText: "TASTY!"
+      }
+    },
+    {
+      id: 3,
+      introDialogue: {
+        speaker: "Lunti",
+        bisayaText: "Ang katapusan!",
+        englishText: "The last one!"
+      },
+      cookingDialogue: {
+        speaker: "Lunti",
+        bisayaText: "Hapit na gyud ma-luto.",
+        englishText: "Almost done cooking."
+      },
+      eatingDialogue: {
+        speaker: "Lunti",
+        bisayaText: "Pwerting LAMI-A! Gikan sa GUTOM, karon BUSOG na gyud ko!",
+        englishText: "It's so YUMMY! From HUNGRY, I am finally FULL!"
+      }
+    }
+  ]
+};
 
 // ── Intro dialogue ─────────────────────────────────────────────────────
 export const INTRO_DIALOGUE = [
