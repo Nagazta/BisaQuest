@@ -490,15 +490,9 @@ const ITEM_QUESTS = {
     },
 
     lampara: {
-        mechanic: "item_association",
-        instructionBisaya: "Unsay naghatag og suga?",
-        instructionEnglish: "Which one gives light?",
-        items: [
-            { id: "q_lamp", label: "Lampara", imageKey: "lamp", isCorrect: true },
-            { id: "q_broom", label: "Silhig", imageKey: "walis", isCorrect: false },
-            { id: "q_pot", label: "Kaldero", imageKey: "kaldero", isCorrect: false },
-            { id: "q_fan", label: "Bentilador", imageKey: "Bentilador", isCorrect: false },
-        ],
+        mechanic: "light_lamp",
+        instructionBisaya: "Sindiri ang lampara gamit ang posporo!",
+        instructionEnglish: "Light the lamp using the match!",
     },
 
     sopa: {

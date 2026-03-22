@@ -462,6 +462,17 @@
     max-width: 96vw;
 }
 
+.iqm-modal--full {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+}
+
 /* ── Scene canvas ────────────────────────────────────────────── */
 .iqm-scene-canvas {
     position: relative;

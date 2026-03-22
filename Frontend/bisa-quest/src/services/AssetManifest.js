@@ -50,6 +50,11 @@ import sugaOff from "../assets/images/environments/scenario/suga_off.jpeg";
 import dustFeatherImg from "../assets/items/dust_feather.jpg";
 import ironBoardImg from "../assets/images/environments/scenario/iron_board.png";
 import ironImg from "../assets/items/iron.jpg";
+import lampOn from "../assets/items/lamp_on.png";
+import lampOff from "../assets/items/lamp_off.png";
+import boxMatch from "../assets/items/box_match.jpg";
+import litMatch from "../assets/items/lit_match.jpg";
+import matchImg from "../assets/items/match.jpg";
 
 // ── Forest assets ────────────────────────────────────────────────────────────
 import ForestBackground from "../assets/images/environments/Forest.png";
@@ -178,6 +183,8 @@ const AssetManifest = {
             sugaOff: sugaOff,
             dustFeather: dustFeatherImg,
             ironBoard: ironBoardImg,
+            lampOn: lampOn,
+            lampOff: lampOff,
         },
         items: {
             plangganaWater: plangganaWater,
@@ -186,6 +193,9 @@ const AssetManifest = {
             plateWashing: plateWashImg,
             spoon: spoonImg,
             kahoy: kahoyImg,
+            boxMatch: boxMatch,
+            litMatch: litMatch,
+            match: matchImg,
         }
     },
 
