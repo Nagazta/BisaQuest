@@ -28,10 +28,10 @@ import "./BookCollectModal.css";
 
 const BookCollectModal = ({
     isOpen,
-    npcName      = "Your neighbor",
+    npcName      = "Ligaya",
     pageNumber   = 1,       // which page number this is (1–9)
     totalPages   = 1,       // total pages collected so far (for "X / 9")
-    environment  = "village",
+    environment  = "sala",
     onClose,
     autoDismiss  = 4000,    // auto-close after ms (0 = manual only)
 }) => {
@@ -46,55 +46,60 @@ const BookCollectModal = ({
 
     const ENV_LABEL = {
         village: "Village Fragment",
+        sala:    "Sala Fragment",
+        kusina:  "Kusina Fragment",
+        kwarto:  "Kwarto Fragment",
         forest:  "Forest Fragment",
         castle:  "Castle Fragment",
     };
 
-    const PAGE_COLOR = {
-        village: "#c8a96e",
-        forest:  "#7aaa6e",
-        castle:  "#9e8ec8",
-    };
-
     return (
         <div className="book-collect-overlay" onClick={onClose}>
-            <div
-                className="book-collect-modal"
-                style={{ "--page-color": PAGE_COLOR[environment] || "#c8a96e" }}
-                onClick={e => e.stopPropagation()}
-            >
-                {/* Floating pages animation */}
-                <div className="book-collect-pages-burst">
-                    {[...Array(5)].map((_, i) => (
-                        <span key={i} className={`burst-page burst-page--${i + 1}`}>📄</span>
-                    ))}
+            <div className="book-collect-modal" onClick={e => e.stopPropagation()}>
+
+                {/* Header bar */}
+                <div className="book-collect-header">
+                    ✦ {ENV_LABEL[environment] || "Fragment"} ✦
                 </div>
 
-                {/* Book icon */}
-                <div className="book-collect-icon">
-                    <span className="book-icon-emoji">📖</span>
-                    <div className="book-collect-glow" />
-                </div>
+                {/* Body */}
+                <div className="book-collect-body">
 
-                {/* Text */}
-                <div className="book-collect-text">
-                    <p className="book-collect-subtitle">A scattered page found!</p>
+                    {/* Book icon */}
+                    <div className="book-collect-icon">📖</div>
+
+                    {/* Main punchy line */}
                     <h2 className="book-collect-title">
-                        {ENV_LABEL[environment]} — Page {pageNumber}
+                        Maayo! You collected a page!
                     </h2>
+
+                    {/* Sub line */}
                     <p className="book-collect-npc">
-                        {npcName}'s knowledge has been restored to the Libro.
+                        Ang kahibalo ni {npcName} has been restored to the Libro.
                     </p>
-                    <p className="book-collect-counter">
-                        📚 Pages collected: <strong>{totalPages} / 9</strong>
-                    </p>
+
+                    {/* Divider */}
+                    <div className="book-collect-divider" />
+
+                    {/* Page counter */}
+                    <div className="book-collect-counter">
+                        📚 Pages collected: <span className="book-collect-counter-num">{totalPages} / 9</span>
+                    </div>
+
+                    {/* Progress pips */}
+                    <div className="book-collect-pips">
+                        {[...Array(9)].map((_, i) => (
+                            <div key={i} className={`book-collect-pip ${i < totalPages ? "book-collect-pip--done" : ""}`} />
+                        ))}
+                    </div>
+
+                    {/* Button */}
+                    <button className="book-collect-btn" onClick={onClose}>
+                        Padayon →
+                    </button>
+
+                    <p className="book-collect-dismiss">Tap anywhere to continue</p>
                 </div>
-
-                <button className="book-collect-btn" onClick={onClose}>
-                    Continue →
-                </button>
-
-                <p className="book-collect-dismiss">Tap anywhere to continue</p>
             </div>
         </div>
     );
