@@ -271,7 +271,7 @@ const HousePage = () => {
         npcName={collectedPage?.npcName}
         pageNumber={collectedPage?.pageNumber}
         totalPages={getLibroPageCount()}
-        environment="village"
+        environment="sala"
         onClose={() => {
           setShowPageModal(false);
           setShowDoorChoice(true);

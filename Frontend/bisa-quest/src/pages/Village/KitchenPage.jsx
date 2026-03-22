@@ -254,7 +254,7 @@ const [showDoorChoice, setShowDoorChoice] = useState(false);
         npcName={collectedPage?.npcName}
         pageNumber={collectedPage?.pageNumber}
         totalPages={getLibroPageCount()}
-        environment="village"
+        environment="kusina"
         onClose={() => {
           setShowPageModal(false);
           setShowDoorChoice(true);
