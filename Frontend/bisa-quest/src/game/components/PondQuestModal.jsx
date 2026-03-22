@@ -8,6 +8,7 @@ import FrogBridgeGame from "./minigames/FrogBridgeGame";
 import FireflyPairGame from "./minigames/FireflyPairGame";
 import TurtleShellGame from "./minigames/TurtleShellGame";
 import FishingGame from "./minigames/FishingGame";
+import CampfireCookingGame from "./minigames/CampfireCookingGame";
 
 import {
   FISH_FAMILIES_DATA,
@@ -17,6 +18,7 @@ import {
   TURTLE_SYNONYM_PAIRS,
   FISHING_GAME_DATA,
   TURTLE_SHELL_DATA,
+  CAMPFIRE_GAME_DATA,
 } from "../../pages/Forest/data/pondData";
 
 // Map each pond item id to its mini-game config
@@ -49,6 +51,10 @@ const POND_QUESTS = {
   pawikan: {
     mechanic: "turtle_shell_repair",
     ...TURTLE_SHELL_DATA,
+  },
+  kalayo: {
+    mechanic: "campfire_cooking",
+    ...CAMPFIRE_GAME_DATA,
   },
 };
 
@@ -83,6 +89,8 @@ const PondQuestModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
       return <TurtleShellGame {...sharedProps} />;
     case "fishing_game":
       return <FishingGame {...sharedProps} />;
+    case "campfire_cooking":
+      return <CampfireCookingGame {...sharedProps} />;
     default:
       return null;
   }
