@@ -9,6 +9,7 @@ import FireflyPairGame from "./minigames/FireflyPairGame";
 import TurtleShellGame from "./minigames/TurtleShellGame";
 import FishingGame from "./minigames/FishingGame";
 import CampfireCookingGame from "./minigames/CampfireCookingGame";
+import FlowerBloomingGame from "./minigames/FlowerBloomingGame";
 
 import {
   FISH_FAMILIES_DATA,
@@ -19,6 +20,7 @@ import {
   FISHING_GAME_DATA,
   TURTLE_SHELL_DATA,
   CAMPFIRE_GAME_DATA,
+  FLOWER_GAME_DATA,
 } from "../../pages/Forest/data/pondData";
 
 // Map each pond item id to its mini-game config
@@ -56,6 +58,10 @@ const POND_QUESTS = {
     mechanic: "campfire_cooking",
     ...CAMPFIRE_GAME_DATA,
   },
+  bulaklak: {
+    mechanic: "flower_blooming",
+    ...FLOWER_GAME_DATA,
+  },
 };
 
 const PondQuestModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
@@ -91,6 +97,8 @@ const PondQuestModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
       return <FishingGame {...sharedProps} />;
     case "campfire_cooking":
       return <CampfireCookingGame {...sharedProps} />;
+    case "flower_blooming":
+      return <FlowerBloomingGame {...sharedProps} />;
     default:
       return null;
   }

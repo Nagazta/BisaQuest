@@ -98,62 +98,42 @@ export const POND_ITEMS = [
     w: 10,
     h: 10,
   },
+  {
+    id: "bulaklak",
+    labelBisaya: "Mga Bulaklak",
+    labelEnglish: "The Flowers",
+    descriptionBisaya: "Ang mga bulaklak nangalaya na. Tabangi si Lunti nga mapresko kini balik pinaagi sa pagbisbis og tubig!",
+    descriptionEnglish: "The flowers have withered. Help Lunti make them fresh again by watering them!",
+    x: 58,
+    y: 75,
+    w: 12,
+    h: 12,
+  },
 ];
 
 export const CAMPFIRE_GAME_DATA = {
+  // ... (previous campfire data)
+};
+
+export const FLOWER_GAME_DATA = {
   rounds: [
     {
       id: 1,
+      targetConcept: "Antonym & Synonym",
       introDialogue: {
         speaker: "Lunti",
-        bisayaText: "Gigutom na gyud ko! Mag-luto ta aning hilaw nga isda.",
-        englishText: "I'm so hungry! Let's cook this raw fish."
+        bisayaText: "Bisbisan nato kining MALAYA nga bulak para mahimo kining PRESKO!",
+        englishText: "Let's water this Wilted (malaya) flower to make it Fresh (presko)!"
       },
-      cookingDialogue: {
+      wateringDialogues: [
+        { threshold: 0, bisayaText: "Sige pa, bisbisi pa og maayo!", englishText: "Keep going, water them well!" },
+        { threshold: 33, bisayaText: "Wow! Pagka-NINDOT (Beautiful) na gyud tan-awon!", englishText: "Wow! It looks Beautiful (Nindot)!" },
+        { threshold: 66, bisayaText: "Tan-awa! Pagka-GWAPA (Pretty) na gyud ni!", englishText: "Look! This one is Pretty (Gwapa)!" }
+      ],
+      resultDialogue: {
         speaker: "Lunti",
-        bisayaText: "Dugay-dugay gyud ang pag-luto, lipong na ko sa kaguol!",
-        englishText: "It took so long, I'm famished!"
-      },
-      eatingDialogue: {
-        speaker: "Lunti",
-        bisayaText: "LAMI kaayo!",
-        englishText: "DELICIOUS!"
-      }
-    },
-    {
-      id: 2,
-      introDialogue: {
-        speaker: "Lunti",
-        bisayaText: "Luto pa ta og usa.",
-        englishText: "Let's cook another one."
-      },
-      cookingDialogue: {
-        speaker: "Lunti",
-        bisayaText: "Gigutom pa gihapon ko pag-ayo!",
-        englishText: "I'm still starving!"
-      },
-      eatingDialogue: {
-        speaker: "Lunti",
-        bisayaText: "LAMI-A oy!",
-        englishText: "TASTY!"
-      }
-    },
-    {
-      id: 3,
-      introDialogue: {
-        speaker: "Lunti",
-        bisayaText: "Ang katapusan!",
-        englishText: "The last one!"
-      },
-      cookingDialogue: {
-        speaker: "Lunti",
-        bisayaText: "Hapit na gyud ma-luto.",
-        englishText: "Almost done cooking."
-      },
-      eatingDialogue: {
-        speaker: "Lunti",
-        bisayaText: "Pwerting LAMI-A! Gikan sa GUTOM, karon BUSOG na gyud ko!",
-        englishText: "It's so YUMMY! From HUNGRY, I am finally FULL!"
+        bisayaText: "Pagka-MATAHOM na gyud! NINDOT, GWAPA, ug MATAHOM ang mga flowers",
+        englishText: "It's really LOVELY! The flowers are beautiful, pretty, and lovely!"
       }
     }
   ]
