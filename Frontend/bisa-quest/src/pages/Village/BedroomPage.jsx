@@ -256,7 +256,7 @@ const BedroomPage = () => {
         npcName={collectedPage?.npcName}
         pageNumber={collectedPage?.pageNumber}
         totalPages={getLibroPageCount()}
-        environment="village"
+        environment="kwarto"
         onClose={() => {
           setShowPageModal(false);
           setShowDoorChoice(true);

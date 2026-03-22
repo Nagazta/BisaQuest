@@ -9,7 +9,7 @@ import FireflyPairGame from "./minigames/FireflyPairGame";
 import TurtleShellGame from "./minigames/TurtleShellGame";
 
 import {
-  FISH_SYNONYM_PAIRS,
+  FISH_FAMILIES_DATA,
   SQUIRREL_ANTONYM_PAIRS,
   FROG_ANTONYM_SLOTS,
   FIREFLY_SYNONYM_PAIRS,
@@ -19,12 +19,11 @@ import {
 // Map each pond item id to its mini-game config
 const POND_QUESTS = {
   isda: {
-    mechanic: "fish_pair",
-    pairs: FISH_SYNONYM_PAIRS,
-    instructionBisaya: "I-drag ang isda paduol sa iyang synonym partner!",
-    instructionEnglish: "Drag the fish to its synonym partner!",
+    mechanic: "fish_families",
+    ...FISH_FAMILIES_DATA,
   },
-  unggoy: {
+  // key matches POND_ITEMS id: "laksoy"
+  laksoy: {
     mechanic: "squirrel_sort",
     data: SQUIRREL_ANTONYM_PAIRS,
     instructionBisaya: "I-drag ang bunga sa hollow nga may kabaliktaran nga pulong!",
@@ -69,7 +68,7 @@ const PondQuestModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
   const sharedProps = { quest, item, npcName, npcImage, onClose, onComplete };
 
   switch (quest.mechanic) {
-    case "fish_pair":
+    case "fish_families":
       return <FishPairGame {...sharedProps} />;
     case "squirrel_sort":
       return <SquirrelSortGame {...sharedProps} />;
