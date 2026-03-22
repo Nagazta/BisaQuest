@@ -11,6 +11,7 @@ import {
     hasCutsceneSeen,
     markCompleteDismissed,
     isCompleteDismissed,
+    getLibroPageCountForEnv,
 } from "../../utils/playerStorage";
 import AssetManifest from "../../services/AssetManifest";
 import bgMusic from "../../assets/music/bg-music.mp3";
@@ -22,7 +23,7 @@ import "./ForestPage.css";
 
 const FOREST_NPCS = [
     { npcId: "forest_npc_1", name: "Lunti", x: 25, y: 35, character: AssetManifest.forest.npcs.forest_guardian, showName: true, quest: "synonym_antonym" },
-    { npcId: "forest_npc_2", name: "Ronaldo", x: 72, y: 35, character: AssetManifest.forest.npcs.wandering_bard, showName: true, quest: "synonym_antonym" }, // TODO: no quests yet
+    // { npcId: "forest_npc_2", name: "Ronaldo", x: 72, y: 35, character: AssetManifest.forest.npcs.wandering_bard, showName: true, quest: "synonym_antonym" }, // TODO: no quests yet
     { npcId: "forest_npc_3", name: "Diwata", x: 45, y: 45, character: AssetManifest.forest.npcs.diwata, showName: true, quest: "synonym_antonym" },
 ];
 
@@ -73,9 +74,14 @@ const ForestPage = () => {
     const loadForestProgress = () => {
         const progress = getProgress();
         const pct = progress.forest_progress || 0;
-        setForestProgress(pct);
+        const forestPages = getLibroPageCountForEnv("forest");
 
-        if (pct >= 100 && !isCompleteDismissed("forest")) {
+        // Show real page-based progress: each page = 33%
+        const effectivePct = Math.max(pct, Math.min(Math.round((forestPages / 3) * 100), 100));
+        setForestProgress(effectivePct);
+
+        // Trigger completion when 3+ forest libro pages collected
+        if (effectivePct >= 100 && !isCompleteDismissed("forest")) {
             const words = getLearnedWords("forest");
             setLearnedWords(words);
             setShowCompleteModal(true);
