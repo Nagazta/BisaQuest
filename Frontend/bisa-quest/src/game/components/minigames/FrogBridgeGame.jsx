@@ -1,337 +1,441 @@
 // ─────────────────────────────────────────────────────────────────────────────
-//  FrogBridgeGame.jsx — Bridge builder: place antonym stones on lily pads
-//  A row of lily pads forms a bridge. Some have words, others are empty slots.
-//  Player drags word-stones from the bottom to fill each empty slot with
-//  the ANTONYM of the adjacent pad's word.
+//  FrogBridgeGame.jsx — "Frog Lily Path"
+//  The frog clicks its way across 3 rows of lily pad pairs.
+//  Each row has one SAFE pad (healthy green — synonym concept) and one
+//  UNSAFE pad (wilted/broken — antonym concept), placed randomly top/bottom.
+//  After crossing, Lunti teaches synonyms then antonyms through dialogue.
+//  Pads are pure SVG visuals — no text labels.
 // ─────────────────────────────────────────────────────────────────────────────
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef } from "react";
 
+// ── SVG Lily Pad ──────────────────────────────────────────────────────────────
+const LilyPad = ({ variant, size = 68, onClick, shake, glow }) => {
+  const s = size;
+  const cx = s / 2;
+  const cy = s / 2;
+  const r = s / 2 - 3;
+
+  const svgContent = () => {
+    switch (variant) {
+      // ── Safe variants (green) ──────────────────────────────────────────────
+      case "perfect":
+        return (
+          <>
+            <circle cx={cx} cy={cy} r={r} fill="#43a047" />
+            {/* Leaf veins */}
+            <line x1={cx} y1={5} x2={cx} y2={cy} stroke="#2e7d32" strokeWidth="2.5" opacity="0.7" />
+            <line x1={cx} y1={cy} x2={cx + r - 5} y2={cy + r - 5} stroke="#2e7d32" strokeWidth="2" opacity="0.6" />
+            <line x1={cx} y1={cy} x2={cx - r + 5} y2={cy + r - 5} stroke="#2e7d32" strokeWidth="2" opacity="0.6" />
+          </>
+        );
+      case "small_hole":
+        return (
+          <>
+            <circle cx={cx} cy={cy} r={r} fill="#43a047" />
+            <line x1={cx} y1={5} x2={cx} y2={cy} stroke="#2e7d32" strokeWidth="2.5" opacity="0.7" />
+            <line x1={cx} y1={cy} x2={cx + r - 5} y2={cy + r - 5} stroke="#2e7d32" strokeWidth="2" opacity="0.6" />
+            {/* Small hole */}
+            <circle cx={cx + r * 0.45} cy={cy - r * 0.35} r={5} fill="#1b5e20" opacity="0.9" />
+          </>
+        );
+      case "tiny_crack":
+        return (
+          <>
+            <circle cx={cx} cy={cy} r={r} fill="#43a047" />
+            <line x1={cx} y1={5} x2={cx} y2={cy} stroke="#2e7d32" strokeWidth="2.5" opacity="0.7" />
+            <line x1={cx} y1={cy} x2={cx - r + 5} y2={cy + r - 5} stroke="#2e7d32" strokeWidth="2" opacity="0.6" />
+            {/* Tiny crack — short jagged line */}
+            <path
+              d={`M ${cx - 10} ${cy - 14} L ${cx - 5} ${cy - 6} L ${cx - 12} ${cy}`}
+              stroke="#1b5e20" strokeWidth="2" fill="none" opacity="0.9"
+            />
+          </>
+        );
+
+      // ── Unsafe variants (brown/wilted) ─────────────────────────────────────
+      case "wilted":
+        // Droopy irregular ellipse, brownish
+        return (
+          <>
+            <ellipse
+              cx={cx} cy={cy + 5}
+              rx={r - 3} ry={r - 10}
+              fill="#8d6e63"
+              transform={`rotate(-20, ${cx}, ${cy})`}
+            />
+            {/* Extra wilted droop */}
+            <ellipse
+              cx={cx - 6} cy={cy + 8}
+              rx={r - 10} ry={r - 14}
+              fill="#795548" opacity="0.7"
+              transform={`rotate(15, ${cx}, ${cy})`}
+            />
+          </>
+        );
+      case "cracks":
+        return (
+          <>
+            <circle cx={cx} cy={cy} r={r} fill="#6d4c41" />
+            {/* Multiple crack lines */}
+            <path
+              d={`M ${cx - 8} ${cy - r + 6} L ${cx - 3} ${cy - 5} L ${cx + 5} ${cy + 3} L ${cx + 2} ${cy + r - 6}`}
+              stroke="#3e2723" strokeWidth="2.5" fill="none"
+            />
+            <path
+              d={`M ${cx + 8} ${cy - 12} L ${cx + 3} ${cy + 6}`}
+              stroke="#3e2723" strokeWidth="1.5" fill="none"
+            />
+            <path
+              d={`M ${cx - 20} ${cy + 6} L ${cx - 5} ${cy + 3}`}
+              stroke="#3e2723" strokeWidth="1.5" fill="none"
+            />
+            <path
+              d={`M ${cx + r - 8} ${cy - 10} L ${cx + r - 14} ${cy + 4}`}
+              stroke="#3e2723" strokeWidth="1" fill="none"
+            />
+          </>
+        );
+      case "huge_hole":
+        return (
+          <>
+            <circle cx={cx} cy={cy} r={r} fill="#6d4c41" />
+            {/* Huge hole — same colour as the pond background to punch through */}
+            <circle cx={cx} cy={cy} r={r * 0.52} fill="#1a6fa8" />
+          </>
+        );
+
+      default:
+        return <circle cx={cx} cy={cy} r={r} fill="#43a047" />;
+    }
+  };
+
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        cursor: onClick ? "pointer" : "default",
+        animation: shake ? "pad-shake 0.4s ease" : undefined,
+        filter: glow
+          ? "drop-shadow(0 0 10px #a5d6a7) drop-shadow(0 0 4px #69f0ae)"
+          : "none",
+        transition: "filter 0.3s ease",
+        userSelect: "none",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <svg width={s} height={s} viewBox={`0 0 ${s} ${s}`}>
+        {svgContent()}
+      </svg>
+    </div>
+  );
+};
+
+// ── Component ─────────────────────────────────────────────────────────────────
 const FrogBridgeGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) => {
-  const { slots } = quest;
+  const { introDialogue, synonymDialogue, antonymDialogue, padRows } = quest;
 
-  // Build the bridge layout: [word pad, empty slot, word pad, empty slot, ...]
-  const bridgeLayout = slots.flatMap((slot, i) => [
-    { type: "pad", word: slot.padWord, meaning: slot.padMeaning, slotIndex: i },
-    { type: "slot", expectedWord: slot.stoneWord, expectedMeaning: slot.stoneMeaning, slotIndex: i },
-  ]);
-
-  // Stones at the bottom (shuffled)
-  const stonesRef = useRef(
-    [...slots]
-      .sort(() => Math.random() - 0.5)
-      .map((slot, i) => ({
-        id: `stone_${i}`,
-        word: slot.stoneWord,
-        meaning: slot.stoneMeaning,
-        slotIndex: slot.padMeaning === slots.find(s => s.stoneWord === slot.stoneWord)?.padMeaning
-          ? slots.findIndex(s => s.stoneWord === slot.stoneWord)
-          : i,
-        startX: 15 + i * 28,
-        startY: 82,
-      }))
+  // Randomise safe pad placement (top vs bottom) for each row — once on mount
+  const rowConfigs = useRef(
+    padRows.map(() => ({ safeOnTop: Math.random() > 0.5 }))
   ).current;
 
-  // Re-map slotIndex correctly
-  const stones = stonesRef.map((stone) => ({
-    ...stone,
-    slotIndex: slots.findIndex((s) => s.stoneWord === stone.word),
-  }));
-
+  // ── Stage machine ─────────────────────────────────────────────────────────
+  // intro → playing → synonym_lesson → antonym_lesson → done
   const [stage, setStage] = useState("intro");
-  const [introStep, setIntroStep] = useState(0);
-  const [positions, setPositions] = useState(
-    Object.fromEntries(stones.map((s) => [s.id, { x: s.startX, y: s.startY }]))
-  );
-  const [filled, setFilled] = useState({}); // slotIndex → stoneId
-  const [draggedId, setDraggedId] = useState(null);
-  const [splashId, setSplashId] = useState(null);
-  const [frogProgress, setFrogProgress] = useState(0);
+  const [dialogueStep, setDialogueStep] = useState(0);
 
-  const containerRef = useRef(null);
-  const dragOffset = useRef({ x: 0, y: 0 });
+  // ── Progress ──────────────────────────────────────────────────────────────
+  // currentRow: index of the next pad row the player should click (0–2).
+  // Once it reaches padRows.length the frog is at the end.
+  const [currentRow, setCurrentRow] = useState(0);
+  const [reachedRows, setReachedRows] = useState([]); // row indices successfully crossed
+  const [shakePad, setShakePad] = useState(null); // { row, top: bool }
 
-  const introDialogue = [
-    {
-      bisayaText: `${item.emoji} ${item.labelBisaya}! Ang tulay sa mga baki nabuak!`,
-      englishText: `${item.emoji} ${item.labelEnglish}! The frogs' bridge is broken!`,
-    },
-    {
-      bisayaText: quest.instructionBisaya,
-      englishText: quest.instructionEnglish,
-    },
-  ];
+  // ── Frog position (percentage coords) ────────────────────────────────────
+  const [frogX, setFrogX] = useState(8);
+  const [frogY, setFrogY] = useState(50);
 
-  const handleIntroNext = () => {
-    if (introStep < introDialogue.length - 1) setIntroStep((s) => s + 1);
-    else setStage("playing");
+  // ── Dialogue helpers ──────────────────────────────────────────────────────
+  const currentLines =
+    stage === "intro" ? introDialogue :
+      stage === "synonym_lesson" ? synonymDialogue :
+        stage === "antonym_lesson" ? antonymDialogue : null;
+
+  const dialogueLine = currentLines?.[dialogueStep] ?? null;
+
+  const handleDialogueNext = () => {
+    if (!currentLines) return;
+    if (dialogueStep < currentLines.length - 1) {
+      setDialogueStep((s) => s + 1);
+    } else {
+      if (stage === "intro") { setStage("playing"); setDialogueStep(0); }
+      else if (stage === "synonym_lesson") { setStage("antonym_lesson"); setDialogueStep(0); }
+      else if (stage === "antonym_lesson") { setStage("done"); }
+    }
   };
 
-  // Slot positions (percentage)
-  const getSlotPos = (index) => {
-    const totalItems = bridgeLayout.length;
-    const spacing = 80 / totalItems;
-    return { x: 10 + index * spacing, y: 40 };
-  };
+  // ── Pad click ─────────────────────────────────────────────────────────────
+  // xPct for each row column: 30%, 52%, 74%
+  const colX = (rowIndex) => 30 + rowIndex * 22;
 
-  const handlePointerDown = (id, e) => {
+  const handlePadClick = (rowIndex, isSafe, isTop) => {
     if (stage !== "playing") return;
-    // Don't allow dragging already-placed stones
-    if (Object.values(filled).includes(id)) return;
-    e.preventDefault();
-    const rect = e.currentTarget.getBoundingClientRect();
-    dragOffset.current = { x: e.clientX - rect.left - rect.width / 2, y: e.clientY - rect.top - rect.height / 2 };
-    setDraggedId(id);
-    e.currentTarget.setPointerCapture(e.pointerId);
+    if (rowIndex !== currentRow) return;
+
+    if (isSafe) {
+      const safeY = isTop ? 27 : 73;
+      setFrogX(colX(rowIndex));
+      setFrogY(safeY);
+      setReachedRows((prev) => [...prev, rowIndex]);
+      const next = currentRow + 1;
+      setCurrentRow(next);
+
+      if (next >= padRows.length) {
+        // Hop to end pad then start lesson
+        setTimeout(() => {
+          setFrogX(92);
+          setFrogY(50);
+          setTimeout(() => {
+            setStage("synonym_lesson");
+            setDialogueStep(0);
+          }, 550);
+        }, 400);
+      }
+    } else {
+      // Wrong — shake that pad, frog stays
+      setShakePad({ row: rowIndex, top: isTop });
+      setTimeout(() => setShakePad(null), 500);
+    }
   };
 
-  const handlePointerMove = (id, e) => {
-    if (draggedId !== id) return;
-    e.preventDefault();
-    const container = containerRef.current;
-    if (!container) return;
-    const r = container.getBoundingClientRect();
-    const x = ((e.clientX - dragOffset.current.x - r.left) / r.width) * 100;
-    const y = ((e.clientY - dragOffset.current.y - r.top) / r.height) * 100;
-    setPositions((prev) => ({ ...prev, [id]: { x: Math.min(Math.max(x, 2), 98), y: Math.min(Math.max(y, 2), 98) } }));
-  };
+  // ── Canvas content ────────────────────────────────────────────────────────
+  const renderPlayingCanvas = () => (
+    <>
+      {/* Water shimmer */}
+      <div style={{
+        position: "absolute", inset: 0, borderRadius: "12px",
+        background: "repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(255,255,255,0.04) 20px, rgba(255,255,255,0.04) 22px)",
+        pointerEvents: "none",
+      }} />
 
-  const handlePointerUp = useCallback(
-    (id, e) => {
-      if (draggedId !== id) return;
-      setDraggedId(null);
-      if (e?.currentTarget && e.pointerId != null) {
-        try { e.currentTarget.releasePointerCapture(e.pointerId); } catch (_) {}
-      }
+      {/* Start pad */}
+      <div style={{ position: "absolute", left: "8%", top: "50%", transform: "translate(-50%, -50%)" }}>
+        <LilyPad variant="perfect" size={58} />
+        <div style={{ textAlign: "center", fontSize: 9, color: "rgba(255,255,255,0.6)", marginTop: 2 }}>Start</div>
+      </div>
 
-      const stone = stones.find((s) => s.id === id);
-      const pos = positions[id];
-      if (!stone || !pos) return;
+      {/* Pad rows */}
+      {padRows.map((row, rowIndex) => {
+        const xPct = colX(rowIndex);
+        const cfg = rowConfigs[rowIndex];
+        const isClickable = stage === "playing" && rowIndex === currentRow;
 
-      // Check proximity to each empty slot
-      const emptySlots = bridgeLayout
-        .map((item, idx) => ({ ...item, layoutIdx: idx }))
-        .filter((item) => item.type === "slot" && !filled[item.slotIndex]);
+        const topVariant = cfg.safeOnTop ? row.safeVariant : row.unsafeVariant;
+        const botVariant = cfg.safeOnTop ? row.unsafeVariant : row.safeVariant;
+        const topIsSafe = cfg.safeOnTop;
 
-      for (const slot of emptySlots) {
-        const slotPos = getSlotPos(slot.layoutIdx);
-        const dist = Math.sqrt((pos.x - slotPos.x) ** 2 + (pos.y - slotPos.y) ** 2);
+        const topShake = shakePad?.row === rowIndex && shakePad?.top === true;
+        const botShake = shakePad?.row === rowIndex && shakePad?.top === false;
+        const topGlow = reachedRows.includes(rowIndex) && cfg.safeOnTop;
+        const botGlow = reachedRows.includes(rowIndex) && !cfg.safeOnTop;
 
-        if (dist < 12) {
-          // Check if correct antonym
-          if (stone.slotIndex === slot.slotIndex) {
-            // Correct!
-            setFilled((prev) => {
-              const next = { ...prev, [slot.slotIndex]: id };
-              const filledCount = Object.keys(next).length;
-              setFrogProgress(filledCount);
-              if (filledCount >= slots.length) {
-                setTimeout(() => setStage("success"), 700);
-              }
-              return next;
-            });
-            // Snap stone into the slot position
-            setPositions((prev) => ({ ...prev, [id]: slotPos }));
-            return;
-          } else {
-            // Wrong — splash animation
-            setSplashId(id);
-            setTimeout(() => setSplashId(null), 600);
-            setPositions((prev) => ({ ...prev, [id]: { x: stone.startX, y: stone.startY } }));
-            return;
-          }
-        }
-      }
+        return (
+          <React.Fragment key={rowIndex}>
+            {/* Top pad */}
+            <div style={{ position: "absolute", left: `${xPct}%`, top: "27%", transform: "translate(-50%, -50%)" }}>
+              <LilyPad
+                variant={topVariant}
+                size={66}
+                onClick={isClickable ? () => handlePadClick(rowIndex, topIsSafe, true) : undefined}
+                shake={topShake}
+                glow={topGlow}
+              />
+            </div>
+            {/* Bottom pad */}
+            <div style={{ position: "absolute", left: `${xPct}%`, top: "73%", transform: "translate(-50%, -50%)" }}>
+              <LilyPad
+                variant={botVariant}
+                size={66}
+                onClick={isClickable ? () => handlePadClick(rowIndex, !topIsSafe, false) : undefined}
+                shake={botShake}
+                glow={botGlow}
+              />
+            </div>
+          </React.Fragment>
+        );
+      })}
 
-      // Not near any slot — snap back
-      setPositions((prev) => ({ ...prev, [id]: { x: stone.startX, y: stone.startY } }));
-    },
-    [draggedId, positions, stones, filled, bridgeLayout, slots]
+      {/* End pad */}
+      <div style={{ position: "absolute", left: "92%", top: "50%", transform: "translate(-50%, -50%)" }}>
+        <LilyPad variant="perfect" size={58} glow={currentRow >= padRows.length} />
+        <div style={{ textAlign: "center", fontSize: 9, color: "rgba(255,255,255,0.6)", marginTop: 2 }}>End</div>
+      </div>
+
+      {/* Frog — animates via CSS transition */}
+      <div style={{
+        position: "absolute",
+        left: `${frogX}%`,
+        top: `${frogY}%`,
+        transform: "translate(-50%, -105%)",
+        fontSize: 28,
+        transition: "left 0.45s ease, top 0.45s ease",
+        zIndex: 20,
+        pointerEvents: "none",
+        filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.5))",
+      }}>
+        🐸
+      </div>
+
+      {/* Progress pips */}
+      <div className="iqm-sweep-progress" style={{ top: "6%", bottom: "auto" }}>
+        {padRows.map((_, i) => (
+          <div key={i} className={`iqm-sweep-pip ${i < currentRow ? "iqm-sweep-pip--done" : ""}`} />
+        ))}
+      </div>
+    </>
   );
 
-  const getDialogueText = () => {
-    if (stage === "intro") return introDialogue[introStep];
-    if (stage === "success")
-      return {
-        bisayaText: "Maayo kaayo! Nakatabok na ang mga baki! 🐸🌿",
-        englishText: "Great job! The frogs crossed safely! 🐸🌿",
-      };
-    return {
-      bisayaText: `${quest.instructionBisaya} (${frogProgress}/${slots.length})`,
-      englishText: `${quest.instructionEnglish} (${frogProgress}/${slots.length})`,
-    };
+  const renderSynonymCanvas = () => (
+    <div style={{
+      position: "absolute", inset: 0,
+      display: "flex", alignItems: "center", justifyContent: "center", gap: 18,
+    }}>
+      <div style={{ textAlign: "center" }}>
+        <LilyPad variant="perfect" size={68} glow />
+        <div style={{ color: "#a5d6a7", fontSize: 10, marginTop: 4, fontWeight: "bold" }}>Healthy and no flaws <br />Walay depekto</div>
+      </div>
+      <span style={{ color: "#a5d6a7", fontSize: 22, fontWeight: "bold" }}>≈</span>
+      <div style={{ textAlign: "center" }}>
+        <LilyPad variant="small_hole" size={68} glow />
+        <div style={{ color: "#a5d6a7", fontSize: 10, marginTop: 4, fontWeight: "bold" }}>Small hole but still healthy <br />Gamay nga lubak pero himsog pa</div>
+      </div>
+      <span style={{ color: "#a5d6a7", fontSize: 22, fontWeight: "bold" }}>≈</span>
+      <div style={{ textAlign: "center" }}>
+        <LilyPad variant="tiny_crack" size={68} glow />
+        <div style={{ color: "#a5d6a7", fontSize: 10, marginTop: 4, fontWeight: "bold" }}>Tiny crack but still healthy <br />Gamay nga liki pero himsog pa</div>
+      </div>
+    </div>
+  );
+
+  const renderAntonymCanvas = () => (
+    <div style={{
+      position: "absolute", inset: 0,
+      display: "flex", alignItems: "center", justifyContent: "center", gap: 36,
+    }}>
+      <div style={{ textAlign: "center" }}>
+        <LilyPad variant="perfect" size={74} glow />
+        <div style={{ color: "#a5d6a7", fontSize: 11, marginTop: 6, fontWeight: "bold" }}>
+          Luwas / Safe
+        </div>
+      </div>
+      <div style={{ color: "#fff", fontSize: 28, fontWeight: "bold", textShadow: "0 2px 8px rgba(0,0,0,0.4)" }}>
+        ≠
+      </div>
+      <div style={{ textAlign: "center" }}>
+        <LilyPad variant="huge_hole" size={74} />
+        <div style={{ color: "#ef9a9a", fontSize: 11, marginTop: 6, fontWeight: "bold" }}>
+          Dili luwas / Unsafe
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderDoneCanvas = () => (
+    <div className="iqm-scene-success-overlay">
+      <div className="iqm-scene-success-card">
+        <div className="iqm-scene-success-stars">🐸🍃🐸</div>
+        <div className="iqm-scene-success-text">Nakatabok na! · Crossed safely!</div>
+      </div>
+    </div>
+  );
+
+  const renderCanvas = () => {
+    switch (stage) {
+      case "playing": return renderPlayingCanvas();
+      case "synonym_lesson": return renderSynonymCanvas();
+      case "antonym_lesson": return renderAntonymCanvas();
+      case "done": return renderDoneCanvas();
+      default: return null;
+    }
   };
 
-  const dialogueText = getDialogueText();
+  const showNextBtn = stage === "intro" || stage === "synonym_lesson" || stage === "antonym_lesson";
 
   return (
     <div className="iqm-overlay">
       <div className="iqm-modal iqm-modal--scene">
         <button className="iqm-close" onClick={onClose}>✕</button>
+
         <div className="iqm-header">
           <span className="iqm-header-bisaya">{item.labelBisaya}</span>
           <span className="iqm-header-english">{item.labelEnglish}</span>
-          <span className="iqm-mechanic-badge" style={{ background: "#66BB6A" }}>
-            Antonym Bridge
+          <span className="iqm-mechanic-badge" style={{ background: "#388e3c" }}>
+            Frog Path
           </span>
         </div>
 
+        {/* ── Game Canvas ─────────────────────────────────────────────────── */}
         <div
           className="iqm-scene-canvas"
-          ref={containerRef}
           style={{
-            background: "linear-gradient(180deg, #4a148c 0%, #1a237e 30%, #0d47a1 60%, #01579b 100%)",
+            background: "#1a6fa8",
             borderRadius: "12px",
             position: "relative",
+            overflow: "hidden",
           }}
         >
-          {/* Water surface */}
-          <div style={{
-            position: "absolute", bottom: 0, left: 0, right: 0, height: "40%",
-            background: "linear-gradient(180deg, rgba(1,87,155,0.3) 0%, rgba(0,96,100,0.5) 100%)",
-            borderRadius: "0 0 12px 12px", pointerEvents: "none",
-          }} />
-
-          {/* Bridge layout */}
-          {(stage === "playing" || stage === "success") &&
-            bridgeLayout.map((layoutItem, idx) => {
-              const pos = getSlotPos(idx);
-              const isFilled = layoutItem.type === "slot" && filled[layoutItem.slotIndex];
-
-              return (
-                <div
-                  key={`bridge_${idx}`}
-                  style={{
-                    position: "absolute",
-                    left: `${pos.x}%`,
-                    top: `${pos.y}%`,
-                    transform: "translate(-50%, -50%)",
-                    display: "flex", flexDirection: "column", alignItems: "center", gap: "3px",
-                    pointerEvents: "none",
-                  }}
-                >
-                  {/* Lily pad */}
-                  <span style={{
-                    fontSize: layoutItem.type === "pad" ? "30px" : "26px",
-                    opacity: layoutItem.type === "slot" && !isFilled ? 0.4 : 1,
-                  }}>
-                    🍃
-                  </span>
-
-                  {/* Word label */}
-                  {layoutItem.type === "pad" && (
-                    <span style={{
-                      background: "rgba(76,175,80,0.85)", color: "#fff",
-                      padding: "2px 8px", borderRadius: "8px", fontSize: "11px",
-                      fontFamily: "'Pixelify Sans', sans-serif", fontWeight: "bold",
-                      whiteSpace: "nowrap",
-                    }}>
-                      {layoutItem.word}
-                      <span style={{ fontSize: "9px", opacity: 0.8, marginLeft: "3px" }}>
-                        ({layoutItem.meaning})
-                      </span>
-                    </span>
-                  )}
-
-                  {/* Empty slot marker */}
-                  {layoutItem.type === "slot" && !isFilled && (
-                    <span style={{
-                      border: "2px dashed rgba(255,255,255,0.4)",
-                      padding: "2px 14px", borderRadius: "8px", fontSize: "11px",
-                      color: "rgba(255,255,255,0.4)",
-                      fontFamily: "'Pixelify Sans', sans-serif",
-                    }}>
-                      ???
-                    </span>
-                  )}
-
-                  {/* Frog on completed sections */}
-                  {layoutItem.type === "slot" && isFilled && (
-                    <span style={{ fontSize: "18px", marginTop: "-26px" }}>🐸</span>
-                  )}
-                </div>
-              );
-            })}
-
-          {/* Draggable stones at bottom */}
-          {(stage === "playing" || stage === "success") &&
-            stones.map((stone) => {
-              const pos = positions[stone.id];
-              const isPlaced = Object.values(filled).includes(stone.id);
-              const isDragging = draggedId === stone.id;
-              const isSplash = splashId === stone.id;
-
-              if (isPlaced) return null;
-
-              return (
-                <div
-                  key={stone.id}
-                  style={{
-                    position: "absolute",
-                    left: `${pos.x}%`,
-                    top: `${pos.y}%`,
-                    transform: `translate(-50%, -50%) ${isSplash ? "scale(0.7)" : ""}`,
-                    cursor: isDragging ? "grabbing" : "grab",
-                    zIndex: isDragging ? 20 : 10,
-                    transition: isDragging ? "none" : "left 0.3s ease, top 0.3s ease, transform 0.3s ease",
-                    display: "flex", flexDirection: "column", alignItems: "center", gap: "2px",
-                    opacity: isSplash ? 0.5 : 1,
-                    userSelect: "none",
-                  }}
-                  onPointerDown={(e) => handlePointerDown(stone.id, e)}
-                  onPointerMove={(e) => handlePointerMove(stone.id, e)}
-                  onPointerUp={(e) => handlePointerUp(stone.id, e)}
-                  onPointerCancel={(e) => handlePointerUp(stone.id, e)}
-                >
-                  <span style={{ fontSize: "22px" }}>🪨</span>
-                  <span style={{
-                    background: "rgba(121,85,72,0.9)", color: "#fff",
-                    padding: "2px 8px", borderRadius: "8px", fontSize: "11px",
-                    fontFamily: "'Pixelify Sans', sans-serif", fontWeight: "bold",
-                    whiteSpace: "nowrap",
-                  }}>
-                    {stone.word}
-                  </span>
-                  <span style={{ fontSize: "9px", color: "rgba(255,255,255,0.6)", fontStyle: "italic" }}>
-                    ({stone.meaning})
-                  </span>
-                </div>
-              );
-            })}
-
-          {/* Progress pips */}
-          {stage === "playing" && (
-            <div className="iqm-sweep-progress" style={{ top: "8%", bottom: "auto" }}>
-              {slots.map((_, i) => (
-                <div key={i} className={`iqm-sweep-pip ${filled[i] ? "iqm-sweep-pip--done" : ""}`} />
-              ))}
-            </div>
-          )}
-
-          {/* Success overlay */}
-          {stage === "success" && (
-            <div className="iqm-scene-success-overlay">
-              <div className="iqm-scene-success-card">
-                <div className="iqm-scene-success-stars">🐸🌿🐸</div>
-                <div className="iqm-scene-success-text">Nakatabok na ang mga Baki!</div>
-              </div>
-            </div>
-          )}
+          {renderCanvas()}
         </div>
 
-        {/* Dialogue */}
+        {/* ── NPC Dialogue Row ─────────────────────────────────────────────── */}
         <div className="iqm-dialogue-row">
           <img src={npcImage} alt={npcName} className="iqm-npc-img" draggable={false} />
           <div className="iqm-dialogue-bubble">
             <div className="iqm-dialogue-speaker">{npcName}</div>
             <div className="iqm-dialogue-text">
-              <span className="iqm-dialogue-bisaya">{dialogueText.bisayaText}</span>
-              <span className="iqm-dialogue-english">{dialogueText.englishText}</span>
+              {dialogueLine ? (
+                <>
+                  <span className="iqm-dialogue-bisaya">{dialogueLine.bisayaText}</span>
+                  <span className="iqm-dialogue-english">{dialogueLine.englishText}</span>
+                </>
+              ) : stage === "playing" ? (
+                <>
+                  <span className="iqm-dialogue-bisaya">
+                    I-click ang luwas nga dahon! ({currentRow}/{padRows.length})
+                  </span>
+                  <span className="iqm-dialogue-english">
+                    Click the safe lily pad! ({currentRow}/{padRows.length})
+                  </span>
+                </>
+              ) : stage === "done" ? (
+                <>
+                  <span className="iqm-dialogue-bisaya">Nakatabok na ang baki! 🎉</span>
+                  <span className="iqm-dialogue-english">The frog made it across! 🎉</span>
+                </>
+              ) : null}
             </div>
-            {stage === "intro" && <button className="iqm-next-btn" onClick={handleIntroNext}>▶</button>}
-            {stage === "success" && <button className="iqm-next-btn" onClick={() => onComplete(item)}>✓</button>}
+
+            {showNextBtn && (
+              <button className="iqm-next-btn" onClick={handleDialogueNext}>▶</button>
+            )}
+            {stage === "done" && (
+              <button className="iqm-next-btn" onClick={() => onComplete(item)}>✓</button>
+            )}
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes pad-shake {
+          0%, 100% { transform: translateX(0); }
+          20%       { transform: translateX(-8px); }
+          40%       { transform: translateX(8px); }
+          60%       { transform: translateX(-5px); }
+          80%       { transform: translateX(5px); }
+        }
+      `}</style>
     </div>
   );
 };

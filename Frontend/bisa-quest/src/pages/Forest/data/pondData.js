@@ -75,12 +75,12 @@ export const POND_ITEMS = [
   },
   {
     id: "pawikan",
-    labelBisaya: "Mga Pawikan",
-    labelEnglish: "Turtles & Shells",
+    labelBisaya: "Pawikan",
+    labelEnglish: "Turtle",
     descriptionBisaya:
-      "Ang mga bao sa pawikan nabuak! Pangitaa ang katunga nga pareho og kahulogan para mataod balik!",
+      "Ang bao sa pawikan kay nabuak! I-taod nato ug balik!",
     descriptionEnglish:
-      "The turtles' shells cracked! Find the half with the same meaning (synonym) to repair each shell!",
+      "The turtles' shells shattered! Let's put them back together!",
     emoji: "🐢",
     x: 20,
     y: 60,
@@ -142,8 +142,8 @@ export const INTRO_DIALOGUE = [
 export const buildPondDialogue = (region) => [
   {
     speaker: "Lunti",
-    bisayaText: `Tan-awa! Kini ang mga ${region.labelBisaya}!`,
-    englishText: `Look! These are ${region.labelEnglish}!`,
+    bisayaText: `Tan-awa! Kini ang ${region.labelBisaya}!`,
+    englishText: `Look! It's ${region.labelEnglish}!`,
   },
   {
     speaker: "Lunti",
@@ -267,11 +267,79 @@ export const SQUIRREL_ANTONYM_PAIRS = {
   ],
 };
 
-export const FROG_ANTONYM_SLOTS = [
-  { padWord: "Mainit", padMeaning: "Hot", stoneWord: "Bugnaw", stoneMeaning: "Cold" },
-  { padWord: "Gamay", padMeaning: "Small", stoneWord: "Dako", stoneMeaning: "Big" },
-  { padWord: "Mingaw", padMeaning: "Lonely", stoneWord: "Malipayon", stoneMeaning: "Happy" },
-];
+export const FROG_PATH_DATA = {
+  // NPC intro dialogue (4 lines) before the game starts
+  introDialogue: [
+    {
+      bisayaText: "Ganahan mutabok sa lim-aw ang baki.",
+      englishText: "This frog wants to cross the pond.",
+    },
+    {
+      bisayaText: "Tabangi siya mulukso sa luwas nga dahon.",
+      englishText: "Help it jump on safe lily pads.",
+    },
+    {
+      bisayaText: "Tan-awa pag-ayo. Ang uban halos parehas.",
+      englishText: "Look carefully. Some pads are almost the same.",
+    },
+    {
+      bisayaText: "Ang uban lahi kaayo.",
+      englishText: "Some are too different.",
+    },
+  ],
+
+  // Post-completion synonym lesson
+  synonymDialogue: [
+    {
+      bisayaText: "Maayo kaayo.",
+      englishText: "Good job.",
+    },
+    {
+      bisayaText: "Lahi gamay ang mga dahon…",
+      englishText: "These pads look a little different…",
+    },
+    {
+      bisayaText: "Pero halos parehas sila.",
+      englishText: "But they are almost the same.",
+    },
+    {
+      bisayaText: "Sama sa mga pulong nga parehas ug kahulugan.",
+      englishText: "Like words that mean the same.",
+    },
+    {
+      bisayaText: "Mao ni ang synonyms.",
+      englishText: "These are synonyms.",
+    },
+  ],
+
+  // Post-synonym antonym lesson (4 lines)
+  antonymDialogue: [
+    {
+      bisayaText: "Apan kini lahi kaayo.",
+      englishText: "But this one is very different.",
+    },
+    {
+      bisayaText: "Dili siya parehas sa uban.",
+      englishText: "It is not like the others.",
+    },
+    {
+      bisayaText: "Magkasukwahi kini.",
+      englishText: "This is an opposite.",
+    },
+    {
+      bisayaText: "Mao ni ang antonyms.",
+      englishText: "These are antonyms.",
+    },
+  ],
+
+  // 3 pad rows — safe variant paired with unsafe variant
+  // Rendered as pure SVG visuals, no text labels
+  padRows: [
+    { safeVariant: "perfect", unsafeVariant: "wilted" },
+    { safeVariant: "small_hole", unsafeVariant: "cracks" },
+    { safeVariant: "tiny_crack", unsafeVariant: "huge_hole" },
+  ],
+};
 
 export const FIREFLY_SYNONYM_PAIRS = [
   { wordA: "Malipayon", meaningA: "Happy", wordB: "Masadya", meaningB: "Cheerful" },
@@ -340,3 +408,56 @@ export const FISHING_GAME_DATA = {
     },
   ]
 };
+export const TURTLE_SHELL_DATA = {
+  // NPC intro dialogue (3 lines)
+  introDialogue: [
+    {
+      bisayaText: "Ang kabhang sa pawikan nabuak.",
+      englishText: "The turtle's shell is broken.",
+    },
+    {
+      bisayaText: "Tabangi siya pinaagi sa pagpili sa sakto nga mga piraso.",
+      englishText: "Help fix it by choosing the right pieces.",
+    },
+    {
+      bisayaText: "Tan-awa pag-ayo. Ang uban parehas… ang uban lahi kaayo.",
+      englishText: "Look carefully. Some pieces are similar… some are very different.",
+    },
+  ],
+
+  // Post-completion synonym lesson (5 lines)
+  synonymDialogue: [
+    { bisayaText: "Maayo kaayo.", englishText: "Good job." },
+    { bisayaText: "Lahi-lahi gamay ang mga kabhang…", englishText: "These shells look a little different…" },
+    { bisayaText: "Pero sakto gihapon sila magkuyog.", englishText: "But they still belong together." },
+    { bisayaText: "Sama sa mga pulong nga parehas ug kahulugan.", englishText: "Like words that mean the same." },
+    { bisayaText: "Mao ni ang synonyms.", englishText: "These are synonyms." },
+  ],
+
+  // Antonym lesson (4 lines)
+  antonymDialogue: [
+    { bisayaText: "Kini nga piraso lahi kaayo.", englishText: "This piece is very different." },
+    { bisayaText: "Dili siya angay dinhi.", englishText: "It does not belong here." },
+    { bisayaText: "Magkasukwahi siya.", englishText: "It is the opposite." },
+    { bisayaText: "Mao ni ang antonyms.", englishText: "These are antonyms." },
+  ],
+
+  // 10 shell pieces: 5 correct (synonym-concept), 3 neutral-wrong, 2 opposite-wrong
+  // variant: used to pick the SVG render style (no text labels)
+  pieces: [
+    // ── 5 correct pieces (belong to the turtle) ─────────────────────────────
+    { id: "c1", type: "correct", variant: "smooth" },  // Smooth green shell
+    { id: "c2", type: "correct", variant: "lined" },  // Green with faint lines
+    { id: "c3", type: "correct", variant: "cracked" },  // Green with small crack
+    { id: "c4", type: "correct", variant: "patched" },  // Light green patch pattern
+    { id: "c5", type: "correct", variant: "uneven" },  // Uneven edges, same shape
+    // ── 3 neutral-wrong pieces (different but not opposite) ──────────────────
+    { id: "n1", type: "neutral", variant: "snail" },  // Snail spiral shell
+    { id: "n2", type: "neutral", variant: "crab" },  // Hard curved crab plate
+    { id: "n3", type: "neutral", variant: "clam" },  // Clam bisected shell
+    // ── 2 opposite-wrong pieces (antonym concept) ────────────────────────────
+    { id: "o1", type: "opposite", variant: "spiky" },  // Dark spiky fragment
+    { id: "o2", type: "opposite", variant: "jagged" },  // Broken jagged, unstable
+  ],
+};
+
