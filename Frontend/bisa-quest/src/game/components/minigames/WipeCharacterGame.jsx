@@ -62,7 +62,7 @@ const WipeCharacterGame = ({ quest, npcName, npcImage, onComplete, onClose, item
 
     const dialogueText = (() => {
         if (stage === "intro") return dialogue[introStep];
-        if (stage === "success") return { bisayaText: "Presko na siya! Maayo kaayo! 🎉", englishText: "She's fresh now! Well done! 🎉" };
+        if (stage === "success") return { bisayaText: "Presko na siya! Very good! 🎉", englishText: "She's fresh now! Well done! 🎉" };
         const remaining = quest.characterStage.sweatSpots.length - wiped.size;
         if (remaining > 0) return { bisayaText: `${remaining} ka singot pa ang nahibilin! Pahiri na!`, englishText: `${remaining} more sweat spots to wipe!` };
         return { bisayaText: quest.instructionBisaya, englishText: quest.instructionEnglish };
