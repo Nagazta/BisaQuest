@@ -2,15 +2,43 @@
 //  FanSpeedGame.jsx — Choose the correct fan speed based on instruction
 // ─────────────────────────────────────────────────────────────────────────────
 import React, { useState } from "react";
+import AssetManifest from "../../../services/AssetManifest";
 import { ITEM_IMAGE_MAP } from "../../dragDropConstants";
 import { buildQuestDialogue } from "../questHelpers";
+import Button from "../../../components/Button";
 
 const SPEED_OPTIONS = [
-    { value: 0, label: "OFF", bisaya: "Patay" },
+    { value: 0, label: "Off", bisaya: "Patay" },
     { value: 1, label: "1 - Low", bisaya: "1 - Hinay" },
     { value: 2, label: "2 - Medium", bisaya: "2 - Tunga" },
     { value: 3, label: "3 - High", bisaya: "3 - Kusog" },
 ];
+
+const CssFan = ({ speed }) => {
+    const rotationSpeed = speed === 3 ? "0.2s" : speed === 2 ? "0.5s" : speed === 1 ? "1s" : "0s";
+
+    return (
+        <div className="css-fan">
+            <div className="fan-head">
+                <div className="fan-cage">
+                    {[...Array(12)].map((_, i) => (
+                        <div key={i} className="cage-wire" style={{ transform: `rotate(${i * 30}deg)` }} />
+                    ))}
+                </div>
+                <div className="fan-blades" style={{
+                    animation: speed > 0 ? `fan-spin ${rotationSpeed} linear infinite` : 'none'
+                }}>
+                    <div className="blade blade-1" />
+                    <div className="blade blade-2" />
+                    <div className="blade blade-3" />
+                </div>
+                <div className="fan-center" />
+            </div>
+            <div className="fan-neck" />
+            <div className="fan-base" />
+        </div>
+    );
+};
 
 const FanSpeedGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) => {
     const dialogue = buildQuestDialogue(quest, item);
@@ -26,7 +54,7 @@ const FanSpeedGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =
         { target: 0, bisaya: "Patya ang bentilador!", english: "Turn off the fan!" },
     ];
 
-    const fanImg = ITEM_IMAGE_MAP["Bentilador"] || null;
+    // Removed image-based fanImg
 
     const handleIntroNext = () => {
         if (introStep < dialogue.length - 1) setIntroStep(p => p + 1);
@@ -46,7 +74,6 @@ const FanSpeedGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =
             }
         } else {
             setStage("wrong");
-            setTimeout(() => { setStage("playing"); setSelectedSpeed(null); }, 800);
         }
     };
 
@@ -76,24 +103,8 @@ const FanSpeedGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =
                 <div className="iqm-scene-canvas"
                     style={{ background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "20px" }}>
 
-                    {/* Fan display */}
-                    <div style={{
-                        width: "150px", height: "150px",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        position: "relative",
-                    }}>
-                        {fanImg
-                            ? <img src={fanImg} alt="Fan" style={{
-                                width: "100%", height: "100%", objectFit: "contain",
-                                animation: currentTarget > 0 ? `spin ${fanSpeed} linear infinite` : "none",
-                            }} draggable={false} />
-                            : <span style={{
-                                fontSize: "80px",
-                                animation: currentTarget > 0 ? `spin ${fanSpeed} linear infinite` : "none",
-                                display: "inline-block",
-                            }}>🌀</span>
-                        }
-                    </div>
+                    {/* Fan display (CSS) */}
+                    <CssFan speed={currentTarget} />
 
                     {/* Speed label */}
                     <div style={{
@@ -105,21 +116,22 @@ const FanSpeedGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =
 
                     {/* Speed buttons */}
                     {stage === "playing" && (
-                        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", justifyContent: "center" }}>
+                        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
                             {SPEED_OPTIONS.map(opt => (
-                                <button key={opt.value}
+                                <Button key={opt.value}
                                     onClick={() => handleSpeedClick(opt.value)}
+                                    variant={selectedSpeed === opt.value
+                                        ? (stage === "wrong" ? "danger" : "primary")
+                                        : "secondary"}
                                     style={{
-                                        padding: "12px 20px", fontSize: "16px", fontWeight: "bold",
-                                        border: "2px solid #555", borderRadius: "10px", cursor: "pointer",
-                                        background: selectedSpeed === opt.value
-                                            ? (stage === "wrong" ? "#ef5350" : "#66bb6a") : "#fff",
-                                        color: selectedSpeed === opt.value ? "#fff" : "#333",
-                                        transition: "all 0.2s",
-                                        minWidth: "80px",
+                                        minWidth: "100px",
+                                        padding: "8px 16px",
                                     }}>
-                                    {opt.bisaya}
-                                </button>
+                                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px" }}>
+                                        <div style={{ fontSize: "16px" }}>{opt.bisaya}</div>
+                                        <div style={{ fontSize: "12px", opacity: 0.8, fontWeight: "normal" }}>{opt.label}</div>
+                                    </div>
+                                </Button>
                             ))}
                         </div>
                     )}
@@ -142,10 +154,115 @@ const FanSpeedGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =
                             </div>
                         </div>
                     )}
+
+                    {/* Wrong */}
+                    {stage === "wrong" && (
+                        <div className="iqm-scene-success-overlay">
+                            <div className="iqm-scene-success-card" style={{ borderColor: "#ef5350" }}>
+                                <div className="iqm-scene-success-stars">❌🌀❌</div>
+                                <div className="iqm-scene-success-text" style={{ color: "#ef5350" }}>Sayop!</div>
+                                <div style={{ fontSize: "14px", color: "#666" }}>Sulayi pag-usab / Try again</div>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
-                {/* Add a spin keyframe inline */}
-                <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+                {/* CSS Fan Styles */}
+                <style>{`
+                    @keyframes fan-spin {
+                        from { transform: rotate(0deg); }
+                        to { transform: rotate(360deg); }
+                    }
+
+                    .css-fan {
+                        position: relative;
+                        width: 160px;
+                        height: 220px;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: flex-end;
+                    }
+
+                    .fan-head {
+                        position: relative;
+                        width: 150px;
+                        height: 150px;
+                        border-radius: 50%;
+                        background: rgba(200, 200, 200, 0.1);
+                        border: 4px solid #555;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 2;
+                        box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+                    }
+
+                    .fan-cage {
+                        position: absolute;
+                        top: 0; left: 0; right: 0; bottom: 0;
+                        border-radius: 50%;
+                        pointer-events: none;
+                    }
+
+                    .cage-wire {
+                        position: absolute;
+                        top: 50%; left: 0;
+                        width: 100%;
+                        height: 1px;
+                        background: rgba(85, 85, 85, 0.3);
+                    }
+
+                    .fan-blades {
+                        position: relative;
+                        width: 130px;
+                        height: 130px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 1;
+                    }
+
+                    .blade {
+                        position: absolute;
+                        width: 40px;
+                        height: 60px;
+                        background: linear-gradient(to bottom, #777, #444);
+                        border-radius: 50% 50% 10% 10%;
+                        transform-origin: center 100%;
+                        top: 5px;
+                    }
+
+                    .blade-1 { transform: rotate(0deg); }
+                    .blade-2 { transform: rotate(120deg); }
+                    .blade-3 { transform: rotate(240deg); }
+
+                    .fan-center {
+                        position: absolute;
+                        width: 25px;
+                        height: 25px;
+                        background: #333;
+                        border-radius: 50%;
+                        z-index: 3;
+                        box-shadow: 0 0 5px rgba(0,0,0,0.5);
+                    }
+
+                    .fan-neck {
+                        width: 15px;
+                        height: 40px;
+                        background: #444;
+                        margin-top: -5px;
+                        z-index: 1;
+                    }
+
+                    .fan-base {
+                        width: 80px;
+                        height: 15px;
+                        background: #333;
+                        border-radius: 10px 10px 2px 2px;
+                        z-index: 1;
+                    }
+                `}</style>
 
                 <div className="iqm-dialogue-row">
                     <img src={npcImage} alt={npcName} className="iqm-npc-img" draggable={false} />
@@ -156,6 +273,16 @@ const FanSpeedGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =
                             <span className="iqm-dialogue-english">{dialogueText.englishText}</span>
                         </div>
                         {stage === "intro" && <button className="iqm-next-btn" onClick={handleIntroNext}>▶</button>}
+                        {stage === "wrong" && (
+                            <button
+                                className="iqm-next-btn"
+                                style={{ background: "#ef5350", boxShadow: "0 3px 0 #991b1b", marginTop: "-60px" }}
+                                onClick={() => { setStage("playing"); setSelectedSpeed(null); }}
+                                title="Play Again"
+                            >
+                                ↺
+                            </button>
+                        )}
                         {stage === "success" && <button className="iqm-next-btn" onClick={() => onComplete(item)}>✓</button>}
                     </div>
                 </div>
