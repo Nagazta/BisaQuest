@@ -357,9 +357,47 @@ const FishingGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) =>
                   filter: "drop-shadow(0 3px 6px rgba(0,0,0,0.6))",
                 }}
               >
+                {!isDragging && stage === "playing" && (
+                  <div style={{
+                    position: "absolute",
+                    top: "55px",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    fontSize: "24px",
+                    animation: "bounce 1s infinite",
+                    pointerEvents: "none",
+                    filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))"
+                  }}>
+                    👆
+                  </div>
+                )}
                 🪝
               </div>
             </>
+          )}
+
+          {/* Surface Drop Zone Hint */}
+          {hookAttachedTo && (
+            <div style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "20%",
+              background: "rgba(255, 255, 255, 0.2)",
+              borderBottom: "4px dashed rgba(255, 255, 255, 0.5)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "white",
+              fontWeight: "bold",
+              fontSize: "18px",
+              pointerEvents: "none",
+              zIndex: 10,
+              animation: "pulseSurface 2s infinite"
+            }}>
+              ⬆️ PULL UP TO CATCH!
+            </div>
           )}
 
           {/* Success overlay */}
@@ -373,6 +411,14 @@ const FishingGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) =>
           )}
 
           <style>{`
+            @keyframes bounce {
+              0%, 100% { transform: translateX(-50%) translateY(0); }
+              50% { transform: translateX(-50%) translateY(-10px); }
+            }
+            @keyframes pulseSurface {
+              0%, 100% { background: rgba(255, 255, 255, 0.1); }
+              50% { background: rgba(255, 255, 255, 0.3); }
+            }
             @keyframes shakeError {
               0%, 100% { transform: translate(-50%, -50%) rotate(0); }
               25% { transform: translate(-50%, -50%) rotate(25deg) scale(1.1); }
