@@ -34,7 +34,7 @@ export const LIVING_ROOM_LABELS = [
     id: "toalya",
     labelBisaya: "Toalya",
     labelEnglish: "Towel",
-    descriptionBisaya: "Ang toalya kay panapton nga gigamit para pagpahid sa singot ug pagpamala sa lawas.",
+    descriptionBisaya: "Ang toalya kay panapton nga gigamit para pagpahid sa singot sa lawas.",
     descriptionEnglish: "A towel is a piece of cloth used to wipe sweat and dry your body.",
     x: 17, y: 39, w: 5, h: 10,
   },
