@@ -72,12 +72,6 @@ const HousePage = () => {
       return;
     }
 
-    if (region.id === "lampara") {
-      setQuestItem(region);
-      setActiveItem(null);
-      return;
-    }
-
     setActiveItem(region);
     setDialogueStep(0);
   };

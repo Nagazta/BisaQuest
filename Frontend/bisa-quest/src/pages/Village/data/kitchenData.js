@@ -28,7 +28,7 @@ export const KITCHEN_LABELS = [
     labelEnglish: "Wood Stove",
     descriptionBisaya: "Lutoanan ginamit ang kahoy.",
     descriptionEnglish: "Cooking stove using firewood.",
-    x: 58, y: 52, w: 10, h: 17,
+    x: 57, y: 52, w: 10, h: 17,
   },
   {
     id: "drumin",
@@ -37,7 +37,7 @@ export const KITCHEN_LABELS = [
     descriptionBisaya: "Dako nga sudlanan sa tubig para panluto og panghugas.",
     descriptionEnglish: "Large barrel for storing water for cooking and washing.",
     imageKey: "drumin",
-    x: 68, y: 50, w: 9, h: 19,
+    x: 66, y: 50, w: 9, h: 19,
   },
   {
     id: "bintana_kitchen",
@@ -54,7 +54,7 @@ export const KITCHEN_LABELS = [
     descriptionBisaya: "Butanganan og andaman sa mga pagkaon.",
     descriptionEnglish: "Counter for placing and preparing food.",
     imageKey: "lamesa",
-    x: 18, y: 54, w: 28, h: 19,
+    x: 18, y: 48, w: 28, h: 19,
   },
   {
     id: "estante_wala",
@@ -63,7 +63,7 @@ export const KITCHEN_LABELS = [
     descriptionBisaya: "Butanganan sa mga plato og kaldero.",
     descriptionEnglish: "Shelves for plates and pots.",
     imageKey: "shelf",
-    x: 23, y: 27, w: 22, h: 19,
+    x: 24, y: 27, w: 22, h: 19,
   },
   {
     id: "estante_tuo",
@@ -72,7 +72,7 @@ export const KITCHEN_LABELS = [
     descriptionBisaya: "Kabinete para sa mga buak nga gamit og uban pa.",
     descriptionEnglish: "Cabinet for fragile items and others.",
     imageKey: "big_shelf",
-    x: 80, y: 24, w: 20, h: 35,
+    x: 75, y: 24, w: 20, h: 35,
   },
   {
     id: "basket_kitchen",
@@ -81,7 +81,7 @@ export const KITCHEN_LABELS = [
     descriptionBisaya: "Sudlanan sa mga prutas o gulay.",
     descriptionEnglish: "Container for fruits or vegetables.",
     imageKey: "red_crate",
-    x: 86, y: 77, w: 14, h: 16,
+    x: 80, y: 79, w: 14, h: 16,
   }
 ];
 
