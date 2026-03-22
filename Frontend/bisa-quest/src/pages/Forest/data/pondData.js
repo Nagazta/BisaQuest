@@ -256,11 +256,79 @@ export const SQUIRREL_ANTONYM_PAIRS = {
   ],
 };
 
-export const FROG_ANTONYM_SLOTS = [
-  { padWord: "Mainit", padMeaning: "Hot", stoneWord: "Bugnaw", stoneMeaning: "Cold" },
-  { padWord: "Gamay", padMeaning: "Small", stoneWord: "Dako", stoneMeaning: "Big" },
-  { padWord: "Mingaw", padMeaning: "Lonely", stoneWord: "Malipayon", stoneMeaning: "Happy" },
-];
+export const FROG_PATH_DATA = {
+  // NPC intro dialogue (4 lines) before the game starts
+  introDialogue: [
+    {
+      bisayaText: "Ganahan mutabok sa lim-aw ang baki.",
+      englishText: "This frog wants to cross the pond.",
+    },
+    {
+      bisayaText: "Tabangi siya mulukso sa luwas nga dahon.",
+      englishText: "Help it jump on safe lily pads.",
+    },
+    {
+      bisayaText: "Tan-awa pag-ayo. Ang uban halos parehas.",
+      englishText: "Look carefully. Some pads are almost the same.",
+    },
+    {
+      bisayaText: "Ang uban lahi kaayo.",
+      englishText: "Some are too different.",
+    },
+  ],
+
+  // Post-completion synonym lesson (5 lines)
+  synonymDialogue: [
+    {
+      bisayaText: "Maayo kaayo.",
+      englishText: "Good job.",
+    },
+    {
+      bisayaText: "Lahi gamay ang mga dahon…",
+      englishText: "These pads look a little different…",
+    },
+    {
+      bisayaText: "Pero halos parehas sila.",
+      englishText: "But they are almost the same.",
+    },
+    {
+      bisayaText: "Sama sa mga pulong nga parehas ug kahulugan.",
+      englishText: "Like words that mean the same.",
+    },
+    {
+      bisayaText: "Mao ni ang synonyms.",
+      englishText: "These are synonyms.",
+    },
+  ],
+
+  // Post-synonym antonym lesson (4 lines)
+  antonymDialogue: [
+    {
+      bisayaText: "Apan kini lahi kaayo.",
+      englishText: "But this one is very different.",
+    },
+    {
+      bisayaText: "Dili siya parehas sa uban.",
+      englishText: "It is not like the others.",
+    },
+    {
+      bisayaText: "Magkasukwahi kini.",
+      englishText: "This is an opposite.",
+    },
+    {
+      bisayaText: "Mao ni ang antonyms.",
+      englishText: "These are antonyms.",
+    },
+  ],
+
+  // 3 pad rows — safe variant paired with unsafe variant
+  // Rendered as pure SVG visuals, no text labels
+  padRows: [
+    { safeVariant: "perfect",    unsafeVariant: "wilted"    },
+    { safeVariant: "small_hole", unsafeVariant: "cracks"    },
+    { safeVariant: "tiny_crack", unsafeVariant: "huge_hole" },
+  ],
+};
 
 export const FIREFLY_SYNONYM_PAIRS = [
   { wordA: "Malipayon", meaningA: "Happy", wordB: "Masadya", meaningB: "Cheerful" },
