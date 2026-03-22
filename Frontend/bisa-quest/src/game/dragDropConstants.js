@@ -194,6 +194,10 @@ export const ITEM_IMAGE_MAP = {
   pathway: AssetManifest.castle.scenarios.introPathway,
   waterway: AssetManifest.castle.scenarios.introWaterway,
   drawbridge: AssetManifest.castle.scenarios.introBridge,
+  flagpole: AssetManifest.castle.scenarios.introFlagpole,
+  archway: AssetManifest.castle.scenarios.introArchway,
+  rooftop: AssetManifest.castle.scenarios.roof,
+  courtyard: AssetManifest.castle.scenarios.introPatio,
 
 };
 
