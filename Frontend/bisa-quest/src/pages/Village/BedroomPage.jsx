@@ -8,6 +8,8 @@ import BilingualText from "./components/BilingualText";
 import ItemQuestModal from "../../game/components/ItemQuestModal";
 import { NPC_IMAGES, BEDROOM_LABELS, INTRO_DIALOGUE, buildDialogue } from "./data/bedroomData";
 import BookCollectModal from "../../game/components/BookCollectModal";
+import VillageTransitionModal from "../../game/components/VillageTransitionModal";
+import VillageSummaryModal from "../../game/components/VillageSummaryModal";
 import { awardLibroPage, getLibroPageCount } from "../../utils/playerStorage";
 import "./HousePage.css"; // Reuse house CSS for now as the layout is identical
 
@@ -28,8 +30,9 @@ const BedroomPage = () => {
   const [dialogueStep, setDialogueStep] = useState(0);
   const [questItem, setQuestItem] = useState(null);
   const [completedItems, setCompletedItems] = useState(new Set());
- const [showDoorChoice, setShowDoorChoice] = useState(false);
+  const [showDoorChoice, setShowDoorChoice] = useState(false);
   const [showPageModal, setShowPageModal] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
   const [collectedPage, setCollectedPage] = useState(null);
 
   const pendingQuestRef = useRef(null);
@@ -260,32 +263,21 @@ const BedroomPage = () => {
         }}
       />
 
-      {/* ── Door Choice Modal ─────────────────────────────────────────────── */}
-      {showDoorChoice && (
-        <div className="house-door-overlay" onClick={() => setShowDoorChoice(false)}>
-          <div className="house-door-modal" onClick={e => e.stopPropagation()}>
-            <button className="house-door-close" onClick={() => setShowDoorChoice(false)}>✕</button>
-            <h2 className="house-door-title">
-              Asa nimo gusto muadto? <br />
-              <small className="house-door-subtitle">(Where do you want to go?)</small>
-            </h2>
-            <div className="house-door-options">
-              <button
-                className="house-door-btn"
-                onClick={() => navigate("/student/kitchen", { state: { returnTo: "/student/bedroom" } })}
-              >
-                🍳 Kusina (Kitchen)
-              </button>
-              <button
-                className="house-door-btn"
-                onClick={() => navigate("/student/house", { state: { returnTo: "/student/bedroom" } })}
-              >
-                🛋️ Sala (Living Room)
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ── Door Choice & Summary Modals ────────────────────────────────── */}
+      <VillageTransitionModal
+        isOpen={showDoorChoice}
+        currentRoom="bedroom"
+        onClose={() => setShowDoorChoice(false)}
+        onProceedToForest={() => {
+            setShowDoorChoice(false);
+            setShowSummary(true);
+        }}
+      />
+      
+      <VillageSummaryModal
+        isOpen={showSummary}
+        onClose={() => setShowSummary(false)}
+      />
 
     </div>
   );
