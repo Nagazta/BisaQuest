@@ -11,15 +11,23 @@ import HouseDebugTools from "../Village/components/HouseDebugTools";
 import BilingualText from "../Village/components/BilingualText";
 import CastleImageCombineModal from "./components/CastleImageCombineModal";
 import CastleApplyModal from "./components/CastleApplyModal";
+import BookCollectModal from "../../game/components/BookCollectModal";
+import CastleTransitionModal from "../../game/components/CastleTransitionModal";
 import { CASTLE_NPC_IMAGES, getQuestData, buildCastleDialogue } from "./data/castleRoomData";
+import {
+  saveNPCProgress,
+  awardLibroPage,
+  getLibroPageCount,
+  getLibroPageCountForEnv,
+} from "../../utils/playerStorage";
 import AssetManifest from "../../services/AssetManifest";
 import "./CastleGatePage.css";
 
 const QUEST_INDEX = 0;
 const NPC_ID      = "castle_npc_1";
 const NPC_NAME    = "Princess Hara";
-const NEXT_ROUTE  = "/castle/courtyard";
 const TOTAL_SCENES = 3;
+const REQUIRED_QUESTS = 3;
 
 const CastleGatePage = () => {
   const navigate = useNavigate();
@@ -37,7 +45,12 @@ const CastleGatePage = () => {
   const [dialogueStep, setDialogueStep]     = useState(0);
   const [questItem, setQuestItem]           = useState(null);
   const [completedItems, setCompletedItems] = useState(new Set());
-  const [showSceneComplete, setShowSceneComplete] = useState(false);
+
+  // Book & transition modals
+  const [showPageModal, setShowPageModal]   = useState(false);
+  const [collectedPage, setCollectedPage]   = useState(null);
+  const [showTransition, setShowTransition] = useState(false);
+  const [progressSaved, setProgressSaved]   = useState(false);
 
   const pendingQuestRef = useRef(null);
 
@@ -48,14 +61,6 @@ const CastleGatePage = () => {
       pendingQuestRef.current = null;
     }
   }, [activeItem]);
-
-  // ── Check completion ────────────────────────────────────────────────────────
-  useEffect(() => {
-    if (quest && completedItems.size > 0 && completedItems.size >= quest.items.length) {
-      const t = setTimeout(() => setShowSceneComplete(true), 600);
-      return () => clearTimeout(t);
-    }
-  }, [completedItems, quest]);
 
   // ── Derived ─────────────────────────────────────────────────────────────────
   const introDone    = introStep === null;
@@ -79,7 +84,7 @@ const CastleGatePage = () => {
   };
 
   const handleItemClick = (region) => {
-    if (!introDone || showSceneComplete) return;
+    if (!introDone) return;
     if (debugMode) { setSelectedRegion(selectedRegion?.id === region.id ? null : region); return; }
     setActiveItem(region);
     setDialogueStep(0);
@@ -99,13 +104,47 @@ const CastleGatePage = () => {
 
   const handleQuestComplete = (region) => {
     setQuestItem(null);
-    setCompletedItems((prev) => new Set([...prev, region.id]));
+    setCompletedItems((prev) => {
+      const next = new Set([...prev, region.id]);
+
+      if (next.size >= REQUIRED_QUESTS && !progressSaved) {
+        setProgressSaved(true);
+        saveNPCProgress("castle", NPC_ID, quest.items.length, true, 3);
+
+        const isNewPage = awardLibroPage("castle", "castle_gate");
+        if (isNewPage) {
+          const pageNumber = getLibroPageCountForEnv("castle");
+          const totalCollected = getLibroPageCount();
+          setCollectedPage({ pageNumber, totalCollected });
+          setShowPageModal(true);
+        } else {
+          setShowTransition(true);
+        }
+      }
+
+      return next;
+    });
   };
 
   const handleQuestClose = () => setQuestItem(null);
 
-  const handleNextScene = () =>
-    navigate(NEXT_ROUTE, { state: { returnTo } });
+  // BookCollectModal closes → show transition
+  const handleFragmentModalClose = () => {
+    setShowPageModal(false);
+    setCollectedPage(null);
+    setShowTransition(true);
+  };
+
+  // CastleTransitionModal handlers
+  const handleStay = () => setShowTransition(false);
+  const handleGoBack = () => {
+    setShowTransition(false);
+    navigate(returnTo, { state: { completed: true } });
+  };
+  const handleNextScene = () => {
+    setShowTransition(false);
+    navigate("/castle/courtyard", { state: { returnTo } });
+  };
 
   // ── Guard ───────────────────────────────────────────────────────────────────
   if (!quest) return (
@@ -164,10 +203,10 @@ const CastleGatePage = () => {
             onClick={() => handleItemClick(region)}
           >
             {debugMode && <span className="croom-debug-badge">{region.id}</span>}
-            {!debugMode && !activeItem && !questItem && !showSceneComplete && (
+            {!debugMode && !activeItem && !questItem && (
               <span className={`croom-item-dot ${isDone ? "croom-item-dot--done" : ""}`} />
             )}
-            {!debugMode && !activeItem && !questItem && !showSceneComplete && (
+            {!debugMode && !activeItem && !questItem && (
               <div className="croom-hover-tooltip">
                 <span className="croom-hover-tooltip-bisaya">{region.labelBisaya}</span>
                 <span className="croom-hover-tooltip-english">{region.labelEnglish}</span>
@@ -216,7 +255,7 @@ const CastleGatePage = () => {
       )}
 
       {/* Idle hint */}
-      {introDone && !activeItem && !questItem && !showSceneComplete && !debugMode && (
+      {introDone && !activeItem && !questItem && !debugMode && (
         <div className="croom-idle-hint">
           <span className="croom-idle-hint-bisaya">💬 I-click ang bisan unsang butang para makat-on og Compound Words!</span>
           <span className="croom-idle-hint-english">Click any item to learn about Compound Words!</span>
@@ -237,31 +276,25 @@ const CastleGatePage = () => {
             />
       )}
 
-      {/* Scene complete overlay */}
-      {showSceneComplete && (
-        <div className="croom-complete-overlay">
-          <div className="croom-complete-card">
-            <h2 className="croom-complete-title">Castle Gate Done!</h2>
-            <p className="croom-complete-sub">
-              Great job! Gamiton ang yawi para adto sa Courtyard!
-              <br />Great job! Use the key to enter the Courtyard!
-            </p>
-            <div className="croom-complete-words">
-              {quest.items.map((item) => (
-                <span key={item.id} className="croom-complete-word-chip">{item.compoundWord.result}</span>
-              ))}
-            </div>
-            <img
-              src={AssetManifest.castle.scenarios.key}
-              alt="Key to Courtyard"
-              className="croom-complete-key"
-              draggable={false}
-              onClick={handleNextScene}
-            />
-            <p className="croom-complete-key-hint">I-click ang yawi! · Click the key!</p>
-          </div>
-        </div>
-      )}
+      {/* ── Book Collect Modal ────────────────────────────────────────────── */}
+      <BookCollectModal
+        isOpen={showPageModal}
+        npcName={NPC_NAME}
+        pageNumber={collectedPage?.pageNumber}
+        totalPages={collectedPage?.totalCollected}
+        environment="castle"
+        onClose={handleFragmentModalClose}
+      />
+
+      {/* ── Stay / Go Back transition modal ────────────────────────────────── */}
+      <CastleTransitionModal
+        isOpen={showTransition}
+        sceneName="the Gate"
+        onStay={handleStay}
+        onGoBack={handleGoBack}
+        onNextScene={handleNextScene}
+        nextSceneName="Courtyard"
+      />
 
     </div>
   );
