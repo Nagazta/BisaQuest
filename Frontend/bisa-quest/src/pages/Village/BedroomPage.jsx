@@ -11,7 +11,7 @@ import BookCollectModal from "../../game/components/BookCollectModal";
 import VillageTransitionModal from "../../game/components/VillageTransitionModal";
 import VillageSummaryModal from "../../game/components/VillageSummaryModal";
 import FogTransition from "../../components/FogTransition";
-import { awardLibroPage, getLibroPageCount, hasCutsceneSeen, markCompleteDismissed } from "../../utils/playerStorage";
+import { awardLibroPage, getLibroPageCount, hasCutsceneSeen, markCompleteDismissed, saveNPCProgress } from "../../utils/playerStorage";
 import "./HousePage.css"; // Reuse house CSS for now as the layout is identical
 
 const BedroomPage = () => {
@@ -97,6 +97,11 @@ const BedroomPage = () => {
     setQuestItem(null);
     setCompletedItems(prev => {
       const next = new Set([...prev, region.id]);
+
+      // Save this word
+      const word = `${region.labelBisaya} (${region.labelEnglish})`;
+      saveNPCProgress("village", "village_bedroom", next.size, true, 3, [word]);
+
       if (next.size >= 3) {
         const isNew = awardLibroPage('village', 'village_bedroom');
         if (isNew) {

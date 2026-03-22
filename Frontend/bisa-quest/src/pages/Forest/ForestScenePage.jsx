@@ -287,8 +287,9 @@ const ForestScenePage = () => {
     const submitProgress = () => {
         if (!playerId || !questId) return;
 
-        // Save NPC progress — npcCount=3 (Ronaldo excluded until quests are ready)
-        saveNPCProgress("forest", npcId, items.length, true, 3);
+        // Save NPC progress with collected words
+        const words = items.filter(i => i.isCorrect).map(i => i.label);
+        saveNPCProgress("forest", npcId, items.length, true, 3, words);
 
         // Award a Forest Fragment if the player qualifies (≥3 encounters OR NPC fully completed)
         if (shouldAwardForestFragment(npcId)) {

@@ -28,7 +28,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "houseplant",
     descriptionBisaya: "Ang houseplant kay tanom nga ibutang sulod sa balay para dekorasyon.",
     descriptionEnglish: "A houseplant is a plant kept inside the house used mostly as decoration.",
-    x: 13, y: 25, w: 6, h: 7,
+    x: 9, y: 25, w: 6, h: 7,
   },
   {
     id: "toalya",
@@ -45,7 +45,7 @@ export const LIVING_ROOM_LABELS = [
     descriptionBisaya: "Suga ni nga naggamit og lana o gas aron makabuhat og kayo. Gigamit kini kung walay kuryente o bombilya.",
     descriptionEnglish: "A lamp is a light that uses oil or gas to make a flame. It can be used when there is no electricity or light bulb.",
     imageKey: "lamp",
-    x: 30, y: 25, w: 4, h: 10,
+    x: 27, y: 25, w: 4, h: 10,
   },
   {
     id: "relo",
@@ -62,7 +62,7 @@ export const LIVING_ROOM_LABELS = [
     descriptionBisaya: "Ang bayong kay gigamit sa pagdala og mga butang o pagpalit sa merkado.",
     descriptionEnglish: "A bag is used to carry things or bring items from the market.",
     imageKey: "bag",
-    x: 29, y: 42, w: 7, h: 10,
+    x: 25, y: 42, w: 7, h: 10,
   },
   {
     id: "kalendaryo",

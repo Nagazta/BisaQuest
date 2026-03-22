@@ -1,6 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  ItemQuestModal.jsx
-// ─────────────────────────────────────────────────────────────────────────────
 import React, { useState, useCallback } from "react";
 import { ITEM_IMAGE_MAP } from "../dragDropConstants";
 import AssetManifest from "../../services/AssetManifest";
@@ -70,7 +67,7 @@ const ITEM_QUESTS = {
         mechanic: "scene_drag",
         background: "spill",
         backgroundClean: "clean",
-        instructionBisaya: "I-mop ang nayabo na tubig sa salog!",
+        instructionBisaya: "I-mop ang mga tubig-tubig sa salog!",
         instructionEnglish: "Mop up the water spills on the floor!",
         draggable: {
             id: "mop_item",
@@ -148,7 +145,7 @@ const ITEM_QUESTS = {
                 { id: "dirt_2", x: 10, y: 86, w: 4, h: 4 },
                 { id: "dirt_3", x: 4, y: 88, w: 4, h: 4 },
             ],
-            successLabel: "Limpyo na!",
+            successLabel: "Limpyo Na!",
         },
     },
 
@@ -204,7 +201,7 @@ const ITEM_QUESTS = {
         instructionEnglish: "Place the wood first, then the nails, and hammer them down!",
         repairStage: {
             background: AssetManifest.village.scenarios.houseSofaGuba,
-            successBisaya: "Naayo na ang sopa. Makalingkud na ang bisita, salamat! 🎉",
+            successBisaya: "Nindot na usab ang sopa! Maayo kaayo! 🎉",
             successEnglish: "The sofa looks good as new! Well done! 🎉",
             repairSpots: [
                 { id: "s_leg_l", x: 30, y: 70 },
@@ -230,7 +227,7 @@ const ITEM_QUESTS = {
             hideBaseBackground: true,
             dirtyImage: AssetManifest.village.scenarios.houseWindow,
             cleanImage: AssetManifest.village.scenarios.houseWindow,
-            successLabel: "Limpyo na'ng kurtina!",
+            successLabel: "Limpyo Na'ng Kurtina!",
             successBisaya: "Limpyo na ang kurtina! Maayo kaayo! 🎉",
             successEnglish: "The curtain is clean! Well done! 🎉",
             remainingBisaya: (count) => `${count} ka dapit pa ang hugaw!`,
@@ -261,9 +258,9 @@ const ITEM_QUESTS = {
             hideBaseBackground: true,
             dirtyImage: AssetManifest.village.scenarios.houseWindow,
             cleanImage: AssetManifest.village.scenarios.houseWindow,
-            successLabel: "Limpyo na!",
-            successBisaya: "Limpyo na and bintana! Good job! 🎉",
-            successEnglish: "The window is clean now! Well done! 🎉",
+            successLabel: "Hayag Na!",
+            successBisaya: "Hayag na ang bintana! Maayo kaayo! 🎉",
+            successEnglish: "The window is bright now! Well done! 🎉",
             remainingBisaya: (count) => `${count} ka spots pa ang hugaw!`,
             remainingEnglish: (count) => `${count} more spots to wipe!`,
             dirtSpots: [
@@ -334,7 +331,7 @@ const ITEM_QUESTS = {
         background: AssetManifest.village.scenarios.house,
         instructionBisaya: "Ibutang ang sinina sa aparador!",
         instructionEnglish: "Put the clothes in the cabinet!",
-        successText: "Napuno na ang aparador!",
+        successText: "Napuno na ang Aparador!",
         draggableItems: [
             { id: "dz_shirt", imageKey: "baro", label: "Baro", startX: 15, startY: 80 },
             { id: "dz_pants", imageKey: "sinina", label: "Sinina", startX: 50, startY: 82 },
@@ -345,20 +342,20 @@ const ITEM_QUESTS = {
     lamesa: {
         mechanic: "drag_to_zone",
         background: AssetManifest.village.scenarios.house,
-        instructionBisaya: "Ibutang ang mga gamit para sa kape sa lamesa.",
-        instructionEnglish: "Put the things needed for coffee on the table.",
-        successText: "Mangape nata!",
+        instructionBisaya: "Andama ang pagkaon sa lamesa!",
+        instructionEnglish: "Set the table with food and dishes!",
+        successText: "Andam na ang Lamesa!",
         draggableItems: [
-            { id: "dz_plate", imageKey: "plato", label: "Plato", startX: 15, startY: 80 },
-            { id: "dz_cup", imageKey: "tasa", label: "Tasa", startX: 50, startY: 82 },
-            { id: "dz_spoon", imageKey: "kutsara", label: "Kutsarita", startX: 85, startY: 78 },
+            { id: "dz_plate", imageKey: "plato", label: "Plato/Plate", startX: 15, startY: 80 },
+            { id: "dz_cup", imageKey: "tasa", label: "Tasa/Cup", startX: 50, startY: 82 },
+            { id: "dz_spoon", imageKey: "spoon", label: "Spoon/Kutsara", startX: 85, startY: 78 },
         ],
         dropZone: { x: 48, y: 56, w: 20, h: 14, emoji: "🍽️", label: "Lamesa" },
     },
     alfombra: {
         mechanic: "wash_and_mop",
-        instructionBisaya: "Hugasi ang karpet sa planggana!",
-        instructionEnglish: "Wash the carpet in the basin!",
+        instructionBisaya: "Hugasi ang banig sa planggana!",
+        instructionEnglish: "Wash the rug in the basin!",
         washStage: {
             background: "houseRugGuba",
             basinImage: "plangganaWater",
@@ -408,8 +405,8 @@ const ITEM_QUESTS = {
             hideBaseBackground: true,
             dirtyImage: AssetManifest.village.scenarios.pictureFrame,
             cleanImage: AssetManifest.village.scenarios.pictureFrame,
-            successLabel: "Limpyo na!",
-            successBisaya: "Limpyo na ang kuwadro! Maayo kaayo! 🎉",
+            successLabel: "Limpyo Na!",
+            successBisaya: "Limpyo na ang litrato! Maayo kaayo! 🎉",
             successEnglish: "The picture frame is clean! Well done! 🎉",
             remainingBisaya: (count) => `${count} ka abog pa ang nahibilin! Pahiri na!`,
             remainingEnglish: (count) => `${count} more dust spots to wipe!`,
@@ -540,7 +537,7 @@ const ITEM_QUESTS = {
     bukag_bedroom: {
         mechanic: "drag_to_zone",
         background: AssetManifest.village.scenarios.bedroom,
-        instructionBisaya: "I-butang ang hugaw nga sinina sa bukag!",
+        instructionBisaya: "I-butang ang bulingon nga sinina sa bukag!",
         instructionEnglish: "Put the dirty clothes in the laundry basket!",
         successText: "Napuno na ang Bukag!",
         draggableItems: [

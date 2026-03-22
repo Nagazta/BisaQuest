@@ -285,7 +285,6 @@ const VillagePage = () => {
                     variant="primary"
                     className="proceed-forest-btn"
                     onClick={handleGoToForest}
-                    style={{ marginLeft: "20px" }}
                 >
                     🌲 Proceed to Forest
                 </Button>

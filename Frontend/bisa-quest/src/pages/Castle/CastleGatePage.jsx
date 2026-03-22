@@ -107,9 +107,12 @@ const CastleGatePage = () => {
     setCompletedItems((prev) => {
       const next = new Set([...prev, region.id]);
 
+      // Save this word
+      const word = `${region.labelBisaya} (${region.labelEnglish})`;
+      saveNPCProgress("castle", NPC_ID, next.size, true, 3, [word]);
+
       if (next.size >= REQUIRED_QUESTS && !progressSaved) {
         setProgressSaved(true);
-        saveNPCProgress("castle", NPC_ID, quest.items.length, true, 3);
 
         const isNewPage = awardLibroPage("castle", "castle_gate");
         if (isNewPage) {

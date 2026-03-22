@@ -107,12 +107,13 @@ const ForestPondPage = () => {
       const next = new Set([...prev, region.id]);
       const milestone = MILESTONES[milestonesAwarded]; // next target
 
+      // Save this word
+      const word = `${region.labelBisaya} (${region.labelEnglish})`;
+      saveNPCProgress("forest", npcId, POND_ITEMS.length, true, 3, [word]);
+
       if (milestone && next.size >= milestone) {
         const pageKey = `${npcId}_page${milestonesAwarded + 1}`;
         setMilestonesAwarded((m) => m + 1);
-
-        // Save NPC progress so the forest map updates
-        saveNPCProgress("forest", npcId, POND_ITEMS.length, true, 3);
 
         const isNewPage = awardLibroPage("forest", pageKey);
         if (isNewPage) {

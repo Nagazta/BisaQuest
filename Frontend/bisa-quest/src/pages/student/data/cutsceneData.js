@@ -1,15 +1,4 @@
-// src/data/cutsceneData.js
-// ─────────────────────────────────────────────────────────────────────────────
-//  All cutscene slide definitions for BisaQuest.
-//  Import the CUTSCENES object into StoryCutscene.jsx.
-//
-//  To add artwork when ready:
-//    1. Import your image at the top of this file
-//    2. Set  image: yourImport  on the relevant slide
-//    3. Remove bg + emoji (or leave — they're ignored when image is set)
-// ─────────────────────────────────────────────────────────────────────────────
-
-// ── Story intro images ────────────────────────────────────────────────────────
+//Story intro images
 import intro1 from "../../../assets/images/cutscene/intro/intro_1.png";
 import intro2 from "../../../assets/images/cutscene/intro/intro_2.png";
 import intro3 from "../../../assets/images/cutscene/intro/intro_3.png";
@@ -19,7 +8,7 @@ import intro6 from "../../../assets/images/cutscene/intro/intro_6.png";
 import intro7 from "../../../assets/images/cutscene/intro/intro_7.png";
 import intro8 from "../../../assets/images/cutscene/intro/intro_8.png";
 
-// ── Village artwork ───────────────────────────────────────────────────────────
+//Village artwork
 import villageEntry1 from "../../../assets/images/cutscene/village/village_1.png";
 import villageEntry2 from "../../../assets/images/cutscene/village/village_2.png";
 import villageEntry3 from "../../../assets/images/cutscene/village/village_3.png";
@@ -31,36 +20,19 @@ import villageEntry8 from "../../../assets/images/cutscene/village/village_8.png
 import villageEntry9 from "../../../assets/images/cutscene/village/village_9.png";
 import villageEntry10 from "../../../assets/images/cutscene/village/village_10.png";
 
-// ── Forest artwork ────────────────────────────────────────────────────────────
+//Forest artwork
 import guloHideout from "../../../assets/images/cutscene/forest/gulo-hideout.png";
 
-// ── Castle artwork ────────────────────────────────────────────────────────────
+//Castle artwork
 import castle1 from "../../../assets/images/cutscene/castle/castle_1.png";
 import castle2 from "../../../assets/images/cutscene/castle/castle_2.png";
 import castle3 from "../../../assets/images/cutscene/castle/castle_3.png";
 import castle4 from "../../../assets/images/cutscene/castle/castle_4.png";
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  CUTSCENES map
-//
-//  Each entry:
-//    key         {string|undefined}  localStorage flag key. undefined = legacy global flag.
-//    destination {string}            route to navigate AFTER fog clears
-//    finalLabel  {string}            last-slide button label
-//    fogColor    {string}            fog wipe color (default white)
-//    slides      {Array}             slide objects (see shape below)
-//
-//  Slide shape:
-//    image   {import|null}   actual artwork; null shows bg+emoji placeholder
-//    bg      {string}        CSS background color when no image
-//    emoji   {string}        large emoji shown when no image
-//    speaker {string|null}   NPC name shown above caption (optional)
-//    text    {string}        narration / dialogue text
-// ─────────────────────────────────────────────────────────────────────────────
 
 export const CUTSCENES = {
 
-    // ── Story intro (after character creation → /dashboard) ──────────────────
+    //Story intro (after character creation → /dashboard)
     story: {
         key: undefined,
         destination: "/dashboard",
@@ -78,7 +50,7 @@ export const CUTSCENES = {
         ],
     },
 
-    // ── Village entry (first visit → /student/village) ───────────────────────
+    // Village entry (first visit → /student/village)
     village_entry: {
         key: "village_entry",
         destination: "/student/village",
@@ -108,7 +80,7 @@ export const CUTSCENES = {
         ],
     },
 
-    // ── Village complete (all 3 NPCs done → /student/forest) ─────────────────
+    // Village complete (all 3 NPCs done → /student/forest)
     village_complete: {
         key: "village_complete",
         destination: "/student/forest",
@@ -139,7 +111,7 @@ export const CUTSCENES = {
     },
 
 
-    // ── Castle entry (first visit → /student/castle) ─────────────────────────
+    // Castle entry (first visit → /student/castle)
     castle_entry: {
         key: "castle_entry",
         destination: "/student/castle",
@@ -148,13 +120,13 @@ export const CUTSCENES = {
         slides: [
             { image: castle4, text: "Miabot ka na sa Kastilyo — ang pinakamahal nga lugar sa Baryo Bulawan. Dako ug tag-as ang mga tore niini, ug ang bato nga pader kay nagpasiga sa kahayag sa gabii." },
             { image: castle1, text: "Dinhi sa Kastilyo, gitipon ang labing bililhon nga mga pulong. Apan tungod ni Gulo, nagkatag ang mga pahina sa Libro — ang mga compound words kay nahisagol ug nawagtang." },
-            { image: castle3, text: "Ang mga pulong sa atong kastilyo kay nagkagubot. Kinahanglan nimo ipares ang mga pulong aron mabawi ang ilang kahulogan."},
+            { image: castle3, text: "Ang mga pulong sa atong kastilyo kay nagkagubot. Kinahanglan nimo ipares ang mga pulong aron mabawi ang ilang kahulogan." },
             { image: castle3, text: "Tulo ka tawo ang nanginahanglan sa imong tabang dinhi — si Princess Hara, Manong Kwill, ug si Gulo mismo. Tabangan sila ug sulbaron ang mga compound words aron mapugos ang mga pahina sa Libro nga mobalik." },
         ],
     },
 
 
-    // ── Castle complete (all 3 NPCs done → /dashboard) ───────────────────────
+    // Castle complete (all 3 NPCs done → /dashboard)
     castle_complete: {
         key: "castle_complete",
         destination: "/dashboard",
@@ -162,13 +134,13 @@ export const CUTSCENES = {
         fogColor: "#c8a96e",
         slides: [
             { image: castle1, text: "Nahuman na! Ang tanan nga mga compound words sa Kastilyo kay nabalik na sa Libro. Ang mga pahina kay nagtipon-tipon pag-usab." },
-            { image: castle2, text: "Ang Kastilyo kay malinaw na pag-usab — ang mga pulong kay buhi na."},
+            { image: castle2, text: "Ang Kastilyo kay malinaw na pag-usab — ang mga pulong kay buhi na." },
             { image: castle3, text: "Ang Libro sa mga Pulong kay kumpleto na. Ang tanan nga fragments gikan sa Baryo, Kagubatan, ug Kastilyo kay natipon na, ug nalipay na usab ang mga tawo." },
         ],
     },
 
 
-    // ── Forest complete (all 4 NPCs done → /student/castle) ──────────────────
+    // Forest complete (all 4 NPCs done → /student/castle)
     forest_complete: {
         key: "forest_complete",
         destination: "/student/castle",
