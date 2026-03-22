@@ -58,11 +58,15 @@ export const LIVING_ROOM_LABELS = [
   },
   {
     id: "bag",
-    labelBisaya: "Bag / Bayong",
+    labelBisaya: "Bayong",
     labelEnglish: "Bag / Basket",
-    descriptionBisaya: "Gigamit sa pagdala og mga gamit o palengke.",
-    descriptionEnglish: "Used for carrying belongings or going to the market.",
-    x: 27, y: 40, w: 7, h: 10,
+    descriptionBisaya: "Ang bayong kay gigamit sa pagdala og mga butang o pagpalit sa merkado.",
+    descriptionEnglish: "A bag is used to carry things or bring items from the market.",
+    imageKey: "bag",
+    x: 28, y: 42, w: 7, h: 10,
+    imageKey: "bag",
+    x: 28, y: 42, w: 7, h: 10,
+
   },
   {
     id: "kalendaryo",
