@@ -19,6 +19,7 @@ export const KITCHEN_LABELS = [
     labelEnglish: "Sink",
     descriptionBisaya: "Hugasanan sa mga plato og kamot.",
     descriptionEnglish: "Place to wash plates and hands.",
+    imageKey: "lababo",
     x: 46, y: 49, w: 12, h: 19,
   },
   {
@@ -52,6 +53,7 @@ export const KITCHEN_LABELS = [
     labelEnglish: "Counter / Table",
     descriptionBisaya: "Butanganan og andaman sa mga pagkaon.",
     descriptionEnglish: "Counter for placing and preparing food.",
+    imageKey: "lamesa",
     x: 18, y: 54, w: 28, h: 19,
   },
   {
@@ -60,6 +62,7 @@ export const KITCHEN_LABELS = [
     labelEnglish: "Shelves",
     descriptionBisaya: "Butanganan sa mga plato og kaldero.",
     descriptionEnglish: "Shelves for plates and pots.",
+    imageKey: "shelf",
     x: 23, y: 27, w: 22, h: 19,
   },
   {
@@ -68,6 +71,7 @@ export const KITCHEN_LABELS = [
     labelEnglish: "Large Shelf",
     descriptionBisaya: "Kabinete para sa mga buak nga gamit og uban pa.",
     descriptionEnglish: "Cabinet for fragile items and others.",
+    imageKey: "big_shelf",
     x: 80, y: 24, w: 20, h: 35,
   },
   {
@@ -76,6 +80,7 @@ export const KITCHEN_LABELS = [
     labelEnglish: "Basket / Crate",
     descriptionBisaya: "Sudlanan sa mga prutas o gulay.",
     descriptionEnglish: "Container for fruits or vegetables.",
+    imageKey: "red_crate",
     x: 86, y: 77, w: 14, h: 16,
   }
 ];

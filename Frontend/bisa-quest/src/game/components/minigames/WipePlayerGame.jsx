@@ -1,7 +1,46 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { ITEM_IMAGE_MAP } from "../../dragDropConstants";
 import AssetManifest from "../../../services/AssetManifest";
 import { buildQuestDialogue } from "../questHelpers";
+
+const DustPuff = ({ x, y, onComplete }) => {
+    useEffect(() => {
+        const timer = setTimeout(onComplete, 600);
+        return () => clearTimeout(timer);
+    }, [onComplete]);
+
+    return (
+        <div style={{
+            position: "absolute",
+            left: `${x}%`, top: `${y}%`,
+            width: "40px", height: "40px",
+            transform: "translate(-50%, -50%)",
+            pointerEvents: "none",
+            zIndex: 15
+        }}>
+            {[...Array(6)].map((_, i) => (
+                <div key={i} style={{
+                    position: "absolute",
+                    left: "50%", top: "50%",
+                    width: "8px", height: "8px",
+                    background: "#ddd",
+                    borderRadius: "50%",
+                    opacity: 0.8,
+                    animation: `dustFloat 0.6s ease-out forwards`,
+                    animationDelay: `${i * 0.05}s`,
+                    "--tx": `${(Math.random() - 0.5) * 60}px`,
+                    "--ty": `${(Math.random() - 0.5) * 60}px`,
+                }} />
+            ))}
+            <style>{`
+                @keyframes dustFloat {
+                    0% { transform: translate(0, 0) scale(1); opacity: 0.8; }
+                    100% { transform: translate(var(--tx), var(--ty)) scale(2); opacity: 0; }
+                }
+            `}</style>
+        </div>
+    );
+};
 
 const WipePlayerGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) => {
     const dialogue = buildQuestDialogue(quest, item);
@@ -9,17 +48,28 @@ const WipePlayerGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
     const [introStep, setIntroStep] = useState(0);
     const [stage, setStage] = useState("intro");
     const [wiped, setWiped] = useState(new Set());
+    const [spotHealth, setSpotHealth] = useState({}); // spotId -> 3
     const [toolPos, setToolPos] = useState({ x: quest.draggable.startX, y: quest.draggable.startY });
     const [isDragging, setIsDragging] = useState(false);
     const [showClean, setShowClean] = useState(false);
+    const [puffs, setPuffs] = useState([]); // {id, x, y}
+    
+    const lastWipePos = useRef({ x: 0, y: 0 });
     const containerRef = useRef(null);
     const dragOffset = useRef({ x: 0, y: 0 });
 
     const toolImg = ITEM_IMAGE_MAP[quest.draggable.imageKey] || null;
-    const wipeStage = quest.wipeStage || quest.characterStage; // Support legacy characterStage
-
-    const background = showClean ? wipeStage.cleanImage : wipeStage.dirtyImage;
+    const wipeStage = quest.wipeStage || quest.characterStage;
     const dirtSpots = wipeStage.dirtSpots || wipeStage.sweatSpots;
+    const background = showClean ? wipeStage.cleanImage : wipeStage.dirtyImage;
+
+
+    useEffect(() => {
+        // Initialize health
+        const initialHealth = {};
+        dirtSpots.forEach(s => initialHealth[s.id] = 3);
+        setSpotHealth(initialHealth);
+    }, [dirtSpots]);
 
     const handleToolPointerDown = (e) => {
         if (stage !== "playing") return;
@@ -30,6 +80,7 @@ const WipePlayerGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
             y: e.clientY - rect.top - rect.height / 2,
         };
         setIsDragging(true);
+        lastWipePos.current = { x: e.clientX, y: e.clientY };
         e.currentTarget.setPointerCapture(e.pointerId);
     };
 
@@ -42,24 +93,48 @@ const WipePlayerGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
         const x = ((e.clientX - dragOffset.current.x - rect.left) / rect.width) * 100;
         const y = ((e.clientY - dragOffset.current.y - rect.top) / rect.height) * 100;
         const cx = Math.min(Math.max(x, 5), 95);
-        const cy = Math.min(Math.max(y, 5), 90);
+        const cy = Math.min(Math.max(y, 5), 95);
         setToolPos({ x: cx, y: cy });
 
-        dirtSpots.forEach(spot => {
-            if (wiped.has(spot.id)) return;
-            const overlap =
-                cx + 4 > spot.x && cx - 4 < spot.x + spot.w &&
-                cy + 4 > spot.y && cy - 4 < spot.y + spot.h;
-            if (overlap) {
-                setWiped(prev => {
-                    const next = new Set([...prev, spot.id]);
-                    if (next.size >= dirtSpots.length) {
-                        setTimeout(() => { setShowClean(true); setStage("success"); }, 300);
+        // Calculate distance moved for wipe detection
+        const dx = e.clientX - lastWipePos.current.x;
+        const dy = e.clientY - lastWipePos.current.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist > 30) { // Require significant movement to count as a "wipe"
+            dirtSpots.forEach(spot => {
+                if (wiped.has(spot.id)) return;
+                
+                const overlap =
+                    cx + 3 > spot.x && cx - 3 < spot.x + spot.w &&
+                    cy + 3 > spot.y && cy - 3 < spot.y + spot.h;
+                
+                if (overlap) {
+                    const currentH = spotHealth[spot.id] || 0;
+                    if (currentH > 0) {
+                        const newH = currentH - 1;
+                        setSpotHealth(prev => ({ ...prev, [spot.id]: newH }));
+                        
+                        // Puff animation
+                        if (!wipeStage.noDust) {
+                            const puffId = Date.now() + Math.random();
+                            setPuffs(prev => [...prev, { id: puffId, x: cx, y: cy }]);
+                        }
+                        
+                        if (newH === 0) {
+                            setWiped(prev => {
+                                const next = new Set([...prev, spot.id]);
+                                if (next.size >= dirtSpots.length) {
+                                    setTimeout(() => { setShowClean(true); setStage("success"); }, 500);
+                                }
+                                return next;
+                            });
+                        }
+                        lastWipePos.current = { x: e.clientX, y: e.clientY };
                     }
-                    return next;
-                });
-            }
-        });
+                }
+            });
+        }
     };
 
     const handleToolPointerUp = () => setIsDragging(false);
@@ -118,13 +193,32 @@ const WipePlayerGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
                         }}
                         draggable={false}
                     />
-                    {stage !== "intro" && dirtSpots.map(spot => (
-                        <div
-                            key={spot.id}
-                            className={["iqm-dirt-spot", wiped.has(spot.id) ? "iqm-dirt-spot--swept" : ""].filter(Boolean).join(" ")}
-                            style={{ left: `${spot.x}%`, top: `${spot.y}%`, width: `${spot.w}%`, height: `${spot.h}%` }}
-                        />
+
+                    {/* Dirt Spots */}
+                    {stage !== "intro" && dirtSpots.map(spot => {
+                        const h = spotHealth[spot.id] ?? 3;
+                        const isWiped = wiped.has(spot.id);
+                        return (
+                            <div
+                                key={spot.id}
+                                className={["iqm-dirt-spot", isWiped ? "iqm-dirt-spot--swept" : "", wipeStage.isSweat ? "iqm-dirt-spot--sweat" : ""].filter(Boolean).join(" ")}
+                                style={{ 
+                                    left: `${spot.x}%`, top: `${spot.y}%`, 
+                                    width: `${spot.w}%`, height: `${spot.h}%`,
+                                    opacity: isWiped ? 0 : 0.4 + (h * 0.2), // Fade out as health drops
+                                    transform: `scale(${0.8 + (h * 0.1)})`, // Shrink as health drops
+                                    transition: "opacity 0.2s, transform 0.2s"
+                                }}
+                            />
+                        );
+                    })}
+
+                    {/* Dust Puffs */}
+                    {puffs.map(p => (
+                        <DustPuff key={p.id} x={p.x} y={p.y} onComplete={() => setPuffs(prev => prev.filter(puff => puff.id !== p.id))} />
                     ))}
+
+                    {/* Progress Pips */}
                     {stage === "playing" && (
                         <div className="iqm-sweep-progress">
                             {dirtSpots.map(spot => (
@@ -132,6 +226,8 @@ const WipePlayerGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
                             ))}
                         </div>
                     )}
+
+                    {/* Draggable Tool */}
                     {stage !== "intro" && (
                         <div
                             className={["iqm-scene-broom", isDragging ? "iqm-scene-broom--dragging" : "", stage === "success" ? "iqm-scene-broom--hidden" : ""].filter(Boolean).join(" ")}
@@ -151,15 +247,17 @@ const WipePlayerGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
                                 ? <img src={toolImg} alt="Tool" className="iqm-scene-broom-img" style={{ width: 100, height: 100 }} draggable={false} />
                                 : <span style={{ fontSize: 40 }}>🧻</span>
                             }
-                            {stage === "playing" && !isDragging && (
+                            {stage === "playing" && !isDragging && wiped.size === 0 && (
                                 <div className="iqm-drag-indicator"><span className="iqm-drag-hand">🖐️</span></div>
                             )}
                         </div>
                     )}
+
+                    {/* Success overlay */}
                     {stage === "success" && showClean && (
                         <div className="iqm-scene-success-overlay">
                             <div className="iqm-scene-success-card">
-                                <div className="iqm-scene-success-stars">✨🎊✨</div>
+                                <div className="iqm-scene-success-stars">🧽✨🧽</div>
                                 <div className="iqm-scene-success-text">{wipeStage.successLabel || "Limpyo Na!"}</div>
                             </div>
                         </div>

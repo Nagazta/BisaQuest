@@ -42,9 +42,42 @@ import barrelEmptyBg from "../assets/images/environments/scenario/kitchen_water_
 import barrelFillBg from "../assets/images/environments/scenario/kitchen_water_barrel_fill.png";
 import basketBg from "../assets/images/environments/scenario/basket.png";
 import cauldronImg from "../assets/items/couldron.jpg";
-import plateWashImg from "../assets/items/plate.jpg";
+import plateWashImg from "../assets/items/plate_new.png";
 import spoonImg from "../assets/items/spoon.jpg";
 import kahoyImg from "../assets/items/kahoy.png";
+import sugaOn from "../assets/images/environments/scenario/suga_on.jpeg";
+import sugaOff from "../assets/images/environments/scenario/suga_off.jpeg";
+import dustFeatherImg from "../assets/items/dust_feather.jpg";
+import ironBoardImg from "../assets/images/environments/scenario/iron_board.png";
+import ironImg from "../assets/items/iron.jpg";
+import lampOn from "../assets/items/lamp_on.png";
+import lampOff from "../assets/items/lamp_off.png";
+import boxMatch from "../assets/items/box_match.jpg";
+import litMatch from "../assets/items/lit_match.jpg";
+import matchImg from "../assets/items/match.jpg";
+import wateringCan from "../assets/items/wateringCan.png";
+import wateringCanPour from "../assets/items/wateringCan-pour.png";
+import houseWindow from "../assets/images/environments/scenario/house_window.png";
+import ragImg from "../assets/items/rag.png";
+import rugImg from "../assets/items/rug.jpg";
+import bucketImg from "../assets/images/environments/scenario/bucket.png";
+
+
+
+import houseCeiling from "../assets/images/environments/scenario/house_ceiling.png";
+import houseCeilingFix from "../assets/images/environments/scenario/house_ceiling_fix.png";
+import houseSofaGuba from "../assets/images/environments/scenario/house_sofa_guba.png";
+import houseSofaFix from "../assets/images/environments/scenario/house_sofa_fix.png";
+import hammerImg from "../assets/items/hammer.jpg";
+import lampasoImg from "../assets/items/lampaso.jpg";
+import shoesImg from "../assets/items/shoes.png";
+
+
+import nailImg from "../assets/items/nail.jpg";
+
+
+
+
 
 // ── Forest assets ────────────────────────────────────────────────────────────
 import ForestBackground from "../assets/images/environments/Forest.png";
@@ -169,7 +202,23 @@ const AssetManifest = {
             barrelEmpty: barrelEmptyBg,
             barrelFill: barrelFillBg,
             basket: basketBg,
+            sugaOn: sugaOn,
+            sugaOff: sugaOff,
+            dustFeather: dustFeatherImg,
+            ironBoard: ironBoardImg,
+            lampOn: lampOn,
+            lampOff: lampOff,
+            houseWindow: houseWindow,
+            houseCeiling: houseCeiling,
+            houseCeilingFix: houseCeilingFix,
+            houseSofaGuba: houseSofaGuba,
+            houseSofaFix: houseSofaFix,
+            houseRugGuba: rugImg,
         },
+
+
+
+
         items: {
             plangganaWater: plangganaWater,
             bag: bagPng,
@@ -177,7 +226,28 @@ const AssetManifest = {
             plateWashing: plateWashImg,
             spoon: spoonImg,
             kahoy: kahoyImg,
+            boxMatch: boxMatch,
+            litMatch: litMatch,
+            match: matchImg,
+            wateringCan: wateringCan,
+            wateringCanPour: wateringCanPour,
+            hammer: hammerImg,
+            nail: nailImg,
+            rag: ragImg,
+            alfombra: rugImg,
+            dust_feather: dustFeatherImg,
+            bucket: bucketImg,
+            lampaso: lampasoImg,
+            shoes: shoesImg,
         }
+
+
+
+
+
+
+
+
     },
 
     // ── Forest ───────────────────────────────────────────────────────────────

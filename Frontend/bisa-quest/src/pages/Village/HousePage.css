@@ -45,8 +45,8 @@
 /* ── NPC — floats above the 90px dialogue bar ───────────────── */
 .house-npc-wrap {
   position: absolute;
-  left: 60px;
-  bottom: 90px;
+  left: 2px;
+  bottom: 10px;
   z-index: 20;
   pointer-events: none;
   animation: house-npc-bob 3s ease-in-out infinite;
