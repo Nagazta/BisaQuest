@@ -36,7 +36,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Towel",
     descriptionBisaya: "Ang toalya kay panapton nga gigamit para pagpahid sa singot sa lawas.",
     descriptionEnglish: "A towel is a piece of cloth used to wipe sweat and dry your body.",
-    x: 13, y: 39, w: 5, h: 10,
+    x: 17, y: 39, w: 5, h: 10,
   },
   {
     id: "lampara",
@@ -121,7 +121,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Picture Frame",
     descriptionBisaya: "Ang kuwadro kay butanganan og piktyur (picture) aron madisplay kini.",
     descriptionEnglish: "A picture frame is used to hold and display a picture.",
-    x: 43.5, y: 36, w: 5, h: 6,
+    x: 43, y: 36, w: 5, h: 6,
   },
   {
     id: "sopa",
