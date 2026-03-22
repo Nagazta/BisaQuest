@@ -19,7 +19,10 @@ const WashAndMopGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
     const dragOffset = useRef({ x: 0, y: 0 });
 
     const basinImg = AssetManifest.village.items[quest.washStage.basinImage];
-    const mopImg = ITEM_IMAGE_MAP["mop"] || null;
+    const toolKey = quest.washStage.toolKey || "mop";
+    const mopImg = ITEM_IMAGE_MAP[toolKey] || ITEM_IMAGE_MAP["mop"] || null;
+    const toolName = toolKey === "rag" ? "trapo" : (toolKey === "alfombra" ? "banig" : "mop");
+
 
     const handlePointerDown = (e) => {
         if (stage !== "wash" && stage !== "mop") return;
@@ -52,7 +55,15 @@ const WashAndMopGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
                 setWashCount(prev => {
                     const next = prev + 1;
                     if (next >= 3) {
-                        setTimeout(() => { setIsDragging(false); setStage("mop"); }, 200);
+                        setTimeout(() => { 
+                            setIsDragging(false); 
+                            if (quest.washStage.washOnly) {
+                                setShowClean(true);
+                                setStage("success");
+                            } else {
+                                setStage("mop");
+                            }
+                        }, 200);
                     }
                     return next;
                 });
@@ -94,9 +105,12 @@ const WashAndMopGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
     };
 
     const dialogueText = stage === "success"
-        ? { bisayaText: "Limpyo na ang salog! Maayong pagka-mop!", englishText: "The floor is clean! Well mopped!" }
+        ? { 
+            bisayaText: `Limpyo na ang ${toolName}! Maayo kaayo!`, 
+            englishText: `The ${toolKey === "alfombra" ? "rug" : toolKey} is clean! Well done!` 
+          }
         : stage === "wash"
-            ? { bisayaText: `Hugasi ang mop sa planggana! (${washCount}/3)`, englishText: `Wash the mop in the basin! (${washCount}/3)` }
+            ? { bisayaText: `Hugasi ang ${toolName} sa planggana! (${washCount}/3)`, englishText: `Wash the ${toolKey} in the basin! (${washCount}/3)` }
             : dialogue[introStep];
 
     const bgImage = (stage === "intro" || stage === "wash") ? basinImg : AssetManifest.village.scenarios.house;
@@ -131,13 +145,13 @@ const WashAndMopGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
                                 onPointerUp={handlePointerUp}
                                 onPointerCancel={handlePointerUp}
                             >
-                                {mopImg && <img src={mopImg} alt="Mop" className="iqm-scene-broom-img" style={{ width: 180, height: 180 }} draggable={false} />}
+                                {mopImg && <img src={mopImg} alt={toolKey} className="iqm-scene-broom-img" style={{ width: toolKey === "rag" ? 120 : 180, height: toolKey === "rag" ? 120 : 180 }} draggable={false} />}
+                                {!isDragging && (
+                                    <div className="iqm-drag-indicator" style={{ left: "50%" }}>
+                                        <div className="iqm-drag-hand">🖐️</div>
+                                    </div>
+                                )}
                             </div>
-                            {!isDragging && (
-                                <div className="iqm-drag-indicator" style={{ top: "35%", left: "50%" }}>
-                                    <div className="iqm-drag-hand">👆</div>
-                                </div>
-                            )}
                         </>
                     )}
                     {stage === "mop" && !showClean && (
@@ -166,13 +180,13 @@ const WashAndMopGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
                                 onPointerUp={handlePointerUp}
                                 onPointerCancel={handlePointerUp}
                             >
-                                {mopImg && <img src={mopImg} alt="Mop" className="iqm-scene-broom-img" draggable={false} />}
+                                {mopImg && <img src={mopImg} alt={toolKey} className="iqm-scene-broom-img" style={{ width: toolKey === "rag" ? 120 : 180, height: toolKey === "rag" ? 120 : 180 }} draggable={false} />}
+                                {!isDragging && swept.size === 0 && (
+                                    <div className="iqm-drag-indicator" style={{ left: "50%" }}>
+                                        <div className="iqm-drag-hand">🖐️</div>
+                                    </div>
+                                )}
                             </div>
-                            {!isDragging && swept.size === 0 && (
-                                <div className="iqm-drag-indicator" style={{ top: "35%", left: "50%" }}>
-                                    <div className="iqm-drag-hand">👆</div>
-                                </div>
-                            )}
                         </>
                     )}
                     {stage === "success" && showClean && (

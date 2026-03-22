@@ -548,7 +548,16 @@
     border-radius: 60% 40% 55% 45% / 50% 60% 40% 50%;
 }
 
-/* ── Sweep progress pips ─────────────────────────────────────── */
+/* ── Sweat variant (toalya quest) ───────────────────────────── */
+.iqm-dirt-spot--sweat {
+    background: radial-gradient(ellipse,
+            rgba(180, 220, 255, 0.6) 0%,
+            rgba(140, 190, 240, 0.3) 50%,
+            transparent 100%);
+    border-color: rgba(180, 220, 255, 0.6);
+    border-style: solid;
+}
+
 .iqm-sweep-progress {
     position: absolute;
     top: 8px;
@@ -611,8 +620,8 @@
     animation: iqm-bounce-drag 1.5s infinite;
     background: rgba(0, 0, 0, 0.4);
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
+    width: 45px;
+    height: 45px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -622,8 +631,8 @@
 }
 
 .iqm-drag-hand {
-    font-size: 32px;
-    margin-top: 4px;
+    font-size: 24px;
+    margin-top: 2px;
     /* Slight visual adjust for emoji center */
 }
 

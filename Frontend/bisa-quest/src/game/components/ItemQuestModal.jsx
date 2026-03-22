@@ -24,6 +24,16 @@ import CookingGame from "./minigames/CookingGame";
 import WaterBarrelGame from "./minigames/WaterBarrelGame";
 import ToggleLightGame from "./minigames/ToggleLightGame";
 import IroningGame from "./minigames/IroningGame";
+import WateringPlantGame from "./minigames/WateringPlantGame";
+import HammerGame from "./minigames/HammerGame";
+import SofaRepairGame from "./minigames/SofaRepairGame";
+import MultiWashGame from "./minigames/MultiWashGame";
+import PolishAndSweepGame from "./minigames/PolishAndSweepGame";
+
+
+
+
+
 
 const ITEM_QUESTS = {
     // ── Silhig — scene drag game ───────────────────────────────────────────────
@@ -84,32 +94,61 @@ const ITEM_QUESTS = {
 
     // ── Planggana ──────────────────────────────────────────────────────────────
     planggana: {
+        mechanic: "multi_wash",
+        instructionBisaya: "Hugasi ang banig, trapo, ug paspas sa planggana!",
+        instructionEnglish: "Wash the rug, rag, and dust feather in the basin!",
+        washItems: ["alfombra", "rag", "dust_feather"],
+        basinImage: "plangganaWater",
+    },
+
+    baldi: {
         mechanic: "wash_and_mop",
-        instructionBisaya: "Hugasi ug i-mop ang salog!",
-        instructionEnglish: "Wash the mop and clean the floor!",
+        instructionBisaya: "Hugasi ang mop sa baldi ug limpyohi ang salog!",
+        instructionEnglish: "Wash the mop in the bucket and clean the floor!",
         washStage: {
-            background: "none",
-            basinImage: "plangganaWater",
-            basinX: 50,
-            basinY: 60,
-            basinW: 24,
-            basinH: 15,
-            mopStartX: 20,
-            mopStartY: 40,
+            background: "house",
+            basinImage: "bucket",
+            basinX: 50, basinY: 60, basinW: 24, basinH: 15,
+            mopStartX: 20, mopStartY: 40,
         },
         mopStage: {
             background: "spill",
             dirtSpots: [
-                { id: "spill_1", x: 30, y: 85, w: 10, h: 8 },
-                { id: "spill_2", x: 45, y: 88, w: 12, h: 8 },
-                { id: "spill_3", x: 60, y: 85, w: 12, h: 8 },
-                { id: "spill_4", x: 75, y: 80, w: 10, h: 8 },
-                { id: "spill_5", x: 40, y: 75, w: 9, h: 6 },
-                { id: "spill_6", x: 52, y: 77, w: 9, h: 6 },
-                { id: "spill_7", x: 65, y: 71, w: 8, h: 6 },
-                { id: "spill_8", x: 35, y: 65, w: 8, h: 6 },
-                { id: "spill_9", x: 48, y: 64, w: 8, h: 6 },
+                { id: "floor_1", x: 30, y: 85, w: 10, h: 8 },
+                { id: "floor_2", x: 45, y: 88, w: 12, h: 8 },
+                { id: "floor_3", x: 60, y: 85, w: 12, h: 8 },
             ],
+        },
+    },
+
+    salog: {
+        mechanic: "polish_and_sweep",
+        instructionBisaya: "Lampasohi ang salog ug silhigi ang abog!",
+        instructionEnglish: "Polish the floor and sweep away the dust!",
+    },
+
+    doormat: {
+        mechanic: "wipe",
+        instructionBisaya: "Pahiri ang imong sapatos sa talamakan!",
+        instructionEnglish: "Wipe your shoes on the doormat!",
+        draggable: {
+            id: "shoes_item",
+            label: "Sapatos",
+            imageKey: "shoes",
+            startX: 40,
+            startY: 40,
+        },
+        wipeStage: {
+            label: "Shoe Wiping",
+            hideBaseBackground: true,
+            dirtyImage: AssetManifest.village.scenarios.house,
+            cleanImage: AssetManifest.village.scenarios.house,
+            dirtSpots: [
+                { id: "dirt_1", x: 6, y: 84, w: 4, h: 4 },
+                { id: "dirt_2", x: 10, y: 86, w: 4, h: 4 },
+                { id: "dirt_3", x: 4, y: 88, w: 4, h: 4 },
+            ],
+            successLabel: "Limpyo Na!",
         },
     },
 
@@ -133,6 +172,8 @@ const ITEM_QUESTS = {
             successEnglish: "She's fresh now! Well done! 🎉",
             remainingBisaya: (count) => `${count} ka singot pa ang nahibilin! Pahiri na!`,
             remainingEnglish: (count) => `${count} more sweat spots to wipe!`,
+            noDust: true,
+            isSweat: true,
             dirtSpots: [
                 { id: "sweat_1", x: 45, y: 35, w: 10, h: 10 },
                 { id: "sweat_2", x: 55, y: 40, w: 10, h: 10 },
@@ -142,6 +183,118 @@ const ITEM_QUESTS = {
             ],
         },
     },
+    bulak: {
+        mechanic: "watering_plant",
+        instructionBisaya: "Bisbisi ang tanum gamit ang regadera!",
+        instructionEnglish: "Water the plant using the watering can!",
+        successBisaya: "Presko na ang tanum! Maayo kaayo! 🎉",
+        successEnglish: "The plant is fresh now! Well done! 🎉",
+        wateringCan: {
+            id: "watering_can_item",
+            label: "Watering Can",
+            imageKey: "watering_can",
+            startX: 20,
+            startY: 70,
+        },
+        plantZone: { x: 13.5, y: 26.5, w: 10, h: 10 }, // Zone over the plant
+    },
+    sopa: {
+        mechanic: "sofa_repair",
+        instructionBisaya: "Ibutang una ang kahoy, dayon ang lansang, ug i-martelyo kini!",
+        instructionEnglish: "Place the wood first, then the nails, and hammer them down!",
+        repairStage: {
+            background: AssetManifest.village.scenarios.houseSofaGuba,
+            successBisaya: "Nindot na usab ang sopa! Maayo kaayo! 🎉",
+            successEnglish: "The sofa looks good as new! Well done! 🎉",
+            repairSpots: [
+                { id: "s_leg_l", x: 30, y: 70 },
+                { id: "s_leg_r", x: 70, y: 70 },
+                { id: "s_cushion", x: 50, y: 55 },
+            ],
+        },
+    },
+
+
+    kurtina: {
+        mechanic: "wipe",
+        instructionBisaya: "Limpyohi ang kurtina gamit ang paspas!",
+        instructionEnglish: "Clean the curtain using the dust feather!",
+        draggable: {
+            id: "paspas_item",
+            label: "Paspas",
+            imageKey: "paspas",
+            startX: 20, startY: 60,
+        },
+        wipeStage: {
+            label: "Clean the Curtain",
+            hideBaseBackground: true,
+            dirtyImage: AssetManifest.village.scenarios.houseWindow,
+            cleanImage: AssetManifest.village.scenarios.houseWindow,
+            successLabel: "Limpyo Na'ng Kurtina!",
+            successBisaya: "Limpyo na ang kurtina! Maayo kaayo! 🎉",
+            successEnglish: "The curtain is clean! Well done! 🎉",
+            remainingBisaya: (count) => `${count} ka dapit pa ang hugaw!`,
+            remainingEnglish: (count) => `${count} more spots to clean!`,
+            dirtSpots: [
+                { id: "curtain_l1", x: 37, y: 30, w: 5, h: 18 },
+                { id: "curtain_l2", x: 39, y: 50, w: 4, h: 10 },
+                { id: "curtain_r1", x: 60, y: 30, w: 5, h: 18 },
+                { id: "curtain_r2", x: 62, y: 50, w: 4, h: 10 },
+            ],
+
+        },
+
+    },
+
+    bintana: {
+        mechanic: "wipe",
+        instructionBisaya: "Pahiran ang bintana aron malimpyo!",
+        instructionEnglish: "Wipe the window to clean it!",
+        draggable: {
+            id: "rag_item",
+            label: "Trapo",
+            imageKey: "rag",
+            startX: 20, startY: 60,
+        },
+        wipeStage: {
+            label: "Wipe the Window",
+            hideBaseBackground: true,
+            dirtyImage: AssetManifest.village.scenarios.houseWindow,
+            cleanImage: AssetManifest.village.scenarios.houseWindow,
+            successLabel: "Hayag Na!",
+            successBisaya: "Hayag na ang bintana! Maayo kaayo! 🎉",
+            successEnglish: "The window is bright now! Well done! 🎉",
+            remainingBisaya: (count) => `${count} ka spots pa ang hugaw!`,
+            remainingEnglish: (count) => `${count} more spots to wipe!`,
+            dirtSpots: [
+                { id: "win_1", x: 32, y: 35, w: 6, h: 20 }, // Left Shutter
+                { id: "win_2", x: 65, y: 35, w: 6, h: 20 }, // Right Shutter
+                { id: "win_3", x: 50, y: 62, w: 12, h: 5 }, // Bottom Sill
+            ],
+
+        },
+
+    },
+    atop: {
+        mechanic: "hammer_repair",
+        instructionBisaya: "Ayoha ang atop gamit ang martelyo ug lansang!",
+        instructionEnglish: "Fix the ceiling using the hammer and nails!",
+        repairStage: {
+            background: AssetManifest.village.scenarios.houseCeiling,
+            successBisaya: "Naayo na ang atop! Dili na kini motulo. Maayo kaayo! 🎉",
+            successEnglish: "The ceiling is fixed! It won't leak anymore. Well done! 🎉",
+            repairSpots: [
+                { id: "leak_1", x: 35, y: 30 },
+                { id: "leak_2", x: 45, y: 25 },
+                { id: "leak_3", x: 55, y: 30 },
+                { id: "leak_4", x: 40, y: 45 },
+                { id: "leak_5", x: 50, y: 40 },
+                { id: "leak_6", x: 60, y: 45 },
+            ],
+        },
+    },
+
+
 
     bag: {
         mechanic: "pack_bag",
@@ -203,23 +356,19 @@ const ITEM_QUESTS = {
     },
     alfombra: {
         mechanic: "wash_and_mop",
-        instructionBisaya: "Hugasi ang alfombra ug limpyohi ang salog!",
-        instructionEnglish: "Wash the rug and clean the floor!",
+        instructionBisaya: "Hugasi ang banig sa planggana!",
+        instructionEnglish: "Wash the rug in the basin!",
         washStage: {
-            background: "none",
+            background: "houseRugGuba",
             basinImage: "plangganaWater",
             basinX: 50, basinY: 60, basinW: 24, basinH: 15,
             mopStartX: 20, mopStartY: 40,
+            toolKey: "alfombra",
+            washOnly: true,
         },
         mopStage: {
-            background: "spill",
-            dirtSpots: [
-                { id: "rug_1", x: 35, y: 70, w: 12, h: 8 },
-                { id: "rug_2", x: 50, y: 75, w: 12, h: 8 },
-                { id: "rug_3", x: 65, y: 70, w: 12, h: 8 },
-                { id: "rug_4", x: 42, y: 82, w: 10, h: 7 },
-                { id: "rug_5", x: 58, y: 85, w: 10, h: 7 },
-            ],
+            background: "houseRugGuba",
+            dirtSpots: [],
         },
     },
     trapo: {
@@ -489,25 +638,11 @@ const ITEM_QUESTS = {
         mechanic: "schedule_event",
     },
 
+
     lampara: {
         mechanic: "light_lamp",
         instructionBisaya: "Sindiri ang lampara gamit ang posporo!",
         instructionEnglish: "Light the lamp using the match!",
-    },
-
-    sopa: {
-        mechanic: "drag_drop",
-        instructionBisaya: "I-drag ang unan sa sopa!",
-        instructionEnglish: "Drag the pillow to the sofa!",
-        items: [
-            { id: "q_pillow", label: "Unan", imageKey: "pillow", isCorrect: true, correctZone: "sopa" },
-            { id: "q_broom", label: "Silhig", imageKey: "walis", isCorrect: false, correctZone: null },
-            { id: "q_pot", label: "Kaldero", imageKey: "kaldero", isCorrect: false, correctZone: null },
-        ],
-        zones: [
-            { id: "sopa", label: "Sopa / Sofa" },
-            { id: "bookshelf", label: "Estante / Shelf" },
-        ],
     },
 
     bookshelf: {
@@ -775,6 +910,25 @@ const ItemQuestModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
     }
     if (quest.mechanic === "ironing_game") {
         return <IroningGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
+    }
+    if (quest.mechanic === "hammer_repair") {
+        return <HammerGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
+    }
+    if (quest.mechanic === "sofa_repair") {
+        return <SofaRepairGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
+    }
+    if (quest.mechanic === "watering_plant") {
+
+
+        return <WateringPlantGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
+    }
+
+
+    if (quest.mechanic === "multi_wash") {
+        return <MultiWashGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
+    }
+    if (quest.mechanic === "polish_and_sweep") {
+        return <PolishAndSweepGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;
     }
 
     return <StandardModalGame quest={quest} item={item} npcName={npcName} npcImage={npcImage} onClose={onClose} onComplete={onComplete} />;

@@ -212,21 +212,16 @@ const HousePage = () => {
                 <span className="house-bilingual-bisaya">{currentLine.bisayaText}</span>
                 <span className="house-bilingual-english">{currentLine.englishText}</span>
               </span>
-              {isLastDialogueLine && activeItem?.id !== "purtahan" && (
-                <div className="house-quest-incoming" style={{ flexShrink: 0 }}>
-                  <span className="house-quest-incoming-bisaya">🎮 Mini-game sunod!</span>
-                  <span className="house-quest-incoming-english">Mini-game coming up!</span>
-                </div>
-              )}
+              {isLastDialogueLine && activeItem?.id !== "purtahan"}
             </span>
           }
           rightSlot={null}
           introItem={
             dialogueStep === 0
               ? {
-                  label: activeItem.labelBisaya,
-                  imageKey: activeItem.imageKey || activeItem.id,
-                }
+                label: activeItem.labelBisaya,
+                imageKey: activeItem.imageKey || activeItem.id,
+              }
               : null
           }
           isNarration={false}
@@ -265,18 +260,18 @@ const HousePage = () => {
           <div className="house-door-modal" onClick={e => e.stopPropagation()}>
             <button className="house-door-close" onClick={() => setShowDoorChoice(false)}>✕</button>
             <h2 className="house-door-title">
-              Asa nimo gusto muadto? <br/>
+              Asa nimo gusto muadto? <br />
               <small className="house-door-subtitle">(Where do you want to go?)</small>
             </h2>
             <div className="house-door-options">
-              <button 
-                className="house-door-btn" 
+              <button
+                className="house-door-btn"
                 onClick={() => navigate("/student/bedroom", { state: { returnTo: "/student/house" } })}
               >
                 🛏️ Kwarto (Bedroom)
               </button>
-              <button 
-                className="house-door-btn" 
+              <button
+                className="house-door-btn"
                 onClick={() => navigate("/student/kitchen", { state: { returnTo: "/student/house" } })}
               >
                 🍳 Kusina (Kitchen)

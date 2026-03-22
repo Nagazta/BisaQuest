@@ -55,6 +55,29 @@ import lampOff from "../assets/items/lamp_off.png";
 import boxMatch from "../assets/items/box_match.jpg";
 import litMatch from "../assets/items/lit_match.jpg";
 import matchImg from "../assets/items/match.jpg";
+import wateringCan from "../assets/items/wateringCan.png";
+import wateringCanPour from "../assets/items/wateringCan-pour.png";
+import houseWindow from "../assets/images/environments/scenario/house_window.png";
+import ragImg from "../assets/items/rag.png";
+import rugImg from "../assets/items/rug.jpg";
+import bucketImg from "../assets/images/environments/scenario/bucket.png";
+
+
+
+import houseCeiling from "../assets/images/environments/scenario/house_ceiling.png";
+import houseCeilingFix from "../assets/images/environments/scenario/house_ceiling_fix.png";
+import houseSofaGuba from "../assets/images/environments/scenario/house_sofa_guba.png";
+import houseSofaFix from "../assets/images/environments/scenario/house_sofa_fix.png";
+import hammerImg from "../assets/items/hammer.jpg";
+import lampasoImg from "../assets/items/lampaso.jpg";
+import shoesImg from "../assets/items/shoes.png";
+
+
+import nailImg from "../assets/items/nail.jpg";
+
+
+
+
 
 // ── Forest assets ────────────────────────────────────────────────────────────
 import ForestBackground from "../assets/images/environments/Forest.png";
@@ -185,7 +208,17 @@ const AssetManifest = {
             ironBoard: ironBoardImg,
             lampOn: lampOn,
             lampOff: lampOff,
+            houseWindow: houseWindow,
+            houseCeiling: houseCeiling,
+            houseCeilingFix: houseCeilingFix,
+            houseSofaGuba: houseSofaGuba,
+            houseSofaFix: houseSofaFix,
+            houseRugGuba: rugImg,
         },
+
+
+
+
         items: {
             plangganaWater: plangganaWater,
             bag: bagPng,
@@ -196,7 +229,25 @@ const AssetManifest = {
             boxMatch: boxMatch,
             litMatch: litMatch,
             match: matchImg,
+            wateringCan: wateringCan,
+            wateringCanPour: wateringCanPour,
+            hammer: hammerImg,
+            nail: nailImg,
+            rag: ragImg,
+            alfombra: rugImg,
+            dust_feather: dustFeatherImg,
+            bucket: bucketImg,
+            lampaso: lampasoImg,
+            shoes: shoesImg,
         }
+
+
+
+
+
+
+
+
     },
 
     // ── Forest ───────────────────────────────────────────────────────────────
