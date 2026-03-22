@@ -19,52 +19,57 @@ const VillageTransitionModal = ({ isOpen, currentRoom, onClose, onProceedToFores
         <div className="house-door-overlay" onClick={onClose}>
           <div className="house-door-modal" onClick={e => e.stopPropagation()}>
             <button className="house-door-close" onClick={onClose}>✕</button>
-            <h2 className="house-door-title">
-              What would you like to do next?
-            </h2>
-            <div className="house-door-options">
-              <button
-                className="house-door-btn"
-                style={{ background: "#e0e0e0", borderColor: "#888", color: "#333", boxShadow: "0 6px 0 #999" }}
-                onClick={onClose}
-              >
-                Stay and Explore
+
+            <div className="house-door-header">
+              <div className="house-door-title">Asa ka muadto next? 🗺️</div>
+            </div>
+
+            <div className="house-door-body">
+              <div className="house-door-grid">
+
+                {currentRoom !== 'bedroom' && (
+                  <button className="house-door-btn"
+                    onClick={() => navigate("/student/bedroom", { state: { returnTo: location.pathname } })}>
+                    <span className="house-door-btn-icon">🛏️</span>
+                    <div className="house-door-btn-name">Kwarto</div>
+                    <div className="house-door-btn-sub">Adto sa Bedroom!</div>
+                  </button>
+                )}
+
+                {currentRoom !== 'kitchen' && (
+                  <button className="house-door-btn"
+                    onClick={() => navigate("/student/kitchen", { state: { returnTo: location.pathname } })}>
+                    <span className="house-door-btn-icon">🍳</span>
+                    <div className="house-door-btn-name">Kusina</div>
+                    <div className="house-door-btn-sub">Adto sa Kitchen!</div>
+                  </button>
+                )}
+
+                {currentRoom !== 'house' && (
+                  <button className="house-door-btn"
+                    onClick={() => navigate("/student/house", { state: { returnTo: location.pathname } })}>
+                    <span className="house-door-btn-icon">🛋️</span>
+                    <div className="house-door-btn-name">Sala</div>
+                    <div className="house-door-btn-sub">Adto sa Living Room!</div>
+                  </button>
+                )}
+
+                {allCompleted && (
+                  <button className="house-door-btn house-door-btn--forest"
+                    onClick={onProceedToForest}>
+                    <span className="house-door-btn-icon">🌲</span>
+                    <div className="house-door-btn-name" style={{ color: "#2d6a4f" }}>Forest</div>
+                    <div className="house-door-btn-sub house-door-btn-sub--forest">Adto sa Kagubatan!</div>
+                  </button>
+                )}
+
+              </div>
+
+              <div className="house-door-divider" />
+
+              <button className="house-door-stay" onClick={onClose}>
+                🏠 Dili muna — Stay here
               </button>
-
-              {allCompleted && (
-                <button
-                    className="house-door-btn"
-                    style={{ background: "#4caf50", borderColor: "#1b5e20", color: "#fff", boxShadow: "0 6px 0 #2e7d32" }}
-                    onClick={onProceedToForest}
-                >
-                    Proceed to Forest 🌲
-                </button>
-              )}
-
-              {currentRoom !== 'bedroom' && (
-                  <button
-                    className="house-door-btn"
-                    onClick={() => navigate("/student/bedroom", { state: { returnTo: location.pathname } })}
-                  >
-                    Go to Bedroom 🛏️
-                  </button>
-              )}
-              {currentRoom !== 'kitchen' && (
-                  <button
-                    className="house-door-btn"
-                    onClick={() => navigate("/student/kitchen", { state: { returnTo: location.pathname } })}
-                  >
-                    Go to Kitchen 🍳
-                  </button>
-              )}
-              {currentRoom !== 'house' && (
-                  <button
-                    className="house-door-btn"
-                    onClick={() => navigate("/student/house", { state: { returnTo: location.pathname } })}
-                  >
-                    Go to Living Room 🛋️
-                  </button>
-              )}
             </div>
           </div>
         </div>

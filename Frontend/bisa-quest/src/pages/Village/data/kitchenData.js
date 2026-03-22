@@ -11,7 +11,7 @@ export const KITCHEN_LABELS = [
     labelEnglish: "Door",
     descriptionBisaya: "Ang pultahan pagawas.",
     descriptionEnglish: "The door to go out.",
-    x: 0, y: 30, w: 15, h: 45,
+    x: 3, y: 20, w: 15, h: 45,
   },
   {
     id: "lababo",
@@ -20,7 +20,7 @@ export const KITCHEN_LABELS = [
     descriptionBisaya: "Hugasanan sa mga plato og kamot.",
     descriptionEnglish: "Place to wash plates and hands.",
     imageKey: "lababo",
-    x: 46, y: 49, w: 12, h: 19,
+    x: 45, y: 49, w: 12, h: 19,
   },
   {
     id: "dapogan",
@@ -45,7 +45,7 @@ export const KITCHEN_LABELS = [
     labelEnglish: "Window",
     descriptionBisaya: "Bukas nga parte sa dingding para hangin og suga.",
     descriptionEnglish: "Opening in the wall for air and light.",
-    x: 46, y: 31, w: 9, h: 17,
+    x: 46, y: 28, w: 9, h: 17,
   },
   {
     id: "lamesa_kitchen",
@@ -81,7 +81,7 @@ export const KITCHEN_LABELS = [
     descriptionBisaya: "Sudlanan sa mga prutas o gulay.",
     descriptionEnglish: "Container for fruits or vegetables.",
     imageKey: "red_crate",
-    x: 80, y: 79, w: 14, h: 16,
+    x: 79, y: 78, w: 14, h: 16,
   }
 ];
 
