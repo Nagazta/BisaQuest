@@ -8,7 +8,6 @@ export const LIVING_ROOM_LABELS = [
   // ── Left wall ─────────────────────────────────────────────────────────────
   {
     id: "purtahan",
-<<<<<<< HEAD
     labelBisaya: "purtahan / pultahan",
     labelEnglish: "door",
     descriptionBisaya: "Ang pultahan kay maablihan ug masirad-an aron matabonan ang agianan sa kwarto, building, o sakyanan.",
@@ -30,30 +29,6 @@ export const LIVING_ROOM_LABELS = [
     descriptionBisaya: "Ang houseplant kay tanom nga ibutang sulod sa balay para dekorasyon.",
     descriptionEnglish: "A houseplant is a plant kept inside the house used mostly as decoration.",
     x: 13, y: 25, w: 6, h: 7,
-=======
-    labelBisaya: "Purtahan/Pultahan",
-    labelEnglish: "Door",
-    descriptionBisaya: "Usa ka nagtabayag o nag-aginod nga babag nga mosira sa agianan sa usa ka lawak, balay, o sakyanan.",
-    descriptionEnglish: "A swinging or sliding barrier that will close the entrance to a room or building or vehicle",
-    imageKey: "purtahan",
-    x: 0, y: 44, w: 10, h: 18,
-  },
-  {
-    id: "estante_wall",
-    labelBisaya: "Estante sa Dingding",
-    labelEnglish: "Wall Shelf",
-    descriptionBisaya: "Gibitay sa dingding para sa mga gamit ug dekorasyon.",
-    descriptionEnglish: "Mounted on the wall to hold items and decorations.",
-    x: 19, y: 26, w: 5, h: 5,
-  },
-  {
-    id: "bulak",
-    labelBisaya: "Bulak / Tanum",
-    labelEnglish: "Plant",
-    descriptionBisaya: "Tanum nga nagpaayos sa sulod sa balay ug naghatag og presko nga hangin.",
-    descriptionEnglish: "A plant that decorates the home and helps freshen the air.",
-    x: 14, y: 24, w: 5, h: 6,
->>>>>>> ca3095668fb13644fe4c2e10d2f83cd290a23cd9
   },
   {
     id: "toalya",
@@ -208,21 +183,12 @@ export const LIVING_ROOM_LABELS = [
   },
   // ── Floor & ceiling ───────────────────────────────────────────────────────
   {
-<<<<<<< HEAD
     id: "trapo",
     labelBisaya: "Talamakan",
     labelEnglish: "Doormat",
     descriptionBisaya: "Ang talamakan kay makita sa pultahan aron ipahid ang hugaw sa sapatos.",
     descriptionEnglish: "A doormat is a mat placed near a door where you wipe your shoes or feet.",
     x: -1, y: 82, w: 15, h: 12,
-=======
-    id: "doormat",
-    labelBisaya: "Talamakanan",
-    labelEnglish: "Doormat",
-    descriptionBisaya: "Himo sa mga dahon o buli, gamiton sa paghigda o paglingkod.",
-    descriptionEnglish: "Woven from leaves or palm, used for sleeping or sitting.",
-    x: 0, y: 84, w: 10, h: 11,
->>>>>>> ca3095668fb13644fe4c2e10d2f83cd290a23cd9
   },
   {
     id: "salog",
