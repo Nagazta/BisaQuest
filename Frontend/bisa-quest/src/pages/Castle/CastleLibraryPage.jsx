@@ -12,6 +12,7 @@ import HouseDebugTools from "../Village/components/HouseDebugTools";
 import BilingualText from "../Village/components/BilingualText";
 import CastleCompoundWordModal from "./components/CastleCompoundWordModal";
 import CastleVisualDragModal from "./components/CastleVisualDragModal";
+import CastleApplyModal from "./components/CastleApplyModal";
 import { CASTLE_NPC_IMAGES, getQuestData, buildCastleDialogue } from "./data/castleRoomData";
 import "./CastleLibraryPage.css";
 
@@ -221,17 +222,22 @@ const CastleLibraryPage = () => {
         </div>
       )}
 
-      {/* Mini-game modal — visual drag for library items */}
+      {/* Mini-game modal */}
       {questItem && (
-        questItem.mechanic === "visual_drag"
-          ? <CastleVisualDragModal
+        questItem.applyGame
+          ? <CastleApplyModal
               item={questItem} npcName={NPC_NAME} npcImage={NpcImage}
               onClose={handleQuestClose} onComplete={handleQuestComplete}
             />
-          : <CastleCompoundWordModal
-              item={questItem} npcName={NPC_NAME} npcImage={NpcImage}
-              onClose={handleQuestClose} onComplete={handleQuestComplete}
-            />
+          : questItem.mechanic === "visual_drag"
+            ? <CastleVisualDragModal
+                item={questItem} npcName={NPC_NAME} npcImage={NpcImage}
+                onClose={handleQuestClose} onComplete={handleQuestComplete}
+              />
+            : <CastleCompoundWordModal
+                item={questItem} npcName={NPC_NAME} npcImage={NpcImage}
+                onClose={handleQuestClose} onComplete={handleQuestComplete}
+              />
       )}
 
       {/* Scene complete overlay */}

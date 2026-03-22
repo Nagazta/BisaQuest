@@ -181,6 +181,20 @@ export const ITEM_IMAGE_MAP = {
   lit_match: LitMatchImg,
   match: MatchImg,
 
+  // Castle library
+  sunlight: AssetManifest.castle.scenarios.sun,
+  candlelight: AssetManifest.castle.scenarios.candleStick,
+  fireplace: AssetManifest.castle.scenarios.introFireplace,
+  candlestick: AssetManifest.castle.scenarios.introCandlestick,
+  bookshelf: AssetManifest.castle.scenarios.introBookshelf,
+  keyhole: AssetManifest.castle.scenarios.key,
+  doorway: AssetManifest.castle.scenarios.door,
+  stonework: AssetManifest.castle.scenarios.introStone,
+  grassland: AssetManifest.castle.scenarios.grass,
+  pathway: AssetManifest.castle.scenarios.introPathway,
+  waterway: AssetManifest.castle.scenarios.introWaterway,
+  drawbridge: AssetManifest.castle.scenarios.introBridge,
+
 };
 
 // Scene backgrounds
