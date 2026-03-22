@@ -94,7 +94,7 @@ const LightLampGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) 
 
     const getDialogueText = () => {
         if (stage === "intro") return dialogue[introStep];
-        if (stage === "success") return { bisayaText: "Nasindihan na ang lampara! 🔥", englishText: "The lamp is now lit! 🔥" };
+        if (stage === "success") return { bisayaText: "Nisiga na ang lampara!🔥", englishText: "The lamp is now lit! 🔥" };
         if (stage === "strike") return {
             bisayaText: `I-click ang posporo aron modilaab! (${Math.floor(strikeCount)}/3)`,
             englishText: `Click the match to strike it! (${Math.floor(strikeCount)}/3)`
@@ -213,8 +213,8 @@ const LightLampGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) 
                     {stage === "success" && showSuccess && (
                         <div className="iqm-scene-success-overlay" style={{ background: "rgba(0,0,0,0.5)", zIndex: 150 }}>
                             <div className="iqm-scene-success-card">
-                                <div className="iqm-scene-success-stars">🕯️🔥🕯️</div>
-                                <div className="iqm-scene-success-text">Nasindihan na ang Lampara!</div>
+                                <div className="iqm-scene-success-stars">🔥🏆🔥</div>
+                                <div className="iqm-scene-success-text">Salamat hayag na!</div>
                             </div>
                         </div>
                     )}

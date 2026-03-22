@@ -17,8 +17,8 @@ export const KITCHEN_LABELS = [
     id: "lababo",
     labelBisaya: "Lababo",
     labelEnglish: "Sink",
-    descriptionBisaya: "Hugasanan sa mga plato og kamot.",
-    descriptionEnglish: "Place to wash plates and hands.",
+    descriptionBisaya: "Ang lababo kay hugasanan sa mga plato og kamot.",
+    descriptionEnglish: "This is where we wash the plates and our hands.",
     imageKey: "lababo",
     x: 45, y: 49, w: 12, h: 19,
   },
@@ -87,22 +87,37 @@ export const KITCHEN_LABELS = [
 
 export const INTRO_DIALOGUE = [
   {
-    speaker: "Ligaya",
-    bisayaText: "Mao ni ang Kusina.",
-    englishText: "This is the Kitchen.",
-  },
-  {
-    speaker: "Ligaya",
-    bisayaText: "Dire mi magluto og mokaon. I-click ang pultahan para mubalik sa sala.",
-    englishText: "This is where we cook and eat. Click the door to go back to the living room.",
-  }
+  speaker: "Ligaya",
+  bisayaText: "Mao ni ang kusina!",
+  englishText: "This is the kitchen!",
+},
+{
+  speaker: "Ligaya",
+  bisayaText: "Diri mi magluto ug mokaon.",
+  englishText: "This is where we cook and eat.",
+},
+{
+  speaker: "Ligaya",
+  bisayaText: "I-click ang mga butang sa kusina para makakat-on pa.",
+  englishText: "Click the items in the kitchen to learn more.",
+},
+{
+  speaker: "Ligaya",
+  bisayaText: "Kung gusto ka mubalik sa sala, i-click ang pultahan.",
+  englishText: "If you want to go back to the living room, click the door.",
+},
+{
+  speaker: "Ligaya",
+  bisayaText: "I-click ang arrow para magsugod ang adventure sa kusina!",
+  englishText: "Click the arrow to start the kitchen adventure!",
+}
 ];
 
 export const buildDialogue = (region) => [
   {
     speaker: "Ligaya",
-    bisayaText: `Kini ang "${region.labelBisaya}"!`,
-    englishText: `This is the "${region.labelEnglish}"!`,
+    bisayaText: `Kini ang ${region.labelBisaya}!`,
+    englishText: `This is the ${region.labelEnglish}!`,
   },
   {
     speaker: "Ligaya",

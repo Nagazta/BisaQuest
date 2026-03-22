@@ -236,8 +236,8 @@ const AdjustClockGame = ({ quest, npcName, npcImage, onComplete, onClose, item }
                     {stage === "success" && (
                         <div className="iqm-scene-success-overlay" style={{ background: "rgba(0,0,0,0.3)" }}>
                             <div className="iqm-scene-success-card">
-                                <div className="iqm-scene-success-stars">✨🎊✨</div>
-                                <div className="iqm-scene-success-text">Sakto!</div>
+                                <div className="iqm-scene-success-stars">✨🏆✨</div>
+                                <div className="iqm-scene-success-text">Very good!</div>
                             </div>
                         </div>
                     )}

@@ -186,7 +186,7 @@ const DragToZoneGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
                     {stage === "success" && showSuccess && (
                         <div className="iqm-scene-success-overlay">
                             <div className="iqm-scene-success-card">
-                                <div className="iqm-scene-success-stars">✨🎊✨</div>
+                                <div className="iqm-scene-success-stars">✨🏆✨</div>
                                 <div className="iqm-scene-success-text">{quest.successText || "Maayo kay ka!"}</div>
                             </div>
                         </div>

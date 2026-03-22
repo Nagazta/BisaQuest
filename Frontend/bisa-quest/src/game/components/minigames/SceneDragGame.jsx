@@ -73,7 +73,7 @@ const SceneDragGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) 
 
     const dialogueText = (() => {
         if (stage === "intro") return dialogue[introStep];
-        if (stage === "success") return { bisayaText: "Limpyo na ang salog! Maayo kaayo! 🎉", englishText: "The floor is clean! Well done! 🎉" };
+        if (stage === "success") return { bisayaText: "Uga na ang salog! Maayo kaayo! 🏆🎉", englishText: "The floor is dry! Well done! 🎉" };
         const remaining = quest.dirtSpots.length - swept.size;
         if (remaining > 0) return {
             bisayaText: `${remaining} hugaw pa ang nahibilin! I-silhig na!`,
@@ -94,7 +94,7 @@ const SceneDragGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) 
                 <div className="iqm-header">
                     <span className="iqm-header-bisaya">{item.labelBisaya}</span>
                     <span className="iqm-header-english">{item.labelEnglish}</span>
-                    <span className="iqm-mechanic-badge iqm-mechanic-badge--scene_drag">Clean the Floor</span>
+                    <span className="iqm-mechanic-badge iqm-mechanic-badge--scene_drag">Mop the floor</span>
                 </div>
                 <div className="iqm-scene-canvas" ref={containerRef}>
                     <img
