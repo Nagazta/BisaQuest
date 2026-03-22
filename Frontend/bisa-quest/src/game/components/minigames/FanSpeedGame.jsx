@@ -2,8 +2,10 @@
 //  FanSpeedGame.jsx — Choose the correct fan speed based on instruction
 // ─────────────────────────────────────────────────────────────────────────────
 import React, { useState } from "react";
+import AssetManifest from "../../../services/AssetManifest";
 import { ITEM_IMAGE_MAP } from "../../dragDropConstants";
 import { buildQuestDialogue } from "../questHelpers";
+import Button from "../../../components/Button";
 
 const SPEED_OPTIONS = [
     { value: 0, label: "Off", bisaya: "Patay" },
@@ -14,7 +16,7 @@ const SPEED_OPTIONS = [
 
 const CssFan = ({ speed }) => {
     const rotationSpeed = speed === 3 ? "0.2s" : speed === 2 ? "0.5s" : speed === 1 ? "1s" : "0s";
-    
+
     return (
         <div className="css-fan">
             <div className="fan-head">
@@ -23,8 +25,8 @@ const CssFan = ({ speed }) => {
                         <div key={i} className="cage-wire" style={{ transform: `rotate(${i * 30}deg)` }} />
                     ))}
                 </div>
-                <div className="fan-blades" style={{ 
-                    animation: speed > 0 ? `fan-spin ${rotationSpeed} linear infinite` : 'none' 
+                <div className="fan-blades" style={{
+                    animation: speed > 0 ? `fan-spin ${rotationSpeed} linear infinite` : 'none'
                 }}>
                     <div className="blade blade-1" />
                     <div className="blade blade-2" />
@@ -72,7 +74,6 @@ const FanSpeedGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =
             }
         } else {
             setStage("wrong");
-            setTimeout(() => { setStage("playing"); setSelectedSpeed(null); }, 800);
         }
     };
 
@@ -115,24 +116,22 @@ const FanSpeedGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =
 
                     {/* Speed buttons */}
                     {stage === "playing" && (
-                        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", justifyContent: "center" }}>
+                        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
                             {SPEED_OPTIONS.map(opt => (
-                                <button key={opt.value}
+                                <Button key={opt.value}
                                     onClick={() => handleSpeedClick(opt.value)}
+                                    variant={selectedSpeed === opt.value
+                                        ? (stage === "wrong" ? "danger" : "primary")
+                                        : "secondary"}
                                     style={{
-                                        padding: "12px 20px", fontSize: "16px", fontWeight: "bold",
-                                        border: "2px solid #555", borderRadius: "10px", cursor: "pointer",
-                                        background: selectedSpeed === opt.value
-                                            ? (stage === "wrong" ? "#ef5350" : "#66bb6a") : "#fff",
-                                        color: selectedSpeed === opt.value ? "#fff" : "#333",
-                                        transition: "all 0.2s",
-                                        minWidth: "80px",
+                                        minWidth: "100px",
+                                        padding: "8px 16px",
                                     }}>
                                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px" }}>
                                         <div style={{ fontSize: "16px" }}>{opt.bisaya}</div>
                                         <div style={{ fontSize: "12px", opacity: 0.8, fontWeight: "normal" }}>{opt.label}</div>
                                     </div>
-                                </button>
+                                </Button>
                             ))}
                         </div>
                     )}
@@ -152,6 +151,17 @@ const FanSpeedGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =
                             <div className="iqm-scene-success-card">
                                 <div className="iqm-scene-success-stars">🌀✅🌀</div>
                                 <div className="iqm-scene-success-text">Maayo!</div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Wrong */}
+                    {stage === "wrong" && (
+                        <div className="iqm-scene-success-overlay">
+                            <div className="iqm-scene-success-card" style={{ borderColor: "#ef5350" }}>
+                                <div className="iqm-scene-success-stars">❌🌀❌</div>
+                                <div className="iqm-scene-success-text" style={{ color: "#ef5350" }}>Sayop!</div>
+                                <div style={{ fontSize: "14px", color: "#666" }}>Sulayi pag-usab / Try again</div>
                             </div>
                         </div>
                     )}
@@ -263,6 +273,16 @@ const FanSpeedGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =
                             <span className="iqm-dialogue-english">{dialogueText.englishText}</span>
                         </div>
                         {stage === "intro" && <button className="iqm-next-btn" onClick={handleIntroNext}>▶</button>}
+                        {stage === "wrong" && (
+                            <button
+                                className="iqm-next-btn"
+                                style={{ background: "#ef5350", boxShadow: "0 3px 0 #991b1b", marginTop: "-60px" }}
+                                onClick={() => { setStage("playing"); setSelectedSpeed(null); }}
+                                title="Play Again"
+                            >
+                                ↺
+                            </button>
+                        )}
                         {stage === "success" && <button className="iqm-next-btn" onClick={() => onComplete(item)}>✓</button>}
                     </div>
                 </div>
