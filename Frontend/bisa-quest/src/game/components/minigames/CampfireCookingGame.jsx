@@ -55,9 +55,9 @@ const CampfireCookingGame = ({ quest, item, npcName, npcImage, onClose, onComple
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
 
-    setFishPos({ 
-      x: Math.max(5, Math.min(95, x)), 
-      y: Math.max(5, Math.min(95, y)) 
+    setFishPos({
+      x: Math.max(5, Math.min(95, x)),
+      y: Math.max(5, Math.min(95, y))
     });
   };
 
@@ -130,9 +130,9 @@ const CampfireCookingGame = ({ quest, item, npcName, npcImage, onClose, onComple
             filter: stage === "eating" ? "drop-shadow(0 0 10px #FFEB3B)" : "none",
             transition: "all 0.3s"
           }}>
-            <img 
-              src={stage === "success" ? AssetManifest.forest.npcs.forest_guardian : npcImage} 
-              alt="Lunti" 
+            <img
+              src={stage === "success" ? AssetManifest.forest.npcs.forest_guardian : npcImage}
+              alt="Lunti"
               style={{ width: "100%", height: "auto" }}
             />
           </div>
@@ -152,6 +152,23 @@ const CampfireCookingGame = ({ quest, item, npcName, npcImage, onClose, onComple
                 transition: isDragging ? "none" : "all 0.2s"
               }}
             >
+              {/* Drag Indicator Emoji */}
+              {!isDragging && (stage === "cooking" || stage === "cooked") && (
+                <div style={{
+                  position: "absolute",
+                  top: "50px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  fontSize: "30px",
+                  animation: "bounce 1s infinite",
+                  pointerEvents: "none",
+                  zIndex: 20,
+                  filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))"
+                }}>
+                  👆
+                </div>
+              )}
+
               <img
                 src={AssetManifest.forest.items.fish1}
                 alt="Fish"
@@ -160,8 +177,8 @@ const CampfireCookingGame = ({ quest, item, npcName, npcImage, onClose, onComple
                   width: "100%",
                   height: "auto",
                   mixBlendMode: "multiply",
-                  filter: stage === "cooked" || stage === "eating" 
-                    ? "sepia(0.6) brightness(0.7) contrast(1.2)" 
+                  filter: stage === "cooked" || stage === "eating"
+                    ? "sepia(0.6) brightness(0.7) contrast(1.2)"
                     : "none"
                 }}
               />
@@ -187,22 +204,67 @@ const CampfireCookingGame = ({ quest, item, npcName, npcImage, onClose, onComple
             </div>
           )}
 
-          {/* Cooking Indicator at Fire */}
+          {/* Drop Zone Indicators */}
           {stage === "cooking" && !isAtFire() && (
-            <div style={{
-              position: "absolute",
-              left: `${FIRE_ZONE.x}%`,
-              top: `${FIRE_ZONE.y}%`,
-              transform: "translate(-50%, -50%)",
-              width: "100px",
-              height: "100px",
-              border: "3px dashed rgba(255,152,0,0.5)",
-              borderRadius: "50%",
-              animation: "pulse 1.5s infinite"
-            }} />
+            <div
+              title="Cook here!"
+              style={{
+                position: "absolute",
+                left: `${FIRE_ZONE.x}%`,
+                top: `${FIRE_ZONE.y}%`,
+                transform: "translate(-50%, -50%)",
+                width: "120px",
+                height: "120px",
+                border: "4px dashed #FF5722",
+                borderRadius: "50%",
+                animation: "pulse 1.5s infinite",
+                backgroundColor: "rgba(255, 87, 34, 0.1)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#FF5722",
+                fontWeight: "bold",
+                fontSize: "14px",
+                pointerEvents: "none"
+              }}
+            >
+              🔥 COOK
+            </div>
+          )}
+
+          {stage === "cooked" && !isAtLunti() && (
+            <div
+              title="Feed Lunti!"
+              style={{
+                position: "absolute",
+                left: `${LUNTI_ZONE.x}%`,
+                top: `${LUNTI_ZONE.y}%`,
+                transform: "translate(-50%, -50%)",
+                width: "140px",
+                height: "140px",
+                border: "4px dashed #4CAF50",
+                borderRadius: "50%",
+                animation: "pulse 1.5s infinite",
+                backgroundColor: "rgba(76, 175, 80, 0.1)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#2E7D32",
+                fontWeight: "bold",
+                fontSize: "14px",
+                pointerEvents: "none",
+                zIndex: 5
+              }}
+            >
+              😋 FEED
+            </div>
           )}
 
           <style>{`
+            @keyframes bounce {
+              0%, 100% { transform: translateX(-50%) translateY(0); }
+              50% { transform: translateX(-50%) translateY(-10px); }
+            }
             @keyframes pulse {
               0% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
               50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
