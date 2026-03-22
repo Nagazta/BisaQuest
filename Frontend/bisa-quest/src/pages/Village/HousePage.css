@@ -103,10 +103,10 @@
   transform: translate(-50%, -50%);
   width: 16px;
   height: 16px;
-  background-color: #fcd765;
+  background-color: #fcd45c;
   border-radius: 50%;
   border: 2px solid rgba(0, 0, 0, 0.5);
-  box-shadow: 0 0 8px rgba(252, 215, 101, 0.8);
+  box-shadow: 0 0 8px rgba(255, 203, 47, 0.8);
   animation: house-pulse-dot 2s infinite ease-in-out;
   pointer-events: none;
 }

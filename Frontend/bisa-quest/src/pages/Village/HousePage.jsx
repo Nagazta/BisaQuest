@@ -10,6 +10,8 @@ import HouseDebugTools from "./components/HouseDebugTools";
 import BilingualText from "./components/BilingualText";
 import ItemQuestModal from "../../game/components/ItemQuestModal";
 import { NPC_IMAGES, LIVING_ROOM_LABELS, INTRO_DIALOGUE, buildDialogue } from "./data/houseData";
+import BookCollectModal from "../../game/components/BookCollectModal";
+import { awardLibroPage, getLibroPageCount } from "../../utils/playerStorage";
 import "./HousePage.css";
 
 const HousePage = () => {
@@ -31,6 +33,8 @@ const HousePage = () => {
   const [questItem, setQuestItem] = useState(null);
   const [completedItems, setCompletedItems] = useState(new Set());
   const [showDoorChoice, setShowDoorChoice] = useState(false);
+  const [showPageModal, setShowPageModal] = useState(false);
+  const [collectedPage, setCollectedPage] = useState(null);
 
   // pendingQuest holds the region we want to open a quest for
   // after activeItem has been cleared in the same render cycle
@@ -72,12 +76,6 @@ const HousePage = () => {
       return;
     }
 
-    if (region.id === "lampara") {
-      setQuestItem(region);
-      setActiveItem(null);
-      return;
-    }
-
     setActiveItem(region);
     setDialogueStep(0);
   };
@@ -101,7 +99,20 @@ const HousePage = () => {
 
   const handleQuestComplete = (region) => {
     setQuestItem(null);
-    setCompletedItems(prev => new Set([...prev, region.id]));
+    setCompletedItems(prev => {
+      const next = new Set([...prev, region.id]);
+      if (next.size >= 3) {
+        const isNew = awardLibroPage('village', 'village_house');
+        if (isNew) {
+          setCollectedPage({
+            npcName: npcName,
+            pageNumber: getLibroPageCount(),
+          });
+          setShowPageModal(true);
+        }
+      }
+      return next;
+    });
   };
 
   const handleQuestClose = () => {
@@ -253,6 +264,19 @@ const HousePage = () => {
           onComplete={handleQuestComplete}
         />
       )}
+
+      {/* ── Book Collect Modal ────────────────────────────────────────────── */}
+      <BookCollectModal
+        isOpen={showPageModal}
+        npcName={collectedPage?.npcName}
+        pageNumber={collectedPage?.pageNumber}
+        totalPages={getLibroPageCount()}
+        environment="sala"
+        onClose={() => {
+          setShowPageModal(false);
+          setShowDoorChoice(true);
+        }}
+      />
 
       {/* ── Door Choice Modal ─────────────────────────────────────────────── */}
       {showDoorChoice && (
