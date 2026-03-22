@@ -112,7 +112,59 @@ export const POND_ITEMS = [
 ];
 
 export const CAMPFIRE_GAME_DATA = {
-  // ... (previous campfire data)
+  rounds: [
+    {
+      introDialogue: {
+        speaker: "Lunti",
+        bisayaText: "Gutom na gyud ko! Luto-on nato kining isda para LAMI (Delicious) kaonon.",
+        englishText: "I'm so hungry! Let's cook this fish so it's DELICIOUS (Lami) to eat."
+      },
+      cookingDialogue: {
+        speaker: "Lunti",
+        bisayaText: "I-duol ang isda sa kalayo para maluto og maayo.",
+        englishText: "Move the fish closer to the fire to cook it well."
+      },
+      eatingDialogue: {
+        speaker: "Lunti",
+        bisayaText: "Hmm! LAMI ug LAB-AS na gyud kining isdaa! Ang LAMI ug LAB-AS kay parehas og kahulogan (Synonyms).",
+        englishText: "Hmm! This fish is DELICIOUS and FRESH! DELICIOUS and FRESH have similar meanings (Synonyms)."
+      }
+    },
+    {
+      introDialogue: {
+        speaker: "Lunti",
+        bisayaText: "Luto pa ta og usa! Pero ayaw palabi-i og luto, basin ma-INIT (Hot) kaayo.",
+        englishText: "Let's cook one more! But don't overcook it, it might get too HOT (Init)."
+      },
+      cookingDialogue: {
+        speaker: "Lunti",
+        bisayaText: "Bantayi ang kalayo, ayaw pasagdi nga masunog.",
+        englishText: "Watch the fire, don't let it burn."
+      },
+      eatingDialogue: {
+        speaker: "Lunti",
+        bisayaText: "Init pa gyud! Ang INIT (Hot) kay kabaliktaran sa BUGNAW (Cold). Mao ni ang Antonyms.",
+        englishText: "It's still hot! HOT (Init) is the opposite of COLD (Bugnaw). These are Antonyms."
+      }
+    },
+    {
+      introDialogue: {
+        speaker: "Lunti",
+        bisayaText: "Usa na lang gyud para ma-BUSOG (Full) na ko!",
+        englishText: "Just one more so I'll be FULL (Busog)!"
+      },
+      cookingDialogue: {
+        speaker: "Lunti",
+        bisayaText: "Hapit na gyud ma-cooked! Gamay na lang!",
+        englishText: "It's almost cooked! Just a little more!"
+      },
+      eatingDialogue: {
+        speaker: "Lunti",
+        bisayaText: "Busog na gyud ko! Ang BUSOG ug PUNO (Satiated) kay parehas ra og kahulogan (Synonyms).",
+        englishText: "I'm finally full! FULL and SATIATED (Puno) mean the same thing (Synonyms)."
+      }
+    }
+  ]
 };
 
 export const FLOWER_GAME_DATA = {

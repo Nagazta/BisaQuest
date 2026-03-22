@@ -22,6 +22,7 @@ import {
   getLibroPageCountForEnv,
 } from "../../utils/playerStorage";
 import BookCollectModal from "../../game/components/BookCollectModal";
+import ForestTransitionModal from "../../game/components/ForestTransitionModal";
 import "./ForestPondPage.css";
 
 const ForestPondPage = () => {
@@ -45,6 +46,8 @@ const ForestPondPage = () => {
   // ── Fragment modal ────────────────────────────────────────────────────────
   const [showPageModal, setShowPageModal] = useState(false);
   const [collectedPage, setCollectedPage] = useState(null);
+  const [showTransition, setShowTransition] = useState(false);
+  const [progressSaved, setProgressSaved] = useState(false);
 
   // pendingQuest holds the region we want to open a quest for
   const pendingQuestRef = useRef(null);
@@ -99,10 +102,25 @@ const ForestPondPage = () => {
     setQuestItem(null);
     setCompletedItems((prev) => {
       const next = new Set([...prev, region.id]);
-      // Check if all 5 items are done → save progress
-      if (next.size >= POND_ITEMS.length) {
-        submitProgress();
+
+      // Save progress & award fragment after 3 unique items (matching Village pattern)
+      if (next.size >= 3 && !progressSaved) {
+        setProgressSaved(true);
+        // Save NPC progress immediately so the forest map updates
+        saveNPCProgress("forest", npcId, POND_ITEMS.length, true, 3);
+
+        const isNewPage = awardLibroPage("forest", npcId);
+        if (isNewPage) {
+          const pageNumber = getLibroPageCountForEnv("forest");
+          const totalCollected = getLibroPageCount();
+          setCollectedPage({ pageNumber, totalCollected });
+          setShowPageModal(true);
+        } else {
+          // Already awarded previously — just show the transition modal
+          setShowTransition(true);
+        }
       }
+
       return next;
     });
   };
@@ -111,31 +129,20 @@ const ForestPondPage = () => {
     setQuestItem(null);
   };
 
-  // ── Progress submission ─────────────────────────────────────────────────
-  const submitProgress = () => {
-    if (!playerId) return;
-
-    // npcCount for forest — currently 3 active NPCs (Lunti, Diwata, Deer)
-    saveNPCProgress("forest", npcId, POND_ITEMS.length, true, 3);
-
-    // Award a Forest Fragment if the player qualifies
-    if (shouldAwardForestFragment(npcId)) {
-      const isNewPage = awardLibroPage("forest", npcId);
-      if (isNewPage) {
-        const pageNumber = getLibroPageCountForEnv("forest");
-        const totalCollected = getLibroPageCount();
-        setCollectedPage({ pageNumber, totalCollected });
-        setShowPageModal(true);
-        return;
-      }
-    }
-
-    navigate(returnTo, { state: { completed: true } });
-  };
-
+  // BookCollectModal closes → show the stay/go-back choice
   const handleFragmentModalClose = () => {
     setShowPageModal(false);
     setCollectedPage(null);
+    setShowTransition(true);
+  };
+
+  // ForestTransitionModal handlers
+  const handleStay = () => {
+    setShowTransition(false);
+  };
+
+  const handleGoBack = () => {
+    setShowTransition(false);
     navigate(returnTo, { state: { completed: true } });
   };
 
@@ -305,6 +312,14 @@ const ForestPondPage = () => {
         totalPages={collectedPage?.totalCollected}
         environment="forest"
         onClose={handleFragmentModalClose}
+      />
+
+      {/* ── Stay / Go Back transition modal ────────────────────────────────── */}
+      <ForestTransitionModal
+        isOpen={showTransition}
+        sceneName="the Pond"
+        onStay={handleStay}
+        onGoBack={handleGoBack}
       />
     </div>
   );

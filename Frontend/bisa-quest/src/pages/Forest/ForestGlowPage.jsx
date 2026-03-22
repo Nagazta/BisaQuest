@@ -24,6 +24,7 @@ import {
   getLibroPageCountForEnv,
 } from "../../utils/playerStorage";
 import BookCollectModal from "../../game/components/BookCollectModal";
+import ForestTransitionModal from "../../game/components/ForestTransitionModal";
 import "./ForestGlowPage.css";
 
 const ForestGlowPage = () => {
@@ -47,6 +48,8 @@ const ForestGlowPage = () => {
   // ── Book-collect modal ───────────────────────────────────────────────────────
   const [showPageModal,  setShowPageModal]  = useState(false);
   const [collectedPage,  setCollectedPage]  = useState(null);
+  const [showTransition, setShowTransition] = useState(false);
+  const [progressSaved,  setProgressSaved]  = useState(false);
 
   // Pending quest ref (same pattern as ForestPondPage)
   const pendingQuestRef = useRef(null);
@@ -104,36 +107,45 @@ const ForestGlowPage = () => {
     setQuestItem(null);
     setCompletedItems((prev) => {
       const next = new Set([...prev, region.id]);
-      if (next.size >= GLOW_ITEMS.length) {
-        submitProgress();
+
+      // Save progress & award fragment after 3 unique items (matching Village pattern)
+      if (next.size >= 3 && !progressSaved) {
+        setProgressSaved(true);
+        // Save NPC progress immediately so the forest map updates
+        saveNPCProgress("forest", npcId, GLOW_ITEMS.length, true, 3);
+
+        const isNewPage = awardLibroPage("forest", npcId);
+        if (isNewPage) {
+          const pageNumber = getLibroPageCountForEnv("forest");
+          const totalCollected = getLibroPageCount();
+          setCollectedPage({ pageNumber, totalCollected });
+          setShowPageModal(true);
+        } else {
+          // Already awarded previously — just show the transition modal
+          setShowTransition(true);
+        }
       }
+
       return next;
     });
   };
 
   const handleQuestClose = () => setQuestItem(null);
 
-  // ── Progress submission ──────────────────────────────────────────────────────
-  const submitProgress = () => {
-    if (!playerId) return;
-    saveNPCProgress("forest", npcId, GLOW_ITEMS.length, true, 3);
-
-    if (shouldAwardForestFragment(npcId)) {
-      const isNewPage = awardLibroPage("forest", npcId);
-      if (isNewPage) {
-        const pageNumber     = getLibroPageCountForEnv("forest");
-        const totalCollected = getLibroPageCount();
-        setCollectedPage({ pageNumber, totalCollected });
-        setShowPageModal(true);
-        return;
-      }
-    }
-    navigate(returnTo, { state: { completed: true } });
-  };
-
+  // BookCollectModal closes → show the stay/go-back choice
   const handleFragmentModalClose = () => {
     setShowPageModal(false);
     setCollectedPage(null);
+    setShowTransition(true);
+  };
+
+  // ForestTransitionModal handlers
+  const handleStay = () => {
+    setShowTransition(false);
+  };
+
+  const handleGoBack = () => {
+    setShowTransition(false);
     navigate(returnTo, { state: { completed: true } });
   };
 
@@ -272,6 +284,14 @@ const ForestGlowPage = () => {
         totalPages={collectedPage?.totalCollected}
         environment="forest"
         onClose={handleFragmentModalClose}
+      />
+
+      {/* ── Stay / Go Back transition modal ────────────────────────────────── */}
+      <ForestTransitionModal
+        isOpen={showTransition}
+        sceneName="the Glow"
+        onStay={handleStay}
+        onGoBack={handleGoBack}
       />
     </div>
   );

@@ -279,7 +279,7 @@ export const shouldAwardForestFragment = (npcId) => {
     const progress = getProgress();
     const npcData = progress['forest_npcs']?.[npcId];
     if (!npcData) return false;
-    return (npcData.encounters >= 4) || (npcData.completed === true);
+    return (npcData.encounters >= 3) || (npcData.completed === true);
 };
 
 // ─── Clear ───────────────────────────────────────────────────────────────────
