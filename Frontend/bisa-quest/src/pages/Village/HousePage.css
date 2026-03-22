@@ -355,9 +355,10 @@
 }
 
 .house-door-modal {
-  background: #fff;
+  background: #f3e6cb;
   padding: 30px;
   border-radius: 16px;
+  width: min(450px, 90vw);
   border: 4px solid #3a2010;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   text-align: center;
@@ -408,7 +409,8 @@
   font-family: 'Pixelify Sans', sans-serif;
   margin-top: 0;
   margin-bottom: 20px;
-  font-size: 24px;
+  font-size: 28px;
+  font-weight: 900;
 }
 
 .house-door-subtitle {
@@ -450,6 +452,56 @@
 .house-bilingual-english {
   font-style: italic;
   display: block;
-  color: #ebe0c9; /* optional: matches your other English text */
+  color: #ebe0c9;
+  /* optional: matches your other English text */
   font-size: 18px;
+}
+
+.house-door-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.house-door-grid .house-door-btn:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.house-door-btn-sub {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 14px;
+  color: #7a4a20;
+  font-style: italic;
+  font-weight: normal;
+}
+
+.house-door-btn--forest {
+  background: #b8f0d8;
+  border-color: #2d6a4f;
+  box-shadow: 0 6px 0 #1b4332;
+}
+
+.house-door-btn--forest:hover {
+  background: #c8f5e0;
+}
+
+.house-door-btn-icon {
+  font-size: 40px;
+  line-height: 1;
+}
+
+.house-door-stay {
+  background: #dfe6e9;
+  border: 3px solid #7a7a7a;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 18px;
+  color: #555;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #7a7a7a;
+  width: 100%;
+  font-weight: bold;
+  transition: transform 0.1s, box-shadow 0.1s;
 }

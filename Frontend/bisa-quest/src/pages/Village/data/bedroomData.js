@@ -11,7 +11,7 @@ export const BEDROOM_LABELS = [
     labelEnglish: "Door",
     descriptionBisaya: "Ang pultahan pagawas.",
     descriptionEnglish: "The door to go out.",
-    x: 0, y: 30, w: 15, h: 45,
+    x: 0, y: 20, w: 15, h: 45,
   },
   {
     id: "katre",

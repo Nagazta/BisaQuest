@@ -13,7 +13,7 @@ export const LIVING_ROOM_LABELS = [
     descriptionBisaya: "Ang pultahan kay maablihan ug masirad-an aron matabonan ang agianan sa kwarto, building, o sakyanan.",
     descriptionEnglish: "A door opens and closes to cover the entrance of a room, building, or vehicle.",
     imageKey: "purtahan",
-    x: 0, y: 44, w: 10, h: 18,
+    x: 2, y: 40, w: 10, h: 18,
   },
   {
     id: "estante_wall",
@@ -21,7 +21,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Wall Shelf",
     descriptionBisaya: "Ang estante kay nipis nga tabla nga gibutang sa bungbong diin nimo ibutang ang mga butang.",
     descriptionEnglish: "A shelf is a thin, flat board attached to a wall where you can put things.",
-    x: 19, y: 26, w: 5, h: 5,
+    x: 22, y: 31, w: 5, h: 5,
   },
   {
     id: "bulak",
@@ -37,7 +37,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Cloth / Towel",
     descriptionBisaya: "Gamit sa paglimpyo o pagpunas sa mga butang sa balay.",
     descriptionEnglish: "Used for cleaning or wiping things around the house.",
-    x: 17, y: 39, w: 5, h: 10,
+    x: 18, y: 40, w: 5, h: 10,
   },
   {
     id: "lampara",
@@ -46,7 +46,7 @@ export const LIVING_ROOM_LABELS = [
     descriptionBisaya: "Naghatag og suga sa gabii. Sa una, gamiton ang lana o kandila.",
     descriptionEnglish: "Provides light at night. In the past, oil or candles were used.",
     imageKey: "lamp",
-    x: 29, y: 26, w: 4, h: 10,
+    x: 30, y: 25, w: 4, h: 10,
   },
   {
     id: "relo",
@@ -54,7 +54,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Clock",
     descriptionBisaya: "Ginagamit aron mahibaw-an ang oras sa adlaw.",
     descriptionEnglish: "Used to tell the time of day.",
-    x: 45.5, y: 26, w: 5, h: 6,
+    x: 45, y: 26, w: 5, h: 6,
   },
   {
     id: "bag",
@@ -63,7 +63,7 @@ export const LIVING_ROOM_LABELS = [
     descriptionBisaya: "Gigamit sa pagdala og mga gamit o palengke.",
     descriptionEnglish: "Used for carrying belongings or going to the market.",
     imageKey: "bag",
-    x: 28, y: 42, w: 7, h: 10,
+    x: 29, y: 42, w: 7, h: 10,
   },
   {
     id: "kalendaryo",
@@ -71,7 +71,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Calendar",
     descriptionBisaya: "Gipakita ang mga petsa ug buwan sa tuig.",
     descriptionEnglish: "Shows the dates and months of the year.",
-    x: 72, y: 31, w: 8, h: 10,
+    x: 68, y: 31, w: 8, h: 10,
   },
   {
     id: "silhig",
@@ -80,7 +80,7 @@ export const LIVING_ROOM_LABELS = [
     descriptionBisaya: "Gamiton sa pagsapu sa salog aron malimpyo ang balay.",
     descriptionEnglish: "Used to sweep the floor and keep the house clean.",
     imageKey: "walis",
-    x: 40, y: 45, w: 6, h: 14,
+    x: 39, y: 45, w: 6, h: 14,
   },
   {
     id: "planggana",
@@ -97,7 +97,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Bucket",
     descriptionBisaya: "Sudlanan sa tubig para sa paglimpyo o paglaba.",
     descriptionEnglish: "A bucket for holding water used for cleaning or washing.",
-    x: 28, y: 59, w: 6, h: 8,
+    x: 30, y: 60, w: 6, h: 8,
   },
   // ── Center ────────────────────────────────────────────────────────────────
   {
@@ -114,7 +114,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Window",
     descriptionBisaya: "Bukas nga parte sa dingding para sa hangin ug suga gikan sa gawas.",
     descriptionEnglish: "An opening in the wall that lets in air and light from outside.",
-    x: 58, y: 30, w: 10, h: 13,
+    x: 57, y: 30, w: 10, h: 13,
   },
   {
     id: "litrato",
@@ -122,7 +122,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Picture Frame",
     descriptionBisaya: "Gi-frame nga larawan sa pamilya o dekorasyon sa dingding.",
     descriptionEnglish: "A framed photo of family or a decoration hung on the wall.",
-    x: 43.5, y: 36, w: 5, h: 6,
+    x: 43, y: 34, w: 5, h: 6,
   },
   {
     id: "sopa",
@@ -130,7 +130,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Bench / Sofa",
     descriptionBisaya: "Lingkoranan sa sala para sa pahinga ug pakig-istoryahanay.",
     descriptionEnglish: "Seating in the living area for resting and conversation.",
-    x: 53, y: 46, w: 18, h: 12,
+    x: 48, y: 46, w: 18, h: 12,
   },
   {
     id: "book",
@@ -138,7 +138,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Book",
     descriptionBisaya: "Gamiton sa pagbasa og mga istorya.",
     descriptionEnglish: "Used for reading stories.",
-    x: 58, y: 57, w: 6, h: 6,
+    x: 52, y: 57, w: 6, h: 6,
   },
   {
     id: "lamesa",
@@ -147,7 +147,7 @@ export const LIVING_ROOM_LABELS = [
     descriptionBisaya: "Gamit sa pagbutang og mga butang o pag-abot sa bisita.",
     descriptionEnglish: "Used for placing items or serving guests.",
     imageKey: "lamesa_sala",
-    x: 55, y: 59, w: 16, h: 9,
+    x: 55, y: 58, w: 16, h: 9,
   },
   {
     id: "alfombra",
@@ -156,7 +156,7 @@ export const LIVING_ROOM_LABELS = [
     descriptionBisaya: "Gibuklad sa salog para sa dekorasyon ug pagpahumok sa tiil.",
     descriptionEnglish: "Spread on the floor for decoration and to cushion your feet.",
     imageKey: "alfombra",
-    x: 45, y: 65, w: 31, h: 12,
+    x: 43, y: 70, w: 31, h: 12,
   },
   // ── Right wall ────────────────────────────────────────────────────────────
   {
@@ -165,7 +165,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Cabinet",
     descriptionBisaya: "Sudlanan sa mga sinina, libro, o uban pang gamit sa balay.",
     descriptionEnglish: "Stores clothes, books, or other household items.",
-    x: 79, y: 34, w: 9, h: 20,
+    x: 75, y: 34, w: 9, h: 20,
   },
   {
     id: "bookshelf",
@@ -190,7 +190,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Doormat",
     descriptionBisaya: "Ang talamakan kay makita sa pultahan aron ipahid ang hugaw sa sapatos.",
     descriptionEnglish: "A doormat is a mat placed near a door where you wipe your shoes or feet.",
-    x: 0, y: 84, w: 10, h: 11,
+    x: 10, y: 84, w: 10, h: 11,
   },
   {
     id: "salog",
@@ -198,7 +198,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Floor",
     descriptionBisaya: "Ang lapak sa balay, kasagaran gama sa semento o kahoy.",
     descriptionEnglish: "The ground surface of the house, usually cement or wood.",
-    x: 20, y: 80, w: 30, h: 7,
+    x: 16, y: 75, w: 30, h: 7,
   },
   {
     id: "atop",
