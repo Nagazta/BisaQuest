@@ -11,8 +11,11 @@ const TASKS = [
         instructionEnglish: "Put the firewood in the stove to generate more heat!",
         successBisaya: "Nagdilaab na ang kalayo! Maayo!",
         successEnglish: "The fire is burning bright! Great!",
-        draggableKey: "kahoy",
-        targetZone: { x: 50, y: 40, w: 30, h: 18 }, // Firebox opening
+        draggableItems: [
+            { id: "wood1", imageKey: "kahoy", label: "Kahoy", startX: 45, startY: 78 },
+            { id: "wood2", imageKey: "kahoy", label: "Kahoy", startX: 55, startY: 78 },
+        ],
+        targetZone: { x: 50, y: 40, w: 30, h: 18 },
     },
     {
         id: "mix",
@@ -33,8 +36,9 @@ const TASKS = [
         successBisaya: "Andam na ang tanan! Luto na!",
         successEnglish: "Everything is ready! It's cooking!",
         draggableItems: [
-            { id: "ing1", imageKey: "carrot", label: "Karot", startX: 8, startY: 35 },
-            { id: "ing2", imageKey: "potato", label: "Patatas", startX: 15, startY: 35 },
+            { id: "ing1", imageKey: "carrot", label: "Karot", startX: 7, startY: 38 },
+            { id: "ing2", imageKey: "potato", label: "Patatas", startX: 12, startY: 36 },
+            { id: "ing3", imageKey: "onion", label: "Sibuyas", startX: 17, startY: 38 },
         ],
         targetZone: { x: 50, y: 22, w: 20, h: 15 }, // Inside cauldron
     }
@@ -73,7 +77,10 @@ const CookingGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =>
                 return acc;
             }, {}));
         } else if (task.mechanic === "drag_to_heat") {
-            setPositions({ [task.id]: { x: 50, y: 78 } });
+            setPositions(task.draggableItems.reduce((acc, it) => {
+                acc[it.id] = { x: it.startX, y: it.startY };
+                return acc;
+            }, {}));
          } else {
             setPositions({ [task.id]: { x: 28, y: 28 } });
         }
@@ -157,16 +164,27 @@ const CookingGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =>
                         return next;
                     });
                 } else {
-                    if (task.mechanic === "drag_to_heat") setFireLit(true);
-                    setTimeout(() => triggerSuccess(), 400);
+                    if (task.mechanic === "drag_to_heat") {
+                        setPlacedItems(prev => {
+                            const next = new Set([...prev, id]);
+                            if (next.size === 1) setFireLit(true);
+                            if (next.size >= 2) setTimeout(() => triggerSuccess(), 400);
+                            return next;
+                        });
+                    } else {
+                        setTimeout(() => triggerSuccess(), 400);
+                    }
                 }
             } else {
                 // Reset pos
                 if (task.mechanic === "add_ingredients") {
                     const orig = task.draggableItems.find(i => i.id === id);
                     setPositions(p => ({ ...p, [id]: { x: orig.startX, y: orig.startY } }));
+                } else if (task.mechanic === "drag_to_heat") {
+                    const orig = task.draggableItems.find(i => i.id === id);
+                    setPositions(p => ({ ...p, [id]: { x: orig.startX, y: orig.startY } }));
                 } else {
-                    setPositions({ [task.id]: { x: task.mechanic === "drag_to_heat" ? 50 : 38, y: task.mechanic === "drag_to_heat" ? 78 : 28 } });
+                    setPositions({ [task.id]: { x: 38, y: 28 } });
                 }
             }
         }
@@ -218,7 +236,7 @@ const CookingGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =>
 
                     {/* Draggable Items */}
                     {(stage === "playing" || stage === "success") && (
-                        task.mechanic === "add_ingredients" 
+                        (task.mechanic === "add_ingredients" || task.mechanic === "drag_to_heat")
                         ? task.draggableItems.map(it => (
                             <div key={it.id}
                                 style={{
@@ -248,7 +266,7 @@ const CookingGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =>
                                     left: `${positions[task.id]?.x}%`,
                                     top: `${positions[task.id]?.y}%`,
                                     transform: "translate(-50%, -50%)",
-                                    width: "185px", height: "185px",
+                                    width: "140px", height: "140px",
                                     zIndex: 20,
                                     cursor: "grab"
                                 }}
@@ -275,8 +293,10 @@ const CookingGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =>
                     {stage === "success" && showSuccessCard && (
                         <div className="iqm-scene-success-overlay">
                             <div className="iqm-scene-success-card">
-                                <div className="iqm-scene-success-stars">✨🍲✨</div>
-                                <div className="iqm-scene-success-text">Humot na kaayo!</div>
+                                <div className="iqm-scene-success-stars">
+                                    {task.mechanic === "drag_to_heat" ? "🔥🪵🔥" : task.mechanic === "mix" ? "🥄🍲🥄" : "🥕🍲🥔"}
+                                </div>
+                                <div className="iqm-scene-success-text">{task.successBisaya}</div>
                             </div>
                         </div>
                     )}

@@ -29,8 +29,8 @@ const WaterBarrelGame = ({ quest, npcName, npcImage, onComplete, onClose, item }
         // Initialize buckets
         const buckets = Array.from({ length: REQUIRED_POINTS }).map((_, i) => ({
             id: `bucket_${i}`,
-            startX: 15 + (i * 12),
-            startY: 85
+            startX: 10 + (i * 12),
+            startY: 80
         }));
         
         setPositions(buckets.reduce((acc, b) => {
@@ -100,7 +100,7 @@ const WaterBarrelGame = ({ quest, npcName, npcImage, onComplete, onClose, item }
             const index = parseInt(id.split("_")[1]);
             setPositions(prev => ({
                 ...prev,
-                [id]: { x: 15 + (index * 12), y: 85 }
+                [id]: { x: 15 + (index * 12), y: 75 }
             }));
         }
     };
@@ -187,7 +187,7 @@ const WaterBarrelGame = ({ quest, npcName, npcImage, onComplete, onClose, item }
                                     left: `${positions[id].x}%`,
                                     top: `${positions[id].y}%`,
                                     transform: "translate(-50%, -50%)",
-                                    width: "70px", height: "70px",
+                                    width: "180px", height: "180px",
                                     zIndex: draggedId === id ? 20 : 10,
                                     opacity: placedItems.has(id) ? 0.6 : 1,
                                     cursor: placedItems.has(id) ? "default" : "grab",
@@ -206,7 +206,9 @@ const WaterBarrelGame = ({ quest, npcName, npcImage, onComplete, onClose, item }
                     {stage === "success" && showSuccessCard && (
                         <div className="iqm-scene-success-overlay">
                             <div className="iqm-scene-success-card">
-                                <div className="iqm-scene-success-stars">✨💦✨</div>
+                                <div className="iqm-scene-success-stars">
+                                    {mode === "FILL" ? "💧🪣💧" : "🪣✅🪣"}
+                                </div>
                                 <div className="iqm-scene-success-text">{successLabel}</div>
                             </div>
                         </div>

@@ -21,7 +21,7 @@ const WashDishesGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
     const [isOverItem, setIsOverItem] = useState(false);
 
     // Sponge position (draggable)
-    const [spongePos, setSpongePos] = useState({ x: 25, y: 40 });
+    const [spongePos, setSpongePos] = useState({ x: 65, y: 40 });
     const [isDragging, setIsDragging] = useState(false);
 
     // Place-stage drag position for the clean item
@@ -244,7 +244,7 @@ const WashDishesGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
                                     position: "absolute", bottom: "13px", left: "50%", transform: "translateX(-50%)",
                                     fontSize: "12px", color: "#fff", background: "rgba(0,0,0,0.55)",
                                     padding: "2px 8px", borderRadius: "6px", whiteSpace: "nowrap"
-                                }}>{currentWashItem.labelBisaya}/ {currentWashItem.labelEnglish}</span>
+                                }}>{currentWashItem.labelBisaya} / {currentWashItem.labelEnglish}</span>
 
                                 {/* Bubble animation when scrubbing */}
                                 {washCount > 0 && washCount < 3 && (
