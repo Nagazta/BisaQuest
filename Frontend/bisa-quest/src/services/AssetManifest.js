@@ -197,6 +197,29 @@ import castleSunImg from "../assets/images/environments/scenario/castle-sun.png"
 import castleDoorOpenImg from "../assets/images/environments/scenario/castle-door-open.png";
 import castleDoorImg from "../assets/images/environments/scenario/castle-door.png";
 import castleDoorwayImg from "../assets/images/environments/scenario/castle-doorway.png";
+import castleFireImg from "../assets/images/environments/scenario/castle-fire.png";
+import castleIntroFireplaceImg from "../assets/images/environments/scenario/castle-intro-fireplace.png";
+import castleIntroCandlestickImg from "../assets/images/environments/scenario/castle-intro-candlestick.png";
+import castleIntroBookshelfImg from "../assets/images/environments/scenario/castle-intro-bookshelf.png";
+import castleIntroStoneImg from "../assets/images/environments/scenario/castle-intro-stone.png";
+import castleIntroKeyholeImg from "../assets/images/environments/scenario/castle-intro-keyhole.png";
+import castleIntroPathwayImg from "../assets/images/environments/scenario/castle-intro-pathway.png";
+import castleIntroWaterwayImg from "../assets/images/environments/scenario/castle-intro-waterway.png";
+import castleIntroBridgeImg from "../assets/images/environments/scenario/castle-intro-bridge.png";
+import castleNoFireImg from "../assets/images/environments/scenario/castle-no-fire.png";
+import castleWithFireImg from "../assets/images/environments/scenario/castle-with-fire.png";
+import castleBooksImg from "../assets/images/environments/scenario/castle-books.png";
+import castleNoBooksImg from "../assets/images/environments/scenario/castle-no-books.png";
+import castleWithBookImg from "../assets/images/environments/scenario/castle-with-book.png";
+import castleStoryImg from "../assets/images/environments/scenario/castle-story.png";
+import castleTableBookImg from "../assets/images/environments/scenario/castle-table-book.png";
+import castleTableStorybookImg from "../assets/images/environments/scenario/castle-table-storybook.png";
+import castleLightImg from "../assets/images/environments/scenario/castle-light.png";
+import castleCandleImg from "../assets/images/environments/scenario/castle-candle.png";
+import castleCandlelightImg from "../assets/images/environments/scenario/castle-candlelight.png";
+import castleCandleStickImg from "../assets/images/environments/scenario/castle-candle-stick.png";
+import castleSideStickImg from "../assets/images/environments/scenario/castle-side-stick.png";
+import castleSideCandleImg from "../assets/images/environments/scenario/castle-side-candle.png";
 
 // ── UI assets ────────────────────────────────────────────────────────────────
 import DashboardBg from "../assets/images/bg-dashboard.png";
@@ -437,6 +460,29 @@ const AssetManifest = {
             doorOpen: castleDoorOpenImg,
             door: castleDoorImg,
             doorway: castleDoorwayImg,
+            fire: castleFireImg,
+            introFireplace: castleIntroFireplaceImg,
+            introCandlestick: castleIntroCandlestickImg,
+            introBookshelf: castleIntroBookshelfImg,
+            introStone: castleIntroStoneImg,
+            introKeyhole: castleIntroKeyholeImg,
+            introPathway: castleIntroPathwayImg,
+            introWaterway: castleIntroWaterwayImg,
+            introBridge: castleIntroBridgeImg,
+            noFire: castleNoFireImg,
+            withFire: castleWithFireImg,
+            books: castleBooksImg,
+            noBooks: castleNoBooksImg,
+            withBook: castleWithBookImg,
+            story: castleStoryImg,
+            tableBook: castleTableBookImg,
+            tableStorybook: castleTableStorybookImg,
+            light: castleLightImg,
+            candle: castleCandleImg,
+            candlelight: castleCandlelightImg,
+            candleStick: castleCandleStickImg,
+            sideStick: castleSideStickImg,
+            sideCandle: castleSideCandleImg,
         }
     },
 
