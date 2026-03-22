@@ -23,7 +23,7 @@ const MultiWashGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) 
     const currentToolImg = ITEM_IMAGE_MAP[currentToolKey] || null;
     
     const toolNames = {
-        alfombra: { bi: "banig", en: "rug" },
+        alfombra: { bi: "karpet", en: "rug" },
         rag: { bi: "trapo", en: "rag" },
         dust_feather: { bi: "paspas", en: "dust feather" }
     };
@@ -184,8 +184,8 @@ const MultiWashGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) 
                     {stage === "success" && (
                         <div className="iqm-scene-success-overlay">
                             <div className="iqm-scene-success-card">
-                                <div className="iqm-scene-success-stars">✨🧺✨</div>
-                                <div className="iqm-scene-success-text">Limpyo Na!</div>
+                                <div className="iqm-scene-success-stars">✨🏆✨</div>
+                                <div className="iqm-scene-success-text">Limpyo na!</div>
                             </div>
                         </div>
                     )}
