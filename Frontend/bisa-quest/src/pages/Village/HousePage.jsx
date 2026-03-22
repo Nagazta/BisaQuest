@@ -13,7 +13,8 @@ import { NPC_IMAGES, LIVING_ROOM_LABELS, INTRO_DIALOGUE, buildDialogue } from ".
 import BookCollectModal from "../../game/components/BookCollectModal";
 import VillageTransitionModal from "../../game/components/VillageTransitionModal";
 import VillageSummaryModal from "../../game/components/VillageSummaryModal";
-import { awardLibroPage, getLibroPageCount } from "../../utils/playerStorage";
+import FogTransition from "../../components/FogTransition";
+import { awardLibroPage, getLibroPageCount, hasCutsceneSeen, markCompleteDismissed } from "../../utils/playerStorage";
 import "./HousePage.css";
 
 const HousePage = () => {
@@ -37,6 +38,7 @@ const HousePage = () => {
   const [showDoorChoice, setShowDoorChoice] = useState(false);
   const [showPageModal, setShowPageModal] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
+  const [fogActive, setFogActive] = useState(false);
   const [collectedPage, setCollectedPage] = useState(null);
 
   // pendingQuest holds the region we want to open a quest for
@@ -122,8 +124,17 @@ const HousePage = () => {
     setQuestItem(null);
   };
 
+  const handleFogDone = () => {
+    if (!hasCutsceneSeen("village_complete")) {
+      navigate("/cutscene/village_complete", { replace: true });
+    } else {
+      navigate("/student/forest", { replace: true });
+    }
+  };
+
   return (
     <div className="house-container">
+      <FogTransition active={fogActive} onDone={handleFogDone} label="🌲 Entering the Forest..." />
 
       <img
         src={AssetManifest.village.scenarios.house}
@@ -295,6 +306,10 @@ const HousePage = () => {
       <VillageSummaryModal
         isOpen={showSummary}
         onClose={() => setShowSummary(false)}
+        onProceed={() => {
+            markCompleteDismissed("village");
+            setFogActive(true);
+        }}
       />
 
     </div>

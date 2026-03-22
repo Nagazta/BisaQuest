@@ -11,6 +11,7 @@ import {
     hasCutsceneSeen,
     markCompleteDismissed,
     isCompleteDismissed,
+    getLibroPageCountForEnv,
 } from "../../utils/playerStorage";
 import AssetManifest from "../../services/AssetManifest";
 import "./VillagePage.css";
@@ -89,8 +90,8 @@ const VillagePage = () => {
 
     // ── Load village progress ─────────────────────────────────────────────────
     const loadVillageProgress = () => {
-        const progress = getProgress();
-        const pct = progress.village_progress || 0;
+        const books = getLibroPageCountForEnv('village');
+        const pct = Math.round((books / 3) * 100);
         setVillageProgress(pct);
 
         // Only show the modal if at 100% AND the player hasn't dismissed it yet
@@ -131,6 +132,12 @@ const VillagePage = () => {
             navigate("/cutscene/village_complete", { replace: true });
         } else {
             navigate("/student/forest", { replace: true });
+        }
+    };
+
+    const handleEdgeWalk = (direction) => {
+        if (direction === 'right' && villageProgress >= 100 && !fogActive) {
+            handleGoToForest();
         }
     };
 
@@ -273,6 +280,17 @@ const VillagePage = () => {
                 ← {language === "ceb" ? "Balik" : "Back"}
             </Button>
 
+            {villageProgress >= 100 && (
+                <Button
+                    variant="primary"
+                    className="proceed-forest-btn"
+                    onClick={handleGoToForest}
+                    style={{ marginLeft: "20px" }}
+                >
+                    🌲 Proceed to Forest
+                </Button>
+            )}
+
             <EnvironmentPage
                 key={refreshKey}
                 environmentType="village"
@@ -283,6 +301,7 @@ const VillagePage = () => {
                 characterType={character === "roberta" ? "girl" : "boy"}
                 debugMode={false}
                 playerId={playerId}
+                onEdgeWalk={handleEdgeWalk}
             />
 
             <div className="decorative-clouds">

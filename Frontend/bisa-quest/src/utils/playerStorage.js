@@ -92,6 +92,7 @@ export const saveEnvironmentUnlock = (environment) => {
 
 export const isEnvironmentUnlocked = (environment) => {
     if (environment === 'village') return true;
+    if (environment === 'forest' && getLibroPageCountForEnv('village') >= 3) return true;
     return !!getUnlocks()[environment];
 };
 
