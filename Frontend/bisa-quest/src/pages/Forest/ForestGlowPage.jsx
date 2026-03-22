@@ -108,11 +108,13 @@ const ForestGlowPage = () => {
     setCompletedItems((prev) => {
       const next = new Set([...prev, region.id]);
 
+      // Save this word
+      const word = `${region.labelBisaya} (${region.labelEnglish})`;
+      saveNPCProgress("forest", npcId, GLOW_ITEMS.length, true, 3, [word]);
+
       // Save progress & award fragment after 3 unique items (matching Village pattern)
       if (next.size >= 3 && !progressSaved) {
         setProgressSaved(true);
-        // Save NPC progress immediately so the forest map updates
-        saveNPCProgress("forest", npcId, GLOW_ITEMS.length, true, 3);
 
         const isNewPage = awardLibroPage("forest", npcId);
         if (isNewPage) {

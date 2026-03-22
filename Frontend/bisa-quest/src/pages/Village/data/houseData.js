@@ -12,12 +12,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "door",
     descriptionBisaya: "Ang pultahan kay maablihan ug masirad-an aron matabonan ang agianan sa kwarto, building, o sakyanan.",
     descriptionEnglish: "A door opens and closes to cover the entrance of a room, building, or vehicle.",
-<<<<<<< Updated upstream
-    imageKey: "purtahan",
-    x: 2, y: 40, w: 10, h: 18,
-=======
     x: 1, y: 30, w: 8, h: 40,
->>>>>>> Stashed changes
   },
   {
     id: "estante_wall",
@@ -25,11 +20,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "shelf",
     descriptionBisaya: "Ang estante kay nipis nga tabla nga gibutang sa bungbong diin nimo ibutang ang mga butang.",
     descriptionEnglish: "A shelf is a thin, flat board attached to a wall where you can put things.",
-<<<<<<< Updated upstream
-    x: 22, y: 31, w: 5, h: 5,
-=======
     x: 12, y: 32, w: 15, h: 7,
->>>>>>> Stashed changes
   },
   {
     id: "bulak",
@@ -37,22 +28,15 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "houseplant",
     descriptionBisaya: "Ang houseplant kay tanom nga ibutang sulod sa balay para dekorasyon.",
     descriptionEnglish: "A houseplant is a plant kept inside the house used mostly as decoration.",
-    x: 13, y: 25, w: 6, h: 7,
+    x: 9, y: 25, w: 6, h: 7,
   },
   {
     id: "toalya",
     labelBisaya: "Toalya",
-<<<<<<< Updated upstream
-    labelEnglish: "Cloth / Towel",
-    descriptionBisaya: "Gamit sa paglimpyo o pagpunas sa mga butang sa balay.",
-    descriptionEnglish: "Used for cleaning or wiping things around the house.",
-    x: 18, y: 40, w: 5, h: 10,
-=======
     labelEnglish: "Towel",
     descriptionBisaya: "Ang toalya kay panapton nga gigamit para pagpahid sa singot sa lawas.",
     descriptionEnglish: "A towel is a piece of cloth used to wipe sweat and dry your body.",
-    x: 17, y: 39, w: 5, h: 10,
->>>>>>> Stashed changes
+    x: 13, y: 39, w: 5, h: 10,
   },
   {
     id: "lampara",
@@ -61,21 +45,15 @@ export const LIVING_ROOM_LABELS = [
     descriptionBisaya: "Suga ni nga naggamit og lana o gas aron makabuhat og kayo. Gigamit kini kung walay kuryente o bombilya.",
     descriptionEnglish: "A lamp is a light that uses oil or gas to make a flame. It can be used when there is no electricity or light bulb.",
     imageKey: "lamp",
-    x: 30, y: 25, w: 4, h: 10,
+    x: 27, y: 25, w: 4, h: 10,
   },
   {
     id: "relo",
     labelBisaya: "Orasan",
     labelEnglish: "Clock",
-<<<<<<< Updated upstream
-    descriptionBisaya: "Ginagamit aron mahibaw-an ang oras sa adlaw.",
-    descriptionEnglish: "Used to tell the time of day.",
-    x: 45, y: 26, w: 5, h: 6,
-=======
     descriptionBisaya: "Ang orasan kay butang nga nagsulti sa oras.",
     descriptionEnglish: "It is used to tell the time of day.",
     x: 45.5, y: 26, w: 5, h: 6,
->>>>>>> Stashed changes
   },
   {
     id: "bag",
@@ -84,21 +62,15 @@ export const LIVING_ROOM_LABELS = [
     descriptionBisaya: "Ang bayong kay gigamit sa pagdala og mga butang o pagpalit sa merkado.",
     descriptionEnglish: "A bag is used to carry things or bring items from the market.",
     imageKey: "bag",
-    x: 29, y: 42, w: 7, h: 10,
+    x: 25, y: 42, w: 7, h: 10,
   },
   {
     id: "kalendaryo",
     labelBisaya: "Kalendaryo",
     labelEnglish: "Calendar",
-<<<<<<< Updated upstream
-    descriptionBisaya: "Gipakita ang mga petsa ug buwan sa tuig.",
-    descriptionEnglish: "Shows the dates and months of the year.",
-    x: 68, y: 31, w: 8, h: 10,
-=======
     descriptionBisaya: "Ang kalendaryo gigamit para makita kung unsa ang adlaw, semana, ug bulan sa usa ka tuig.",
     descriptionEnglish: "A calendar is used to show the days, weeks, and months of the year.",
     x: 72, y: 31, w: 8, h: 10,
->>>>>>> Stashed changes
   },
   {
     id: "silhig",
@@ -120,19 +92,11 @@ export const LIVING_ROOM_LABELS = [
   },
   {
     id: "baldi",
-<<<<<<< Updated upstream
-    labelBisaya: "Baldi",
-    labelEnglish: "Bucket",
-    descriptionBisaya: "Sudlanan sa tubig para sa paglimpyo o paglaba.",
-    descriptionEnglish: "A bucket for holding water used for cleaning or washing.",
-    x: 30, y: 60, w: 6, h: 8,
-=======
     labelBisaya: "baldi",
     labelEnglish: "bucket/Pail",
     descriptionBisaya: "Ang baldi kay sudlanan nga gigamit sa pagdala og tubig o uban pang butang.",
     descriptionEnglish: "A pail or bucket is a round container with a handle used to carry water or other things.",
     x: 28, y: 59, w: 6, h: 8,
->>>>>>> Stashed changes
   },
   // ── Center ────────────────────────────────────────────────────────────────
   {
@@ -147,33 +111,14 @@ export const LIVING_ROOM_LABELS = [
     id: "bintana",
     labelBisaya: "Bintana",
     labelEnglish: "Window",
-<<<<<<< Updated upstream
-    descriptionBisaya: "Bukas nga parte sa dingding para sa hangin ug suga gikan sa gawas.",
-    descriptionEnglish: "An opening in the wall that lets in air and light from outside.",
-    x: 57, y: 30, w: 10, h: 13,
-=======
     descriptionBisaya: "Abli nga parte sa dingding para makasulod ang hangin gikan sa gawas.",
     descriptionEnglish: "A window in an opening in the wall that lets in air from outside.",
     x: 58, y: 30, w: 10, h: 13,
->>>>>>> Stashed changes
   },
   {
     id: "litrato",
     labelBisaya: "Kuwadro",
     labelEnglish: "Picture Frame",
-<<<<<<< Updated upstream
-    descriptionBisaya: "Gi-frame nga larawan sa pamilya o dekorasyon sa dingding.",
-    descriptionEnglish: "A framed photo of family or a decoration hung on the wall.",
-    x: 43, y: 34, w: 5, h: 6,
-  },
-  {
-    id: "sopa",
-    labelBisaya: "Sopa / Bangko",
-    labelEnglish: "Bench / Sofa",
-    descriptionBisaya: "Lingkoranan sa sala para sa pahinga ug pakig-istoryahanay.",
-    descriptionEnglish: "Seating in the living area for resting and conversation.",
-    x: 48, y: 46, w: 18, h: 12,
-=======
     descriptionBisaya: "Ang kuwadro kay butanganan og piktyur (picture) aron madisplay kini.",
     descriptionEnglish: "A picture frame is used to hold and display a picture.",
     x: 43.5, y: 36, w: 5, h: 6,
@@ -185,21 +130,14 @@ export const LIVING_ROOM_LABELS = [
     descriptionBisaya: "Ang sopa kay humok nga lingkuranan para sa pahuway ug pagstoryaanay.",
     descriptionEnglish: "A sofa is a soft seat used or resting and conversation.",
     x: 53, y: 46, w: 18, h: 12,
->>>>>>> Stashed changes
   },
   {
     id: "book",
     labelBisaya: "Libro",
     labelEnglish: "Book",
-<<<<<<< Updated upstream
-    descriptionBisaya: "Gamiton sa pagbasa og mga istorya.",
-    descriptionEnglish: "Used for reading stories.",
-    x: 52, y: 57, w: 6, h: 6,
-=======
     descriptionBisaya: "Ang libro kay mga pahina nga naay mga pulong ug hulagway nga mabasa nimo.",
     descriptionEnglish: "A book is a set of pages with words and pictures that you can read.",
     x: 58, y: 57, w: 6, h: 6,
->>>>>>> Stashed changes
   },
   {
     id: "lamesa",
@@ -251,11 +189,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Doormat",
     descriptionBisaya: "Ang talamakan kay makita sa pultahan aron ipahid ang hugaw sa sapatos.",
     descriptionEnglish: "A doormat is a mat placed near a door where you wipe your shoes or feet.",
-<<<<<<< Updated upstream
-    x: 10, y: 84, w: 10, h: 11,
-=======
     x: -1, y: 82, w: 15, h: 12,
->>>>>>> Stashed changes
   },
   {
     id: "salog",

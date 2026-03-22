@@ -46,6 +46,7 @@ import PanImg from "../assets/items/pan.png";
 import LadleImg from "../assets/items/ladle.png";
 import KnifeImg from "../assets/items/knife.png";
 import PlateImg from "../assets/items/plate.png";
+import SpoonImg from "../assets/items/spoon.jpg";
 import CupImg from "../assets/items/cup.png";
 import KahoyImg from "../assets/items/kahoy.png";
 import DruminImg from "../assets/items/drumin.png";
@@ -143,6 +144,7 @@ export const ITEM_IMAGE_MAP = {
   kutsilyo: KnifeImg,
   plate: PlateImg,
   plato: PlateImg,
+  spoon: SpoonImg,
   cup: CupImg,
   tasa: CupImg,
   carrot: CarrotImg,
