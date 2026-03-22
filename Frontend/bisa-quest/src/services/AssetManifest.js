@@ -143,6 +143,9 @@ import forestGuardianHungry from "../assets/images/characters/forest-guardian-hu
 import fish1 from "../assets/items/fish-1.jpg";
 import fish2 from "../assets/items/fish-2.jpg";
 import fish3 from "../assets/items/fish-3.jpg";
+import forestFlowerWilted from "../assets/images/environments/scenario/forest-flower-wilted.jpeg";
+import forestFlowerGrowing from "../assets/images/environments/scenario/forest-flower-growing.jpeg";
+import forestFlowerBlooming from "../assets/images/environments/scenario/forest-flower-blooming.jpeg";
 
 // ── Castle assets ────────────────────────────────────────────────────────────
 import CastleBackground from "../assets/images/environments/castle.png";
@@ -370,6 +373,9 @@ const AssetManifest = {
             glow: forestGlowImg,
             pondUnderwater: pondUnderwaterImg,
             campFire: forestCampFire,
+            flowerWilted: forestFlowerWilted,
+            flowerGrowing: forestFlowerGrowing,
+            flowerBlooming: forestFlowerBlooming,
         },
         items: {
             fish1: fish1,
