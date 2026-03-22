@@ -11,7 +11,7 @@ import TurtleShellGame from "./minigames/TurtleShellGame";
 import {
   FISH_FAMILIES_DATA,
   SQUIRREL_ANTONYM_PAIRS,
-  FROG_ANTONYM_SLOTS,
+  FROG_PATH_DATA,
   FIREFLY_SYNONYM_PAIRS,
   TURTLE_SYNONYM_PAIRS,
 } from "../../pages/Forest/data/pondData";
@@ -30,10 +30,8 @@ const POND_QUESTS = {
     instructionEnglish: "Drag each nut to the hollow with the opposite word!",
   },
   baki: {
-    mechanic: "frog_bridge",
-    slots: FROG_ANTONYM_SLOTS,
-    instructionBisaya: "I-drag ang bato sa lily pad nga may kabaliktaran nga pulong!",
-    instructionEnglish: "Drag the stone to the lily pad with the antonym!",
+    mechanic: "frog_path",
+    ...FROG_PATH_DATA,
   },
   alitaptap: {
     mechanic: "firefly_pair",
@@ -72,7 +70,7 @@ const PondQuestModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
       return <FishPairGame {...sharedProps} />;
     case "squirrel_sort":
       return <SquirrelSortGame {...sharedProps} />;
-    case "frog_bridge":
+    case "frog_path":
       return <FrogBridgeGame {...sharedProps} />;
     case "firefly_pair":
       return <FireflyPairGame {...sharedProps} />;
