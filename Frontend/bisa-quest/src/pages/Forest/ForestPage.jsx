@@ -183,6 +183,17 @@ const ForestPage = () => {
 
             <Button variant="back" className="back-button-forest-overlay" onClick={handleBackClick}>← Back</Button>
 
+            {forestProgress >= 100 && (
+                <Button
+                    variant="primary"
+                    className="proceed-forest-btn"
+                    onClick={handleGoToCastle}
+                    style={{ marginLeft: "20px" }}
+                >
+                    🏰 Proceed to Castle
+                </Button>
+            )}
+
             <EnvironmentPage
                 key={refreshKey}
                 environmentType="forest"

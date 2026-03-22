@@ -13,13 +13,22 @@ import BilingualText from "../Village/components/BilingualText";
 import CastleCompoundWordModal from "./components/CastleCompoundWordModal";
 import CastleVisualDragModal from "./components/CastleVisualDragModal";
 import CastleApplyModal from "./components/CastleApplyModal";
+import BookCollectModal from "../../game/components/BookCollectModal";
+import CastleTransitionModal from "../../game/components/CastleTransitionModal";
 import { CASTLE_NPC_IMAGES, getQuestData, buildCastleDialogue } from "./data/castleRoomData";
+import {
+  saveNPCProgress,
+  awardLibroPage,
+  getLibroPageCount,
+  getLibroPageCountForEnv,
+} from "../../utils/playerStorage";
 import "./CastleLibraryPage.css";
 
 const QUEST_INDEX  = 2;
 const NPC_ID       = "castle_npc_1";
 const NPC_NAME     = "Princess Hara";
 const TOTAL_SCENES = 3;
+const REQUIRED_QUESTS = 3;
 
 const CastleLibraryPage = () => {
   const navigate = useNavigate();
@@ -37,25 +46,21 @@ const CastleLibraryPage = () => {
   const [dialogueStep, setDialogueStep]     = useState(0);
   const [questItem, setQuestItem]           = useState(null);
   const [completedItems, setCompletedItems] = useState(new Set());
-  const [showSceneComplete, setShowSceneComplete] = useState(false);
+
+  // Book & transition modals
+  const [showPageModal, setShowPageModal]   = useState(false);
+  const [collectedPage, setCollectedPage]   = useState(null);
+  const [showTransition, setShowTransition] = useState(false);
+  const [progressSaved, setProgressSaved]   = useState(false);
 
   const pendingQuestRef = useRef(null);
 
-  // ── Open mini-game once activeItem clears ───────────────────────────────────
   useEffect(() => {
     if (pendingQuestRef.current && !activeItem) {
       setQuestItem(pendingQuestRef.current);
       pendingQuestRef.current = null;
     }
   }, [activeItem]);
-
-  // ── Check completion ────────────────────────────────────────────────────────
-  useEffect(() => {
-    if (quest && completedItems.size > 0 && completedItems.size >= quest.items.length) {
-      const t = setTimeout(() => setShowSceneComplete(true), 600);
-      return () => clearTimeout(t);
-    }
-  }, [completedItems, quest]);
 
   // ── Derived ─────────────────────────────────────────────────────────────────
   const introDone     = introStep === null;
@@ -79,7 +84,7 @@ const CastleLibraryPage = () => {
   };
 
   const handleItemClick = (region) => {
-    if (!introDone || showSceneComplete) return;
+    if (!introDone) return;
     if (debugMode) { setSelectedRegion(selectedRegion?.id === region.id ? null : region); return; }
     setActiveItem(region);
     setDialogueStep(0);
@@ -99,13 +104,41 @@ const CastleLibraryPage = () => {
 
   const handleQuestComplete = (region) => {
     setQuestItem(null);
-    setCompletedItems((prev) => new Set([...prev, region.id]));
+    setCompletedItems((prev) => {
+      const next = new Set([...prev, region.id]);
+
+      if (next.size >= REQUIRED_QUESTS && !progressSaved) {
+        setProgressSaved(true);
+        saveNPCProgress("castle", NPC_ID, quest.items.length, true, 3);
+
+        const isNewPage = awardLibroPage("castle", "castle_library");
+        if (isNewPage) {
+          const pageNumber = getLibroPageCountForEnv("castle");
+          const totalCollected = getLibroPageCount();
+          setCollectedPage({ pageNumber, totalCollected });
+          setShowPageModal(true);
+        } else {
+          setShowTransition(true);
+        }
+      }
+
+      return next;
+    });
   };
 
   const handleQuestClose = () => setQuestItem(null);
 
-  const handleFinish = () =>
+  const handleFragmentModalClose = () => {
+    setShowPageModal(false);
+    setCollectedPage(null);
+    setShowTransition(true);
+  };
+
+  const handleStay = () => setShowTransition(false);
+  const handleGoBack = () => {
+    setShowTransition(false);
     navigate(returnTo, { state: { completed: true } });
+  };
 
   // ── Guard ───────────────────────────────────────────────────────────────────
   if (!quest) return (
@@ -118,18 +151,13 @@ const CastleLibraryPage = () => {
   return (
     <div className="croom-container">
 
-      {/* Background */}
       <img src={quest.background} alt={quest.sceneName} className="croom-background" draggable={false} />
-
-      {/* Back */}
       <Button variant="back" className="croom-back" onClick={handleBack}>← Back</Button>
 
-      {/* Scene label */}
       <div className="croom-scene-label">
         {!introDone ? "Story Introduction" : `${quest.sceneName} · Scene 3 / ${TOTAL_SCENES}`}
       </div>
 
-      {/* Progress dots */}
       <div className="croom-quest-dots">
         {Array.from({ length: TOTAL_SCENES }).map((_, i) => (
           <span key={i} className={[
@@ -140,13 +168,11 @@ const CastleLibraryPage = () => {
         ))}
       </div>
 
-      {/* Debug tools */}
       <HouseDebugTools
         debugMode={debugMode} setDebugMode={setDebugMode}
         selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion}
       />
 
-      {/* Clickable regions */}
       {introDone && quest.items.map((region) => {
         const isDone = completedItems.has(region.id);
         return (
@@ -163,10 +189,10 @@ const CastleLibraryPage = () => {
             onClick={() => handleItemClick(region)}
           >
             {debugMode && <span className="croom-debug-badge">{region.id}</span>}
-            {!debugMode && !activeItem && !questItem && !showSceneComplete && (
+            {!debugMode && !activeItem && !questItem && (
               <span className={`croom-item-dot ${isDone ? "croom-item-dot--done" : ""}`} />
             )}
-            {!debugMode && !activeItem && !questItem && !showSceneComplete && (
+            {!debugMode && !activeItem && !questItem && (
               <div className="croom-hover-tooltip">
                 <span className="croom-hover-tooltip-bisaya">{region.labelBisaya}</span>
                 <span className="croom-hover-tooltip-english">{region.labelEnglish}</span>
@@ -177,7 +203,6 @@ const CastleLibraryPage = () => {
         );
       })}
 
-      {/* NPC */}
       <div className="croom-npc-wrap">
         <img
           src={NpcImage} alt={NPC_NAME} draggable={false}
@@ -185,7 +210,6 @@ const CastleLibraryPage = () => {
         />
       </div>
 
-      {/* Intro dialogue */}
       {introLine && (
         <DialogueBox
           title={introLine.speaker}
@@ -195,7 +219,6 @@ const CastleLibraryPage = () => {
         />
       )}
 
-      {/* Item dialogue */}
       {introDone && currentLine && (
         <DialogueBox
           title={currentLine.speaker}
@@ -214,15 +237,13 @@ const CastleLibraryPage = () => {
         />
       )}
 
-      {/* Idle hint */}
-      {introDone && !activeItem && !questItem && !showSceneComplete && !debugMode && (
+      {introDone && !activeItem && !questItem && !debugMode && (
         <div className="croom-idle-hint">
           <span className="croom-idle-hint-bisaya">💬 I-drag ang mga butang para makat-on og Compound Words!</span>
           <span className="croom-idle-hint-english">Drag the items to learn about Compound Words!</span>
         </div>
       )}
 
-      {/* Mini-game modal */}
       {questItem && (
         questItem.applyGame
           ? <CastleApplyModal
@@ -240,24 +261,21 @@ const CastleLibraryPage = () => {
               />
       )}
 
-      {/* Scene complete overlay */}
-      {showSceneComplete && (
-        <div className="croom-complete-overlay">
-          <div className="croom-complete-card">
-            <div className="croom-complete-emoji">🏆</div>
-            <h2 className="croom-complete-title">Quest Complete!</h2>
-            <p className="croom-complete-sub">
-              Nahuman na nimo ang tanan nga lawak! / You finished all the rooms!
-            </p>
-            <div className="croom-complete-words">
-              {quest.items.map((item) => (
-                <span key={item.id} className="croom-complete-word-chip">{item.compoundWord.result}</span>
-              ))}
-            </div>
-            <Button variant="primary" onClick={handleFinish}>🏰 Return to Castle</Button>
-          </div>
-        </div>
-      )}
+      <BookCollectModal
+        isOpen={showPageModal}
+        npcName={NPC_NAME}
+        pageNumber={collectedPage?.pageNumber}
+        totalPages={collectedPage?.totalCollected}
+        environment="castle"
+        onClose={handleFragmentModalClose}
+      />
+
+      <CastleTransitionModal
+        isOpen={showTransition}
+        sceneName="the Library"
+        onStay={handleStay}
+        onGoBack={handleGoBack}
+      />
 
     </div>
   );

@@ -68,10 +68,14 @@ const PlayerLobby = () => {
         const forestPages  = getLibroPageCountForEnv("forest");
         const forestPct    = Math.max(forestNpcPct, Math.min(Math.round((forestPages / 3) * 100), 100));
 
+        const castleNpcPct = progress.castle_progress || 0;
+        const castlePages  = getLibroPageCountForEnv("castle");
+        const castlePct    = Math.max(castleNpcPct, Math.min(Math.round((castlePages / 3) * 100), 100));
+
         setModuleProgress({
             1: progress.village_progress || 0,
             2: forestPct,
-            3: progress.castle_progress  || 0,
+            3: castlePct,
         });
     };
 
