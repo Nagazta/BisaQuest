@@ -20,7 +20,6 @@ import BedsheetImg from "../assets/items/bedsheet.png";
 import HabolImg from "../assets/items/habol.png";
 import HandfanImg from "../assets/items/hand_fan.png";
 import bucketImg from "../assets/items/bucket.png";
-import lampImg from "../assets/items/lamp.png";
 import BookImg from "../assets/items/book.png";
 import KalendaryoImg from "../assets/items/kalendaryo.png";
 import PurtahanImg from "../assets/items/purtahan.png";
@@ -58,6 +57,11 @@ import KatreImg from "../assets/items/katre.png";
 import AparadorImg from "../assets/items/aparador.png";
 import DustFeatherImg from "../assets/items/dust_feather.jpg";
 import IronImg from "../assets/items/iron.jpg";
+import LampOnImg from "../assets/items/lamp_on.png";
+import LampOffImg from "../assets/items/lamp_off.png";
+import BoxMatchImg from "../assets/items/box_match.jpg";
+import LitMatchImg from "../assets/items/lit_match.jpg";
+import MatchImg from "../assets/items/match.jpg";
 
 
 export const ITEM_IMAGE_MAP = {
@@ -80,7 +84,7 @@ export const ITEM_IMAGE_MAP = {
   trash: TrashImg,
   basura: TrashImg,
   bucket: bucketImg,
-  lamp: lampImg,
+  lamp: LampOffImg,
   book: BookImg,
   libro: BookImg,
   kalendaryo: KalendaryoImg,
@@ -134,6 +138,11 @@ export const ITEM_IMAGE_MAP = {
   dust_feather: DustFeatherImg,
   iron: IronImg,
   plantsa: IronImg,
+  lamp_on: LampOnImg,
+  lamp_off: LampOffImg,
+  box_match: BoxMatchImg,
+  lit_match: LitMatchImg,
+  match: MatchImg,
 
 };
 
