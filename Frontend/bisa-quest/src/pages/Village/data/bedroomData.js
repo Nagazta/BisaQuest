@@ -20,7 +20,7 @@ export const BEDROOM_LABELS = [
     descriptionBisaya: "Ang higdaanan para mupahulay og matulog.",
     descriptionEnglish: "The bed for resting and sleeping.",
     imageKey: "katre",
-    x: 25, y: 59, w: 33, h: 13,
+    x: 25, y: 55, w: 33, h: 13,
   },
   {
     id: "suga_bedroom",
@@ -28,6 +28,7 @@ export const BEDROOM_LABELS = [
     labelEnglish: "Ceiling Light",
     descriptionBisaya: "Ang suga nga nagdan-ag sa tibuok kwarto.",
     descriptionEnglish: "The light that illuminates the entire room.",
+    imageKey: "kisame",
     x: 48, y: 5, w: 10, h: 20,
   },
   {
@@ -36,7 +37,7 @@ export const BEDROOM_LABELS = [
     labelEnglish: "Dust Feather / Duster",
     descriptionBisaya: "Gamiton sa paglimpyo sa abog sa mga muwebles.",
     descriptionEnglish: "Used for cleaning dust off furniture.",
-    x: 64, y: 52, w: 7, h: 5,
+    x: 60, y: 50, w: 7, h: 5,
   },
   {
     id: "bintana_bedroom",
@@ -53,7 +54,7 @@ export const BEDROOM_LABELS = [
     descriptionBisaya: "Gipakita ang mga petsa ug buwan sa tuig.",
     descriptionEnglish: "Shows the dates and months of the year.",
     imageKey: "kalendaryo",
-    x: 63, y: 34, w: 7, h: 15,
+    x: 61, y: 30, w: 7, h: 15,
   },
   {
     id: "aparador_bedroom",
@@ -62,7 +63,7 @@ export const BEDROOM_LABELS = [
     descriptionBisaya: "Sudlanan sa mga sinina o uban pang gamit.",
     descriptionEnglish: "Stores clothes or other things.",
     imageKey: "aparador",
-    x: 65, y: 55, w: 9, h: 18,
+    x: 64, y: 55, w: 9, h: 18,
   },
   {
     id: "bentilador_bedroom",
@@ -71,7 +72,7 @@ export const BEDROOM_LABELS = [
     descriptionBisaya: "Gamit pampabugnaw kung puwerte kainit.",
     descriptionEnglish: "Used to cool down when it's very hot.",
     imageKey: "Bentilador",
-    x: 14, y: 64, w: 10, h: 20,
+    x: 16, y: 50, w: 10, h: 20,
   },
   {
     id: "plantsa_bedroom",
@@ -79,7 +80,7 @@ export const BEDROOM_LABELS = [
     labelEnglish: "Iron / Ironing Board",
     descriptionBisaya: "Gigamit sa pagpahu karsonsilyo o sinina aron hapsay tan-awon.",
     descriptionEnglish: "Used to iron clothes or pants to make them look neat.",
-    x: 78, y: 51, w: 12, h: 27,
+    x: 75, y: 42, w: 12, h: 27,
   },
   {
     id: "bukag_bedroom",
@@ -88,7 +89,7 @@ export const BEDROOM_LABELS = [
     descriptionBisaya: "Sudlanan sa mga bulingon nga sanina.",
     descriptionEnglish: "Container for dirty clothes.",
     imageKey: "laundry_basket",
-    x: 83, y: 68, w: 13, h: 19,
+    x: 80, y: 65, w: 13, h: 19,
   }
 ];
 

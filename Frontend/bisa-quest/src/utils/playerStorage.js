@@ -213,6 +213,9 @@ export const hasLibroPage = (environment, npcId) => {
 const INTERNAL_NPC_META = {
     village: {
         village_npc_2: { name: "Ligaya" },
+        village_house: { name: "Ligaya" },
+        village_kitchen: { name: "Ligaya" },
+        village_bedroom: { name: "Ligaya" },
     },
     forest: {
         forest_npc_1: { name: "Lunti" },

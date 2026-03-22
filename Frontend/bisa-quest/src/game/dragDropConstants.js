@@ -26,6 +26,19 @@ import PurtahanImg from "../assets/items/purtahan.png";
 import RugImg from "../assets/items/rug.png";
 import PlangganaImg from "../assets/items/planggana.png";
 import LamesaSalaImg from "../assets/items/lamesa_sala.png";
+import BookshelfItemImg from "../assets/items/bookshelf_item.png";
+import SopaImg from "../assets/items/sopa.png";
+import BulakImg from "../assets/items/bulak.png";
+import ToalyaImg from "../assets/items/toalya.png";
+import BaldiImg from "../assets/items/baldi.png";
+import LitratoImg from "../assets/items/litrato.png";
+import BintanaImg from "../assets/items/bintana.png";
+import KurtinaImg from "../assets/items/kurtina.png";
+import BayongImg from "../assets/items/bayong.png";
+import SalaCeilingImg from "../assets/items/sala_ceiling.png";
+import SalogImg from "../assets/items/salog.png";
+import DoormatImg from "../assets/items/doormat.png";
+import EstanteWallImg from "../assets/items/estante_wall.png";
 
 //Item images — Kitchen
 import PotImg from "../assets/items/pot.png";
@@ -55,13 +68,15 @@ import electricFanImg from "../assets/items/electricfan.png";
 import LaundryBasketImg from "../assets/items/laundry_basket.png";
 import KatreImg from "../assets/items/katre.png";
 import AparadorImg from "../assets/items/aparador.png";
-import DustFeatherImg from "../assets/items/dust_feather.jpg";
-import IronImg from "../assets/items/iron.jpg";
+import DustFeatherImg from "../assets/items/dust_feather.png";
+import IronImg from "../assets/items/iron.png";
 import LampOnImg from "../assets/items/lamp_on.png";
 import LampOffImg from "../assets/items/lamp_off.png";
 import BoxMatchImg from "../assets/items/box_match.jpg";
 import LitMatchImg from "../assets/items/lit_match.jpg";
 import MatchImg from "../assets/items/match.jpg";
+import ReloImg from "../assets/items/relo.png";
+import KisameImg from "../assets/items/kisame.png";
 
 
 export const ITEM_IMAGE_MAP = {
@@ -92,7 +107,21 @@ export const ITEM_IMAGE_MAP = {
   alfombra: RugImg,
   planggana: PlangganaImg,
   lamesa_sala: LamesaSalaImg,
-  bag: AssetManifest.village.items.bag,
+  relo: ReloImg,
+  kisame: KisameImg,
+  bookshelf: BookshelfItemImg,
+  sopa: SopaImg,
+  bulak: BulakImg,
+  toalya: ToalyaImg,
+  baldi: BaldiImg,
+  litrato: LitratoImg,
+  bintana: BintanaImg,
+  kurtina: KurtinaImg,
+  bag: BayongImg,
+  sala_ceiling: SalaCeilingImg,
+  salog: SalogImg,
+  doormat: DoormatImg,
+  estante_wall: EstanteWallImg,
   watering_can: AssetManifest.village.items.wateringCan,
   watering_can_pour: AssetManifest.village.items.wateringCanPour,
   hammer: AssetManifest.village.items.hammer,
@@ -102,14 +131,6 @@ export const ITEM_IMAGE_MAP = {
   dust_feather: AssetManifest.village.items.dust_feather,
   lampaso: AssetManifest.village.items.lampaso,
   shoes: AssetManifest.village.items.shoes,
-
-
-
-
-
-
-
-
 
   // Kitchen
   pot: PotImg,
