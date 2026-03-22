@@ -16,6 +16,7 @@ import KitchenPage from "./pages/Village/KitchenPage";
 //Forest environment pages
 import ForestScenePage from "./pages/Forest/ForestScenePage";
 import ForestPondPage from "./pages/Forest/ForestPondPage";
+import ForestGlowPage from "./pages/Forest/ForestGlowPage";
 
 //Castle environment pages
 import CastleScenePage from "./pages/Castle/CastleScenePage";
@@ -59,6 +60,7 @@ function App() {
                 <Route path="/student/kitchen" element={<ProtectedRoute><KitchenPage /></ProtectedRoute>} />
                 <Route path="/forest/scene" element={<ProtectedRoute><ForestScenePage /></ProtectedRoute>} />
                 <Route path="/student/forest-pond" element={<ProtectedRoute><ForestPondPage /></ProtectedRoute>} />
+                <Route path="/student/forest-glow" element={<ProtectedRoute><ForestGlowPage /></ProtectedRoute>} />
                 <Route path="/castle/scene" element={<ProtectedRoute><CastleScenePage /></ProtectedRoute>} />
                 <Route path="/castle/room" element={<ProtectedRoute><CastleRoomPage /></ProtectedRoute>} />
                 <Route path="/castle/gate" element={<ProtectedRoute><CastleGatePage /></ProtectedRoute>} />
