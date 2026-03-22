@@ -10,7 +10,8 @@ import { NPC_IMAGES, BEDROOM_LABELS, INTRO_DIALOGUE, buildDialogue } from "./dat
 import BookCollectModal from "../../game/components/BookCollectModal";
 import VillageTransitionModal from "../../game/components/VillageTransitionModal";
 import VillageSummaryModal from "../../game/components/VillageSummaryModal";
-import { awardLibroPage, getLibroPageCount } from "../../utils/playerStorage";
+import FogTransition from "../../components/FogTransition";
+import { awardLibroPage, getLibroPageCount, hasCutsceneSeen, markCompleteDismissed } from "../../utils/playerStorage";
 import "./HousePage.css"; // Reuse house CSS for now as the layout is identical
 
 const BedroomPage = () => {
@@ -33,6 +34,7 @@ const BedroomPage = () => {
   const [showDoorChoice, setShowDoorChoice] = useState(false);
   const [showPageModal, setShowPageModal] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
+  const [fogActive, setFogActive] = useState(false);
   const [collectedPage, setCollectedPage] = useState(null);
 
   const pendingQuestRef = useRef(null);
@@ -113,8 +115,17 @@ const BedroomPage = () => {
     setQuestItem(null);
   };
 
+  const handleFogDone = () => {
+    if (!hasCutsceneSeen("village_complete")) {
+      navigate("/cutscene/village_complete", { replace: true });
+    } else {
+      navigate("/student/forest", { replace: true });
+    }
+  };
+
   return (
-    <div className="house-container">
+    <div className="bedroom-container">
+      <FogTransition active={fogActive} onDone={handleFogDone} label="🌲 Entering the Forest..." />
 
       <img
         src={AssetManifest.village.scenarios.bedroom}
@@ -277,6 +288,10 @@ const BedroomPage = () => {
       <VillageSummaryModal
         isOpen={showSummary}
         onClose={() => setShowSummary(false)}
+        onProceed={() => {
+            markCompleteDismissed("village");
+            setFogActive(true);
+        }}
       />
 
     </div>

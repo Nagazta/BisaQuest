@@ -29,9 +29,12 @@
 }
 
 @keyframes pulseGlow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 0 15px rgba(255, 215, 0, 0.5);
   }
+
   50% {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 0 25px rgba(255, 215, 0, 0.8);
   }
@@ -70,9 +73,24 @@
 
 .village-progress-bar-wrap {
   position: fixed;
-  top: 70px;      /* sits just below the Back button (~56px tall) */
+  top: 70px;
+  /* sits just below the Back button (~56px tall) */
   left: 30px;
   z-index: 50;
   width: 200px;
   pointer-events: none;
+}
+
+.proceed-forest-btn {
+  position: absolute;
+  top: 20px;
+  right: 80px;
+  z-index: 50;
+  background: #4caf50 !important;
+  border-color: #1b5e20 !important;
+  box-shadow: 0 4px 0 #2e7d32 !important;
+  color: white !important;
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-size: 1.1rem;
+  padding: 10px 20px;
 }

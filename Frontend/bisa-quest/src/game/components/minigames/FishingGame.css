@@ -1,0 +1,166 @@
+/* FishingGame.css */
+.fishing-game-modal {
+  position: relative;
+  width: 90vw;
+  height: 80vh;
+  max-width: 1000px;
+  background-color: #5CADCE; /* Underwater fallback color */
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.fishing-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Make sure the text on top is readable */
+.fishing-header-container {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.fishing-header {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.95);
+  padding: 10px 25px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  border: 4px solid #4CAF50;
+}
+
+.fishing-instruction {
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.fishing-target-word {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ff5722;
+}
+
+.fishing-score {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #4CAF50;
+  margin-top: 5px;
+}
+
+.fishing-npc {
+  position: absolute;
+  bottom: -20px;
+  left: -20px;
+  height: 350px;
+  z-index: 5;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+  transition: opacity 0.5s ease;
+}
+
+.fishing-fish-wrapper {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  text-align: center;
+  z-index: 8;
+  pointer-events: none; /* Let drag events pass to parent */
+  transition: left 0.1s ease-out, top 0.1s ease-out;
+}
+
+.fishing-fish-img {
+  width: 100%;
+  height: auto;
+  mix-blend-mode: multiply; /* Removes white background from JPGs */
+  transform: scaleX(-1); /* Face left by default usually looks better */
+}
+
+.fishing-fish-word {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-weight: bold;
+  color: #333;
+  font-size: 0.95rem;
+  border: 2px solid #555;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.fishing-line {
+  position: absolute;
+  top: -100px;
+  width: 2px;
+  background-color: rgba(255, 255, 255, 0.7);
+  z-index: 10;
+  pointer-events: none;
+  transform: translateX(-50%);
+  transition: left 0.05s linear, height 0.05s linear;
+}
+
+.fishing-hook {
+  position: absolute;
+  transform: translate(-50%, -10%);
+  font-size: 3.5rem;
+  z-index: 11;
+  user-select: none;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6));
+  transition: left 0.05s linear, top 0.05s linear;
+}
+
+.fishing-hook:active {
+  cursor: grabbing;
+}
+
+.fishing-dialogue-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 20px;
+  pointer-events: auto; /* Catch clicks for dialogue */
+}
+
+/* Animations */
+.sway-anim {
+  animation: sway 4s infinite ease-in-out alternate;
+}
+
+@keyframes sway {
+  0% { transform: translate(-50%, -50%) rotate(-4deg) translateY(-8px); }
+  100% { transform: translate(-50%, -50%) rotate(4deg) translateY(8px); }
+}
+
+.shake-error {
+  animation: shakeError 0.5s ease;
+  filter: sepia(100%) hue-rotate(310deg) saturate(300%); /* Turn red */
+}
+
+@keyframes shakeError {
+  0%, 100% { transform: translate(-50%, -50%) rotate(0); }
+  25% { transform: translate(-50%, -50%) rotate(20deg) scale(1.1); }
+  50% { transform: translate(-50%, -50%) rotate(-20deg) scale(1.1); }
+  75% { transform: translate(-50%, -50%) rotate(15deg) scale(1.1); }
+}

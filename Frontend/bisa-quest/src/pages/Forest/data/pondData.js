@@ -7,6 +7,17 @@ export const NPC_IMAGES = {
 // ── 5 Clickable pond items (placeholder positions — adjust when background is ready) ──
 export const POND_ITEMS = [
   {
+    id: "tubig",
+    labelBisaya: "Ang Tubig",
+    labelEnglish: "The Water",
+    descriptionBisaya: "Si Lunti gigutom. Tabangi siya mamasol og isda nga naay saktong pulong!",
+    descriptionEnglish: "Lunti is hungry. Help her catch fish with the correct word!",
+    x: 39,
+    y: 55,
+    w: 20,
+    h: 15,
+  },
+  {
     id: "isda",
     labelBisaya: "Isda",
     labelEnglish: "Fishes",
@@ -274,3 +285,58 @@ export const TURTLE_SYNONYM_PAIRS = [
   { turtleWord: "Hilom", turtleMeaning: "Quiet", shellWord: "Malinawon", shellMeaning: "Peaceful" },
   { turtleWord: "Bata", turtleMeaning: "Young/Child", shellWord: "Kabataan", shellMeaning: "Youth" },
 ];
+
+export const FISHING_GAME_DATA = {
+  introDialogue: [
+    { speaker: "Lunti", bisayaText: "Gutom na kaayo ko...", englishText: "I am so hungry..." },
+    { speaker: "Lunti", bisayaText: "Puwede ba nimo ko tabangan og pangisda?", englishText: "Could you help me catch some fish?" },
+    { speaker: "Lunti", bisayaText: "Pero pili-a lang ang isda nga naay saktong pulong!", englishText: "But only catch the fish with the right word!" },
+    { speaker: "Lunti", bisayaText: "Pangitaa ang Synonym (parehas) o Antonym (kabaliktaran) sa pulong.", englishText: "Find the Synonym or Antonym of the word." },
+  ],
+  completionDialogue: [
+    { speaker: "Lunti", bisayaText: "Salamat kaayo!", englishText: "Thank you so much!" },
+    { speaker: "Lunti", bisayaText: "The raw fish is ready to cook!", englishText: "The raw fish is ready to cook!" },
+  ],
+  rounds: [
+    {
+      targetWord: "Dako",
+      targetEnglish: "Big",
+      questionType: "Antonym",
+      questionTypeBisaya: "Kabaliktaran",
+      correctWord: "Gamay",
+      wrongWords: ["Taas", "Daghan"],
+    },
+    {
+      targetWord: "Sayop",
+      targetEnglish: "Wrong",
+      questionType: "Synonym",
+      questionTypeBisaya: "Parehas",
+      correctWord: "Sipyat",
+      wrongWords: ["Sakto", "Maayo"],
+    },
+    {
+      targetWord: "Init",
+      targetEnglish: "Hot",
+      questionType: "Antonym",
+      questionTypeBisaya: "Kabaliktaran",
+      correctWord: "Bugnaw",
+      wrongWords: ["Paso", "Kalayo"],
+    },
+    {
+      targetWord: "Paspas",
+      targetEnglish: "Fast",
+      questionType: "Synonym",
+      questionTypeBisaya: "Parehas",
+      correctWord: "Dali",
+      wrongWords: ["Hinay", "Hunong"],
+    },
+    {
+      targetWord: "Limpyo",
+      targetEnglish: "Clean",
+      questionType: "Antonym",
+      questionTypeBisaya: "Kabaliktaran",
+      correctWord: "Hugaw",
+      wrongWords: ["Klaro", "Baga"],
+    },
+  ]
+};

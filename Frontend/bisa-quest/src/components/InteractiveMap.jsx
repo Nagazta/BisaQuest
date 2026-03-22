@@ -69,7 +69,7 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
 
   // ── Tooltip lock message ───────────────────────────────────────────────────
   const getLockMessage = (areaId) => {
-    if (areaId === 2) return "Complete all Village quests to unlock";
+    if (areaId === 2) return "Complete 3 Village Scenarios to unlock";
     if (areaId === 3) return "Complete the Forest to unlock";
     return "Complete previous quest to unlock";
   };

@@ -7,6 +7,7 @@ import SquirrelSortGame from "./minigames/SquirrelSortGame";
 import FrogBridgeGame from "./minigames/FrogBridgeGame";
 import FireflyPairGame from "./minigames/FireflyPairGame";
 import TurtleShellGame from "./minigames/TurtleShellGame";
+import FishingGame from "./minigames/FishingGame";
 
 import {
   FISH_FAMILIES_DATA,
@@ -14,10 +15,15 @@ import {
   FROG_ANTONYM_SLOTS,
   FIREFLY_SYNONYM_PAIRS,
   TURTLE_SYNONYM_PAIRS,
+  FISHING_GAME_DATA,
 } from "../../pages/Forest/data/pondData";
 
 // Map each pond item id to its mini-game config
 const POND_QUESTS = {
+  tubig: {
+    mechanic: "fishing_game",
+    ...FISHING_GAME_DATA,
+  },
   isda: {
     mechanic: "fish_families",
     ...FISH_FAMILIES_DATA,
@@ -78,6 +84,8 @@ const PondQuestModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
       return <FireflyPairGame {...sharedProps} />;
     case "turtle_shell":
       return <TurtleShellGame {...sharedProps} />;
+    case "fishing_game":
+      return <FishingGame {...sharedProps} />;
     default:
       return null;
   }

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getLearnedWords } from "../../utils/playerStorage";
 import "../../pages/Village/HousePage.css";
 
-const VillageSummaryModal = ({ isOpen, onClose }) => {
+const VillageSummaryModal = ({ isOpen, onClose, onProceed }) => {
     const navigate = useNavigate();
 
     if (!isOpen) return null;
@@ -40,8 +40,9 @@ const VillageSummaryModal = ({ isOpen, onClose }) => {
                     className="house-door-btn"
                     style={{ background: "#4caf50", borderColor: "#1b5e20", color: "#fff", boxShadow: "0 6px 0 #2e7d32" }}
                     onClick={() => {
-                        onClose && onClose();
-                        navigate("/student/forest");
+                        if (onProceed) onProceed();
+                        else navigate("/student/forest");
+                        if (onClose) onClose();
                     }}
                 >
                     Continue to Forest 🌲

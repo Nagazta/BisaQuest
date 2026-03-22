@@ -18,6 +18,7 @@ const EnvironmentPage = ({
     debugMode = false,
     playerId,
     hintMessage,
+    onEdgeWalk,
 }) => {
     const [playerPosition, setPlayerPosition] = useState({ x: 50, y: 50 });
     const [keysPressed, setKeysPressed] = useState({});
@@ -130,6 +131,11 @@ const EnvironmentPage = ({
                 if (keysPressed["s"]) newY = prev.y + moveSpeed;
                 if (keysPressed["a"]) newX = prev.x - moveSpeed;
                 if (keysPressed["d"]) newX = prev.x + moveSpeed;
+                
+                if (onEdgeWalk && newX > 98) {
+                    onEdgeWalk('right');
+                }
+
                 if (checkCollision(newX, newY)) {
                     if (checkCollision(newX, prev.y)) newX = prev.x;
                     if (checkCollision(prev.x, newY)) newY = prev.y;

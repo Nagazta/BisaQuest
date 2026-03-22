@@ -137,6 +137,11 @@ import forkedPathImg from "../assets/images/environments/scenario/forked-path.pn
 import forestRiverImg from "../assets/images/environments/scenario/forest-river.png";
 import forestPondImg from "../assets/images/environments/scenario/forest-pond.png";
 import forestGlowImg from "../assets/images/environments/scenario/forest-glow.png";
+import pondUnderwaterImg from "../assets/images/environments/scenario/pond-underwater.png";
+import forestGuardianHungry from "../assets/images/characters/forest-guardian-hungry.png";
+import fish1 from "../assets/items/fish-1.jpg";
+import fish2 from "../assets/items/fish-2.jpg";
+import fish3 from "../assets/items/fish-3.jpg";
 
 // ── Castle assets ────────────────────────────────────────────────────────────
 import CastleBackground from "../assets/images/environments/castle.png";
@@ -352,6 +357,7 @@ const AssetManifest = {
         npcs: {
             diwata: DiwataCharacter,
             forest_guardian: ForestGuardianCharacter,
+            forest_guardian_hungry: forestGuardianHungry,
             wandering_bard: WanderingBardCharacter,
             deer: DeerCharacter,
         },
@@ -361,6 +367,12 @@ const AssetManifest = {
             river: forestRiverImg,
             pond: forestPondImg,
             glow: forestGlowImg,
+            pondUnderwater: pondUnderwaterImg,
+        },
+        items: {
+            fish1: fish1,
+            fish2: fish2,
+            fish3: fish3,
         }
     },
 
