@@ -290,7 +290,7 @@ const ForestScenePage = () => {
         // Save NPC progress — npcCount=3 (Ronaldo excluded until quests are ready)
         saveNPCProgress("forest", npcId, items.length, true, 3);
 
-        // Award a Forest Fragment if the player qualifies (≥4 encounters OR NPC fully completed)
+        // Award a Forest Fragment if the player qualifies (≥3 encounters OR NPC fully completed)
         if (shouldAwardForestFragment(npcId)) {
             const isNewPage = awardLibroPage("forest", npcId);
             if (isNewPage) {
