@@ -68,7 +68,7 @@ const PackBagGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =>
 
     const dialogueText = (() => {
         if (stage === "intro") return dialogue[introStep];
-        if (stage === "success") return { bisayaText: "Nakahipos Na! Maayo kaayo! 🎉", englishText: "Packed! Well done! 🎉" };
+        if (stage === "success") return { bisayaText: "Nahipos Na! Good job! 🎉", englishText: "Awesome! You packed everything! 🎉" };
         const remaining = Object.values(itemsState).filter(s => !s.isPacked).length;
         if (remaining > 0) return { bisayaText: `${remaining} ka butang pa ang nahibilin! Ibutang sa bag!`, englishText: `${remaining} more items left! Put them in the bag!` };
         return { bisayaText: quest.instructionBisaya, englishText: quest.instructionEnglish };
@@ -117,8 +117,8 @@ const PackBagGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =>
                     {stage === "success" && (
                         <div className="iqm-scene-success-overlay">
                             <div className="iqm-scene-success-card">
-                                <div className="iqm-scene-success-stars">🎒✅🎒</div>
-                                <div className="iqm-scene-success-text">Nakahipos Na!</div>
+                                <div className="iqm-scene-success-stars">✨🏆✨</div>
+                                <div className="iqm-scene-success-text">Nakahipos na!</div>
                             </div>
                         </div>
                     )}

@@ -655,29 +655,55 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(2px);
     z-index: 20;
     animation: iqm-fade-in 0.3s ease both;
 }
 
+/* ── Reward card ───────────────────────────────────────────── */
+
 .iqm-scene-success-card {
-    background: rgba(20, 10, 2, 0.92);
+    background: linear-gradient(145deg, #2b1605, #1a0c02);
     border: 3px solid #fcd765;
-    border-radius: 16px;
-    padding: 20px 36px;
+    border-radius: 18px;
+    padding: 24px 40px;
     text-align: center;
-    animation: iqm-pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    box-shadow: 0 0 20px rgba(252, 215, 101, 0.4);
+    animation: iqm-pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+               iqm-glow 1.5s ease-in-out infinite;
 }
 
+/* ── Trophy / stars ────────────────────────────────────────── */
+
 .iqm-scene-success-stars {
-    font-size: 36px;
-    margin-bottom: 6px;
+    font-size: 48px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 4px rgba(252, 215, 101, 0.4);
+    animation: iqm-bounce 1s ease-in-out infinite;
 }
+/* ── Text ─────────────────────────────────────────────────── */
 
 .iqm-scene-success-text {
     font-family: 'Pixelify Sans', sans-serif;
-    font-size: 26px;
+    font-size: 28px;
     color: #fcd765;
+    letter-spacing: 1px;
+}
+/* ── Animations ───────────────────────────────────────────── */
+
+@keyframes iqm-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+@keyframes iqm-glow {
+    0%, 100% {
+        box-shadow: 0 0 15px rgba(252, 215, 101, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(252, 215, 101, 0.7);
+    }
 }
 
 /* ── scene_drag mechanic badge ───────────────────────────────── */

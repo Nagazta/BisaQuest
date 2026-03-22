@@ -322,7 +322,7 @@ const ITEM_QUESTS = {
         background: AssetManifest.village.scenarios.house,
         instructionBisaya: "Ibutang ang mga gamit sa estante!",
         instructionEnglish: "Put the items on the shelf!",
-        successText: "Napuno na ang Estante!",
+        successText: "Awesome!",
         draggableItems: [
             { id: "dz_book", imageKey: "book", label: "Libro", startX: 20, startY: 80 },
             { id: "dz_plant", imageKey: "potted_plant", label: "Tanum", startX: 75, startY: 82 },

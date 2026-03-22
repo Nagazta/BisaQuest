@@ -234,8 +234,8 @@ const WateringPlantGame = ({ quest, npcName, npcImage, onComplete, onClose, item
                     {stage === "success" && showSuccess && (
                         <div className="iqm-scene-success-overlay">
                             <div className="iqm-scene-success-card">
-                                <div className="iqm-scene-success-stars">✨🌿✨</div>
-                                <div className="iqm-scene-success-text">{quest.successText || "Nahuman Na!"}</div>
+                                <div className="iqm-scene-success-stars">✨🏆✨</div>
+                                <div className="iqm-scene-success-text">{quest.successText || "Good job!"}</div>
                             </div>
                         </div>
                     )}
