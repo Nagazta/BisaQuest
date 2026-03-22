@@ -298,9 +298,10 @@ const ITEM_QUESTS = {
 
     bag: {
         mechanic: "pack_bag",
+        bagImage: AssetManifest.village.scenarios.bagScene,
+        bayongImage: AssetManifest.village.items.bag,
         instructionBisaya: "I-hipos ang mga gamit sa bag!",
         instructionEnglish: "Pack the items into the bag!",
-        bagImage: AssetManifest.village.items.bag,
         draggableItems: [
             { id: "pack_book", imageKey: "book", startX: 15, startY: 80 },
             { id: "pack_towel", imageKey: "towel", startX: 85, startY: 80 },
