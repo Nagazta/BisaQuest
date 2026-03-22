@@ -13,7 +13,7 @@ import {
   SQUIRREL_ANTONYM_PAIRS,
   FROG_PATH_DATA,
   FIREFLY_SYNONYM_PAIRS,
-  TURTLE_SYNONYM_PAIRS,
+  TURTLE_SHELL_DATA,
 } from "../../pages/Forest/data/pondData";
 
 // Map each pond item id to its mini-game config
@@ -40,10 +40,8 @@ const POND_QUESTS = {
     instructionEnglish: "Click two fireflies that mean the same thing!",
   },
   pawikan: {
-    mechanic: "turtle_shell",
-    pairs: TURTLE_SYNONYM_PAIRS,
-    instructionBisaya: "I-drag ang katunga sa bao paduol sa pawikan nga pareho og kahulogan!",
-    instructionEnglish: "Drag the shell half to the turtle with the synonym!",
+    mechanic: "turtle_shell_repair",
+    ...TURTLE_SHELL_DATA,
   },
 };
 
@@ -74,7 +72,7 @@ const PondQuestModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
       return <FrogBridgeGame {...sharedProps} />;
     case "firefly_pair":
       return <FireflyPairGame {...sharedProps} />;
-    case "turtle_shell":
+    case "turtle_shell_repair":
       return <TurtleShellGame {...sharedProps} />;
     default:
       return null;
