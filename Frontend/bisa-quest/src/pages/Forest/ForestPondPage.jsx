@@ -47,7 +47,7 @@ const ForestPondPage = () => {
   const [showPageModal, setShowPageModal] = useState(false);
   const [collectedPage, setCollectedPage] = useState(null);
   const [showTransition, setShowTransition] = useState(false);
-  const [progressSaved, setProgressSaved] = useState(false);
+  const [milestonesAwarded, setMilestonesAwarded] = useState(0);
 
   // pendingQuest holds the region we want to open a quest for
   const pendingQuestRef = useRef(null);
@@ -98,18 +98,23 @@ const ForestPondPage = () => {
     }
   };
 
+  // Two milestones: 1st book at 3 quests, 2nd book at 6 quests
+  const MILESTONES = [3, 6];
+
   const handleQuestComplete = (region) => {
     setQuestItem(null);
     setCompletedItems((prev) => {
       const next = new Set([...prev, region.id]);
+      const milestone = MILESTONES[milestonesAwarded]; // next target
 
-      // Save progress & award fragment after 3 unique items (matching Village pattern)
-      if (next.size >= 3 && !progressSaved) {
-        setProgressSaved(true);
-        // Save NPC progress immediately so the forest map updates
+      if (milestone && next.size >= milestone) {
+        const pageKey = `${npcId}_page${milestonesAwarded + 1}`;
+        setMilestonesAwarded((m) => m + 1);
+
+        // Save NPC progress so the forest map updates
         saveNPCProgress("forest", npcId, POND_ITEMS.length, true, 3);
 
-        const isNewPage = awardLibroPage("forest", npcId);
+        const isNewPage = awardLibroPage("forest", pageKey);
         if (isNewPage) {
           const pageNumber = getLibroPageCountForEnv("forest");
           const totalCollected = getLibroPageCount();

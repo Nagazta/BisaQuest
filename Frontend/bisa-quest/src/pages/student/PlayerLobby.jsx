@@ -9,7 +9,7 @@ import Notification from "../../components/Notification";
 import ParticleEffects from "../../components/ParticleEffects";
 import {
     getPlayerId, getProgress, isEnvironmentUnlocked,
-    hasCutsceneSeen, clearPlayerData,
+    hasCutsceneSeen, clearPlayerData, getLibroPageCountForEnv,
 } from "../../utils/playerStorage";
 import Button from "../../components/Button";
 
@@ -64,9 +64,13 @@ const PlayerLobby = () => {
 
     const fetchModuleProgress = () => {
         const progress = getProgress();
+        const forestNpcPct = progress.forest_progress || 0;
+        const forestPages  = getLibroPageCountForEnv("forest");
+        const forestPct    = Math.max(forestNpcPct, Math.min(Math.round((forestPages / 3) * 100), 100));
+
         setModuleProgress({
             1: progress.village_progress || 0,
-            2: progress.forest_progress  || 0,
+            2: forestPct,
             3: progress.castle_progress  || 0,
         });
     };
