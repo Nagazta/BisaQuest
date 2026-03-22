@@ -206,6 +206,9 @@ import castleIntroKeyholeImg from "../assets/images/environments/scenario/castle
 import castleIntroPathwayImg from "../assets/images/environments/scenario/castle-intro-pathway.png";
 import castleIntroWaterwayImg from "../assets/images/environments/scenario/castle-intro-waterway.png";
 import castleIntroBridgeImg from "../assets/images/environments/scenario/castle-intro-bridge.png";
+import castleIntroFlagpoleImg from "../assets/images/environments/scenario/castle-intro-flagpole.png";
+import castleIntroArchwayImg from "../assets/images/environments/scenario/castle-intro-archway.png";
+import castleIntroPatioImg from "../assets/images/environments/scenario/castle-intro-patio.png";
 import castleNoFireImg from "../assets/images/environments/scenario/castle-no-fire.png";
 import castleWithFireImg from "../assets/images/environments/scenario/castle-with-fire.png";
 import castleBooksImg from "../assets/images/environments/scenario/castle-books.png";
@@ -469,6 +472,9 @@ const AssetManifest = {
             introPathway: castleIntroPathwayImg,
             introWaterway: castleIntroWaterwayImg,
             introBridge: castleIntroBridgeImg,
+            introFlagpole: castleIntroFlagpoleImg,
+            introArchway: castleIntroArchwayImg,
+            introPatio: castleIntroPatioImg,
             noFire: castleNoFireImg,
             withFire: castleWithFireImg,
             books: castleBooksImg,
