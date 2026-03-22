@@ -1,75 +1,67 @@
 // ─────────────────────────────────────────────────────────────────────────────
 //  RiverFlowGame.jsx — "Flow Restoration"
-//  3 obstacles block the river. Player clicks each obstacle to remove it.
-//  Each removal reveals a flowing water segment. When all 3 are cleared →
-//  synonym lesson → antonym lesson → done.
-//  Plain deep-blue background (placeholder).
+//  3 obstacles block the river. Player holds down on each obstacle to remove it.
+//  Obstacles use real image assets; fade out on removal.
 // ─────────────────────────────────────────────────────────────────────────────
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback } from "react";
+import riverGameBg from "../../../assets/images/environments/scenario/river-game.png";
+import logImg from "../../../assets/items/log.png";
+import driedGrass from "../../../assets/items/dried-grass.png";
+import boulderImg from "../../../assets/items/boulder.png";
 
-// ── River SVG ─────────────────────────────────────────────────────────────────
-const RiverSVG = ({ clearedIds, obstacles, totalZones }) => {
-  const clearedCount = clearedIds.size;
-  // Wave animation style
+// Map obs.id → imported image
+const OBSTACLE_IMAGES = {
+  o1: boulderImg,
+  o2: logImg,
+  o3: driedGrass,
+};
+
+const HOLD_DURATION = 1200; // ms the player must hold to clear an obstacle
+
+// ── Circular hold-progress ring ───────────────────────────────────────────────
+const HoldRing = ({ progress }) => {
+  const r = 48;
+  const circ = 2 * Math.PI * r;
+  const dash = circ * Math.min(progress, 1);
   return (
-    <svg width="280" height="90" viewBox="0 0 280 90" style={{ display: "block" }}>
-      {/* River bed */}
-      <path d="M 0 50 Q 70 30 140 50 Q 210 70 280 50 L 280 90 L 0 90 Z"
-        fill="rgba(30,80,140,0.5)" />
-
-      {/* Flowing segments (one per zone, from left to right) */}
-      {[0, 1, 2].map((idx) => {
-        const cleared = clearedIds.has(`o${idx + 1}`);
-        const xStart = idx * 93 + 5;
-        return (
-          <g key={idx}>
-            {/* Base water */}
-            <path
-              d={`M ${xStart} 52 Q ${xStart + 25} 40 ${xStart + 47} 52 Q ${xStart + 70} 64 ${xStart + 93} 52`}
-              stroke={cleared ? "#29b6f6" : "rgba(100,160,200,0.3)"}
-              strokeWidth={cleared ? 3 : 1.5}
-              fill="none"
-              strokeLinecap="round"
-            />
-            {/* Ripple lines when cleared */}
-            {cleared && [8, 16, 24].map((dy) => (
-              <path key={dy}
-                d={`M ${xStart + dy} 56 Q ${xStart + dy + 10} 50 ${xStart + dy + 20} 56`}
-                stroke="rgba(120,210,255,0.6)" strokeWidth="1.5" fill="none"
-                strokeLinecap="round"
-              />
-            ))}
-          </g>
-        );
-      })}
-
-      {/* Current flow indicator */}
-      {clearedCount > 0 && (
-        <text x="140" y="80" textAnchor="middle" fontSize="11" fill="rgba(120,210,255,0.8)"
-          fontFamily="'Pixelify Sans', sans-serif">
-          {clearedCount === 3 ? "Nagaagay na! · Flowing!" : `${clearedCount}/3 cleared`}
-        </text>
-      )}
+    <svg
+      width={110} height={110}
+      style={{ position: "absolute", top: 0, left: 0, pointerEvents: "none" }}
+    >
+      {/* track */}
+      <circle cx={55} cy={55} r={r} fill="none"
+        stroke="rgba(255,255,255,0.2)" strokeWidth={5} />
+      {/* fill */}
+      <circle cx={55} cy={55} r={r} fill="none"
+        stroke="#29b6f6" strokeWidth={5}
+        strokeDasharray={`${dash} ${circ}`}
+        strokeLinecap="round"
+        transform="rotate(-90 55 55)"
+        style={{ transition: "stroke-dasharray 0.05s linear" }}
+      />
     </svg>
   );
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
 const RiverFlowGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) => {
-  const { introDialogue, synonymDialogue, antonymDialogue, obstacles } = quest;
+  const { introDialogue, completionDialogue, synonymDialogue, antonymDialogue, obstacles } = quest;
 
-  const [stage,        setStage]        = useState("intro");
+  const doneLines = completionDialogue
+    || [...(synonymDialogue || []), ...(antonymDialogue || [])];
+
+  const [stage, setStage] = useState("intro");
   const [dialogueStep, setDialogueStep] = useState(0);
-  const [cleared,      setCleared]      = useState(new Set());
-  const [shakeId,      setShakeId]      = useState(null);
+  const [cleared, setCleared] = useState(new Set());
+  const [fading, setFading] = useState(new Set()); // ids currently fading out
+  const [holding, setHolding] = useState({});        // { [id]: progress 0-1 }
+
+  const holdTimers = useRef({});  // { [id]: intervalId }
+  const holdStart = useRef({});  // { [id]: timestamp }
 
   const clearedCount = cleared.size;
 
-  const currentLines =
-    stage === "intro"           ? introDialogue   :
-    stage === "synonym_lesson"  ? synonymDialogue :
-    stage === "antonym_lesson"  ? antonymDialogue : null;
-
+  const currentLines = stage === "intro" ? introDialogue : stage === "done" ? doneLines : null;
   const dialogueLine = currentLines?.[dialogueStep] ?? null;
 
   const handleDialogueNext = () => {
@@ -77,20 +69,49 @@ const RiverFlowGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) 
     if (dialogueStep < currentLines.length - 1) {
       setDialogueStep((s) => s + 1);
     } else {
-      if (stage === "intro")            { setStage("playing");        setDialogueStep(0); }
-      else if (stage === "synonym_lesson") { setStage("antonym_lesson"); setDialogueStep(0); }
-      else if (stage === "antonym_lesson") { setStage("done"); }
+      if (stage === "intro") { setStage("playing"); setDialogueStep(0); }
+      else if (stage === "done") onComplete(item);
     }
   };
 
-  const handleObstacleClick = (id) => {
-    if (stage !== "playing" || cleared.has(id)) return;
-    const next = new Set([...cleared, id]);
-    setCleared(next);
-    if (next.size >= obstacles.length) {
-      setTimeout(() => { setStage("synonym_lesson"); setDialogueStep(0); }, 800);
+  // ── Hold mechanics ────────────────────────────────────────────────────────
+  const startHold = useCallback((id) => {
+    if (stage !== "playing" || cleared.has(id) || fading.has(id)) return;
+    holdStart.current[id] = performance.now();
+
+    holdTimers.current[id] = setInterval(() => {
+      const elapsed = performance.now() - holdStart.current[id];
+      const progress = Math.min(elapsed / HOLD_DURATION, 1);
+      setHolding((prev) => ({ ...prev, [id]: progress }));
+
+      if (progress >= 1) {
+        clearInterval(holdTimers.current[id]);
+        delete holdTimers.current[id];
+        // Trigger fade
+        setFading((prev) => new Set([...prev, id]));
+        setHolding((prev) => { const n = { ...prev }; delete n[id]; return n; });
+        // After fade completes, mark cleared
+        setTimeout(() => {
+          setCleared((prev) => {
+            const next = new Set([...prev, id]);
+            if (next.size >= obstacles.length) {
+              setTimeout(() => { setStage("done"); setDialogueStep(0); }, 300);
+            }
+            return next;
+          });
+          setFading((prev) => { const n = new Set(prev); n.delete(id); return n; });
+        }, 600);
+      }
+    }, 30);
+  }, [stage, cleared, fading, obstacles.length]);
+
+  const stopHold = useCallback((id) => {
+    if (holdTimers.current[id]) {
+      clearInterval(holdTimers.current[id]);
+      delete holdTimers.current[id];
     }
-  };
+    setHolding((prev) => { const n = { ...prev }; delete n[id]; return n; });
+  }, []);
 
   return (
     <div className="iqm-overlay">
@@ -105,7 +126,7 @@ const RiverFlowGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) 
 
         {/* ── Game Canvas ───────────────────────────────────────────────── */}
         <div className="iqm-scene-canvas" style={{
-          background: "linear-gradient(160deg, #0a1a2e 0%, #0d2240 100%)",
+          background: `url(${riverGameBg}) center/cover no-repeat`,
           borderRadius: "12px", position: "relative", overflow: "hidden",
           display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
         }}>
@@ -118,46 +139,82 @@ const RiverFlowGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) 
 
           {stage === "playing" && (
             <>
-              {/* River visual */}
-              <div style={{ marginBottom: 24, zIndex: 2 }}>
-                <RiverSVG clearedIds={cleared} obstacles={obstacles} totalZones={obstacles.length} />
-              </div>
-
-              {/* Obstacle buttons */}
-              <div style={{ display: "flex", gap: 20, zIndex: 2 }}>
+              {/* Obstacle images — huddled cluster */}
+              <div style={{ position: "absolute", zIndex: 2, top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none" }}>
                 {obstacles.map((obs) => {
                   const isCleared = cleared.has(obs.id);
+                  const isFading = fading.has(obs.id);
+                  const holdProg = holding[obs.id] ?? 0;
+
+                  // Cluster just below the sweep progress pips (~top 30%)
+                  const OFFSETS = [
+                    { dx: -58, dy: 10 },  // o1 boulder – left
+                    { dx: 0, dy: -8 },  // o2 log – centre
+                    { dx: 58, dy: 10 },  // o3 dried grass – right
+                  ];
+                  const idx = obstacles.indexOf(obs);
+                  const off = OFFSETS[idx] ?? { dx: 0, dy: 0 };
+                  const anchorX = 50; // % – horizontally centred
+                  const anchorY = 30; // % – just below pips
+
                   return (
                     <div
                       key={obs.id}
-                      onClick={() => handleObstacleClick(obs.id)}
+                      onMouseDown={() => startHold(obs.id)}
+                      onMouseUp={() => stopHold(obs.id)}
+                      onMouseLeave={() => stopHold(obs.id)}
+                      onTouchStart={(e) => { e.preventDefault(); startHold(obs.id); }}
+                      onTouchEnd={() => stopHold(obs.id)}
                       style={{
-                        width: 70, height: 70,
-                        borderRadius: 14,
-                        background: isCleared
-                          ? "rgba(41,182,246,0.2)"
-                          : "rgba(100,80,60,0.7)",
-                        border: isCleared
-                          ? "2px solid rgba(41,182,246,0.7)"
-                          : "2px solid rgba(180,140,80,0.5)",
-                        display: "flex", flexDirection: "column",
-                        alignItems: "center", justifyContent: "center", gap: 4,
+                        width: 250, height: 250,
+                        borderRadius: 12,
+                        position: "absolute",
+                        left: `calc(${anchorX}% + ${off.dx}px)`,
+                        top: `calc(${anchorY}% + ${off.dy}px)`,
+                        transform: "translate(-50%, -50%)",
                         cursor: isCleared ? "default" : "pointer",
-                        transition: "all 0.3s ease",
-                        filter: isCleared ? "grayscale(1) opacity(0.5)" : "none",
-                        transform: isCleared ? "scale(0.9)" : "scale(1)",
-                        animation: shakeId === obs.id ? "pad-shake 0.4s ease" : undefined,
+                        userSelect: "none",
+                        opacity: isCleared ? 0 : isFading ? 0 : 1,
+                        transition: isFading ? "opacity 0.6s ease" : "opacity 0.1s",
+                        pointerEvents: isCleared ? "none" : "auto",
                       }}
-                      title={obs.label}
                     >
-                      <span style={{ fontSize: 26 }}>{isCleared ? "💧" : obs.emoji}</span>
-                      <span style={{
-                        fontSize: 9, color: isCleared ? "#29b6f6" : "#c8a870",
-                        fontFamily: "'Pixelify Sans', sans-serif", textAlign: "center",
-                        lineHeight: 1.2,
-                      }}>
-                        {isCleared ? "Tangtang na!" : obs.label}
-                      </span>
+                      {/* Image */}
+                      {!isCleared && (
+                        <img
+                          src={OBSTACLE_IMAGES[obs.id]}
+                          alt={obs.label}
+                          draggable={false}
+                          style={{
+                            width: "100%", height: "100%",
+                            objectFit: "contain",
+                            borderRadius: 10,
+                            filter: holdProg > 0
+                              ? `brightness(${1 + holdProg * 0.4}) drop-shadow(0 0 ${Math.round(holdProg * 12)}px #29b6f6)`
+                              : "drop-shadow(0 2px 6px rgba(0,0,0,0.55)) drop-shadow(0 0 8px rgba(255,240,180,0.18))",
+                            transition: "filter 0.05s linear",
+                          }}
+                        />
+                      )}
+
+                      {/* Hold-progress ring */}
+                      {holdProg > 0 && !isCleared && (
+                        <HoldRing progress={holdProg} />
+                      )}
+
+                      {/* Label removed */}
+                      {false && (
+                        <div style={{
+                          position: "absolute", bottom: -20, left: 0, right: 0,
+                          textAlign: "center",
+                          fontSize: 9, color: "#e0d4b0",
+                          fontFamily: "'Pixelify Sans', sans-serif",
+                          textShadow: "0 1px 3px rgba(0,0,0,0.8)",
+                          whiteSpace: "nowrap",
+                        }}>
+                          {obs.label}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -172,44 +229,6 @@ const RiverFlowGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) 
             </>
           )}
 
-          {/* Synonym lesson */}
-          {stage === "synonym_lesson" && (
-            <div style={{
-              position: "absolute", inset: 0,
-              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16,
-            }}>
-              {/* Full flowing river */}
-              <RiverSVG clearedIds={new Set(["o1","o2","o3"])} obstacles={obstacles} totalZones={3} />
-              <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-                {["Nagaagay", "Naglihok", "Kusog"].map((w, i) => (
-                  <React.Fragment key={w}>
-                    <span style={{ color: "#80deea", fontSize: 13, fontFamily: "'Pixelify Sans', sans-serif", fontWeight: "bold" }}>{w}</span>
-                    {i < 2 && <span style={{ color: "#29b6f6", fontSize: 18, fontWeight: "bold" }}>≈</span>}
-                  </React.Fragment>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Antonym lesson */}
-          {stage === "antonym_lesson" && (
-            <div style={{
-              position: "absolute", inset: 0,
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 28,
-            }}>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 38 }}>🧱</div>
-                <div style={{ color: "#ef9a9a", fontSize: 11, marginTop: 6, fontWeight: "bold" }}>Gibabagan / Blocked</div>
-              </div>
-              <span style={{ color: "#fff", fontSize: 28, fontWeight: "bold" }}>↔</span>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 38, filter: "drop-shadow(0 0 10px rgba(41,182,246,0.9))" }}>🌊</div>
-                <div style={{ color: "#80deea", fontSize: 11, marginTop: 6, fontWeight: "bold" }}>Nagaagay / Flowing</div>
-              </div>
-            </div>
-          )}
-
-          {/* Done */}
           {stage === "done" && (
             <div className="iqm-scene-success-overlay">
               <div className="iqm-scene-success-card">
@@ -233,29 +252,28 @@ const RiverFlowGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) 
                 </>
               ) : stage === "playing" ? (
                 <>
-                  <span className="iqm-dialogue-bisaya">I-klik ang mga babag aron tangtangon! ({clearedCount}/{obstacles.length})</span>
-                  <span className="iqm-dialogue-english">Click the obstacles to clear them! ({clearedCount}/{obstacles.length})</span>
-                </>
-              ) : stage === "done" ? (
-                <>
-                  <span className="iqm-dialogue-bisaya">Nakaagay na ang suba! 🌊</span>
-                  <span className="iqm-dialogue-english">The river flows again! 🌊</span>
+                  <span className="iqm-dialogue-bisaya">
+                    Piksa ang mga babag — i-hold ang matag usa aron tangtangon! ({clearedCount}/{obstacles.length})
+                  </span>
+                  <span className="iqm-dialogue-english">
+                    Hold down on each obstacle to clear it! ({clearedCount}/{obstacles.length})
+                  </span>
                 </>
               ) : null}
             </div>
-            {(stage === "intro" || stage === "synonym_lesson" || stage === "antonym_lesson") && (
-              <button className="iqm-next-btn" onClick={handleDialogueNext}>▶</button>
-            )}
-            {stage === "done" && (
-              <button className="iqm-next-btn" onClick={() => onComplete(item)}>✓</button>
+            {(stage === "intro" || stage === "done") && (
+              <button className="iqm-next-btn" onClick={handleDialogueNext}>
+                {stage === "done" && dialogueStep === doneLines.length - 1 ? "✓" : "▶"}
+              </button>
             )}
           </div>
         </div>
       </div>
 
       <style>{`
-        @keyframes pad-shake {
-          0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)}
+        @keyframes river-pulse {
+          0%,100% { box-shadow: 0 0 0 0 rgba(41,182,246,0.4); }
+          50%      { box-shadow: 0 0 0 8px rgba(41,182,246,0); }
         }
       `}</style>
     </div>

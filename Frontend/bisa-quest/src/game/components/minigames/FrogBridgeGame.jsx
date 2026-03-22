@@ -1,367 +1,218 @@
 // ─────────────────────────────────────────────────────────────────────────────
-//  FrogBridgeGame.jsx — "Frog Lily Path"
-//  The frog clicks its way across 3 rows of lily pad pairs.
-//  Each row has one SAFE pad (healthy green — synonym concept) and one
-//  UNSAFE pad (wilted/broken — antonym concept), placed randomly top/bottom.
-//  After crossing, Lunti teaches synonyms then antonyms through dialogue.
-//  Pads are pure SVG visuals — no text labels.
+//  FrogBridgeGame.jsx — "Lily Pad Bridge"
+//  Drag the frog from START onto the safe lily pad in each column.
+//  Cannot skip columns. Flow: intro (preview) → playing → done.
+//
+//  Drag system: Pointer events (onPointerDown/Move/Up) — same approach as
+//  TurtleShellGame. The frog visually follows the cursor in real-time;
+//  no browser ghost image, no cursor icon change.
+//
+//  Hit-testing: on pointerUp we check the frog's centre against each
+//  lily-pad's bounding rect to decide which pad (if any) was targeted.
+//
+//  ┌─── POSITION TUNING GUIDE ───────────────────────────────────────────────┐
+//  │ START spot (frog initial position):                                      │
+//  │   → FROG_START_LEFT / FROG_START_TOP (% of canvas, lines below)         │
+//  │                                                                          │
+//  │ Lily pad column container:                                               │
+//  │   → PAD_AREA_LEFT  — how far from left edge                              │
+//  │   → PAD_AREA_RIGHT — how far from right edge                             │
+//  │   → PAD_AREA_TOP   — vertical centre of columns                         │
+//  │                                                                          │
+//  │ Lily pad image size:                                                     │
+//  │   → PAD_SIZE_PX    — width in pixels of each pad image                  │
+//  └─────────────────────────────────────────────────────────────────────────┘
 // ─────────────────────────────────────────────────────────────────────────────
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
+import frogGameBg from "../../../assets/images/environments/scenario/frog-game.png";
 
-// ── SVG Lily Pad ──────────────────────────────────────────────────────────────
-const LilyPad = ({ variant, size = 68, onClick, shake, glow }) => {
-  const s = size;
-  const cx = s / 2;
-  const cy = s / 2;
-  const r = s / 2 - 3;
+import frogImg from "../../../assets/items/frog.png";
+import lily1 from "../../../assets/items/lily1.png";
+import lily2 from "../../../assets/items/lily2.png";
+import lily3 from "../../../assets/items/lily3.png";
+import lilyWilt1 from "../../../assets/items/lily-wilt1.png";
+import lilyWilt2 from "../../../assets/items/lily-wilt2.png";
+import lilyWilt3 from "../../../assets/items/lily-wilt3.png";
 
-  const svgContent = () => {
-    switch (variant) {
-      // ── Safe variants (green) ──────────────────────────────────────────────
-      case "perfect":
-        return (
-          <>
-            <circle cx={cx} cy={cy} r={r} fill="#43a047" />
-            {/* Leaf veins */}
-            <line x1={cx} y1={5} x2={cx} y2={cy} stroke="#2e7d32" strokeWidth="2.5" opacity="0.7" />
-            <line x1={cx} y1={cy} x2={cx + r - 5} y2={cy + r - 5} stroke="#2e7d32" strokeWidth="2" opacity="0.6" />
-            <line x1={cx} y1={cy} x2={cx - r + 5} y2={cy + r - 5} stroke="#2e7d32" strokeWidth="2" opacity="0.6" />
-          </>
-        );
-      case "small_hole":
-        return (
-          <>
-            <circle cx={cx} cy={cy} r={r} fill="#43a047" />
-            <line x1={cx} y1={5} x2={cx} y2={cy} stroke="#2e7d32" strokeWidth="2.5" opacity="0.7" />
-            <line x1={cx} y1={cy} x2={cx + r - 5} y2={cy + r - 5} stroke="#2e7d32" strokeWidth="2" opacity="0.6" />
-            {/* Small hole */}
-            <circle cx={cx + r * 0.45} cy={cy - r * 0.35} r={5} fill="#1b5e20" opacity="0.9" />
-          </>
-        );
-      case "tiny_crack":
-        return (
-          <>
-            <circle cx={cx} cy={cy} r={r} fill="#43a047" />
-            <line x1={cx} y1={5} x2={cx} y2={cy} stroke="#2e7d32" strokeWidth="2.5" opacity="0.7" />
-            <line x1={cx} y1={cy} x2={cx - r + 5} y2={cy + r - 5} stroke="#2e7d32" strokeWidth="2" opacity="0.6" />
-            {/* Tiny crack — short jagged line */}
-            <path
-              d={`M ${cx - 10} ${cy - 14} L ${cx - 5} ${cy - 6} L ${cx - 12} ${cy}`}
-              stroke="#1b5e20" strokeWidth="2" fill="none" opacity="0.9"
-            />
-          </>
-        );
+const SAFE_IMGS = [lily1, lily2, lily3];
+const WILT_IMGS = [lilyWilt1, lilyWilt2, lilyWilt3];
 
-      // ── Unsafe variants (brown/wilted) ─────────────────────────────────────
-      case "wilted":
-        // Droopy irregular ellipse, brownish
-        return (
-          <>
-            <ellipse
-              cx={cx} cy={cy + 5}
-              rx={r - 3} ry={r - 10}
-              fill="#8d6e63"
-              transform={`rotate(-20, ${cx}, ${cy})`}
-            />
-            {/* Extra wilted droop */}
-            <ellipse
-              cx={cx - 6} cy={cy + 8}
-              rx={r - 10} ry={r - 14}
-              fill="#795548" opacity="0.7"
-              transform={`rotate(15, ${cx}, ${cy})`}
-            />
-          </>
-        );
-      case "cracks":
-        return (
-          <>
-            <circle cx={cx} cy={cy} r={r} fill="#6d4c41" />
-            {/* Multiple crack lines */}
-            <path
-              d={`M ${cx - 8} ${cy - r + 6} L ${cx - 3} ${cy - 5} L ${cx + 5} ${cy + 3} L ${cx + 2} ${cy + r - 6}`}
-              stroke="#3e2723" strokeWidth="2.5" fill="none"
-            />
-            <path
-              d={`M ${cx + 8} ${cy - 12} L ${cx + 3} ${cy + 6}`}
-              stroke="#3e2723" strokeWidth="1.5" fill="none"
-            />
-            <path
-              d={`M ${cx - 20} ${cy + 6} L ${cx - 5} ${cy + 3}`}
-              stroke="#3e2723" strokeWidth="1.5" fill="none"
-            />
-            <path
-              d={`M ${cx + r - 8} ${cy - 10} L ${cx + r - 14} ${cy + 4}`}
-              stroke="#3e2723" strokeWidth="1" fill="none"
-            />
-          </>
-        );
-      case "huge_hole":
-        return (
-          <>
-            <circle cx={cx} cy={cy} r={r} fill="#6d4c41" />
-            {/* Huge hole — same colour as the pond background to punch through */}
-            <circle cx={cx} cy={cy} r={r * 0.52} fill="#1a6fa8" />
-          </>
-        );
+// ── Tunable layout constants ──────────────────────────────────────────────────
+const PAD_SIZE_PX = 88;        // width of each lily pad image (px)
+const FROG_START_LEFT = 20;       // frog start X (% of canvas width)
+const FROG_START_TOP = 55;       // frog start Y (% of canvas height)
+const PAD_AREA_LEFT = "28%";     // left edge of pad column container
+const PAD_AREA_RIGHT = "8%";      // right edge of pad column container
+const PAD_AREA_TOP = "50%";     // vertical centre of pad column container
 
-      default:
-        return <circle cx={cx} cy={cy} r={r} fill="#43a047" />;
-    }
-  };
-
-  return (
-    <div
-      onClick={onClick}
-      style={{
-        cursor: onClick ? "pointer" : "default",
-        animation: shake ? "pad-shake 0.4s ease" : undefined,
-        filter: glow
-          ? "drop-shadow(0 0 10px #a5d6a7) drop-shadow(0 0 4px #69f0ae)"
-          : "none",
-        transition: "filter 0.3s ease",
-        userSelect: "none",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <svg width={s} height={s} viewBox={`0 0 ${s} ${s}`}>
-        {svgContent()}
-      </svg>
-    </div>
-  );
+// NPC line shown when frog falls off an unsafe pad
+const FELL_OFF_LINE = {
+  bisayaText: "Nahulog ang baki! Nagbalik siya sa luwas nga dahon. 🐸💦",
+  englishText: "The frog fell off and had to swim back to the safe lily pad!",
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
 const FrogBridgeGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) => {
-  const { introDialogue, synonymDialogue, antonymDialogue, padRows } = quest;
+  const { introDialogue, completionDialogue, synonymDialogue, antonymDialogue, padRows } = quest;
 
-  // Randomise safe pad placement (top vs bottom) for each row — once on mount
-  const rowConfigs = useRef(
-    padRows.map(() => ({ safeOnTop: Math.random() > 0.5 }))
-  ).current;
+  const doneLines = completionDialogue
+    || [...(synonymDialogue || []), ...(antonymDialogue || [])];
 
-  // ── Stage machine ─────────────────────────────────────────────────────────
-  // intro → playing → synonym_lesson → antonym_lesson → done
   const [stage, setStage] = useState("intro");
   const [dialogueStep, setDialogueStep] = useState(0);
+  const [frogCol, setFrogCol] = useState(-1);           // -1 = start, 0..N = on pad col
+  const [frogPos, setFrogPos] = useState({ leftPct: FROG_START_LEFT, topPct: FROG_START_TOP });
+  const [clearedCols, setClearedCols] = useState([]);
+  const [shakeCol, setShakeCol] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [feedbackLine, setFeedbackLine] = useState(null);  // temporary NPC fell-off message
 
-  // ── Progress ──────────────────────────────────────────────────────────────
-  // currentRow: index of the next pad row the player should click (0–2).
-  // Once it reaches padRows.length the frog is at the end.
-  const [currentRow, setCurrentRow] = useState(0);
-  const [reachedRows, setReachedRows] = useState([]); // row indices successfully crossed
-  const [shakePad, setShakePad] = useState(null); // { row, top: bool }
+  // Stable per-column layout (safe/wilt image + which is on top) — never re-shuffled
+  const columns = useRef(
+    padRows.map((_, i) => ({
+      safeOnTop: Math.random() > 0.5,
+      safeImg: SAFE_IMGS[i] ?? lily1,
+      wiltImg: WILT_IMGS[i] ?? lilyWilt1,
+    }))
+  ).current;
 
-  // ── Frog position (percentage coords) ────────────────────────────────────
-  const [frogX, setFrogX] = useState(8);
-  const [frogY, setFrogY] = useState(50);
+  const canvasRef = useRef(null);
+  const frogRef = useRef(null);
+  const padRefs = useRef({});   // { "colIdx-safe": el, "colIdx-wilt": el, … }
+  const dragOffset = useRef({ x: 0, y: 0 });
+  const feedbackTimer = useRef(null);
 
-  // ── Dialogue helpers ──────────────────────────────────────────────────────
-  const currentLines =
-    stage === "intro" ? introDialogue :
-      stage === "synonym_lesson" ? synonymDialogue :
-        stage === "antonym_lesson" ? antonymDialogue : null;
+  const rows = padRows;
 
+  // Store last committed frog position so we can snap back on bad drops
+  const lastSafePos = useRef({ leftPct: FROG_START_LEFT, topPct: FROG_START_TOP });
+
+  // ── Dialogue ──────────────────────────────────────────────────────────────
+  const currentLines = stage === "intro" ? introDialogue : stage === "done" ? doneLines : null;
   const dialogueLine = currentLines?.[dialogueStep] ?? null;
 
   const handleDialogueNext = () => {
     if (!currentLines) return;
     if (dialogueStep < currentLines.length - 1) {
-      setDialogueStep((s) => s + 1);
+      setDialogueStep(s => s + 1);
     } else {
       if (stage === "intro") { setStage("playing"); setDialogueStep(0); }
-      else if (stage === "synonym_lesson") { setStage("antonym_lesson"); setDialogueStep(0); }
-      else if (stage === "antonym_lesson") { setStage("done"); }
+      else if (stage === "done") onComplete(item);
     }
   };
 
-  // ── Pad click ─────────────────────────────────────────────────────────────
-  // xPct for each row column: 30%, 52%, 74%
-  const colX = (rowIndex) => 30 + rowIndex * 22;
+  // ── Show fell-off feedback for a limited time ─────────────────────────────
+  const showFellOff = () => {
+    if (feedbackTimer.current) clearTimeout(feedbackTimer.current);
+    setFeedbackLine(FELL_OFF_LINE);
+    feedbackTimer.current = setTimeout(() => setFeedbackLine(null), 2500);
+  };
 
-  const handlePadClick = (rowIndex, isSafe, isTop) => {
+  // ── Pointer events (frog) ─────────────────────────────────────────────────
+  const handlePointerDown = useCallback((e) => {
     if (stage !== "playing") return;
-    if (rowIndex !== currentRow) return;
+    e.preventDefault();
+    const rect = e.currentTarget.getBoundingClientRect();
+    // Offset so the frog anchors under where you grab, not by top-left
+    dragOffset.current = {
+      x: e.clientX - rect.left - rect.width / 2,
+      y: e.clientY - rect.top - rect.height / 2,
+    };
+    setIsDragging(true);
+    e.currentTarget.setPointerCapture(e.pointerId);
+  }, [stage]);
 
-    if (isSafe) {
-      const safeY = isTop ? 27 : 73;
-      setFrogX(colX(rowIndex));
-      setFrogY(safeY);
-      setReachedRows((prev) => [...prev, rowIndex]);
-      const next = currentRow + 1;
-      setCurrentRow(next);
+  const handlePointerMove = useCallback((e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const cr = canvas.getBoundingClientRect();
+    const leftPct = ((e.clientX - dragOffset.current.x - cr.left) / cr.width) * 100;
+    const topPct = ((e.clientY - dragOffset.current.y - cr.top) / cr.height) * 100;
+    setFrogPos({
+      leftPct: Math.min(Math.max(leftPct, 2), 98),
+      topPct: Math.min(Math.max(topPct, 2), 98),
+    });
+  }, [isDragging]);
 
-      if (next >= padRows.length) {
-        // Hop to end pad then start lesson
-        setTimeout(() => {
-          setFrogX(92);
-          setFrogY(50);
-          setTimeout(() => {
-            setStage("synonym_lesson");
-            setDialogueStep(0);
-          }, 550);
-        }, 400);
+  const handlePointerUp = useCallback((e) => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    try { e?.currentTarget?.releasePointerCapture(e.pointerId); } catch (_) { }
+
+    if (stage !== "playing") return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const cr = canvas.getBoundingClientRect();
+
+    // Frog centre in viewport coords (where the pointer was released)
+    const frogCentreX = e.clientX - dragOffset.current.x;
+    const frogCentreY = e.clientY - dragOffset.current.y;
+
+    // Hit-test every pad
+    let hitColIdx = null;
+    let hitIsSafe = null;
+
+    for (const [key, el] of Object.entries(padRefs.current)) {
+      if (!el) continue;
+      const pr = el.getBoundingClientRect();
+      if (
+        frogCentreX >= pr.left && frogCentreX <= pr.right &&
+        frogCentreY >= pr.top && frogCentreY <= pr.bottom
+      ) {
+        const [colStr, type] = key.split("-");
+        hitColIdx = Number(colStr);
+        hitIsSafe = type === "safe";
+        break;
       }
-    } else {
-      // Wrong — shake that pad, frog stays
-      setShakePad({ row: rowIndex, top: isTop });
-      setTimeout(() => setShakePad(null), 500);
     }
-  };
 
-  // ── Canvas content ────────────────────────────────────────────────────────
-  const renderPlayingCanvas = () => (
-    <>
-      {/* Water shimmer */}
-      <div style={{
-        position: "absolute", inset: 0, borderRadius: "12px",
-        background: "repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(255,255,255,0.04) 20px, rgba(255,255,255,0.04) 22px)",
-        pointerEvents: "none",
-      }} />
-
-      {/* Start pad */}
-      <div style={{ position: "absolute", left: "8%", top: "50%", transform: "translate(-50%, -50%)" }}>
-        <LilyPad variant="perfect" size={58} />
-        <div style={{ textAlign: "center", fontSize: 9, color: "rgba(255,255,255,0.6)", marginTop: 2 }}>Start</div>
-      </div>
-
-      {/* Pad rows */}
-      {padRows.map((row, rowIndex) => {
-        const xPct = colX(rowIndex);
-        const cfg = rowConfigs[rowIndex];
-        const isClickable = stage === "playing" && rowIndex === currentRow;
-
-        const topVariant = cfg.safeOnTop ? row.safeVariant : row.unsafeVariant;
-        const botVariant = cfg.safeOnTop ? row.unsafeVariant : row.safeVariant;
-        const topIsSafe = cfg.safeOnTop;
-
-        const topShake = shakePad?.row === rowIndex && shakePad?.top === true;
-        const botShake = shakePad?.row === rowIndex && shakePad?.top === false;
-        const topGlow = reachedRows.includes(rowIndex) && cfg.safeOnTop;
-        const botGlow = reachedRows.includes(rowIndex) && !cfg.safeOnTop;
-
-        return (
-          <React.Fragment key={rowIndex}>
-            {/* Top pad */}
-            <div style={{ position: "absolute", left: `${xPct}%`, top: "27%", transform: "translate(-50%, -50%)" }}>
-              <LilyPad
-                variant={topVariant}
-                size={66}
-                onClick={isClickable ? () => handlePadClick(rowIndex, topIsSafe, true) : undefined}
-                shake={topShake}
-                glow={topGlow}
-              />
-            </div>
-            {/* Bottom pad */}
-            <div style={{ position: "absolute", left: `${xPct}%`, top: "73%", transform: "translate(-50%, -50%)" }}>
-              <LilyPad
-                variant={botVariant}
-                size={66}
-                onClick={isClickable ? () => handlePadClick(rowIndex, !topIsSafe, false) : undefined}
-                shake={botShake}
-                glow={botGlow}
-              />
-            </div>
-          </React.Fragment>
-        );
-      })}
-
-      {/* End pad */}
-      <div style={{ position: "absolute", left: "92%", top: "50%", transform: "translate(-50%, -50%)" }}>
-        <LilyPad variant="perfect" size={58} glow={currentRow >= padRows.length} />
-        <div style={{ textAlign: "center", fontSize: 9, color: "rgba(255,255,255,0.6)", marginTop: 2 }}>End</div>
-      </div>
-
-      {/* Frog — animates via CSS transition */}
-      <div style={{
-        position: "absolute",
-        left: `${frogX}%`,
-        top: `${frogY}%`,
-        transform: "translate(-50%, -105%)",
-        fontSize: 28,
-        transition: "left 0.45s ease, top 0.45s ease",
-        zIndex: 20,
-        pointerEvents: "none",
-        filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.5))",
-      }}>
-        🐸
-      </div>
-
-      {/* Progress pips */}
-      <div className="iqm-sweep-progress" style={{ top: "6%", bottom: "auto" }}>
-        {padRows.map((_, i) => (
-          <div key={i} className={`iqm-sweep-pip ${i < currentRow ? "iqm-sweep-pip--done" : ""}`} />
-        ))}
-      </div>
-    </>
-  );
-
-  const renderSynonymCanvas = () => (
-    <div style={{
-      position: "absolute", inset: 0,
-      display: "flex", alignItems: "center", justifyContent: "center", gap: 18,
-    }}>
-      <div style={{ textAlign: "center" }}>
-        <LilyPad variant="perfect" size={68} glow />
-        <div style={{ color: "#a5d6a7", fontSize: 10, marginTop: 4, fontWeight: "bold" }}>Healthy and no flaws <br />Walay depekto</div>
-      </div>
-      <span style={{ color: "#a5d6a7", fontSize: 22, fontWeight: "bold" }}>≈</span>
-      <div style={{ textAlign: "center" }}>
-        <LilyPad variant="small_hole" size={68} glow />
-        <div style={{ color: "#a5d6a7", fontSize: 10, marginTop: 4, fontWeight: "bold" }}>Small hole but still healthy <br />Gamay nga lubak pero himsog pa</div>
-      </div>
-      <span style={{ color: "#a5d6a7", fontSize: 22, fontWeight: "bold" }}>≈</span>
-      <div style={{ textAlign: "center" }}>
-        <LilyPad variant="tiny_crack" size={68} glow />
-        <div style={{ color: "#a5d6a7", fontSize: 10, marginTop: 4, fontWeight: "bold" }}>Tiny crack but still healthy <br />Gamay nga liki pero himsog pa</div>
-      </div>
-    </div>
-  );
-
-  const renderAntonymCanvas = () => (
-    <div style={{
-      position: "absolute", inset: 0,
-      display: "flex", alignItems: "center", justifyContent: "center", gap: 36,
-    }}>
-      <div style={{ textAlign: "center" }}>
-        <LilyPad variant="perfect" size={74} glow />
-        <div style={{ color: "#a5d6a7", fontSize: 11, marginTop: 6, fontWeight: "bold" }}>
-          Luwas / Safe
-        </div>
-      </div>
-      <div style={{ color: "#fff", fontSize: 28, fontWeight: "bold", textShadow: "0 2px 8px rgba(0,0,0,0.4)" }}>
-        ≠
-      </div>
-      <div style={{ textAlign: "center" }}>
-        <LilyPad variant="huge_hole" size={74} />
-        <div style={{ color: "#ef9a9a", fontSize: 11, marginTop: 6, fontWeight: "bold" }}>
-          Dili luwas / Unsafe
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderDoneCanvas = () => (
-    <div className="iqm-scene-success-overlay">
-      <div className="iqm-scene-success-card">
-        <div className="iqm-scene-success-stars">🐸🍃🐸</div>
-        <div className="iqm-scene-success-text">Nakatabok na! · Crossed safely!</div>
-      </div>
-    </div>
-  );
-
-  const renderCanvas = () => {
-    switch (stage) {
-      case "playing": return renderPlayingCanvas();
-      case "synonym_lesson": return renderSynonymCanvas();
-      case "antonym_lesson": return renderAntonymCanvas();
-      case "done": return renderDoneCanvas();
-      default: return null;
+    if (hitColIdx === null || hitColIdx !== frogCol + 1 || clearedCols.includes(hitColIdx)) {
+      // Missed all pads or wrong column — snap back
+      setFrogPos({ ...lastSafePos.current });
+      return;
     }
-  };
 
-  const showNextBtn = stage === "intro" || stage === "synonym_lesson" || stage === "antonym_lesson";
+    // Compute landing position: frog sits ON the pad (top 25% of pad height)
+    const padEl = padRefs.current[`${hitColIdx}-${hitIsSafe ? "safe" : "wilt"}`];
+    if (padEl) {
+      const pr = padEl.getBoundingClientRect();
+      const leftPct = ((pr.left + pr.width / 2 - cr.left) / cr.width) * 100;
+      // transform: translate(-50%, -100%) → frog bottom aligns with this Y
+      // We want frog bottom ~25% down from pad top so it looks seated
+      const topPct = ((pr.top + pr.height * 0.52 - cr.top) / cr.height) * 100;
+      const landPos = { leftPct, topPct };
+
+      if (hitIsSafe) {
+        const next = [...clearedCols, hitColIdx];
+        setClearedCols(next);
+        setFrogCol(hitColIdx);
+        setFrogPos(landPos);
+        lastSafePos.current = landPos;
+        if (next.length >= rows.length) {
+          setTimeout(() => { setStage("done"); setDialogueStep(0); }, 900);
+        }
+      } else {
+        // Shake the unsafe pad, frog bounces back
+        setShakeCol(hitColIdx);
+        setTimeout(() => setShakeCol(null), 500);
+        setFrogPos({ ...lastSafePos.current });
+        showFellOff();
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDragging, stage, frogCol, clearedCols, rows.length]);
+
+  const isIntro = stage === "intro";
+  const showGame = stage === "intro" || stage === "playing";
+
+  // ── Dialogue line shown in playing stage ──────────────────────────────────
+  const playingDialogue = feedbackLine ?? {
+    bisayaText: `I-drag ang baki sa luwas nga dahon! (${clearedCols.length}/${rows.length})`,
+    englishText: `Drag the frog onto the safe lily pad! (${clearedCols.length}/${rows.length})`,
+  };
 
   return (
     <div className="iqm-overlay">
@@ -371,25 +222,147 @@ const FrogBridgeGame = ({ quest, item, npcName, npcImage, onClose, onComplete })
         <div className="iqm-header">
           <span className="iqm-header-bisaya">{item.labelBisaya}</span>
           <span className="iqm-header-english">{item.labelEnglish}</span>
-          <span className="iqm-mechanic-badge" style={{ background: "#388e3c" }}>
-            Frog Path
-          </span>
+          <span className="iqm-mechanic-badge" style={{ background: "#2e7d32" }}>Lily Pad Bridge</span>
         </div>
 
         {/* ── Game Canvas ─────────────────────────────────────────────────── */}
         <div
+          ref={canvasRef}
           className="iqm-scene-canvas"
           style={{
-            background: "#1a6fa8",
-            borderRadius: "12px",
-            position: "relative",
-            overflow: "hidden",
+            background: `url(${frogGameBg}) center/cover no-repeat`,
+            borderRadius: "12px", position: "relative", overflow: "hidden",
           }}
         >
-          {renderCanvas()}
+          {showGame && (
+            <div style={{ width: "100%", height: "100%", position: "relative" }}>
+
+              {/* START label */}
+              <div style={{
+                position: "absolute", left: "20%", top: "60%",
+                transform: "translate(-50%, 0%)",
+                zIndex: 5, pointerEvents: "none",
+              }}>
+                <div style={{
+                  background: "rgba(0,0,0,0.55)", border: "2px solid rgba(150,255,150,0.4)",
+                  borderRadius: 8, padding: "3px 8px",
+                  color: "#a5d6a7", fontSize: 9, fontFamily: "'Pixelify Sans',sans-serif", textAlign: "center",
+                }}>Start</div>
+              </div>
+
+              {/* END label */}
+              <div style={{
+                position: "absolute", right: "5%", top: "55%",
+                transform: "translateY(-50%)",
+                zIndex: 5, pointerEvents: "none",
+              }}>
+                <div style={{
+                  background: clearedCols.length >= rows.length
+                    ? "rgba(50,150,50,0.75)" : "rgba(0,0,0,0.55)",
+                  border: "2px solid rgba(150,255,150,0.5)",
+                  borderRadius: 8, padding: "3px 8px",
+                  color: "#c8e6c9", fontSize: 9, fontFamily: "'Pixelify Sans',sans-serif", textAlign: "center",
+                  transition: "background 0.4s",
+                }}>End</div>
+              </div>
+
+              {/* ── Frog (pointer-draggable) ── */}
+              <div
+                ref={frogRef}
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerUp}
+                style={{
+                  position: "absolute",
+                  left: `${frogPos.leftPct}%`,
+                  top: `${frogPos.topPct}%`,
+                  transform: "translate(-50%, -100%)",
+                  zIndex: 20,
+                  width: 64,
+                  cursor: isIntro ? "default" : isDragging ? "grabbing" : "grab",
+                  transition: isDragging ? "none" : "left 0.45s cubic-bezier(0.34,1.56,0.64,1), top 0.45s cubic-bezier(0.34,1.56,0.64,1)",
+                  filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.65))",
+                  userSelect: "none",
+                  touchAction: "none",
+                }}
+              >
+                <img src={frogImg} alt="Frog" draggable={false} style={{ width: "100%", height: "auto", display: "block" }} />
+              </div>
+
+              {/* ── Lily pad columns ── */}
+              <div style={{
+                position: "absolute",
+                left: PAD_AREA_LEFT, right: PAD_AREA_RIGHT, top: PAD_AREA_TOP,
+                transform: "translateY(-50%)",
+                display: "flex",
+                justifyContent: "space-around",
+                alignItems: "center",
+                zIndex: 4,
+              }}>
+                {columns.map((col, colIdx) => {
+                  const isCleared = clearedCols.includes(colIdx);
+                  const isNext = colIdx === frogCol + 1;
+
+                  const makePad = (isSafe) => {
+                    const src = isSafe ? col.safeImg : col.wiltImg;
+                    const shaking = shakeCol === colIdx && !isSafe;
+                    const refKey = `${colIdx}-${isSafe ? "safe" : "wilt"}`;
+                    return (
+                      <div
+                        key={isSafe ? "s" : "w"}
+                        ref={el => { padRefs.current[refKey] = el; }}
+                        style={{
+                          width: PAD_SIZE_PX,
+                          cursor: isCleared || isIntro ? "default" : isNext ? "copy" : "not-allowed",
+                          opacity: isCleared ? 0.35 : !isNext ? 0.5 : 1,
+                          transition: "opacity 0.3s, transform 0.2s",
+                          filter: isNext && !isIntro
+                            ? (isSafe
+                              ? "drop-shadow(0 0 8px rgba(100,255,120,0.6))"
+                              : "drop-shadow(0 0 8px rgba(255,80,80,0.3))")
+                            : "drop-shadow(0 2px 5px rgba(0,0,0,0.5))",
+                          animation: shaking ? "pad-shake 0.4s ease" : undefined,
+                          userSelect: "none",
+                        }}
+                      >
+                        <img src={src} alt={isSafe ? "safe pad" : "wilt pad"} draggable={false}
+                          style={{ width: "100%", height: "auto", display: "block" }} />
+                      </div>
+                    );
+                  };
+
+                  return (
+                    <div key={colIdx} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                      {col.safeOnTop ? makePad(true) : makePad(false)}
+                      {col.safeOnTop ? makePad(false) : makePad(true)}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Progress pips */}
+              {!isIntro && (
+                <div className="iqm-sweep-progress" style={{ top: "6%", bottom: "auto" }}>
+                  {rows.map((_, i) => (
+                    <div key={i} className={`iqm-sweep-pip ${clearedCols.includes(i) ? "iqm-sweep-pip--done" : ""}`} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {stage === "done" && (
+            <div className="iqm-scene-success-overlay">
+              <div className="iqm-scene-success-card">
+                <div className="iqm-scene-success-stars">🐸💚🐸</div>
+                <div className="iqm-scene-success-text">Nakatawid na ang Baki! · Frog Crossed!</div>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* ── NPC Dialogue Row ─────────────────────────────────────────────── */}
+        {/* ── NPC Dialogue ─────────────────────────────────────────────────── */}
         <div className="iqm-dialogue-row">
           <img src={npcImage} alt={npcName} className="iqm-npc-img" draggable={false} />
           <div className="iqm-dialogue-bubble">
@@ -402,26 +375,15 @@ const FrogBridgeGame = ({ quest, item, npcName, npcImage, onClose, onComplete })
                 </>
               ) : stage === "playing" ? (
                 <>
-                  <span className="iqm-dialogue-bisaya">
-                    I-click ang luwas nga dahon! ({currentRow}/{padRows.length})
-                  </span>
-                  <span className="iqm-dialogue-english">
-                    Click the safe lily pad! ({currentRow}/{padRows.length})
-                  </span>
-                </>
-              ) : stage === "done" ? (
-                <>
-                  <span className="iqm-dialogue-bisaya">Nakatabok na ang baki! 🎉</span>
-                  <span className="iqm-dialogue-english">The frog made it across! 🎉</span>
+                  <span className="iqm-dialogue-bisaya">{playingDialogue.bisayaText}</span>
+                  <span className="iqm-dialogue-english">{playingDialogue.englishText}</span>
                 </>
               ) : null}
             </div>
-
-            {showNextBtn && (
-              <button className="iqm-next-btn" onClick={handleDialogueNext}>▶</button>
-            )}
-            {stage === "done" && (
-              <button className="iqm-next-btn" onClick={() => onComplete(item)}>✓</button>
+            {(stage === "intro" || stage === "done") && (
+              <button className="iqm-next-btn" onClick={handleDialogueNext}>
+                {stage === "done" && dialogueStep === doneLines.length - 1 ? "✓" : "▶"}
+              </button>
             )}
           </div>
         </div>
@@ -429,11 +391,9 @@ const FrogBridgeGame = ({ quest, item, npcName, npcImage, onClose, onComplete })
 
       <style>{`
         @keyframes pad-shake {
-          0%, 100% { transform: translateX(0); }
-          20%       { transform: translateX(-8px); }
-          40%       { transform: translateX(8px); }
-          60%       { transform: translateX(-5px); }
-          80%       { transform: translateX(5px); }
+          0%,100% { transform: translateX(0) scale(1); }
+          25%      { transform: translateX(-9px) scale(0.97); }
+          75%      { transform: translateX(9px) scale(0.97); }
         }
       `}</style>
     </div>

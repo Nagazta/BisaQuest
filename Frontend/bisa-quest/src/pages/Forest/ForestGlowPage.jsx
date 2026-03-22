@@ -1,7 +1,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
 //  ForestGlowPage.jsx — Diwata's exploration page (mirrors ForestPondPage)
 //  Background: forest-glow.png  |  NPC: Diwata
-//  Items: Wilted Flowers, Dark Cave, River, Guiding Lamp
 // ─────────────────────────────────────────────────────────────────────────────
 import { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -28,28 +27,28 @@ import ForestTransitionModal from "../../game/components/ForestTransitionModal";
 import "./ForestGlowPage.css";
 
 const ForestGlowPage = () => {
-  const navigate  = useNavigate();
-  const location  = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const npcId    = location.state?.npcId    || "forest_npc_3";
-  const npcName  = location.state?.npcName  || "Diwata";
+  const npcId = location.state?.npcId || "forest_npc_3";
+  const npcName = location.state?.npcName || "Diwata";
   const returnTo = location.state?.returnTo || "/student/forest";
   const playerId = getPlayerId();
 
   const NpcImage = DIWATA_NPC_IMAGES[npcId] || AssetManifest.forest.npcs.diwata;
 
   // ── State ───────────────────────────────────────────────────────────────────
-  const [introStep,       setIntroStep]       = useState(0);  // null = intro done
-  const [activeItem,      setActiveItem]      = useState(null);
-  const [dialogueStep,    setDialogueStep]    = useState(0);
-  const [questItem,       setQuestItem]       = useState(null);
-  const [completedItems,  setCompletedItems]  = useState(new Set());
+  const [introStep, setIntroStep] = useState(0);  // null = intro done
+  const [activeItem, setActiveItem] = useState(null);
+  const [dialogueStep, setDialogueStep] = useState(0);
+  const [questItem, setQuestItem] = useState(null);
+  const [completedItems, setCompletedItems] = useState(new Set());
 
   // ── Book-collect modal ───────────────────────────────────────────────────────
-  const [showPageModal,  setShowPageModal]  = useState(false);
-  const [collectedPage,  setCollectedPage]  = useState(null);
+  const [showPageModal, setShowPageModal] = useState(false);
+  const [collectedPage, setCollectedPage] = useState(null);
   const [showTransition, setShowTransition] = useState(false);
-  const [progressSaved,  setProgressSaved]  = useState(false);
+  const [progressSaved, setProgressSaved] = useState(false);
 
   // Pending quest ref (same pattern as ForestPondPage)
   const pendingQuestRef = useRef(null);
@@ -63,12 +62,12 @@ const ForestGlowPage = () => {
   };
 
   // ── Derived ─────────────────────────────────────────────────────────────────
-  const introDone       = introStep === null;
-  const introLine       = !introDone ? DIWATA_INTRO_DIALOGUE[introStep] : null;
-  const currentLine     = introDone && activeItem
+  const introDone = introStep === null;
+  const introLine = !introDone ? DIWATA_INTRO_DIALOGUE[introStep] : null;
+  const currentLine = introDone && activeItem
     ? buildGlowDialogue(activeItem)[dialogueStep]
     : null;
-  const isLastDialogue  = activeItem
+  const isLastDialogue = activeItem
     ? dialogueStep === buildGlowDialogue(activeItem).length - 1
     : false;
 
@@ -102,6 +101,8 @@ const ForestGlowPage = () => {
       setTimeout(checkPending, 0);
     }
   };
+
+  const COMPLETE_THRESHOLD = 3;
 
   const handleQuestComplete = (region) => {
     setQuestItem(null);
@@ -153,9 +154,13 @@ const ForestGlowPage = () => {
 
   return (
     <div className="glow-container">
-      {/* Background */}
+      {/* Background — incomplete until ≥3 minigames cleared, then complete */}
       <img
-        src={AssetManifest.forest.scenarios.glow}
+        src={
+          completedItems.size >= COMPLETE_THRESHOLD
+            ? AssetManifest.forest.scenarios.glowComplete
+            : AssetManifest.forest.scenarios.glowIncomplete
+        }
         alt="Forest Glow"
         className="glow-background"
         draggable={false}
@@ -181,9 +186,9 @@ const ForestGlowPage = () => {
                 activeItem?.id === region.id ? "glow-hover-region--active" : "",
               ].filter(Boolean).join(" ")}
               style={{
-                left:   `${region.x}%`,
-                top:    `${region.y}%`,
-                width:  `${region.w}%`,
+                left: `${region.x}%`,
+                top: `${region.y}%`,
+                width: `${region.w}%`,
                 height: `${region.h}%`,
               }}
               onClick={() => handleItemClick(region)}

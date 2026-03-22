@@ -193,10 +193,6 @@ const ForestPondPage = () => {
               }}
               onClick={() => handleItemClick(region)}
             >
-              {/* Emoji visual for the item */}
-              {!activeItem && !questItem && (
-                <span className="pond-item-emoji">{region.emoji}</span>
-              )}
 
               {/* Pulsing dot */}
               {!activeItem && !questItem && (
