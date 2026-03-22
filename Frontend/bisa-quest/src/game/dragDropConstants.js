@@ -93,6 +93,22 @@ export const ITEM_IMAGE_MAP = {
   planggana: PlangganaImg,
   lamesa_sala: LamesaSalaImg,
   bag: AssetManifest.village.items.bag,
+  watering_can: AssetManifest.village.items.wateringCan,
+  watering_can_pour: AssetManifest.village.items.wateringCanPour,
+  hammer: AssetManifest.village.items.hammer,
+  nail: AssetManifest.village.items.nail,
+  kahoy: AssetManifest.village.items.kahoy,
+  rag: AssetManifest.village.items.rag,
+  dust_feather: AssetManifest.village.items.dust_feather,
+  lampaso: AssetManifest.village.items.lampaso,
+  shoes: AssetManifest.village.items.shoes,
+
+
+
+
+
+
+
 
 
   // Kitchen
