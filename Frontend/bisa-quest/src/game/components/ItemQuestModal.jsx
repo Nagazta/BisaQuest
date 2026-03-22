@@ -154,7 +154,7 @@ const ITEM_QUESTS = {
 
     toalya: {
         mechanic: "wipe",
-        instructionBisaya: "Pahiran ang singot ni Ligaya gamit ang toalya!",
+        instructionBisaya: "Trapohi ang singot ni Ligaya gamit ang toalya!",
         instructionEnglish: "Wipe Ligaya's sweat using the towel!",
         draggable: {
             id: "towel_item",
