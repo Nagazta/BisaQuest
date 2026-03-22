@@ -12,8 +12,8 @@ export const POND_ITEMS = [
     labelEnglish: "The Water",
     descriptionBisaya: "Si Lunti gigutom. Tabangi siya mamasol og isda nga naay saktong pulong!",
     descriptionEnglish: "Lunti is hungry. Help her catch fish with the correct word!",
-    x: 39,
-    y: 55,
+    x: 35,
+    y: 57,
     w: 20,
     h: 15,
   },
@@ -27,51 +27,23 @@ export const POND_ITEMS = [
       "Baby fishes are confused and separated from their mother.",
     emoji: "🐟",
     x: 35,
-    y: 60,
-    w: 14,
-    h: 18,
-  },
-  {
-    id: "laksoy",
-    labelBisaya: "Mga Laksoy ug Bunga",
-    labelEnglish: "Squirrels & Nuts",
-    descriptionBisaya:
-      "Duha ka pamilya sa laksoy nagbahin sa ilang bunga, pero nasagol ang mga label — kinahanglan ibalik sa husto pinaagi sa kabaliktaran nga pulong!",
-    descriptionEnglish:
-      "Two squirrel families are sorting their nuts, but the labels got mixed up — sort them by placing each nut with its opposite word!",
-    emoji: "🐿️",
-    x: 70,
-    y: 20,
+    y: 67,
     w: 14,
     h: 18,
   },
   {
     id: "baki",
-    labelBisaya: "Mga Baki",
-    labelEnglish: "Frogs on Lily Pads",
+    labelBisaya: "Baki",
+    labelEnglish: "Frog",
     descriptionBisaya:
-      "Ang tulay sa mga baki nabuak! Kinahanglan ibutang ang bato nga may kabaliktaran nga pulong para mataod balik ang tulay!",
+      "Tabangi ang baki sa pagpili sa luwas na agi-anan!",
     descriptionEnglish:
-      "The frogs' lily pad bridge is broken! Place word-stones with the antonym to rebuild each section!",
+      "Help the frog choose the safe path!",
     emoji: "🐸",
-    x: 42,
-    y: 65,
+    x: 56,
+    y: 67,
     w: 16,
     h: 16,
-  },
-  {
-    id: "alitaptap",
-    labelBisaya: "Mga Alitaptap",
-    labelEnglish: "Fireflies",
-    descriptionBisaya:
-      "Ang mga alitaptap dili na modan-ag! Tabanga sila pagpangita sa ilang partner — ang pareho nga kahulogan!",
-    descriptionEnglish:
-      "The fireflies stopped glowing! Help them find their synonym partner to light up again!",
-    emoji: "✨",
-    x: 80,
-    y: 55,
-    w: 14,
-    h: 18,
   },
   {
     id: "pawikan",
@@ -93,7 +65,7 @@ export const POND_ITEMS = [
     labelEnglish: "The Campfire",
     descriptionBisaya: "Nagpalami si Lunti og isda sa kalayo.",
     descriptionEnglish: "Lunti is cooking some delicious fish over the fire.",
-    x: 48,
+    x: 45.5,
     y: 38,
     w: 10,
     h: 10,
@@ -104,8 +76,8 @@ export const POND_ITEMS = [
     labelEnglish: "The Flowers",
     descriptionBisaya: "Ang mga bulaklak nangalaya na. Tabangi si Lunti nga mapresko kini balik pinaagi sa pagbisbis og tubig!",
     descriptionEnglish: "The flowers have withered. Help Lunti make them fresh again by watering them!",
-    x: 58,
-    y: 75,
+    x: 65,
+    y: 85,
     w: 12,
     h: 12,
   },
@@ -358,16 +330,7 @@ export const FISH_FAMILIES_DATA = {
   ],
 };
 
-export const SQUIRREL_ANTONYM_PAIRS = {
-  zoneA: { word: "Init", meaning: "Hot" },
-  zoneB: { word: "Bugnaw", meaning: "Cold" },
-  nuts: [
-    { id: "nut_1", word: "Hayag", meaning: "Bright", correctZone: "B" },
-    { id: "nut_2", word: "Ngitngit", meaning: "Dark", correctZone: "A" },
-    { id: "nut_3", word: "Hinay", meaning: "Slow", correctZone: "B" },
-    { id: "nut_4", word: "Paspas", meaning: "Fast", correctZone: "A" },
-  ],
-};
+
 
 export const FROG_PATH_DATA = {
   // NPC intro dialogue (4 lines) before the game starts
@@ -388,6 +351,11 @@ export const FROG_PATH_DATA = {
       bisayaText: "Ang uban lahi kaayo.",
       englishText: "Some are too different.",
     },
+  ],
+  completionDialogue: [
+    { bisayaText: "Nakaabut na ang baki! Salamat sa imong tabang!", englishText: "The frog made it across! Thanks for your help!" },
+    { bisayaText: "Ang mga dahon nga halos parehas — synonyms ang ilang pulong!", englishText: "Pads that look almost alike — their words are synonyms!" },
+    { bisayaText: "Ang mga dahon nga lahi kaayo — antonyms ang ilang pulong!", englishText: "Pads that are very different — those words are antonyms!" },
   ],
 
   // Post-completion synonym lesson
@@ -443,12 +411,7 @@ export const FROG_PATH_DATA = {
   ],
 };
 
-export const FIREFLY_SYNONYM_PAIRS = [
-  { wordA: "Malipayon", meaningA: "Happy", wordB: "Masadya", meaningB: "Cheerful" },
-  { wordA: "Nahadlok", meaningA: "Scared", wordB: "Nakulbaan", meaningB: "Frightened" },
-  { wordA: "Kusog", meaningA: "Strong", wordB: "Lig-on", meaningB: "Sturdy" },
-  { wordA: "Sakit", meaningA: "Painful", wordB: "Kasakit", meaningB: "Painful" },
-];
+
 
 export const TURTLE_SYNONYM_PAIRS = [
   { turtleWord: "Makusog", turtleMeaning: "Loud", shellWord: "Saba", shellMeaning: "Noisy" },
@@ -525,6 +488,11 @@ export const TURTLE_SHELL_DATA = {
       bisayaText: "Tan-awa pag-ayo. Ang uban parehas… ang uban lahi kaayo.",
       englishText: "Look carefully. Some pieces are similar… some are very different.",
     },
+  ],
+  completionDialogue: [
+    { bisayaText: "Nataod na ang kabhang! Salamat kaayo!", englishText: "The shell is fixed! Thank you!" },
+    { bisayaText: "Ang mga piraso nga parehas ug dagway — synonyms sila!", englishText: "Pieces that look alike — they are synonyms!" },
+    { bisayaText: "Ang mga piraso nga lahi kaayo — antonyms sila!", englishText: "Pieces that are very different — those are antonyms!" },
   ],
 
   // Post-completion synonym lesson (5 lines)

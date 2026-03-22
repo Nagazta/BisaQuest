@@ -3,9 +3,7 @@
 //  Mirrors ItemQuestModal.jsx but for Lunti's synonym/antonym games.
 // ─────────────────────────────────────────────────────────────────────────────
 import FishPairGame from "./minigames/FishPairGame";
-import SquirrelSortGame from "./minigames/SquirrelSortGame";
 import FrogBridgeGame from "./minigames/FrogBridgeGame";
-import FireflyPairGame from "./minigames/FireflyPairGame";
 import TurtleShellGame from "./minigames/TurtleShellGame";
 import FishingGame from "./minigames/FishingGame";
 import CampfireCookingGame from "./minigames/CampfireCookingGame";
@@ -13,9 +11,7 @@ import FlowerBloomingGame from "./minigames/FlowerBloomingGame";
 
 import {
   FISH_FAMILIES_DATA,
-  SQUIRREL_ANTONYM_PAIRS,
   FROG_PATH_DATA,
-  FIREFLY_SYNONYM_PAIRS,
   TURTLE_SYNONYM_PAIRS,
   FISHING_GAME_DATA,
   TURTLE_SHELL_DATA,
@@ -33,22 +29,9 @@ const POND_QUESTS = {
     mechanic: "fish_families",
     ...FISH_FAMILIES_DATA,
   },
-  // key matches POND_ITEMS id: "laksoy"
-  laksoy: {
-    mechanic: "squirrel_sort",
-    data: SQUIRREL_ANTONYM_PAIRS,
-    instructionBisaya: "I-drag ang bunga sa hollow nga may kabaliktaran nga pulong!",
-    instructionEnglish: "Drag each nut to the hollow with the opposite word!",
-  },
   baki: {
     mechanic: "frog_path",
     ...FROG_PATH_DATA,
-  },
-  alitaptap: {
-    mechanic: "firefly_pair",
-    pairs: FIREFLY_SYNONYM_PAIRS,
-    instructionBisaya: "I-click ang duha ka alitaptap nga pareho og kahulogan!",
-    instructionEnglish: "Click two fireflies that mean the same thing!",
   },
   pawikan: {
     mechanic: "turtle_shell_repair",
@@ -85,12 +68,8 @@ const PondQuestModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
   switch (quest.mechanic) {
     case "fish_families":
       return <FishPairGame {...sharedProps} />;
-    case "squirrel_sort":
-      return <SquirrelSortGame {...sharedProps} />;
     case "frog_path":
       return <FrogBridgeGame {...sharedProps} />;
-    case "firefly_pair":
-      return <FireflyPairGame {...sharedProps} />;
     case "turtle_shell_repair":
       return <TurtleShellGame {...sharedProps} />;
     case "fishing_game":

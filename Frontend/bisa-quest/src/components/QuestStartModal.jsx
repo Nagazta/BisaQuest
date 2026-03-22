@@ -84,13 +84,13 @@ const QuestStartModal = ({
       // FOREST NPCS
       // =====================
       case "forest_npc_1":
-        return "Tabangi si Lunti para magkasinabot ang uban animals!";
+        return "Help Lunti make the animals gain clarity!";
 
       case "forest_npc_2":
         return "Naghimo siya ug istorya pero dili niya mahimo tungod sa lost words.";
 
       case "forest_npc_3":
-        return "Ganahan siya ug riddles, pero wala na nagkadimao tungod sa kagubot.";
+        return "Help Diwata restore the balance of the forest!";
 
       case "forest_npc_4":
         return "This magical deer looks lost. Tabangi siya!";

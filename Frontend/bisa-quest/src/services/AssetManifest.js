@@ -137,6 +137,8 @@ import forkedPathImg from "../assets/images/environments/scenario/forked-path.pn
 import forestRiverImg from "../assets/images/environments/scenario/forest-river.png";
 import forestPondImg from "../assets/images/environments/scenario/forest-pond.png";
 import forestGlowImg from "../assets/images/environments/scenario/forest-glow.png";
+import forestGlowIncompleteImg from "../assets/images/environments/scenario/forest-glow-incomplete.png";
+import forestGlowCompleteImg from "../assets/images/environments/scenario/forest-glow-complete.png";
 import pondUnderwaterImg from "../assets/images/environments/scenario/pond-underwater.png";
 import forestCampFire from "../assets/images/environments/scenario/forest-camp-fire.png";
 import forestGuardianHungry from "../assets/images/characters/forest-guardian-hungry.png";
@@ -397,6 +399,8 @@ const AssetManifest = {
             river: forestRiverImg,
             pond: forestPondImg,
             glow: forestGlowImg,
+            glowIncomplete: forestGlowIncompleteImg,
+            glowComplete: forestGlowCompleteImg,
             pondUnderwater: pondUnderwaterImg,
             campFire: forestCampFire,
             flowerWilted: forestFlowerWilted,

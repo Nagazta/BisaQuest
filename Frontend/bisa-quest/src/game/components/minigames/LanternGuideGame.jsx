@@ -1,97 +1,233 @@
 // ─────────────────────────────────────────────────────────────────────────────
-//  LanternGuideGame.jsx — "Guiding the Light"
-//  A central lantern can be rotated in 45° steps with ◀ / ▶ buttons.
-//  3 targets are positioned around it. When the beam angle matches a target,
-//  clicking the ✓ "confirm" button lights that target up.
-//  All 3 lit → synonym lesson → antonym lesson → done.
-//  Plain dark-purple background (placeholder).
+//  LanternGuideGame.jsx — "Magic Circle Alignment"
+//  Two concentric magic circles surround a hollow centre (the lamp).
+//
+//  INNER ring (brightness):  3 snap positions every 120°.
+//    0° = no light · 120° = dim · 240° = fully bright (correct)
+//
+//  OUTER ring (compass):  4 snap positions every 90°.
+//    Correct when compass reads 0° (N at top, pointing up).
+//
+//  Both must be correct simultaneously → synonym lesson → antonym lesson → done.
 // ─────────────────────────────────────────────────────────────────────────────
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
+import lanternGameBg from "../../../assets/images/environments/scenario/guiding-lamp-game.png";
+import glowingLampImg from "../../../assets/items/glowing-lamp.png";
+import dimLampImg from "../../../assets/items/dim-lamp.png";
 
-// ── Lantern + Beam SVG ────────────────────────────────────────────────────────
-const LanternSVG = ({ angle, litTargets, targets }) => {
-  const cx = 100, cy = 100, beamLen = 75;
-  const rad = (angle - 90) * (Math.PI / 180);
-  const beamX = cx + Math.cos(rad) * beamLen;
-  const beamY = cy + Math.sin(rad) * beamLen;
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const norm = (a, step) => ((Math.round(a / step) * step) % 360 + 360) % 360;
+
+// ── SVG Magic Circles ─────────────────────────────────────────────────────────
+const MagicCircles = ({ brightnessAngle, compassAngle, bothCorrect }) => {
+  const size = 260;
+  const cx = size / 2;
+  const cy = size / 2;
+
+  // Brightness: 0 = dark, 120 = dim, 240 = bright
+  const brightLevel = brightnessAngle === 240 ? 2 : brightnessAngle === 120 ? 1 : 0;
+  const glowColor =
+    brightLevel === 2 ? "#ffd54f" : brightLevel === 1 ? "#ffb74d" : "#4a3a6a";
+  const glowOpacity =
+    brightLevel === 2 ? 0.85 : brightLevel === 1 ? 0.4 : 0.08;
+  const ringOpacity =
+    brightLevel === 2 ? 1 : brightLevel === 1 ? 0.55 : 0.2;
+  const ringStroke =
+    brightLevel === 2 ? "#ffd54f" : brightLevel === 1 ? "#c8a040" : "#5a3f80";
+
+  // Cardinal labels on the outer ring (rotate WITH the ring)
+  const cardinals = [
+    { label: "N", angle: 0 },
+    { label: "E", angle: 90 },
+    { label: "S", angle: 180 },
+    { label: "W", angle: 270 },
+  ];
 
   return (
-    <svg width="200" height="200" viewBox="0 0 200 200">
-      {/* Dark background ring */}
-      <circle cx={cx} cy={cy} r={90} fill="rgba(10,5,30,0.5)" />
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: "block" }}>
+      {/* Ambient glow background */}
+      {brightLevel > 0 && (
+        <circle cx={cx} cy={cy} r={110} fill={glowColor} opacity={glowOpacity * 0.4}
+          style={{ filter: `blur(${brightLevel === 2 ? 28 : 16}px)` }} />
+      )}
 
-      {/* Targets */}
-      {targets.map((t) => {
-        const tRad = (t.requiredAngle - 90) * (Math.PI / 180);
-        const dist = 74;
-        const tx = cx + Math.cos(tRad) * dist;
-        const ty = cy + Math.sin(tRad) * dist;
-        const isLit = litTargets.has(t.id);
-        return (
-          <g key={t.id}>
-            <circle cx={tx} cy={ty} r={14}
-              fill={isLit ? "rgba(255,220,80,0.35)" : "rgba(50,30,80,0.8)"}
-              stroke={isLit ? "rgba(255,220,80,0.9)" : "rgba(150,100,200,0.5)"}
-              strokeWidth="2"
+      {/* ── OUTER compass ring ─────────────────────────────────────────────── */}
+      <g transform={`rotate(${compassAngle}, ${cx}, ${cy})`}>
+        {/* Outer ring track */}
+        <circle cx={cx} cy={cy} r={108}
+          fill="none"
+          stroke={compassAngle === 0 ? "#a0c8ff" : "#3a2a60"}
+          strokeWidth="2.5"
+          opacity={compassAngle === 0 ? 0.9 : 0.45}
+        />
+        {/* Decorative arc segments */}
+        {[0, 90, 180, 270].map((deg, i) => {
+          const rad = (deg - 90) * (Math.PI / 180);
+          const x1 = cx + Math.cos(rad) * 90;
+          const y1 = cy + Math.sin(rad) * 90;
+          const x2 = cx + Math.cos(rad) * 108;
+          const y2 = cy + Math.sin(rad) * 108;
+          return (
+            <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+              stroke={compassAngle === 0 ? "#a0c8ff" : "#6040a0"}
+              strokeWidth="3" opacity="0.8" />
+          );
+        })}
+        {/* Compass tick marks */}
+        {Array.from({ length: 16 }).map((_, i) => {
+          const deg = i * 22.5;
+          const isCardinal = deg % 90 === 0;
+          const rad = (deg - 90) * (Math.PI / 180);
+          const r1 = isCardinal ? 98 : 102;
+          const r2 = 108;
+          return (
+            <line key={i}
+              x1={cx + Math.cos(rad) * r1} y1={cy + Math.sin(rad) * r1}
+              x2={cx + Math.cos(rad) * r2} y2={cy + Math.sin(rad) * r2}
+              stroke={isCardinal ? (compassAngle === 0 ? "#a0c8ff" : "#7060a0") : "#4a3870"}
+              strokeWidth={isCardinal ? 2 : 1} opacity="0.7"
             />
-            {isLit && (
-              <circle cx={tx} cy={ty} r={14} fill="none"
-                stroke="rgba(255,220,80,0.6)" strokeWidth="4"
-                style={{ filter: "blur(2px)" }}
-              />
-            )}
-            <text x={tx} y={ty + 5} textAnchor="middle" fontSize="14">
-              {t.emoji}
+          );
+        })}
+        {/* Cardinal direction labels */}
+        {cardinals.map(({ label, angle: deg }) => {
+          const rad = (deg - 90) * (Math.PI / 180);
+          const lx = cx + Math.cos(rad) * 86;
+          const ly = cy + Math.sin(rad) * 86;
+          const isNorth = deg === 0;
+          return (
+            <text key={label} x={lx} y={ly + 6}
+              textAnchor="middle" fontSize={isNorth ? 20 : 17}
+              fontFamily="'Pixelify Sans', sans-serif"
+              fontWeight="bold"
+              fill={compassAngle === 0 ? (isNorth ? "#ffd54f" : "#e0f0ff") : (isNorth ? "#e0b840" : "#c0b0e0")}
+              stroke={compassAngle === 0 ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0.3)"}
+              strokeWidth="0.5"
+              paintOrder="stroke"
+              opacity={1}
+            >
+              {label}
             </text>
-          </g>
-        );
-      })}
+          );
+        })}
+        {/* North pointer arrow */}
+        <polygon
+          points={`${cx},${cy - 78} ${cx - 5},${cy - 62} ${cx + 5},${cy - 62}`}
+          fill={compassAngle === 0 ? "#ffd54f" : "#8060b0"}
+          opacity={compassAngle === 0 ? 1 : 0.5}
+        />
+      </g>
 
-      {/* Light beam */}
-      <line
-        x1={cx} y1={cy} x2={beamX} y2={beamY}
-        stroke="rgba(255,230,100,0.7)" strokeWidth="8" strokeLinecap="round"
-        style={{ filter: "blur(3px)" }}
-      />
-      <line
-        x1={cx} y1={cy} x2={beamX} y2={beamY}
-        stroke="rgba(255,245,200,0.9)" strokeWidth="3" strokeLinecap="round"
+      {/* ── INNER brightness ring ──────────────────────────────────────────── */}
+      <g transform={`rotate(${brightnessAngle}, ${cx}, ${cy})`}>
+        {/* Ring track */}
+        <circle cx={cx} cy={cy} r={72}
+          fill="none"
+          stroke={ringStroke}
+          strokeWidth="2"
+          opacity={ringOpacity}
+        />
+        {/* Glow petals — 6 around the ring */}
+        {[0, 60, 120, 180, 240, 300].map((deg, i) => {
+          const rad = (deg - 90) * (Math.PI / 180);
+          const px = cx + Math.cos(rad) * 64;
+          const py = cy + Math.sin(rad) * 64;
+          const isActive = brightLevel === 2 || (brightLevel === 1 && deg % 120 === 0);
+          return (
+            <circle key={i} cx={px} cy={py} r={brightLevel === 2 ? 8 : 5}
+              fill={isActive ? glowColor : "#2a1d4a"}
+              opacity={isActive ? (brightLevel === 2 ? 0.95 : 0.45) : 0.25}
+              style={brightLevel === 2 ? { filter: "blur(2px)" } : undefined}
+            />
+          );
+        })}
+        {/* Brightness indicator line (points toward current brightness state) */}
+        <line
+          x1={cx} y1={cy - 50}
+          x2={cx} y2={cy - 72}
+          stroke={ringStroke}
+          strokeWidth="3"
+          strokeLinecap="round"
+          opacity={ringOpacity}
+        />
+      </g>
+
+      {/* ── Shared decorative ring between inner and outer ──────────────────── */}
+      <circle cx={cx} cy={cy} r={80}
+        fill="none"
+        stroke="rgba(160,120,255,0.2)"
+        strokeWidth="1"
+        strokeDasharray="4 6"
       />
 
-      {/* Lantern body */}
-      <rect x={cx - 12} y={cy - 16} width={24} height={32} rx={5}
-        fill="#f9a825" stroke="#f57f17" strokeWidth="2" />
-      <rect x={cx - 8}  y={cy - 12} width={16} height={24} rx={3}
-        fill="rgba(255,250,200,0.85)" />
-      {/* Handle */}
-      <path d={`M ${cx - 6} ${cy - 16} Q ${cx} ${cy - 26} ${cx + 6} ${cy - 16}`}
-        stroke="#f57f17" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+      {/* ── Lamp in the hollow centre ──────────────────────────────────────── */}
+      {/* Lamp glow */}
+      {brightLevel > 0 && (
+        <circle cx={cx} cy={cy} r={bothCorrect ? 38 : 30}
+          fill={glowColor}
+          opacity={brightLevel === 2 ? (bothCorrect ? 0.45 : 0.3) : 0.1}
+          style={{ filter: "blur(8px)", transition: "all 0.5s ease" }}
+        />
+      )}
+      {/* Lamp image — switches between glowing and dim */}
+      <image
+        href={brightLevel === 2 ? glowingLampImg : dimLampImg}
+        x={cx - 44}
+        y={cy - 56}
+        width={88}
+        height={112}
+        style={{ transition: "opacity 0.4s ease" }}
+      />
+
+      {/* ── Correct flash ring ─────────────────────────────────────────────── */}
+      {bothCorrect && (
+        <circle cx={cx} cy={cy} r={116}
+          fill="none"
+          stroke="#ffd54f"
+          strokeWidth="3"
+          opacity="0.7"
+          style={{ filter: "drop-shadow(0 0 8px #ffd54f)" }}
+        />
+      )}
     </svg>
   );
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
 const LanternGuideGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) => {
-  const { introDialogue, synonymDialogue, antonymDialogue, targets, rotationStep } = quest;
+  const {
+    introDialogue, synonymDialogue, antonymDialogue, completionDialogue,
+    brightnessCorrectAngle, brightnessStep,
+    compassCorrectAngle, compassStep,
+  } = quest;
 
-  const [stage,        setStage]        = useState("intro");
+  const doneLines = completionDialogue
+    || [...(synonymDialogue || []), ...(antonymDialogue || [])];
+
+  const [stage, setStage] = useState("intro");
   const [dialogueStep, setDialogueStep] = useState(0);
-  const [angle,        setAngle]        = useState(0);
-  const [litTargets,   setLitTargets]   = useState(new Set());
+  const [brightnessAngle, setBrightnessAngle] = useState(0);    // starts at 0° (dark)
+  const [compassAngle, setCompassAngle] = useState(270);  // starts off (not north)
 
-  const litCount = litTargets.size;
+  // Normalise to step grid
+  const normB = (a) => norm(a, brightnessStep);
+  const normC = (a) => norm(a, compassStep);
 
-  // Normalise angle to 0-359
-  const normalise = (a) => ((a % 360) + 360) % 360;
+  const brightOk = normB(brightnessAngle) === brightnessCorrectAngle;
+  const compassOk = normC(compassAngle) === compassCorrectAngle;
+  const bothCorrect = brightOk && compassOk;
 
-  const targetAtAngle = targets.find(
-    (t) => !litTargets.has(t.id) && Math.abs(normalise(angle) - t.requiredAngle) < rotationStep / 2
-  );
+  // Auto-advance when both rings snap correct
+  const advancedRef = React.useRef(false);
+  if (bothCorrect && stage === "playing" && !advancedRef.current) {
+    advancedRef.current = true;
+    setTimeout(() => { setStage("done"); setDialogueStep(0); }, 1100);
+  }
 
+  // Dialogue
   const currentLines =
-    stage === "intro"           ? introDialogue   :
-    stage === "synonym_lesson"  ? synonymDialogue :
-    stage === "antonym_lesson"  ? antonymDialogue : null;
+    stage === "intro" ? introDialogue :
+      stage === "done" ? doneLines : null;
 
   const dialogueLine = currentLines?.[dialogueStep] ?? null;
 
@@ -100,25 +236,49 @@ const LanternGuideGame = ({ quest, item, npcName, npcImage, onClose, onComplete 
     if (dialogueStep < currentLines.length - 1) {
       setDialogueStep((s) => s + 1);
     } else {
-      if (stage === "intro")            { setStage("playing");        setDialogueStep(0); }
-      else if (stage === "synonym_lesson") { setStage("antonym_lesson"); setDialogueStep(0); }
-      else if (stage === "antonym_lesson") { setStage("done"); }
+      if (stage === "intro") { setStage("playing"); setDialogueStep(0); }
+      else if (stage === "done") onComplete(item);
     }
   };
 
-  const rotate = (dir) => {
+  // Rotate helpers
+  const rotateInner = useCallback((dir) => {
     if (stage !== "playing") return;
-    setAngle((a) => normalise(a + dir * rotationStep));
-  };
+    setBrightnessAngle((a) => normB(a + dir * brightnessStep));
+  }, [stage, brightnessStep]);
 
-  const confirmLight = () => {
-    if (!targetAtAngle) return;
-    const next = new Set([...litTargets, targetAtAngle.id]);
-    setLitTargets(next);
-    if (next.size >= targets.length) {
-      setTimeout(() => { setStage("synonym_lesson"); setDialogueStep(0); }, 700);
-    }
-  };
+  const rotateOuter = useCallback((dir) => {
+    if (stage !== "playing") return;
+    setCompassAngle((a) => normC(a + dir * compassStep));
+  }, [stage, compassStep]);
+
+  // Status text for dialogue area during playing
+  const statusBisaya = bothCorrect
+    ? "Perpekto na ang duha! Ang lampara nagsiga! ✨"
+    : brightOk
+      ? "Maayo ang kahayag! Ayha i-align ang compass."
+      : compassOk
+        ? "Tama na ang compass! Ayha i-adjust ang kahayag."
+        : "I-ikot ang duha ka singsing hangtod tama sila!";
+
+  const statusEnglish = bothCorrect
+    ? "Both are perfect! The lamp shines! ✨"
+    : brightOk
+      ? "Brightness is good! Now align the compass."
+      : compassOk
+        ? "Compass is aligned! Now adjust the brightness."
+        : "Rotate both rings until they're correct!";
+
+  // Button style helper
+  const btnStyle = (active) => ({
+    background: active ? "rgba(255,213,79,0.2)" : "rgba(255,255,255,0.08)",
+    border: `1.5px solid ${active ? "rgba(255,213,79,0.7)" : "rgba(255,255,255,0.2)"}`,
+    color: active ? "#ffd54f" : "#ccc",
+    borderRadius: 10, width: 44, height: 44,
+    fontSize: 20, cursor: "pointer",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    transition: "all 0.15s",
+  });
 
   return (
     <div className="iqm-overlay">
@@ -128,131 +288,99 @@ const LanternGuideGame = ({ quest, item, npcName, npcImage, onClose, onComplete 
         <div className="iqm-header">
           <span className="iqm-header-bisaya">{item.labelBisaya}</span>
           <span className="iqm-header-english">{item.labelEnglish}</span>
-          <span className="iqm-mechanic-badge" style={{ background: "#6a1b9a" }}>Guiding Light</span>
+          <span className="iqm-mechanic-badge" style={{ background: "#4a1a8a", color: "#e0c8ff", borderColor: "#9b59b6" }}>
+            Magic Circles
+          </span>
         </div>
 
-        {/* ── Game Canvas ───────────────────────────────────────────────── */}
-        <div className="iqm-scene-canvas" style={{
-          background: "linear-gradient(160deg, #0f0120 0%, #1a0535 100%)",
-          borderRadius: "12px", position: "relative", overflow: "hidden",
-          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-        }}>
-          {/* Star-field shimmer */}
+        {/* ── Game Canvas ─────────────────────────────────────────────────── */}
+        <div
+          className="iqm-scene-canvas"
+          style={{
+            background: `url(${lanternGameBg}) center/cover no-repeat`,
+            borderRadius: "12px", position: "relative", overflow: "hidden",
+            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+          }}
+        >
+          {/* Dark overlay so circles are visible over bg */}
           <div style={{
             position: "absolute", inset: 0,
-            background: "radial-gradient(ellipse at 50% 50%, rgba(100,40,160,0.15) 0%, transparent 70%)",
+            background: "rgba(5, 2, 20, 0.55)",
             pointerEvents: "none",
           }} />
 
-          {stage === "playing" && (
-            <>
-              {/* Lantern SVG */}
-              <div style={{ zIndex: 2, marginBottom: 12 }}>
-                <LanternSVG angle={angle} litTargets={litTargets} targets={targets} />
-              </div>
-
-              {/* Rotation controls */}
-              <div style={{ display: "flex", alignItems: "center", gap: 20, zIndex: 2 }}>
-                <button
-                  onClick={() => rotate(-1)}
-                  style={{
-                    background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)",
-                    color: "#fff", borderRadius: 10, width: 44, height: 44,
-                    fontSize: 22, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                  }}
-                >◀</button>
-
-                {/* Confirm button — only shown when beam aligns with a target */}
-                <button
-                  onClick={confirmLight}
-                  disabled={!targetAtAngle}
-                  style={{
-                    background: targetAtAngle ? "rgba(255,200,50,0.3)" : "rgba(100,100,100,0.15)",
-                    border: targetAtAngle ? "2px solid rgba(255,200,50,0.8)" : "1px solid rgba(100,100,100,0.3)",
-                    color: targetAtAngle ? "#ffd54f" : "rgba(180,180,180,0.4)",
-                    borderRadius: 12, padding: "6px 18px",
-                    fontSize: 13, fontFamily: "'Pixelify Sans', sans-serif", fontWeight: "bold",
-                    cursor: targetAtAngle ? "pointer" : "not-allowed",
-                    transition: "all 0.2s",
-                    filter: targetAtAngle ? "drop-shadow(0 0 8px rgba(255,200,50,0.6))" : "none",
-                  }}
-                >
-                  {targetAtAngle ? `✓ Light ${targetAtAngle.emoji}` : "—"}
-                </button>
-
-                <button
-                  onClick={() => rotate(1)}
-                  style={{
-                    background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)",
-                    color: "#fff", borderRadius: 10, width: 44, height: 44,
-                    fontSize: 22, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                  }}
-                >▶</button>
-              </div>
-
-              {/* Angle indicator */}
-              <div style={{ color: "rgba(200,150,255,0.6)", fontSize: 10, marginTop: 6,
-                fontFamily: "'Pixelify Sans', sans-serif" }}>
-                Beam: {normalise(angle)}° | Targets left: {targets.length - litCount}
-              </div>
-
-              {/* Progress pips */}
-              <div className="iqm-sweep-progress" style={{ top: "6%", bottom: "auto" }}>
-                {targets.map((_, i) => (
-                  <div key={i} className={`iqm-sweep-pip ${i < litCount ? "iqm-sweep-pip--done" : ""}`} />
-                ))}
-              </div>
-            </>
-          )}
-
-          {/* Synonym lesson */}
-          {stage === "synonym_lesson" && (
+          {(stage === "intro" || stage === "playing") && (
             <div style={{
-              position: "absolute", inset: 0,
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 20,
+              position: "relative", zIndex: 2,
+              display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
+              pointerEvents: stage === "intro" ? "none" : "auto",
             }}>
-              {targets.map((t, i) => (
-                <React.Fragment key={t.id}>
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: 30, filter: "drop-shadow(0 0 10px rgba(255,220,80,0.9))" }}>{t.emoji}</div>
-                    <div style={{ color: "#ffd54f", fontSize: 10, marginTop: 4, fontWeight: "bold" }}>{t.label}</div>
+              {/* Magic circle SVG */}
+              <MagicCircles
+                brightnessAngle={normB(brightnessAngle)}
+                compassAngle={normC(compassAngle)}
+                bothCorrect={bothCorrect}
+              />
+
+              {/* Controls row */}
+              <div style={{
+                display: "flex", gap: 28, alignItems: "flex-start",
+              }}>
+                {/* Inner ring controls */}
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                  <span style={{
+                    fontSize: 11, fontFamily: "'Pixelify Sans', sans-serif",
+                    color: brightOk ? "#ffd54f" : "#c0a0ff",
+                    fontWeight: "bold", letterSpacing: 1,
+                  }}>
+                    {brightOk ? "✓ " : ""}Brightness | Kahayag
+                  </span>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button style={btnStyle(false)} onClick={() => rotateInner(-1)}>◀</button>
+                    <button style={btnStyle(false)} onClick={() => rotateInner(1)}>▶</button>
                   </div>
-                  {i < targets.length - 1 && <span style={{ color: "#ffd54f", fontSize: 20, fontWeight: "bold" }}>≈</span>}
-                </React.Fragment>
-              ))}
+                </div>
+
+                {/* Outer ring controls */}
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                  <span style={{
+                    fontSize: 11, fontFamily: "'Pixelify Sans', sans-serif",
+                    color: compassOk ? "#a0c8ff" : "#c0a0ff",
+                    fontWeight: "bold", letterSpacing: 1,
+                  }}>
+                    {compassOk ? "✓ " : ""}Direction | Direksyon
+                  </span>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button style={btnStyle(false)} onClick={() => rotateOuter(-1)}>◀</button>
+                    <button style={btnStyle(false)} onClick={() => rotateOuter(1)}>▶</button>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
-          {/* Antonym lesson */}
-          {stage === "antonym_lesson" && (
-            <div style={{
-              position: "absolute", inset: 0,
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 28,
-            }}>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 36, filter: "drop-shadow(0 0 14px rgba(255,220,80,0.9))" }}>🏮</div>
-                <div style={{ color: "#ffd54f", fontSize: 11, marginTop: 6, fontWeight: "bold" }}>Hayag / Light</div>
-              </div>
-              <span style={{ color: "#fff", fontSize: 28, fontWeight: "bold" }}>↔</span>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 36 }}>🌑</div>
-                <div style={{ color: "#b39ddb", fontSize: 11, marginTop: 6, fontWeight: "bold" }}>Ngitngit / Dark</div>
-              </div>
-            </div>
-          )}
+
 
           {/* Done */}
           {stage === "done" && (
             <div className="iqm-scene-success-overlay">
               <div className="iqm-scene-success-card">
                 <div className="iqm-scene-success-stars">🏮✨🏮</div>
-                <div className="iqm-scene-success-text">Gihayagan na ang Tanan! · All Guided!</div>
+                <div className="iqm-scene-success-text">Nagsiga na ang Lampara! · The Lamp Shines!</div>
               </div>
+            </div>
+          )}
+
+          {/* Progress pips */}
+          {stage === "playing" && (
+            <div className="iqm-sweep-progress" style={{ top: "6%", bottom: "auto" }}>
+              <div className={`iqm-sweep-pip ${brightOk ? "iqm-sweep-pip--done" : ""}`} />
+              <div className={`iqm-sweep-pip ${compassOk ? "iqm-sweep-pip--done" : ""}`} />
             </div>
           )}
         </div>
 
-        {/* ── NPC Dialogue ──────────────────────────────────────────────── */}
+        {/* ── NPC Dialogue ─────────────────────────────────────────────────── */}
         <div className="iqm-dialogue-row">
           <img src={npcImage} alt={npcName} className="iqm-npc-img" draggable={false} />
           <div className="iqm-dialogue-bubble">
@@ -265,21 +393,21 @@ const LanternGuideGame = ({ quest, item, npcName, npcImage, onClose, onComplete 
                 </>
               ) : stage === "playing" ? (
                 <>
-                  <span className="iqm-dialogue-bisaya">I-ikot ang lampara, ictik ✓ aron mahayagan! ({litCount}/{targets.length})</span>
-                  <span className="iqm-dialogue-english">Rotate the lamp, then press ✓ to light a target! ({litCount}/{targets.length})</span>
+                  <span className="iqm-dialogue-bisaya">{statusBisaya}</span>
+                  <span className="iqm-dialogue-english">{statusEnglish}</span>
                 </>
               ) : stage === "done" ? (
                 <>
-                  <span className="iqm-dialogue-bisaya">Gihayagan nimo ang tanan! 🏮</span>
-                  <span className="iqm-dialogue-english">You lit them all! 🏮</span>
+                  <span className="iqm-dialogue-bisaya">Nagsiga na ang lampara! 🏮</span>
+                  <span className="iqm-dialogue-english">The lamp shines! 🏮</span>
                 </>
               ) : null}
             </div>
-            {(stage === "intro" || stage === "synonym_lesson" || stage === "antonym_lesson") && (
-              <button className="iqm-next-btn" onClick={handleDialogueNext}>▶</button>
-            )}
-            {stage === "done" && (
-              <button className="iqm-next-btn" onClick={() => onComplete(item)}>✓</button>
+
+            {(stage === "intro" || stage === "done") && (
+              <button className="iqm-next-btn" onClick={handleDialogueNext}>
+                {stage === "done" && dialogueStep === doneLines.length - 1 ? "✓" : "▶"}
+              </button>
             )}
           </div>
         </div>

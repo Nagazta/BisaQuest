@@ -42,7 +42,7 @@ export const GLOW_ITEMS = [
     labelEnglish: "Guiding Lamp",
     descriptionBisaya: "Ang lampara naghatod sa kahayag ngadto sa kangitngit.",
     descriptionEnglish: "The lamp guides light into the darkness.",
-    x: 17.5, y: 40, w: 8, h: 10,
+    x: 18.7, y: 40, w: 8, h: 10,
   },
 ];
 
@@ -149,6 +149,11 @@ export const BLOOM_DATA = {
     { bisayaText: "Kining mga pares maoy gitawag og antonyms.", englishText: "These pairs are called antonyms." },
     { bisayaText: "Ang mga antonyms makatabang sa pagbalik sa balanse.", englishText: "Antonyms help restore balance." },
   ],
+  completionDialogue: [
+    { bisayaText: "Mibukad na ang bulak! Salamat kaayo!", englishText: "The flower has bloomed! Thank you!" },
+    { bisayaText: "Ang Huyang ug Kusog — magkasukwahi sila. Mao ni ang antonyms!", englishText: "Weak and Strong — they are opposites. These are antonyms!" },
+    { bisayaText: "Ang Nindot, Gwapa, Matahom — parehas ang kahulogan. Mao ni ang synonyms!", englishText: "Beautiful, Pretty, Lovely — same meaning. These are synonyms!" },
+  ],
   // Each slider: name, emoji, target zone [min, max] out of 0-100
   sliders: [
     { id: "light", label: "Kahayag / Light", emoji: "☀️", targetMin: 45, targetMax: 75 },
@@ -157,56 +162,38 @@ export const BLOOM_DATA = {
   ],
 };
 
-// ── 2. CAVE LIGHT (Dark Cave) ─────────────────────────────────────────────────
+
+// ── 2. CAVE LIGHT (Dark Cave) — Firefly Line-Up ─────────────────────────────
 export const CAVE_DATA = {
   introDialogue: [
-    { bisayaText: "Ang langob puno sa kangitngit.", englishText: "The cave is filled with darkness." },
-    { bisayaText: "Kinahanglan ang tamang butang aron maabot ang kahayag.", englishText: "The right things are needed to bring light." },
-    { bisayaText: "Pilia ang angay nga tinubdan sa kahayag.", englishText: "Choose the right sources of light." },
+    { bisayaText: "Ang langob puno sa kangitngit... gihigtan sa usa ka enchantment.", englishText: "The cave is filled with darkness... held by an enchantment." },
+    { bisayaText: "Apan adunay mga gamhanang alitaptap diri sa palibot.", englishText: "But there are powerful fireflies around us." },
+    { bisayaText: "Aron mabuksan ang langob, kinahanglan i-linya sila — gikan sa pinaka-gamay ngadto sa pinaka-dako.", englishText: "To open the cave, they must be lined up — from the smallest to the largest." },
+    { bisayaText: "I-drag ang matag alitaptap sa tamang dapit sa linya.", englishText: "Drag each firefly to the right spot on the line." },
   ],
-  synonymDialogue: [
-    { bisayaText: "Maayo kaayo!", englishText: "Very good!" },
-    { bisayaText: "Kining mga butang naghatod sa kahayag.", englishText: "These things bring light." },
-    { bisayaText: "Lahi-lahi sila apan parehas ang buhat.", englishText: "They look different but do the same thing." },
-    { bisayaText: "Sama sa mga synonyms — lahi ang pulong, parehas ang kahulogan.", englishText: "Like synonyms — different words, same meaning." },
-    { bisayaText: "Mao ni ang synonyms.", englishText: "These are synonyms." },
+  feedbackDialogue: [
+    { bisayaText: "Ang langob wala motubag...", englishText: "The cave did not respond..." },
+    { bisayaText: "Basin sayop ang han-ay sa mga alitaptap. Sulayi pag-usab!", englishText: "Maybe the order of the fireflies is wrong. Try again!" },
   ],
-  antonymDialogue: [
-    { bisayaText: "Apan kini dili makahatod og kahayag.", englishText: "But these cannot bring light." },
-    { bisayaText: "Bato, dahon, tubig — dili sila tinubdan sa kahayag.", englishText: "Rock, leaf, water — they are not sources of light." },
-    { bisayaText: "Sila ang kaatbang sa kahayag.", englishText: "They are the opposite of light." },
-    { bisayaText: "Mao ni ang antonyms — ang kahayag ug ang kangitngit.", englishText: "These are antonyms — light and darkness." },
+  completionDialogue: [
+    { bisayaText: "Hayag na ang langob! Ang mga alitaptap gibutang sa hustong han-ay!", englishText: "The cave is illuminated! The fireflies were placed in the right order!" },
+    { bisayaText: "Gamay ↔ Dako — magkasukwahi. Mao ni ang antonyms!", englishText: "Small ↔ Large — opposites. These are antonyms!" },
+    { bisayaText: "Gamay, Diniyutay, Mugbo — parehas ang kahulogan. Mao ni ang synonyms!", englishText: "Small, Tiny, Little — same meaning. These are synonyms!" },
   ],
-  // 3 dark zones to fill
-  zones: [
-    { id: "z1", label: "Left chamber", x: 18, y: 40 },
-    { id: "z2", label: "Centre tunnel", x: 50, y: 35 },
-    { id: "z3", label: "Right alcove", x: 78, y: 42 },
-  ],
-  // Items: correct = true means they illuminate
-  items: [
-    { id: "torch", emoji: "🔦", label: "Torch", correct: true },
-    { id: "lantern", emoji: "🏮", label: "Lantern", correct: true },
-    { id: "gstone", emoji: "💎", label: "Glowing Stone", correct: true },
-    { id: "crystal", emoji: "✨", label: "Sun Crystal", correct: true },
-    { id: "rock", emoji: "🪨", label: "Rock", correct: false },
-    { id: "leaf", emoji: "🍃", label: "Leaf", correct: false },
-    { id: "drop", emoji: "💧", label: "Water Drop", correct: false },
-    { id: "wood", emoji: "🪵", label: "Broken Wood", correct: false },
-  ],
+  // No zones/items — the firefly game builds its own internal state.
 };
 
 // ── 3. RIVER FLOW (River) ─────────────────────────────────────────────────────
 export const RIVER_DATA = {
   introDialogue: [
     { bisayaText: "Ang suba dili na makaagay.", englishText: "The river can no longer flow." },
-    { bisayaText: "Ang mga babag naghunong sa tubig.", englishText: "Obstacles have stopped the water." },
-    { bisayaText: "I-klik ang mga babag aron tangtangon sila.", englishText: "Click the obstacles to remove them." },
+    { bisayaText: "Ang mga babag naghunong sa tubig — bato, kahoy, ug paragos nga sagbot.", englishText: "Obstacles have stopped the water — a boulder, a log, and dried grass." },
+    { bisayaText: "I-hold ang matag babag aron tangtangon sila sa dalan sa suba.", englishText: "Hold down on each obstacle to remove it from the river's path." },
   ],
   synonymDialogue: [
     { bisayaText: "Maayo!", englishText: "Good!" },
     { bisayaText: "Ang suba nakaagay na pag-usab.", englishText: "The river flows once more." },
-    { bisayaText: "Ang pag-ayo ug pagbabag pareho og epekto sa tubig.", englishText: "Fixing and blocking have the same effect on water." },
+    { bisayaText: "Nagaagay ug Naglihok — parehas ang kahulogan. Mao ni ang synonyms!", englishText: "Flowing and Moving — same meaning. These are synonyms!" },
     { bisayaText: "Ang duha ka pulong nga parehas og kahulogan gitawag og synonyms.", englishText: "Two words with the same meaning are called synonyms." },
     { bisayaText: "Mao ni ang synonyms.", englishText: "These are synonyms." },
   ],
@@ -216,41 +203,47 @@ export const RIVER_DATA = {
     { bisayaText: "Kining mga pares magkasukwahi — mao ni ang antonyms.", englishText: "These pairs are opposites — these are antonyms." },
     { bisayaText: "Ang pag-ayo sa suba nagpakita sa gahum sa mga antonyms.", englishText: "Restoring the river shows the power of antonyms." },
   ],
-  // 3 obstacles to clear
+  completionDialogue: [
+    { bisayaText: "Nakaagay na ang suba! Salamat sa imong kusog!", englishText: "The river flows again! Thank you for your strength!" },
+    { bisayaText: "Nagaagay ug Naglihok — parehas ang kahulogan. Mao ni ang synonyms!", englishText: "Flowing and Moving — same meaning. These are synonyms!" },
+    { bisayaText: "Gibabagan ↔ Nagaagay — magkasukwahi. Mao ni ang antonyms!", englishText: "Blocked ↔ Flowing — opposites. These are antonyms!" },
+  ],
+  // 3 obstacles to clear (ids map to image assets in RiverFlowGame.jsx)
   obstacles: [
-    { id: "o1", emoji: "🪨", label: "Bato / Boulder", x: 28, y: 45 },
-    { id: "o2", emoji: "🪵", label: "Kahoy / Log", x: 50, y: 42 },
-    { id: "o3", emoji: "🌿", label: "Sagbot / Weeds", x: 72, y: 47 },
+    { id: "o1", label: "Bato / Boulder", x: 28, y: 45 },
+    { id: "o2", label: "Kahoy / Log", x: 50, y: 42 },
+    { id: "o3", label: "Paragos / Dried Grass", x: 72, y: 47 },
   ],
 };
 
 // ── 4. LANTERN GUIDE (Guiding Lamp) ──────────────────────────────────────────
 export const LANTERN_DATA = {
   introDialogue: [
-    { bisayaText: "Ang lampara adunay kahayag, apan wala pa kini makaabut sa mga nagsalig niini.", englishText: "The lamp has light, but it has not yet reached those who need it." },
-    { bisayaText: "I-ikot ang lampara aron i-direksyon ang kahayag.", englishText: "Rotate the lamp to direct its light." },
-    { bisayaText: "Itudlo ang kahayag sa tanan nga nagkinahanglan.", englishText: "Point the light toward all who need it." },
+    { bisayaText: "Ang lampara adunay duha ka galakon nga porma — ang sulod ug ang gawas.", englishText: "The lamp has two magic circles — the inner one and the outer one." },
+    { bisayaText: "Ang SULOD: I-ikot hangtod kini mosiga pag-ayo — HAYAG, dili NGITNGIT.", englishText: "The INNER circle: Rotate it until it glows fully bright — HAYAG (bright), not NGITNGIT (dark)." },
+    { bisayaText: "Ang GAWAS: I-ikot hangtod ang amihan, habagat, silangan, ug kasadpan maabot sa hustong direksyon.", englishText: "The OUTER circle: Rotate it until north, south, east, and west align to the right direction." },
+    { bisayaText: "Kung tama na ang duha, ang lampara magsiga ug makatabang sa tanan!", englishText: "When both are correct, the lamp will shine and guide everyone!" },
   ],
   synonymDialogue: [
-    { bisayaText: "Gihayagan nimo ang tanan!", englishText: "You lit everything!" },
-    { bisayaText: "Ang kahayag nakaabut sa mga nagtago sa kangitngit.", englishText: "The light reached those hiding in darkness." },
-    { bisayaText: "Ang giya ug kahayag magkauban — parehas ang buhat.", englishText: "Guidance and light go together — they do the same thing." },
-    { bisayaText: "Sama sa mga synonyms — managsama og kahulogan.", englishText: "Like synonyms — they share the same meaning." },
-    { bisayaText: "Mao ni ang synonyms.", englishText: "These are synonyms." },
+    { bisayaText: "Hayag na! Gipadayag nimo ang kahayag sa lampara!", englishText: "It's bright! You awakened the lamp's light!" },
+    { bisayaText: "Ang kahayag ug giya — managsama ang buhat, managsama ang kahulugan.", englishText: "Light and guidance — they do the same thing, they share the same meaning." },
+    { bisayaText: "Sama sa mga synonyms — ang Hayag, Siga, ug Kusog nga Kahayag managsama.", englishText: "Like synonyms — Hayag (Light), Siga (Glow), and Kusog nga Kahayag (Bright Light) are alike." },
   ],
   antonymDialogue: [
-    { bisayaText: "Hayag ↔ Ngitngit.", englishText: "Light ↔ Dark." },
-    { bisayaText: "Makita ↔ Natago.", englishText: "Visible ↔ Hidden." },
-    { bisayaText: "Tagda ↔ Nawala.", englishText: "Found ↔ Lost." },
-    { bisayaText: "Kini sila antonyms — magkasukwahi apan nagkinabuhi sa usag usa.", englishText: "These are antonyms — opposites that depend on each other." },
+    { bisayaText: "Hayag ↔ Ngitngit. Walay hayag kung walay kangitngit.", englishText: "Light ↔ Dark. There is no light without darkness." },
+    { bisayaText: "Siga ↔ Patay. Glow ↔ Extinguished.", englishText: "Siga (Glowing) ↔ Patay (Extinguished)." },
+    { bisayaText: "Kini sila antonyms — magkasukwahi, apan nagkinabuhi sa usag usa.", englishText: "These are antonyms — opposites that depend on each other to exist." },
   ],
-  // 3 targets the beam must hit (angular positions around the lantern)
-  // angle in degrees (0 = right, 90 = down, 180 = left, 270 = up)
-  targets: [
-    { id: "t1", emoji: "🌱", label: "Tanum / Plant", requiredAngle: 315, x: 25, y: 25 },
-    { id: "t2", emoji: "🪨", label: "Agianan / Path", requiredAngle: 45, x: 72, y: 28 },
-    { id: "t3", emoji: "🦋", label: "Alibangbang / Butterfly", requiredAngle: 180, x: 15, y: 60 },
+  // Brightness ring: 3 snap positions (step = 120°)
+  // 0° = no light, 120° = dim, 240° = bright (correct)
+  brightnessCorrectAngle: 240,
+  brightnessStep: 120,
+  // Compass ring: 4 snap positions (step = 90°), correct when compass = 0° (N at top)
+  compassCorrectAngle: 0,
+  compassStep: 90,
+  completionDialogue: [
+    { bisayaText: "Nagsiga na ang lampara! Salamat!", englishText: "The lamp shines! Thank you!" },
+    { bisayaText: "Hayag, Siga, Maliwanag — parehas ang kahulogan. Mao ni ang synonyms!", englishText: "Hayag, Siga, Maliwanag — same meaning. These are synonyms!" },
+    { bisayaText: "Hayag ↔ Ngitngit — magkasukwahi. Mao ni ang antonyms!", englishText: "Light ↔ Dark — opposites. These are antonyms!" },
   ],
-  // How many degrees each click rotates the lantern
-  rotationStep: 45,
 };
