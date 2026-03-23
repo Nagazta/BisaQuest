@@ -5,7 +5,7 @@ export const NPC_IMAGES = {
 };
 
 export const LIVING_ROOM_LABELS = [
-  // ── Left wall ─────────────────────────────────────────────────────────────
+  //  Left wall 
   {
     id: "purtahan",
     labelBisaya: "purtahan / pultahan",
@@ -98,7 +98,7 @@ export const LIVING_ROOM_LABELS = [
     descriptionEnglish: "A pail or bucket is a round container with a handle used to carry water or other things.",
     x: 28, y: 59, w: 6, h: 8,
   },
-  // ── Center ────────────────────────────────────────────────────────────────
+  //  Center 
   {
     id: "kurtina",
     labelBisaya: "Kurtina",
@@ -157,7 +157,7 @@ export const LIVING_ROOM_LABELS = [
     imageKey: "alfombra",
     x: 43, y: 70, w: 31, h: 12,
   },
-  // ── Right wall ────────────────────────────────────────────────────────────
+  //  Right wall 
   {
     id: "aparador",
     labelBisaya: "Aparador",
@@ -182,7 +182,7 @@ export const LIVING_ROOM_LABELS = [
     descriptionEnglish: "A mop is a tool used to clean the floor. It has a handle and a soft part that absorbs water.",
     x: 44, y: 46, w: 6, h: 14,
   },
-  // ── Floor & ceiling ───────────────────────────────────────────────────────
+  // Floor & ceiling 
   {
     id: "trapo",
     labelBisaya: "Talamakan",
@@ -209,9 +209,7 @@ export const LIVING_ROOM_LABELS = [
   },
 ];
 
-// ── Intro dialogue ────────────────────────────────────────────────────────────
-
-// Each line has: speaker, bisayaText, englishText
+//  Intro dialogue 
 export const INTRO_DIALOGUE = [
   {
     speaker: "Ligaya",
@@ -235,9 +233,7 @@ export const INTRO_DIALOGUE = [
   },
 ];
 
-// ── Item dialogue ─────────────────────────────────────────────────────────────
-// Step 0: item name introduction (both languages)
-// Step 1: description (both languages)
+// Item dialogue 
 export const buildDialogue = (region) => [
   {
     speaker: "Ligaya",

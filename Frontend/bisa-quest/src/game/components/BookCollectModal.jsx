@@ -1,39 +1,14 @@
-// src/components/BookCollectModal.jsx
-// ─────────────────────────────────────────────────────────────────────────────
-//  Shown for ~3 seconds when a player collects a Libro page fragment.
-//  Call it from HousePage after saveNPCProgress.
-//
-//  Usage:
-//    const [showPageModal, setShowPageModal] = useState(false);
-//    const [collectedPage, setCollectedPage] = useState(null);
-//
-//    // after quest passes:
-//    const isNew = awardLibroPage(environment, npcId);
-//    if (isNew) {
-//        setCollectedPage({ npcName, pageNumber });
-//        setShowPageModal(true);
-//    }
-//
-//    <BookCollectModal
-//        isOpen={showPageModal}
-//        npcName={collectedPage?.npcName}
-//        pageNumber={collectedPage?.pageNumber}
-//        totalPages={getLibroPageCount()}
-//        onClose={() => setShowPageModal(false)}
-//    />
-// ─────────────────────────────────────────────────────────────────────────────
-
 import { useEffect } from "react";
 import "./BookCollectModal.css";
 
 const BookCollectModal = ({
     isOpen,
-    npcName      = "Ligaya",
-    pageNumber   = 1,       // which page number this is (1–9)
-    totalPages   = 1,       // total pages collected so far (for "X / 9")
-    environment  = "sala",
+    npcName = "Ligaya",
+    pageNumber = 1,       // which page number this is (1–9)
+    totalPages = 1,       // total pages collected so far (for "X / 9")
+    environment = "sala",
     onClose,
-    autoDismiss  = 4000,    // auto-close after ms (0 = manual only)
+    autoDismiss = 4000,    // auto-close after ms (0 = manual only)
 }) => {
     // Auto-dismiss
     useEffect(() => {
@@ -46,11 +21,11 @@ const BookCollectModal = ({
 
     const ENV_LABEL = {
         village: "Village Fragment",
-        sala:    "Sala Fragment",
-        kusina:  "Kusina Fragment",
-        kwarto:  "Kwarto Fragment",
-        forest:  "Forest Fragment",
-        castle:  "Castle Fragment",
+        sala: "Sala Fragment",
+        kusina: "Kusina Fragment",
+        kwarto: "Kwarto Fragment",
+        forest: "Forest Fragment",
+        castle: "Castle Fragment",
     };
 
     return (

@@ -1,6 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  LightLampGame.jsx — Light a match and put it on the lamp
-// ─────────────────────────────────────────────────────────────────────────────
 import React, { useState, useRef } from "react";
 import AssetManifest from "../../../services/AssetManifest";
 import { ITEM_IMAGE_MAP } from "../../dragDropConstants";
@@ -57,7 +54,7 @@ const LightLampGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) 
 
         if (stage === "strike") {
             const overBox = Math.abs(cx - BOX_CENTER.x) < BOX_RADIUS &&
-                            Math.abs(cy - BOX_CENTER.y) < BOX_RADIUS;
+                Math.abs(cy - BOX_CENTER.y) < BOX_RADIUS;
             if (overBox) {
                 // Striking logic — requires "wiping" motion or just being over it
                 // We'll use a simple count for now but better to detect movement
@@ -77,11 +74,11 @@ const LightLampGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) 
     const handlePointerUp = (e) => {
         setIsDragging(false);
         if (e?.currentTarget && e.pointerId != null) {
-            try { e.currentTarget.releasePointerCapture(e.pointerId); } catch (_) {}
+            try { e.currentTarget.releasePointerCapture(e.pointerId); } catch (_) { }
         }
         if (stage === "place" && matchLit) {
             const near = Math.abs(matchPos.x - LAMP_CENTER.x) < LAMP_RADIUS &&
-                         Math.abs(matchPos.y - LAMP_CENTER.y) < LAMP_RADIUS;
+                Math.abs(matchPos.y - LAMP_CENTER.y) < LAMP_RADIUS;
             if (near) {
                 setStage("success");
                 setShowSuccess(true);
@@ -114,16 +111,16 @@ const LightLampGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) 
                 </div>
 
                 <div className="iqm-scene-canvas" ref={containerRef}
-                    style={{ 
-                        background: "#000", 
+                    style={{
+                        background: "#000",
                         position: "relative",
                         overflow: "hidden",
                     }}>
-                    
+
                     {/* Living Room Background */}
-                    <img 
-                        src={AssetManifest.village.scenarios.house} 
-                        alt="Background" 
+                    <img
+                        src={AssetManifest.village.scenarios.house}
+                        alt="Background"
                         style={{ width: "100%", height: "100%", objectFit: "cover", opacity: stage === "success" ? 1 : 0.4, transition: "opacity 0.5s ease" }}
                         draggable={false}
                     />
@@ -136,15 +133,15 @@ const LightLampGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) 
                         pointerEvents: "none",
                         zIndex: 5
                     }}>
-                        <img 
-                            src={stage === "success" ? ITEM_IMAGE_MAP["lamp_on"] : ITEM_IMAGE_MAP["lamp_off"]} 
-                            alt="Lamp" 
+                        <img
+                            src={stage === "success" ? ITEM_IMAGE_MAP["lamp_on"] : ITEM_IMAGE_MAP["lamp_off"]}
+                            alt="Lamp"
                             style={{
                                 width: "100%", height: "100%", objectFit: "contain",
                                 filter: stage === "success" ? "drop-shadow(0 0 50px #fcd765) brightness(1.2)" : "brightness(0.6)",
                                 transition: "all 0.5s ease"
-                            }} 
-                            draggable={false} 
+                            }}
+                            draggable={false}
                         />
                     </div>
 
@@ -183,14 +180,14 @@ const LightLampGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) 
                             onPointerUp={handlePointerUp}
                             onPointerCancel={handlePointerUp}
                         >
-                            <img 
-                                src={matchLit ? ITEM_IMAGE_MAP["lit_match"] : ITEM_IMAGE_MAP["match"]} 
-                                alt="Match" 
+                            <img
+                                src={matchLit ? ITEM_IMAGE_MAP["lit_match"] : ITEM_IMAGE_MAP["match"]}
+                                alt="Match"
                                 style={{
                                     width: "100%", height: "100%", objectFit: "contain",
                                     filter: matchLit ? "drop-shadow(0 0 20px #fcd765)" : "none"
-                                }} 
-                                draggable={false} 
+                                }}
+                                draggable={false}
                             />
                             {stage === "strike" && !isDragging && (
                                 <div className="iqm-drag-indicator" style={{ width: "60px", height: "60px" }}>

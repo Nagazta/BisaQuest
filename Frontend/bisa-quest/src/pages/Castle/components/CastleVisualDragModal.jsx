@@ -1,9 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  CastleVisualDragModal.jsx
-//  Visual drag-and-drop game: drag the source image onto the target zone.
-//  On success, the combined result image pops up.
-//  Used for items like "Bookshelf" — drag a Book onto a Shelf.
-// ─────────────────────────────────────────────────────────────────────────────
 import { useState } from "react";
 import Button from "../../../components/Button";
 import "./CastleVisualDragModal.css";
@@ -11,19 +5,19 @@ import "./CastleVisualDragModal.css";
 const CastleVisualDragModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
   const { visualDrag, compoundWord } = item;
 
-  const [isDragging, setIsDragging]   = useState(false);
-  const [isDragOver, setIsDragOver]   = useState(false);
-  const [isDropped, setIsDropped]     = useState(false);
-  const [showResult, setShowResult]   = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [isDropped, setIsDropped] = useState(false);
+  const [showResult, setShowResult] = useState(false);
 
-  // ── Drag handlers (source card) ───────────────────────────────────────────
+  //  Drag handlers (source card) 
   const handleDragStart = (e) => {
     e.dataTransfer.effectAllowed = "move";
     setIsDragging(true);
   };
   const handleDragEnd = () => setIsDragging(false);
 
-  // ── Drop handlers (target zone) ───────────────────────────────────────────
+  //  Drop handlers (target zone) 
   const handleDragOver = (e) => { e.preventDefault(); setIsDragOver(true); };
   const handleDragLeave = () => setIsDragOver(false);
 
@@ -40,7 +34,7 @@ const CastleVisualDragModal = ({ item, npcName, npcImage, onClose, onComplete })
     <div className="cvdm-overlay" onClick={onClose}>
       <div className="cvdm-card" onClick={(e) => e.stopPropagation()}>
 
-        {/* ── Header ──────────────────────────────────────────────────────── */}
+        {/*  Header  */}
         <div className="cvdm-header">
           <img src={npcImage} alt={npcName} className="cvdm-npc-img" draggable={false} />
           <div className="cvdm-header-text">
@@ -53,7 +47,7 @@ const CastleVisualDragModal = ({ item, npcName, npcImage, onClose, onComplete })
 
         <div className="cvdm-divider" />
 
-        {/* ── Success view ─────────────────────────────────────────────────── */}
+        {/*  Success view  */}
         {showResult ? (
           <div className="cvdm-success">
             <div className="cvdm-success-emoji" aria-label={compoundWord.result}>
@@ -82,15 +76,15 @@ const CastleVisualDragModal = ({ item, npcName, npcImage, onClose, onComplete })
           </div>
         ) : (
 
-          /* ── Game view ──────────────────────────────────────────────────── */
+          /*  Game view  */
           <div className="cvdm-game">
 
             {/* Draggable source */}
             <div
               className={[
                 "cvdm-source",
-                isDragging   ? "cvdm-source--dragging" : "",
-                isDropped    ? "cvdm-source--dropped"  : "",
+                isDragging ? "cvdm-source--dragging" : "",
+                isDropped ? "cvdm-source--dropped" : "",
               ].filter(Boolean).join(" ")}
               draggable={!isDropped}
               onDragStart={handleDragStart}
@@ -114,8 +108,8 @@ const CastleVisualDragModal = ({ item, npcName, npcImage, onClose, onComplete })
             <div
               className={[
                 "cvdm-target",
-                isDragOver ? "cvdm-target--over"   : "",
-                isDropped  ? "cvdm-target--filled"  : "",
+                isDragOver ? "cvdm-target--over" : "",
+                isDropped ? "cvdm-target--filled" : "",
               ].filter(Boolean).join(" ")}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}

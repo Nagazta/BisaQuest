@@ -1,15 +1,11 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  diwataData.js — Data for Diwata's forest-glow exploration scene
-//  Theme: "Restore balance through opposites" → antonyms via cause & effect
-// ─────────────────────────────────────────────────────────────────────────────
 import AssetManifest from "../../../services/AssetManifest";
 
-// ── NPC image map ─────────────────────────────────────────────────────────────
+//  NPC image map 
 export const DIWATA_NPC_IMAGES = {
   forest_npc_3: AssetManifest.forest.npcs.diwata,
 };
 
-// ── Clickable items ─────────────────────────────
+//  Clickable items 
 // Positions are placeholders; user will adjust manually
 export const GLOW_ITEMS = [
   {
@@ -100,7 +96,7 @@ export const DIWATA_INTRO_DIALOGUE = [
   },
 ];
 
-// ── Per-item approach dialogue (shown when player clicks an item) ──────────────
+//  Per-item approach dialogue (shown when player clicks an item) 
 export const buildGlowDialogue = (item) => {
   const map = {
     bulak: [
@@ -125,11 +121,6 @@ export const buildGlowDialogue = (item) => {
   ];
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Mini-game data sets
-// ─────────────────────────────────────────────────────────────────────────────
-
-// ── 1. BLOOM REVIVAL (Wilted Flowers) ────────────────────────────────────────
 export const BLOOM_DATA = {
   introDialogue: [
     { bisayaText: "Tan-awa pag-ayo ang bulak.", englishText: "Look carefully at the flower." },
@@ -163,7 +154,7 @@ export const BLOOM_DATA = {
 };
 
 
-// ── 2. CAVE LIGHT (Dark Cave) — Firefly Line-Up ─────────────────────────────
+//  2. CAVE LIGHT (Dark Cave) — Firefly Line-Up 
 export const CAVE_DATA = {
   introDialogue: [
     { bisayaText: "Ang langob puno sa kangitngit... gihigtan sa usa ka enchantment.", englishText: "The cave is filled with darkness... held by an enchantment." },
@@ -183,7 +174,7 @@ export const CAVE_DATA = {
   // No zones/items — the firefly game builds its own internal state.
 };
 
-// ── 3. RIVER FLOW (River) ─────────────────────────────────────────────────────
+//  3. RIVER FLOW (River) 
 export const RIVER_DATA = {
   introDialogue: [
     { bisayaText: "Ang suba dili na makaagay.", englishText: "The river can no longer flow." },
@@ -216,7 +207,7 @@ export const RIVER_DATA = {
   ],
 };
 
-// ── 4. LANTERN GUIDE (Guiding Lamp) ──────────────────────────────────────────
+//  4. LANTERN GUIDE (Guiding Lamp) 
 export const LANTERN_DATA = {
   introDialogue: [
     { bisayaText: "Ang lampara adunay duha ka galakon nga porma — ang sulod ug ang gawas.", englishText: "The lamp has two magic circles — the inner one and the outer one." },

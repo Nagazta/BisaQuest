@@ -1,6 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  DragToZoneGame.jsx — Generic "drag N items into a target zone" mini-game
-// ─────────────────────────────────────────────────────────────────────────────
 import React, { useState, useRef } from "react";
 import { ITEM_IMAGE_MAP } from "../../dragDropConstants";
 import AssetManifest from "../../../services/AssetManifest";
@@ -63,7 +60,7 @@ const DragToZoneGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
         if (draggedId !== id) return;
         setDraggedId(null);
         if (e?.currentTarget && e.pointerId != null) {
-            try { e.currentTarget.releasePointerCapture(e.pointerId); } catch (_) {}
+            try { e.currentTarget.releasePointerCapture(e.pointerId); } catch (_) { }
         }
 
         const pos = positions[id];

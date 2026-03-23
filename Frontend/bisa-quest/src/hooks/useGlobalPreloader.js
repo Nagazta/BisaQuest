@@ -1,4 +1,3 @@
-// hooks/useGlobalPreloader.js
 // Preloads ALL game assets using the existing AssetManager singleton.
 // Uses getAllAssets() from AssetManifest so there's a single source of truth.
 
@@ -10,17 +9,17 @@ import { getAllAssets } from "../services/AssetManifest";
  * @returns {{ progress: number, currentAsset: string, done: boolean }}
  */
 const useGlobalPreloader = () => {
-    const [progress, setProgress]         = useState(0);
+    const [progress, setProgress] = useState(0);
     const [currentAsset, setCurrentAsset] = useState("");
-    const [done, setDone]                 = useState(false);
+    const [done, setDone] = useState(false);
     const started = useRef(false);
 
     useEffect(() => {
         if (started.current) return;
         started.current = true;
 
-        const urls   = getAllAssets();
-        const total  = urls.length;
+        const urls = getAllAssets();
+        const total = urls.length;
         const manager = AssetManager.getInstance();
 
         let loaded = 0;

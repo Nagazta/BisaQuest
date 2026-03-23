@@ -12,11 +12,11 @@ const Login = () => {
     const navigate = useNavigate();
     const { player, createNewPlayer, startNewGame } = useAuth();
 
-    const [nickname,         setNickname]         = useState("");
-    const [loading,          setLoading]           = useState(false);
-    const [error,            setError]             = useState("");
-    const [showAccountModal, setShowAccountModal]  = useState(false);
-    const [savedPlayer,      setSavedPlayer]       = useState(null);
+    const [nickname, setNickname] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [showAccountModal, setShowAccountModal] = useState(false);
+    const [savedPlayer, setSavedPlayer] = useState(null);
 
     // Track whether this component initiated a new player creation
     // so the auto-navigate effect doesn't fire mid-flow
@@ -30,9 +30,9 @@ const Login = () => {
             setShowAccountModal(true);
             console.log('🔍 Existing player found:', saved.nickname);
         }
-    }, []); // ← empty dep array: runs once, never again
+    }, []);
 
-    // ── Auto-navigate ONLY for returning players (not mid-creation flow) ──────
+    //  Auto-navigate ONLY for returning players (not mid-creation flow)
     useEffect(() => {
         if (player && !showAccountModal && !isCreatingPlayer.current) {
             console.log('✅ Player loaded, navigating to dashboard');
@@ -40,7 +40,7 @@ const Login = () => {
         }
     }, [player, showAccountModal, navigate]);
 
-    // ── UC-1.1: Create new player ─────────────────────────────────────────────
+    //Create new player 
     const handlePlayNow = async (e) => {
         e.preventDefault();
         setError("");
@@ -74,14 +74,14 @@ const Login = () => {
         }
     };
 
-    // ── UC-1.2: Continue — just close modal and go to dashboard ───────────────
+    //Continue — just close modal and go to dashboard
     const handleContinueExisting = () => {
         console.log('✅ Continuing as:', savedPlayer?.nickname);
         setShowAccountModal(false);
         navigate("/loading", { state: { redirectTo: "/dashboard" } });
     };
 
-    // ── UC-1.2: New Game — wipe everything, show nickname form ────────────────
+    // New Game — wipe everything, show nickname form
     const handleNewGame = () => {
         console.log('🆕 New game — clearing player data');
         startNewGame();
@@ -89,7 +89,7 @@ const Login = () => {
         setSavedPlayer(null);
     };
 
-    // ── Save Progress Modal (UC-1.2) ──────────────────────────────────────────
+    // Save Progress Modal (UC-1.2)
     if (showAccountModal) {
         return (
             <div className="login-page">
@@ -99,20 +99,20 @@ const Login = () => {
                     isOpen={showAccountModal}
                     onContinue={handleContinueExisting}
                     onNewGame={handleNewGame}
-                    onClose={() => {}}
+                    onClose={() => { }}
                 />
             </div>
         );
     }
 
-    // ── UC-1.1: Enter Name screen ─────────────────────────────────────────────
+    // Enter Name screen
     return (
         <div className="login-page">
             <div className="login-background"></div>
             <ParticleEffects enableMouseTrail={true} />
 
             <div className="character-container">
-                <img src={AssetManifest.characters.boy}  alt="Boy Character"  className="character boy-character" />
+                <img src={AssetManifest.characters.boy} alt="Boy Character" className="character boy-character" />
                 <img src={AssetManifest.characters.girl} alt="Girl Character" className="character girl-character" />
             </div>
 

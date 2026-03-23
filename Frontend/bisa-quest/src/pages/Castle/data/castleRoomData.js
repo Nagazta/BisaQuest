@@ -4,22 +4,11 @@ export const CASTLE_NPC_IMAGES = {
   castle_npc_1: AssetManifest.castle.npcs.princess_hara,
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  CASTLE_QUESTS
-//  Princess Hara — 3 scenes in order:
-//    0 · Castle Gate      → /castle/gate
-//    1 · Castle Courtyard → /castle/courtyard
-//    2 · Castle Library   → /castle/library
-//  Each item's compound word is hidden inside its English name.
-// ─────────────────────────────────────────────────────────────────────────────
-export const CASTLE_QUESTS = {
 
-  // ══════════════════════════════════════════════════════════════════════════
-  //  Princess Hara — castle_npc_1
-  // ══════════════════════════════════════════════════════════════════════════
+export const CASTLE_QUESTS = {
   castle_npc_1: [
 
-    // ── Quest 0: Castle Gate (/castle/gate) ─────────────────────────────────
+    //  Quest 0: Castle Gate (/castle/gate) ─────────────────────────────────
     {
       index: 0,
       sceneName: "Castle Gate",
@@ -57,10 +46,10 @@ export const CASTLE_QUESTS = {
           compoundWord: { word1: "DRAW", word2: "BRIDGE", result: "DRAWBRIDGE", bisayaResult: "Taas-ubos nga Tulay", distractors: ["DOOR", "MOAT"] },
           applyGame: {
             sceneBefore: AssetManifest.castle.scenarios.brokenBridge,
-            sceneAfter:  AssetManifest.castle.scenarios.gate,
+            sceneAfter: AssetManifest.castle.scenarios.gate,
             draggable: { image: AssetManifest.castle.scenarios.draw, label: "DRAW", startX: 78, startY: 72 },
-            dropZone:  { x: 27, y: 50, w: 43, h: 38 },
-            hintBisaya:  "I-drag ang tulay sa agianan para mahimo og drawbridge!",
+            dropZone: { x: 27, y: 50, w: 43, h: 38 },
+            hintBisaya: "I-drag ang tulay sa agianan para mahimo og drawbridge!",
             hintEnglish: "Drag the draw onto the path to create the drawbridge!",
           },
         },
@@ -74,10 +63,10 @@ export const CASTLE_QUESTS = {
           compoundWord: { word1: "DOOR", word2: "WAY", result: "DOORWAY", bisayaResult: "Purtahan", distractors: ["ARCH", "PATH"] },
           applyGame: {
             sceneBefore: AssetManifest.castle.scenarios.doorOpen,
-            sceneAfter:  AssetManifest.castle.scenarios.doorway,
+            sceneAfter: AssetManifest.castle.scenarios.doorway,
             draggable: { image: AssetManifest.castle.scenarios.door, label: "DOOR", startX: 78, startY: 72 },
-            dropZone:  { x: 36, y: 13, w: 26, h: 58 },
-            hintBisaya:  "I-drag ang pultahan sa bukas nga paagi para mahimo og doorway!",
+            dropZone: { x: 36, y: 13, w: 26, h: 58 },
+            hintBisaya: "I-drag ang pultahan sa bukas nga paagi para mahimo og doorway!",
             hintEnglish: "Drag the door onto the open way to create a doorway!",
           },
         },
@@ -91,10 +80,10 @@ export const CASTLE_QUESTS = {
           compoundWord: { word1: "KEY", word2: "HOLE", result: "KEYHOLE", bisayaResult: "Buho sa Yawi", distractors: ["LOCK", "SLOT"] },
           applyGame: {
             sceneBefore: AssetManifest.castle.scenarios.locked,
-            sceneAfter:  AssetManifest.castle.scenarios.unlocked,
+            sceneAfter: AssetManifest.castle.scenarios.unlocked,
             draggable: { image: AssetManifest.castle.scenarios.key, label: "KEY", startX: 78, startY: 72 },
-            dropZone:  { x: 42, y: 58, w: 16, h: 26 },
-            hintBisaya:  "I-drag ang yawi sa buho sa kandado para ablihan kini!",
+            dropZone: { x: 42, y: 58, w: 16, h: 26 },
+            hintBisaya: "I-drag ang yawi sa buho sa kandado para ablihan kini!",
             hintEnglish: "Drag the key into the keyhole to unlock it!",
           },
         },
@@ -108,10 +97,10 @@ export const CASTLE_QUESTS = {
           compoundWord: { word1: "PATH", word2: "WAY", result: "PATHWAY", bisayaResult: "Agianan", distractors: ["ROAD", "WALK"] },
           applyGame: {
             sceneBefore: AssetManifest.castle.scenarios.path,
-            sceneAfter:  AssetManifest.castle.scenarios.pathway,
+            sceneAfter: AssetManifest.castle.scenarios.pathway,
             draggable: { image: AssetManifest.castle.scenarios.footprint, label: "WAY", startX: 78, startY: 72 },
-            dropZone:  { x: 20, y: 40, w: 55, h: 40 },
-            hintBisaya:  "I-drag ang mga tiil-tiil sa agianan para mahimo og pathway!",
+            dropZone: { x: 20, y: 40, w: 55, h: 40 },
+            hintBisaya: "I-drag ang mga tiil-tiil sa agianan para mahimo og pathway!",
             hintEnglish: "Drag the footprints onto the path to create a pathway!",
           },
         },
@@ -125,10 +114,10 @@ export const CASTLE_QUESTS = {
           compoundWord: { word1: "WATER", word2: "WAY", result: "WATERWAY", bisayaResult: "Agianan sa Tubig", distractors: ["RIVER", "FLOW"] },
           applyGame: {
             sceneBefore: AssetManifest.castle.scenarios.way,
-            sceneAfter:  AssetManifest.castle.scenarios.waterway,
+            sceneAfter: AssetManifest.castle.scenarios.waterway,
             draggable: { image: AssetManifest.castle.scenarios.water, label: "WATER", startX: 78, startY: 72 },
-            dropZone:  { x: 28, y: 50, w: 45, h: 40 },
-            hintBisaya:  "I-drag ang tubig sa agianan para mahimo og waterway!",
+            dropZone: { x: 28, y: 50, w: 45, h: 40 },
+            hintBisaya: "I-drag ang tubig sa agianan para mahimo og waterway!",
             hintEnglish: "Drag the water onto the path to create a waterway!",
           },
         },
@@ -142,10 +131,10 @@ export const CASTLE_QUESTS = {
           compoundWord: { word1: "GRASS", word2: "LAND", result: "GRASSLAND", bisayaResult: "Damuhan", distractors: ["FIELD", "GREEN"] },
           applyGame: {
             sceneBefore: AssetManifest.castle.scenarios.land,
-            sceneAfter:  AssetManifest.castle.scenarios.grassland,
+            sceneAfter: AssetManifest.castle.scenarios.grassland,
             draggable: { image: AssetManifest.castle.scenarios.grass, label: "GRASS", startX: 78, startY: 72 },
-            dropZone:  { x: 20, y: 30, w: 55, h: 50 },
-            hintBisaya:  "I-drag ang sagbot sa yuta para mahimo og grassland!",
+            dropZone: { x: 20, y: 30, w: 55, h: 50 },
+            hintBisaya: "I-drag ang sagbot sa yuta para mahimo og grassland!",
             hintEnglish: "Drag the grass onto the land to create a grassland!",
           },
         },
@@ -159,17 +148,17 @@ export const CASTLE_QUESTS = {
           compoundWord: { word1: "STONE", word2: "WORK", result: "STONEWORK", bisayaResult: "Trabaho sa Bato", distractors: ["BRICK", "BUILD"] },
           applyGame: {
             sceneBefore: AssetManifest.castle.scenarios.stone,
-            sceneAfter:  AssetManifest.castle.scenarios.stonework,
+            sceneAfter: AssetManifest.castle.scenarios.stonework,
             draggable: { image: AssetManifest.castle.scenarios.hammer, label: "WORK", startX: 78, startY: 72 },
-            dropZone:  { x: 20, y: 20, w: 30, h: 50 },
-            hintBisaya:  "I-drag ang martilyo sa bato para makahimo og stonework!",
+            dropZone: { x: 20, y: 20, w: 30, h: 50 },
+            hintBisaya: "I-drag ang martilyo sa bato para makahimo og stonework!",
             hintEnglish: "Drag the hammer onto the stone to create stonework!",
           },
         },
       ],
     },
 
-    // ── Quest 1: Castle Courtyard (/castle/courtyard) ───────────────────────
+    //  Quest 1: Castle Courtyard (/castle/courtyard) 
     {
       index: 1,
       sceneName: "Castle Courtyard",
@@ -197,10 +186,10 @@ export const CASTLE_QUESTS = {
           compoundWord: { word1: "FLAG", word2: "POLE", result: "FLAGPOLE", bisayaResult: "Poste sa Bandila", distractors: ["ROPE", "MAST"] },
           applyGame: {
             sceneBefore: AssetManifest.castle.scenarios.pole,
-            sceneAfter:  AssetManifest.castle.scenarios.flagpole,
+            sceneAfter: AssetManifest.castle.scenarios.flagpole,
             draggable: { image: AssetManifest.castle.scenarios.flag, label: "FLAG", startX: 78, startY: 72 },
-            dropZone:  { x: 41, y: 2, w: 21, h: 36 },
-            hintBisaya:  "I-drag ang bandila sa poste para mahimo og flagpole!",
+            dropZone: { x: 41, y: 2, w: 21, h: 36 },
+            hintBisaya: "I-drag ang bandila sa poste para mahimo og flagpole!",
             hintEnglish: "Drag the flag onto the pole to create a flagpole!",
           },
         },
@@ -214,10 +203,10 @@ export const CASTLE_QUESTS = {
           compoundWord: { word1: "COURT", word2: "YARD", result: "COURTYARD", bisayaResult: "Korte / Patyo", distractors: ["GARDEN", "FIELD"] },
           applyGame: {
             sceneBefore: AssetManifest.castle.scenarios.noCourtyard,
-            sceneAfter:  AssetManifest.castle.scenarios.courtyard,
+            sceneAfter: AssetManifest.castle.scenarios.courtyard,
             draggable: { image: AssetManifest.castle.scenarios.yard, label: "YARD", startX: 78, startY: 72 },
-            dropZone:  { x: 22, y: 57, w: 48, h: 39 },
-            hintBisaya:  "I-drag ang sagbot sa korte para mahimo og courtyard!",
+            dropZone: { x: 22, y: 57, w: 48, h: 39 },
+            hintBisaya: "I-drag ang sagbot sa korte para mahimo og courtyard!",
             hintEnglish: "Drag the grass onto the court to create a courtyard!",
           },
         },
@@ -232,10 +221,10 @@ export const CASTLE_QUESTS = {
           wordEmojis: { ROOF: "🏠", TOP: "⬆️", CEIL: "🪟", PEAK: "⛰️" },
           applyGame: {
             sceneBefore: AssetManifest.castle.scenarios.noRooftop,
-            sceneAfter:  AssetManifest.castle.scenarios.courtyard,
+            sceneAfter: AssetManifest.castle.scenarios.courtyard,
             draggable: { image: AssetManifest.castle.scenarios.roof, label: "ROOF", startX: 78, startY: 72 },
-            dropZone:  { x: 5, y: 2, w: 88, h: 30 },
-            hintBisaya:  "I-drag ang atop sa bilding para mahimo og rooftop!",
+            dropZone: { x: 5, y: 2, w: 88, h: 30 },
+            hintBisaya: "I-drag ang atop sa bilding para mahimo og rooftop!",
             hintEnglish: "Drag the roof onto the building to create a rooftop!",
           },
         },
@@ -249,10 +238,10 @@ export const CASTLE_QUESTS = {
           compoundWord: { word1: "ARCH", word2: "WAY", result: "ARCHWAY", bisayaResult: "Arko nga Paagi", distractors: ["GATE", "PATH"] },
           applyGame: {
             sceneBefore: AssetManifest.castle.scenarios.arch,
-            sceneAfter:  AssetManifest.castle.scenarios.courtyard,
+            sceneAfter: AssetManifest.castle.scenarios.courtyard,
             draggable: { image: AssetManifest.castle.scenarios.archWay, label: "WAY", startX: 78, startY: 72 },
-            dropZone:  { x: 35, y: 49, w: 28, h: 46 },
-            hintBisaya:  "I-drag ang agianan sa arko para mahimo og archway!",
+            dropZone: { x: 35, y: 49, w: 28, h: 46 },
+            hintBisaya: "I-drag ang agianan sa arko para mahimo og archway!",
             hintEnglish: "Drag the way into the arch to create an archway!",
           },
         },
@@ -266,17 +255,17 @@ export const CASTLE_QUESTS = {
           compoundWord: { word1: "SUN", word2: "LIGHT", result: "SUNLIGHT", bisayaResult: "Kahayag sa Adlaw", distractors: ["GLOW", "BEAM"] },
           applyGame: {
             sceneBefore: AssetManifest.castle.scenarios.noLight,
-            sceneAfter:  AssetManifest.castle.scenarios.sunlight,
+            sceneAfter: AssetManifest.castle.scenarios.sunlight,
             draggable: { image: AssetManifest.castle.scenarios.sun, label: "SUN", startX: 78, startY: 72 },
-            dropZone:  { x: 20, y: 5, w: 55, h: 45 },
-            hintBisaya:  "I-drag ang adlaw para mahimo og sunlight!",
+            dropZone: { x: 20, y: 5, w: 55, h: 45 },
+            hintBisaya: "I-drag ang adlaw para mahimo og sunlight!",
             hintEnglish: "Drag the sun to create sunlight!",
           },
         },
       ],
     },
 
-    // ── Quest 2: Castle Library (/castle/library) ────────────────────────────
+    //  Quest 2: Castle Library (/castle/library) 
     {
       index: 2,
       sceneName: "Castle Library",
@@ -294,7 +283,7 @@ export const CASTLE_QUESTS = {
         },
       ],
       items: [
-        // ── All library items use the visual drag mechanic ───────────────────
+        //  All library items use the visual drag mechanic 
         {
           id: "bookshelf",
           labelBisaya: "Estante sa Libro / Bookshelf",
@@ -305,10 +294,10 @@ export const CASTLE_QUESTS = {
           compoundWord: { word1: "BOOK", word2: "SHELF", result: "BOOKSHELF", bisayaResult: "Estante sa Libro", distractors: ["DOOR", "CASE"] },
           applyGame: {
             sceneBefore: AssetManifest.castle.scenarios.noBooks,
-            sceneAfter:  AssetManifest.castle.scenarios.withBook,
+            sceneAfter: AssetManifest.castle.scenarios.withBook,
             draggable: { image: AssetManifest.castle.scenarios.books, label: "BOOK", startX: 78, startY: 72 },
-            dropZone:  { x: 31, y: 10, w: 30, h: 75 },
-            hintBisaya:  "I-drag ang mga libro sa estante para mahimo og bookshelf!",
+            dropZone: { x: 31, y: 10, w: 30, h: 75 },
+            hintBisaya: "I-drag ang mga libro sa estante para mahimo og bookshelf!",
             hintEnglish: "Drag the books onto the shelf to create a bookshelf!",
           },
         },
@@ -322,10 +311,10 @@ export const CASTLE_QUESTS = {
           compoundWord: { word1: "CANDLE", word2: "LIGHT", result: "CANDLELIGHT", bisayaResult: "Chandelier / Kandila", distractors: ["WAX", "FLAME"] },
           applyGame: {
             sceneBefore: AssetManifest.castle.scenarios.candle,
-            sceneAfter:  AssetManifest.castle.scenarios.candlelight,
+            sceneAfter: AssetManifest.castle.scenarios.candlelight,
             draggable: { image: AssetManifest.castle.scenarios.light, label: "LIGHT", startX: 78, startY: 72 },
-            dropZone:  { x: 25, y: 5, w: 45, h: 35 },
-            hintBisaya:  "I-drag ang kahayag sa kandila para mahimo og candlelight!",
+            dropZone: { x: 25, y: 5, w: 45, h: 35 },
+            hintBisaya: "I-drag ang kahayag sa kandila para mahimo og candlelight!",
             hintEnglish: "Drag the light to the candle to create candlelight!",
           },
         },
@@ -339,10 +328,10 @@ export const CASTLE_QUESTS = {
           compoundWord: { word1: "FIRE", word2: "PLACE", result: "FIREPLACE", bisayaResult: "Sunoganan", distractors: ["WOOD", "WARM"] },
           applyGame: {
             sceneBefore: AssetManifest.castle.scenarios.noFire,
-            sceneAfter:  AssetManifest.castle.scenarios.withFire,
+            sceneAfter: AssetManifest.castle.scenarios.withFire,
             draggable: { image: AssetManifest.castle.scenarios.fire, label: "FIRE", startX: 78, startY: 72 },
-            dropZone:  { x: 36, y: 60, w: 25, h: 35 },
-            hintBisaya:  "I-drag ang kalayo sa lugar para mahimo og fireplace!",
+            dropZone: { x: 36, y: 60, w: 25, h: 35 },
+            hintBisaya: "I-drag ang kalayo sa lugar para mahimo og fireplace!",
             hintEnglish: "Drag the fire into the place to create a fireplace!",
           },
         },
@@ -356,10 +345,10 @@ export const CASTLE_QUESTS = {
           compoundWord: { word1: "CANDLE", word2: "STICK", result: "CANDLESTICK", bisayaResult: "Tangkayan sa Kandila", distractors: ["WAX", "HOLDER"] },
           applyGame: {
             sceneBefore: AssetManifest.castle.scenarios.sideStick,
-            sceneAfter:  AssetManifest.castle.scenarios.sideCandle,
+            sceneAfter: AssetManifest.castle.scenarios.sideCandle,
             draggable: { image: AssetManifest.castle.scenarios.candleStick, label: "CANDLE", startX: 78, startY: 72 },
-            dropZone:  { x: 12, y: 55, w: 30, h: 40 },
-            hintBisaya:  "I-drag ang kandelero sa stick para mahimo og candlestick!",
+            dropZone: { x: 12, y: 55, w: 30, h: 40 },
+            hintBisaya: "I-drag ang kandelero sa stick para mahimo og candlestick!",
             hintEnglish: "Drag the candle-stick onto the stick to create a candlestick!",
           },
         },
@@ -373,10 +362,10 @@ export const CASTLE_QUESTS = {
           compoundWord: { word1: "STORY", word2: "BOOK", result: "STORYBOOK", bisayaResult: "Libro sa Istorya", distractors: ["READ", "TALE"] },
           applyGame: {
             sceneBefore: AssetManifest.castle.scenarios.tableBook,
-            sceneAfter:  AssetManifest.castle.scenarios.tableStorybook,
+            sceneAfter: AssetManifest.castle.scenarios.tableStorybook,
             draggable: { image: AssetManifest.castle.scenarios.story, label: "STORY", startX: 78, startY: 72 },
-            dropZone:  { x: 21, y: 15, w: 57, h: 54 },
-            hintBisaya:  "I-drag ang istorya sa libro para mahimo og storybook!",
+            dropZone: { x: 21, y: 15, w: 57, h: 54 },
+            hintBisaya: "I-drag ang istorya sa libro para mahimo og storybook!",
             hintEnglish: "Drag the story into the book to create a storybook!",
           },
         },
@@ -390,10 +379,10 @@ export const CASTLE_QUESTS = {
           compoundWord: { word1: "SUN", word2: "LIGHT", result: "SUNLIGHT", bisayaResult: "Kahayag sa Adlaw", distractors: ["GLOW", "BEAM"] },
           applyGame: {
             sceneBefore: AssetManifest.castle.scenarios.library,
-            sceneAfter:  AssetManifest.castle.scenarios.libraryLit,
+            sceneAfter: AssetManifest.castle.scenarios.libraryLit,
             draggable: { image: AssetManifest.castle.scenarios.sun, label: "SUN", startX: 78, startY: 72 },
-            dropZone:  { x: 60, y: 5, w: 30, h: 55 },
-            hintBisaya:  "I-drag ang adlaw sa bintana para mahimo og sunlight sa library!",
+            dropZone: { x: 60, y: 5, w: 30, h: 55 },
+            hintBisaya: "I-drag ang adlaw sa bintana para mahimo og sunlight sa library!",
             hintEnglish: "Drag the sun to the window to create sunlight in the library!",
           },
         },
@@ -402,7 +391,7 @@ export const CASTLE_QUESTS = {
   ],
 };
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+//  Helpers 
 export const getQuestData = (npcId, questIndex = 0) => {
   const quests = CASTLE_QUESTS[npcId];
   if (!quests) return null;
@@ -413,10 +402,8 @@ export const getTotalQuests = (npcId) => {
   return CASTLE_QUESTS[npcId]?.length ?? 0;
 };
 
-// ── Item dialogue builder ──────────────────────────────────────────────────────
-// Line 1 — introduce the item by name
-// Line 2 — explain what it IS (meaning, no formula)
-// Line 3 — challenge: figure out the two words
+//  Item dialogue builder 
+
 export const buildCastleDialogue = (region, npcName) => [
   {
     speaker: npcName,

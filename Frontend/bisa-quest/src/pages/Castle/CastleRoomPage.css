@@ -1,5 +1,3 @@
-/* CastleRoomPage.css — Castle-themed room exploration (mirrors HousePage) */
-
 .croom-container {
   position: fixed;
   inset: 0;
@@ -60,8 +58,15 @@
 }
 
 @keyframes croom-npc-bob {
-  0%,  100% { transform: translateY(0);    }
-  50%        { transform: translateY(-8px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 /* ── Hover / clickable regions ───────────────────────────────── */
@@ -74,9 +79,20 @@
 
 /* ── Pulse dot ───────────────────────────────────────────────── */
 @keyframes croom-pulse-dot {
-  0%   { transform: scale(1);   opacity: 0.8; }
-  50%  { transform: scale(1.5); opacity: 0.4; }
-  100% { transform: scale(1);   opacity: 0.8; }
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scale(1.5);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
 }
 
 .croom-item-dot {
@@ -249,8 +265,15 @@
 }
 
 @keyframes croom-bounce-hint {
-  0%,  100% { transform: translateX(-50%) translateY(0);    }
-  50%        { transform: translateX(-50%) translateY(-5px); }
+
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  50% {
+    transform: translateX(-50%) translateY(-5px);
+  }
 }
 
 /* ── Bilingual dialogue text ─────────────────────────────────── */
@@ -288,6 +311,13 @@
 }
 
 @keyframes croom-pulse {
-  0%,  100% { opacity: 0.9; }
-  50%        { opacity: 0.4; }
+
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
 }

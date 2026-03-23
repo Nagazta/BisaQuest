@@ -1,24 +1,12 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  LanternGuideGame.jsx — "Magic Circle Alignment"
-//  Two concentric magic circles surround a hollow centre (the lamp).
-//
-//  INNER ring (brightness):  3 snap positions every 120°.
-//    0° = no light · 120° = dim · 240° = fully bright (correct)
-//
-//  OUTER ring (compass):  4 snap positions every 90°.
-//    Correct when compass reads 0° (N at top, pointing up).
-//
-//  Both must be correct simultaneously → synonym lesson → antonym lesson → done.
-// ─────────────────────────────────────────────────────────────────────────────
 import React, { useState, useCallback } from "react";
 import lanternGameBg from "../../../assets/images/environments/scenario/guiding-lamp-game.png";
 import glowingLampImg from "../../../assets/items/glowing-lamp.png";
 import dimLampImg from "../../../assets/items/dim-lamp.png";
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// Helpers 
 const norm = (a, step) => ((Math.round(a / step) * step) % 360 + 360) % 360;
 
-// ── SVG Magic Circles ─────────────────────────────────────────────────────────
+//  SVG Magic Circles 
 const MagicCircles = ({ brightnessAngle, compassAngle, bothCorrect }) => {
   const size = 260;
   const cx = size / 2;
@@ -51,7 +39,7 @@ const MagicCircles = ({ brightnessAngle, compassAngle, bothCorrect }) => {
           style={{ filter: `blur(${brightLevel === 2 ? 28 : 16}px)` }} />
       )}
 
-      {/* ── OUTER compass ring ─────────────────────────────────────────────── */}
+      {/*  OUTER compass ring  */}
       <g transform={`rotate(${compassAngle}, ${cx}, ${cy})`}>
         {/* Outer ring track */}
         <circle cx={cx} cy={cy} r={108}
@@ -118,7 +106,7 @@ const MagicCircles = ({ brightnessAngle, compassAngle, bothCorrect }) => {
         />
       </g>
 
-      {/* ── INNER brightness ring ──────────────────────────────────────────── */}
+      {/*  INNER brightness ring  */}
       <g transform={`rotate(${brightnessAngle}, ${cx}, ${cy})`}>
         {/* Ring track */}
         <circle cx={cx} cy={cy} r={72}
@@ -152,7 +140,7 @@ const MagicCircles = ({ brightnessAngle, compassAngle, bothCorrect }) => {
         />
       </g>
 
-      {/* ── Shared decorative ring between inner and outer ──────────────────── */}
+      {/*  Shared decorative ring between inner and outer  */}
       <circle cx={cx} cy={cy} r={80}
         fill="none"
         stroke="rgba(160,120,255,0.2)"
@@ -160,7 +148,7 @@ const MagicCircles = ({ brightnessAngle, compassAngle, bothCorrect }) => {
         strokeDasharray="4 6"
       />
 
-      {/* ── Lamp in the hollow centre ──────────────────────────────────────── */}
+      {/*  Lamp in the hollow centre  */}
       {/* Lamp glow */}
       {brightLevel > 0 && (
         <circle cx={cx} cy={cy} r={bothCorrect ? 38 : 30}
@@ -179,7 +167,7 @@ const MagicCircles = ({ brightnessAngle, compassAngle, bothCorrect }) => {
         style={{ transition: "opacity 0.4s ease" }}
       />
 
-      {/* ── Correct flash ring ─────────────────────────────────────────────── */}
+      {/*  Correct flash ring  */}
       {bothCorrect && (
         <circle cx={cx} cy={cy} r={116}
           fill="none"
@@ -193,7 +181,7 @@ const MagicCircles = ({ brightnessAngle, compassAngle, bothCorrect }) => {
   );
 };
 
-// ── Component ─────────────────────────────────────────────────────────────────
+//  Component 
 const LanternGuideGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) => {
   const {
     introDialogue, synonymDialogue, antonymDialogue, completionDialogue,

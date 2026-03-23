@@ -1,4 +1,3 @@
-// services/AssetManager.js
 // Core singleton — in-memory cache, lazy loading, IndexedDB persistent cache
 
 const DB_NAME = "bisaquest_assets";
@@ -162,7 +161,7 @@ class AssetManager {
             const blob = await response.blob();
 
             // Persist for next session (fire-and-forget)
-            this._persistBlob(url, blob).catch(() => {});
+            this._persistBlob(url, blob).catch(() => { });
 
             const objectUrl = URL.createObjectURL(blob);
             const img = await this._createImage(objectUrl);

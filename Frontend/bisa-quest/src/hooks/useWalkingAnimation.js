@@ -1,6 +1,3 @@
-// hooks/useWalkingAnimation.js
-// Sprite-based walking animation hook for WASD movement
-
 import { useState, useEffect, useRef, useMemo } from "react";
 import AssetManifest from "../services/AssetManifest";
 import { useAsset } from "./useAsset";
@@ -21,7 +18,7 @@ export const useWalkingAnimation = (characterType = "boy", keysPressed = {}) => 
 
     const sprites = useMemo(() => AssetManifest.animation[characterType] || AssetManifest.animation.boy, [characterType]);
 
-    // ── Determine direction from keys ────────────────────────────────────────
+    //  Determine direction from keys 
     useEffect(() => {
         if (keysPressed["a"]) setDirection("left");
         else if (keysPressed["d"]) setDirection("right");
@@ -29,7 +26,7 @@ export const useWalkingAnimation = (characterType = "boy", keysPressed = {}) => 
         // If nothing pressed, keep last direction (idle pose)
     }, [keysPressed]);
 
-    // ── Animate frames while moving ──────────────────────────────────────────
+    //  Animate frames while moving 
     const isMoving = keysPressed["w"] || keysPressed["a"] || keysPressed["s"] || keysPressed["d"];
 
     useEffect(() => {
@@ -47,7 +44,7 @@ export const useWalkingAnimation = (characterType = "boy", keysPressed = {}) => 
     }, [isMoving]);
 
     const currentSpriteUrl = sprites[direction][frame];
-    
+
     // Load the current sprite through AssetManager
     const { src: loadedSpriteSrc } = useAsset(currentSpriteUrl);
 

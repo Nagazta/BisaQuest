@@ -1,8 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  RiverFlowGame.jsx — "Flow Restoration"
-//  3 obstacles block the river. Player holds down on each obstacle to remove it.
-//  Obstacles use real image assets; fade out on removal.
-// ─────────────────────────────────────────────────────────────────────────────
 import React, { useState, useRef, useCallback } from "react";
 import riverGameBg from "../../../assets/images/environments/scenario/river-game.png";
 import logImg from "../../../assets/items/log.png";
@@ -18,7 +13,7 @@ const OBSTACLE_IMAGES = {
 
 const HOLD_DURATION = 1200; // ms the player must hold to clear an obstacle
 
-// ── Circular hold-progress ring ───────────────────────────────────────────────
+// Circular hold-progress ring 
 const HoldRing = ({ progress }) => {
   const r = 48;
   const circ = 2 * Math.PI * r;
@@ -43,7 +38,7 @@ const HoldRing = ({ progress }) => {
   );
 };
 
-// ── Component ─────────────────────────────────────────────────────────────────
+// Component 
 const RiverFlowGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) => {
   const { introDialogue, completionDialogue, synonymDialogue, antonymDialogue, obstacles } = quest;
 
@@ -74,7 +69,7 @@ const RiverFlowGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) 
     }
   };
 
-  // ── Hold mechanics ────────────────────────────────────────────────────────
+  // Hold mechanics 
   const startHold = useCallback((id) => {
     if (stage !== "playing" || cleared.has(id) || fading.has(id)) return;
     holdStart.current[id] = performance.now();
@@ -124,7 +119,7 @@ const RiverFlowGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) 
           <span className="iqm-mechanic-badge" style={{ background: "#0277bd" }}>Flow Restoration</span>
         </div>
 
-        {/* ── Game Canvas ───────────────────────────────────────────────── */}
+        {/*  Game Canvas  */}
         <div className="iqm-scene-canvas" style={{
           background: `url(${riverGameBg}) center/cover no-repeat`,
           borderRadius: "12px", position: "relative", overflow: "hidden",
@@ -239,7 +234,7 @@ const RiverFlowGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) 
           )}
         </div>
 
-        {/* ── NPC Dialogue ──────────────────────────────────────────────── */}
+        {/*  NPC Dialogue  */}
         <div className="iqm-dialogue-row">
           <img src={npcImage} alt={npcName} className="iqm-npc-img" draggable={false} />
           <div className="iqm-dialogue-bubble">

@@ -1,7 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  ForestGlowPage.jsx — Diwata's exploration page (mirrors ForestPondPage)
-//  Background: forest-glow.png  |  NPC: Diwata
-// ─────────────────────────────────────────────────────────────────────────────
 import { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Button from "../../components/Button";

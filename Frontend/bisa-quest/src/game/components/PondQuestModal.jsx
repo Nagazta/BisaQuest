@@ -1,7 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  PondQuestModal.jsx — Routes to the correct forest-pond mini-game
-//  Mirrors ItemQuestModal.jsx but for Lunti's synonym/antonym games.
-// ─────────────────────────────────────────────────────────────────────────────
 import FishPairGame from "./minigames/FishPairGame";
 import FrogBridgeGame from "./minigames/FrogBridgeGame";
 import TurtleShellGame from "./minigames/TurtleShellGame";

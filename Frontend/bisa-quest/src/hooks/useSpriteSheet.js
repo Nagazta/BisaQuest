@@ -1,6 +1,3 @@
-// hooks/useSpriteSheet.js
-// Sprite sheet animation hook — frame-by-frame from a single image
-
 import { useState, useEffect, useRef, useCallback } from "react";
 import AssetManager from "../services/AssetManager";
 

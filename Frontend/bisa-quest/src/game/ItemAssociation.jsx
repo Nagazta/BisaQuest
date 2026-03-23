@@ -1,15 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  ItemAssociation.jsx — generic item-association game component
-//  Used by: ForestScenePage (and any future scene)
-//  NOT used by Village — HousePage handles that inline.
-//
-//  Props via location.state:
-//    questId       — quest to load items from
-//    npcId / npcName
-//    returnTo      — where Back button goes
-//    sceneType     — used to pick background & scene images
-// ─────────────────────────────────────────────────────────────────────────────
-
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 

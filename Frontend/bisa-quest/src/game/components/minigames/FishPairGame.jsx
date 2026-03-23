@@ -1,8 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  FishPairGame.jsx — "Fish Family Sort"
-//  Drag 6 baby fish to the correct mother (small vs big).
-//  Flow: intro dialogue → playing → done.
-// ─────────────────────────────────────────────────────────────────────────────
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import fishGameBg from "../../../assets/images/environments/scenario/fish-game.png";
 import fish4 from "../../../assets/items/fish-4.png";   // small baby fish

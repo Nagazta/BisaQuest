@@ -1,6 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  FanSpeedGame.jsx — Choose the correct fan speed based on instruction
-// ─────────────────────────────────────────────────────────────────────────────
 import React, { useState } from "react";
 import AssetManifest from "../../../services/AssetManifest";
 import { ITEM_IMAGE_MAP } from "../../dragDropConstants";

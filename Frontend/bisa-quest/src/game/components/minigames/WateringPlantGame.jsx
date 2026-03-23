@@ -1,6 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  WateringPlantGame.jsx — Drag watering can to plant to water it
-// ─────────────────────────────────────────────────────────────────────────────
 import React, { useState, useRef, useEffect } from "react";
 import { ITEM_IMAGE_MAP } from "../../dragDropConstants";
 import AssetManifest from "../../../services/AssetManifest";
@@ -81,10 +78,10 @@ const WateringPlantGame = ({ quest, npcName, npcImage, onComplete, onClose, item
         const r = container.getBoundingClientRect();
         const x = ((e.clientX - dragOffset.current.x - r.left) / r.width) * 100;
         const y = ((e.clientY - dragOffset.current.y - r.top) / r.height) * 100;
-        
+
         const newPos = { x: Math.min(Math.max(x, 3), 97), y: Math.min(Math.max(y, 3), 97) };
         setPos(newPos);
-        
+
         const overZone = checkIfOverZone(newPos);
         setIsPouring(overZone);
     };
@@ -94,9 +91,9 @@ const WateringPlantGame = ({ quest, npcName, npcImage, onComplete, onClose, item
         setDragged(false);
         setIsPouring(false);
         if (e?.currentTarget && e.pointerId != null) {
-            try { e.currentTarget.releasePointerCapture(e.pointerId); } catch (_) {}
+            try { e.currentTarget.releasePointerCapture(e.pointerId); } catch (_) { }
         }
-        
+
         // Let the can stay where it was dropped (or return if not success?)
         // The user says "user have free will to stop the drop". 
         // We'll keep it where it is if they drop it.
