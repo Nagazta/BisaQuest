@@ -62,9 +62,6 @@ const ForestGlowPage = () => {
   const currentLine = introDone && activeItem
     ? buildGlowDialogue(activeItem)[dialogueStep]
     : null;
-  const isLastDialogue = activeItem
-    ? dialogueStep === buildGlowDialogue(activeItem).length - 1
-    : false;
 
   // ── Handlers ─────────────────────────────────────────────────────────────────
   const handleBack = () => navigate(returnTo);
@@ -245,11 +242,6 @@ const ForestGlowPage = () => {
             <span className="house-bilingual">
               <span className="house-bilingual-bisaya">{currentLine.bisayaText}</span>
               <span className="house-bilingual-english">{currentLine.englishText}</span>
-              {isLastDialogue && (
-                <span className="glow-quest-incoming-inline">
-                  🎮 Mini-game sunod! · Mini-game coming up!
-                </span>
-              )}
             </span>
           }
           isNarration={false}

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback } from "react";
 import riverGameBg from "../../../assets/images/environments/scenario/river-game.png";
+import riverGameAfterBg from "../../../assets/images/environments/scenario/river-game-after.png";
 import logImg from "../../../assets/items/log.png";
 import driedGrass from "../../../assets/items/dried-grass.png";
 import boulderImg from "../../../assets/items/boulder.png";
@@ -50,6 +51,7 @@ const RiverFlowGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) 
   const [cleared, setCleared] = useState(new Set());
   const [fading, setFading] = useState(new Set()); // ids currently fading out
   const [holding, setHolding] = useState({});        // { [id]: progress 0-1 }
+  const [showAfterBg, setShowAfterBg] = useState(false);
 
   const holdTimers = useRef({});  // { [id]: intervalId }
   const holdStart = useRef({});  // { [id]: timestamp }
@@ -90,7 +92,8 @@ const RiverFlowGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) 
           setCleared((prev) => {
             const next = new Set([...prev, id]);
             if (next.size >= obstacles.length) {
-              setTimeout(() => { setStage("done"); setDialogueStep(0); }, 300);
+              setShowAfterBg(true);
+              setTimeout(() => { setStage("done"); setDialogueStep(0); }, 2000);
             }
             return next;
           });
@@ -125,11 +128,22 @@ const RiverFlowGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) 
           borderRadius: "12px", position: "relative", overflow: "hidden",
           display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
         }}>
+          {/* After background (smooth fade in) */}
+          <div style={{
+            position: "absolute", inset: 0,
+            background: `url(${riverGameAfterBg}) center/cover no-repeat`,
+            opacity: showAfterBg ? 1 : 0,
+            transition: "opacity 1.5s ease-in-out",
+            pointerEvents: "none",
+            zIndex: 0,
+          }} />
+
           {/* Shimmer overlay */}
           <div style={{
             position: "absolute", inset: 0,
             background: "repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(41,182,246,0.04) 40px, rgba(41,182,246,0.04) 42px)",
             pointerEvents: "none",
+            zIndex: 1,
           }} />
 
           {stage === "playing" && (

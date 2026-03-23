@@ -8,9 +8,10 @@ const norm = (a, step) => ((Math.round(a / step) * step) % 360 + 360) % 360;
 
 //  SVG Magic Circles 
 const MagicCircles = ({ brightnessAngle, compassAngle, bothCorrect }) => {
-  const size = 260;
-  const cx = size / 2;
-  const cy = size / 2;
+  const renderSize = 340; // Scaled up size for larger presence
+  const viewBoxSize = 260;
+  const cx = viewBoxSize / 2;
+  const cy = viewBoxSize / 2;
 
   // Brightness: 0 = dark, 120 = dim, 240 = bright
   const brightLevel = brightnessAngle === 240 ? 2 : brightnessAngle === 120 ? 1 : 0;
@@ -32,7 +33,16 @@ const MagicCircles = ({ brightnessAngle, compassAngle, bothCorrect }) => {
   ];
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: "block" }}>
+    <svg
+      viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`}
+      style={{
+        display: "block",
+        width: renderSize,
+        height: renderSize,
+        maxWidth: "100%",
+        maxHeight: "calc(100% - 90px)" // Safely bounded so controls don't overflow
+      }}
+    >
       {/* Ambient glow background */}
       {brightLevel > 0 && (
         <circle cx={cx} cy={cy} r={110} fill={glowColor} opacity={glowOpacity * 0.4}
@@ -77,27 +87,6 @@ const MagicCircles = ({ brightnessAngle, compassAngle, bothCorrect }) => {
             />
           );
         })}
-        {/* Cardinal direction labels */}
-        {cardinals.map(({ label, angle: deg }) => {
-          const rad = (deg - 90) * (Math.PI / 180);
-          const lx = cx + Math.cos(rad) * 86;
-          const ly = cy + Math.sin(rad) * 86;
-          const isNorth = deg === 0;
-          return (
-            <text key={label} x={lx} y={ly + 6}
-              textAnchor="middle" fontSize={isNorth ? 20 : 17}
-              fontFamily="'Pixelify Sans', sans-serif"
-              fontWeight="bold"
-              fill={compassAngle === 0 ? (isNorth ? "#ffd54f" : "#e0f0ff") : (isNorth ? "#e0b840" : "#c0b0e0")}
-              stroke={compassAngle === 0 ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0.3)"}
-              strokeWidth="0.5"
-              paintOrder="stroke"
-              opacity={1}
-            >
-              {label}
-            </text>
-          );
-        })}
         {/* North pointer arrow */}
         <polygon
           points={`${cx},${cy - 78} ${cx - 5},${cy - 62} ${cx + 5},${cy - 62}`}
@@ -105,6 +94,29 @@ const MagicCircles = ({ brightnessAngle, compassAngle, bothCorrect }) => {
           opacity={compassAngle === 0 ? 1 : 0.5}
         />
       </g>
+
+      {/* Upright Cardinal direction labels (outside rotated group) */}
+      {cardinals.map(({ label, angle: deg }) => {
+        const totalDeg = deg + compassAngle;
+        const rad = (totalDeg - 90) * (Math.PI / 180);
+        const lx = cx + Math.cos(rad) * 86;
+        const ly = cy + Math.sin(rad) * 86;
+        const isNorth = deg === 0;
+        return (
+          <text key={label} x={lx} y={ly + 6}
+            textAnchor="middle" fontSize={isNorth ? 20 : 24}
+            fontFamily="'Pixelify Sans', sans-serif"
+            fontWeight="bold"
+            fill={compassAngle === 0 ? (isNorth ? "#ffd54f" : "#e0f0ff") : (isNorth ? "#e0b840" : "#c0b0e0")}
+            stroke={compassAngle === 0 ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0.3)"}
+            strokeWidth="0.5"
+            paintOrder="stroke"
+            opacity={1}
+          >
+            {label}
+          </text>
+        );
+      })}
 
       {/*  INNER brightness ring  */}
       <g transform={`rotate(${brightnessAngle}, ${cx}, ${cy})`}>
@@ -151,7 +163,7 @@ const MagicCircles = ({ brightnessAngle, compassAngle, bothCorrect }) => {
       {/*  Lamp in the hollow centre  */}
       {/* Lamp glow */}
       {brightLevel > 0 && (
-        <circle cx={cx} cy={cy} r={bothCorrect ? 38 : 30}
+        <circle cx={cx} cy={cy} r={bothCorrect ? 46 : 38}
           fill={glowColor}
           opacity={brightLevel === 2 ? (bothCorrect ? 0.45 : 0.3) : 0.1}
           style={{ filter: "blur(8px)", transition: "all 0.5s ease" }}
@@ -160,10 +172,10 @@ const MagicCircles = ({ brightnessAngle, compassAngle, bothCorrect }) => {
       {/* Lamp image — switches between glowing and dim */}
       <image
         href={brightLevel === 2 ? glowingLampImg : dimLampImg}
-        x={cx - 44}
-        y={cy - 56}
-        width={88}
-        height={112}
+        x={cx - 50}
+        y={cy - 64}
+        width={100}
+        height={128}
         style={{ transition: "opacity 0.4s ease" }}
       />
 
@@ -300,8 +312,10 @@ const LanternGuideGame = ({ quest, item, npcName, npcImage, onClose, onComplete 
           {(stage === "intro" || stage === "playing") && (
             <div style={{
               position: "relative", zIndex: 2,
-              display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
+              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+              height: "100%", width: "100%", gap: 0,
               pointerEvents: stage === "intro" ? "none" : "auto",
+              marginTop: "-15px", // Visually center the magic circle by counteracting optical padding
             }}>
               {/* Magic circle SVG */}
               <MagicCircles
@@ -313,15 +327,16 @@ const LanternGuideGame = ({ quest, item, npcName, npcImage, onClose, onComplete 
               {/* Controls row */}
               <div style={{
                 display: "flex", gap: 28, alignItems: "flex-start",
+                marginTop: "-14px", // Tighten space specifically between magic circle and controls
               }}>
                 {/* Inner ring controls */}
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
                   <span style={{
-                    fontSize: 11, fontFamily: "'Pixelify Sans', sans-serif",
+                    fontSize: 14, fontFamily: "'Pixelify Sans', sans-serif",
                     color: brightOk ? "#ffd54f" : "#c0a0ff",
                     fontWeight: "bold", letterSpacing: 1,
                   }}>
-                    {brightOk ? "✓ " : ""}Brightness | Kahayag
+                    {brightOk ? "" : ""}Brightness | Kahayag
                   </span>
                   <div style={{ display: "flex", gap: 8 }}>
                     <button style={btnStyle(false)} onClick={() => rotateInner(-1)}>◀</button>
@@ -332,11 +347,11 @@ const LanternGuideGame = ({ quest, item, npcName, npcImage, onClose, onComplete 
                 {/* Outer ring controls */}
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
                   <span style={{
-                    fontSize: 11, fontFamily: "'Pixelify Sans', sans-serif",
+                    fontSize: 14, fontFamily: "'Pixelify Sans', sans-serif",
                     color: compassOk ? "#a0c8ff" : "#c0a0ff",
                     fontWeight: "bold", letterSpacing: 1,
                   }}>
-                    {compassOk ? "✓ " : ""}Direction | Direksyon
+                    {compassOk ? "" : ""}Direction | Direksyon
                   </span>
                   <div style={{ display: "flex", gap: 8 }}>
                     <button style={btnStyle(false)} onClick={() => rotateOuter(-1)}>◀</button>
