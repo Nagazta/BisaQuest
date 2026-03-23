@@ -319,7 +319,6 @@ const FishingGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) =>
                   style={{
                     width: "100%",
                     height: "auto",
-                    mixBlendMode: "multiply", // removes white background from JPG
                     filter: isShaking ? "sepia(100%) hue-rotate(310deg) saturate(300%) drop-shadow(0 2px 4px rgba(0,0,0,0.5))" : "drop-shadow(0 2px 4px rgba(0,0,0,0.3))",
                   }}
                 />
