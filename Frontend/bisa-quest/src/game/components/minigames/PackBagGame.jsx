@@ -101,7 +101,7 @@ const PackBagGame = ({ quest, npcName, npcImage, onComplete, onClose, item }) =>
                             <div
                                 key={dItem.id}
                                 className={["iqm-sdd-item", isItemDragging ? "iqm-sdd-item--dragging" : ""].filter(Boolean).join(" ")}
-                                style={{ left: `${state.x}%`, top: `${state.y}%`, transform: "translate(-50%, -50%)", width: "12%", height: "12%", zIndex: isItemDragging ? 20 : 10, cursor: isItemDragging ? "grabbing" : "grab" }}
+                                style={{ left: `${state.x}%`, top: `${state.y}%`, transform: "translate(-50%, -50%)", width: "27%", height: "27%", zIndex: isItemDragging ? 20 : 10, cursor: isItemDragging ? "grabbing" : "grab" }}
                                 onPointerDown={(e) => handlePointerDown(dItem.id, e)}
                                 onPointerMove={handlePointerMove}
                                 onPointerUp={handlePointerUp}

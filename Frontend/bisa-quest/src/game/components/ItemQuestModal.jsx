@@ -151,8 +151,8 @@ const ITEM_QUESTS = {
 
     toalya: {
         mechanic: "wipe",
-        instructionBisaya: "Trapohi ang singot ni Ligaya gamit ang toalya!",
-        instructionEnglish: "Wipe Ligaya's sweat using the towel!",
+        instructionBisaya: "Trapohi ang singot ni Ligaya gamit ang labakara!",
+        instructionEnglish: "Wipe Ligaya's sweat using the face towel!",
         draggable: {
             id: "towel_item",
             label: "Toalya/Towel",
@@ -258,9 +258,9 @@ const ITEM_QUESTS = {
             hideBaseBackground: true,
             dirtyImage: AssetManifest.village.scenarios.houseWindow,
             cleanImage: AssetManifest.village.scenarios.houseWindow,
-            successLabel: "Hayag Na!",
-            successBisaya: "Hayag na ang bintana! Maayo kaayo! 🎉",
-            successEnglish: "The window is bright now! Well done! 🎉",
+            successLabel: "Limpyo Na!",
+            successBisaya: "Wala nay abog ang bintana! Maayo kaayo! 🎉",
+            successEnglish: "The window does not have dust now! Awesome! 🎉",
             remainingBisaya: (count) => `${count} ka spots pa ang hugaw!`,
             remainingEnglish: (count) => `${count} more spots to wipe!`,
             dirtSpots: [
@@ -321,10 +321,10 @@ const ITEM_QUESTS = {
         instructionEnglish: "Put the items on the shelf!",
         successText: "Awesome!",
         draggableItems: [
-            { id: "dz_book", imageKey: "book", label: "Libro/Book", startX: 20, startY: 80 },
-            { id: "dz_plant", imageKey: "potted_plant", label: "Tanum/Plant", startX: 75, startY: 82 },
+            { id: "dz_book", imageKey: "book", label: "Libro", startX: 20, startY: 80 },
+            { id: "dz_plant", imageKey: "bulak", label: "Tanom", startX: 75, startY: 75, size: 180 },
         ],
-        dropZone: { x: 12, y: 28, w: 20, h: 14, emoji: "📚", label: "Estante/Shelf" },
+        dropZone: { x: 10, y: 20, w: 20, h: 14, emoji: "📚", label: "Estante" },
     },
     aparador: {
         mechanic: "drag_to_zone",
@@ -333,9 +333,9 @@ const ITEM_QUESTS = {
         instructionEnglish: "Put the clothes in the cabinet!",
         successText: "Napuno na ang Aparador!",
         draggableItems: [
-            { id: "dz_shirt", imageKey: "baro", label: "Baro/Shirt", startX: 15, startY: 80 },
-            { id: "dz_pants", imageKey: "sinina", label: "Sinina/Pants", startX: 50, startY: 82 },
-            { id: "dz_dress", imageKey: "dress", label: "Bistida/Dress", startX: 85, startY: 78 },
+            { id: "dz_shirt", imageKey: "baro", label: "Shirt", startX: 20, startY: 80, size: 150 },
+            { id: "dz_pants", imageKey: "sinina", label: "Pants", startX: 40, startY: 70, size: 180 },
+            { id: "dz_dress", imageKey: "dress", label: "Dress", startX: 70, startY: 78, size: 200 },
         ],
         dropZone: { x: 75, y: 52, w: 14, h: 20, emoji: "🗄️", label: "Aparador/Cabinet" },
     },
@@ -344,11 +344,11 @@ const ITEM_QUESTS = {
         background: AssetManifest.village.scenarios.house,
         instructionBisaya: "Andama ang pagkaon sa lamesa!",
         instructionEnglish: "Set the table with food and dishes!",
-        successText: "Andam na ang Lamesa!",
+        successText: "Mangape na ta!",
         draggableItems: [
-            { id: "dz_plate", imageKey: "plato", label: "Plato/Plate", startX: 15, startY: 80 },
-            { id: "dz_cup", imageKey: "tasa", label: "Tasa/Cup", startX: 50, startY: 82 },
-            { id: "dz_spoon", imageKey: "spoon", label: "Kutsara/Spoon", startX: 85, startY: 78 },
+            { id: "dz_plate", imageKey: "plato", label: "Plato/Plate", startX: 30, startY: 80, size: 110},
+            { id: "dz_cup", imageKey: "tasa", label: "Tasa/Cup", startX: 50, startY: 82, size: 100 },
+            { id: "dz_spoon", imageKey: "spoon", label: "Spoon/Kutsara", startX: 80, startY: 78, size: 100},
         ],
         dropZone: { x: 48, y: 56, w: 20, h: 14, emoji: "🍽️", label: "Lamesa/Table" },
     },

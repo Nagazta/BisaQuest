@@ -144,7 +144,8 @@ const DragToZoneGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
                                     left: `${pos.x}%`, top: `${pos.y}%`,
                                     transform: "translate(-50%, -50%)",
                                     cursor: isPlaced ? "default" : (isActive ? "grabbing" : "grab"),
-                                    width: "75px", height: "75px",
+                                    width: `${di.size || 75}px`,
+                                    height: `${di.size || 75}px`,
                                     zIndex: isActive ? 20 : (isPlaced ? 5 : 10),
                                     transition: isActive ? "none" : "left 0.3s, top 0.3s",
                                 }}
