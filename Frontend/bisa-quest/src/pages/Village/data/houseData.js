@@ -20,7 +20,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "shelf",
     descriptionBisaya: "Ang estante kay nipis nga tabla nga gibutang sa bungbong diin nimo ibutang ang mga butang.",
     descriptionEnglish: "A shelf is a thin, flat board attached to a wall where you can put things.",
-    x: 22, y: 32, w: 15, h: 7,
+    x: 22.5, y: 32, w: 15, h: 7,
   },
   {
     id: "bulak",
@@ -28,7 +28,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "houseplant",
     descriptionBisaya: "Ang houseplant kay tanom nga ibutang sulod sa balay para dekorasyon.",
     descriptionEnglish: "A houseplant is a plant kept inside the house used mostly as decoration.",
-    x: 9, y: 25, w: 6, h: 7,
+    x: 14, y: 24, w: 6, h: 7,
   },
   {
     id: "toalya",
@@ -45,7 +45,7 @@ export const LIVING_ROOM_LABELS = [
     descriptionBisaya: "Suga ni nga naggamit og lana o gas aron makabuhat og kayo. Gigamit kini kung walay kuryente o bombilya.",
     descriptionEnglish: "A lamp is a light that uses oil or gas to make a flame. It can be used when there is no electricity or light bulb.",
     imageKey: "lamp",
-    x: 27, y: 25, w: 4, h: 10,
+    x: 30, y: 25, w: 4, h: 10,
   },
   {
     id: "relo",
@@ -62,7 +62,7 @@ export const LIVING_ROOM_LABELS = [
     descriptionBisaya: "Ang bayong kay gigamit sa pagdala og mga butang o pagpalit sa merkado.",
     descriptionEnglish: "A bag is used to carry things or bring items from the market.",
     imageKey: "bag",
-    x: 25, y: 42, w: 7, h: 10,
+    x: 29, y: 42, w: 7, h: 10,
   },
   {
     id: "kalendaryo",
@@ -79,7 +79,7 @@ export const LIVING_ROOM_LABELS = [
     descriptionBisaya: "Ang silhig gigamit sa pagpanilhig sa hugaw sa salog.",
     descriptionEnglish: "A broom is used to sweep dirt from the floor.",
     imageKey: "walis",
-    x: 39, y: 45, w: 6, h: 14,
+    x: 39.5, y: 45, w: 6, h: 14,
   },
   {
     id: "planggana",
@@ -121,7 +121,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Picture Frame",
     descriptionBisaya: "Ang kuwadro kay butanganan og piktyur (picture) aron madisplay kini.",
     descriptionEnglish: "A picture frame is used to hold and display a picture.",
-    x: 43, y: 36, w: 5, h: 6,
+    x: 43, y: 34, w: 5, h: 6,
   },
   {
     id: "sopa",
@@ -180,7 +180,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Mop",
     descriptionBisaya: "Ang trapiyador kay gamit sa paglimpyo sa salog. Aduna kiniy kuptanan ug panapton nga mosuyop og tubig.",
     descriptionEnglish: "A mop is a tool used to clean the floor. It has a handle and a soft part that absorbs water.",
-    x: 44, y: 46, w: 6, h: 14,
+    x: 43.2, y: 51, w: 6, h: 14,
   },
   // ── Floor & ceiling ───────────────────────────────────────────────────────
   {
