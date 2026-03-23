@@ -180,7 +180,22 @@ const WashAndMopGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
                                 onPointerUp={handlePointerUp}
                                 onPointerCancel={handlePointerUp}
                             >
-                                {mopImg && <img src={mopImg} alt={toolKey} className="iqm-scene-broom-img" style={{ width: toolKey === "rag" ? 120 : 180, height: toolKey === "rag" ? 120 : 180 }} draggable={false} />}
+                                {(() => {
+                                    let size = 180;
+                                    if (toolKey === "rag") size = 180;
+                                    if (toolKey === "mop") size = 270; // 👈 mop bigger
+
+                                    return mopImg && (
+                                        <img 
+                                            src={mopImg} 
+                                            alt={toolKey} 
+                                            className="iqm-scene-broom-img" 
+                                            style={{ width: size, height: size }} 
+                                            draggable={false} 
+                                        />
+                                    );
+                                })()}
+
                                 {!isDragging && swept.size === 0 && (
                                     <div className="iqm-drag-indicator" style={{ left: "50%" }}>
                                         <div className="iqm-drag-hand">🖐️</div>

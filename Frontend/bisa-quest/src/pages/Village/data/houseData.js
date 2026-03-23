@@ -32,10 +32,10 @@ export const LIVING_ROOM_LABELS = [
   },
   {
     id: "toalya",
-    labelBisaya: "Toalya",
-    labelEnglish: "Towel",
-    descriptionBisaya: "Ang toalya kay panapton nga gigamit para pagpahid sa singot sa lawas.",
-    descriptionEnglish: "A towel is a piece of cloth used to wipe sweat and dry your body.",
+    labelBisaya: "Labakara",
+    labelEnglish: "Face Towel",
+    descriptionBisaya: "Ang labakara kay panapton nga gigamit para pagpahid sa singot sa lawas.",
+    descriptionEnglish: "A face towel is a piece of cloth used to wipe sweat and dry your body.",
     x: 18, y: 39, w: 5, h: 10,
   },
   {
@@ -184,7 +184,7 @@ export const LIVING_ROOM_LABELS = [
   },
   // ── Floor & ceiling ───────────────────────────────────────────────────────
   {
-    id: "trapo",
+    id: "doormat",
     labelBisaya: "Talamakan",
     labelEnglish: "Doormat",
     descriptionBisaya: "Ang talamakan kay makita sa pultahan aron ipahid ang hugaw sa sapatos.",

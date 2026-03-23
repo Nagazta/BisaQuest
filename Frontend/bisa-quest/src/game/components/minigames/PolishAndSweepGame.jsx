@@ -220,7 +220,10 @@ const PolishAndSweepGame = ({ quest, npcName, npcImage, onComplete, onClose, ite
                             <img 
                                 src={stage === "polish" ? lampasoImg : silhigImg} 
                                 alt="Tool" 
-                                style={{ width: 120, filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.3))" }} 
+                                style={{ 
+                                width: stage === "sweep" ? 220 : 140, 
+                                filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.3))" 
+                                }}
                                 draggable={false} 
                             />
                             {!isDragging && (
@@ -234,8 +237,8 @@ const PolishAndSweepGame = ({ quest, npcName, npcImage, onComplete, onClose, ite
                     {stage === "success" && (
                         <div className="iqm-scene-success-overlay">
                             <div className="iqm-scene-success-card">
-                                <div className="iqm-scene-success-stars">✨🧹✨</div>
-                                <div className="iqm-scene-success-text">Nasidlak Na!</div>
+                                <div className="iqm-scene-success-stars">✨🏆✨</div>
+                                <div className="iqm-scene-success-text">Limpyo na!</div>
                             </div>
                         </div>
                     )}
