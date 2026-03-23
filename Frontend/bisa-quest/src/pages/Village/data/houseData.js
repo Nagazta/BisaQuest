@@ -12,7 +12,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "door",
     descriptionBisaya: "Ang pultahan kay maablihan ug masirad-an aron matabonan ang agianan sa kwarto, building, o sakyanan.",
     descriptionEnglish: "A door opens and closes to cover the entrance of a room, building, or vehicle.",
-    x: 1, y: 30, w: 8, h: 40,
+    x: 2, y: 30, w: 8, h: 40,
   },
   {
     id: "estante_wall",
@@ -20,7 +20,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "shelf",
     descriptionBisaya: "Ang estante kay nipis nga tabla nga gibutang sa bungbong diin nimo ibutang ang mga butang.",
     descriptionEnglish: "A shelf is a thin, flat board attached to a wall where you can put things.",
-    x: 12, y: 32, w: 15, h: 7,
+    x: 22, y: 32, w: 15, h: 7,
   },
   {
     id: "bulak",
@@ -36,7 +36,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Towel",
     descriptionBisaya: "Ang toalya kay panapton nga gigamit para pagpahid sa singot sa lawas.",
     descriptionEnglish: "A towel is a piece of cloth used to wipe sweat and dry your body.",
-    x: 17, y: 39, w: 5, h: 10,
+    x: 18, y: 39, w: 5, h: 10,
   },
   {
     id: "lampara",
@@ -53,7 +53,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Clock",
     descriptionBisaya: "Ang orasan kay butang nga nagsulti sa oras.",
     descriptionEnglish: "It is used to tell the time of day.",
-    x: 45.5, y: 26, w: 5, h: 6,
+    x: 45, y: 26, w: 5, h: 6,
   },
   {
     id: "bag",
@@ -70,7 +70,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Calendar",
     descriptionBisaya: "Ang kalendaryo gigamit para makita kung unsa ang adlaw, semana, ug bulan sa usa ka tuig.",
     descriptionEnglish: "A calendar is used to show the days, weeks, and months of the year.",
-    x: 72, y: 31, w: 8, h: 10,
+    x: 68, y: 31, w: 8, h: 10,
   },
   {
     id: "silhig",
@@ -96,7 +96,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "bucket/Pail",
     descriptionBisaya: "Ang baldi kay sudlanan nga gigamit sa pagdala og tubig o uban pang butang.",
     descriptionEnglish: "A pail or bucket is a round container with a handle used to carry water or other things.",
-    x: 28, y: 59, w: 6, h: 8,
+    x: 30, y: 59, w: 6, h: 8,
   },
   // ── Center ────────────────────────────────────────────────────────────────
   {
@@ -113,7 +113,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Window",
     descriptionBisaya: "Abli nga parte sa dingding para makasulod ang hangin gikan sa gawas.",
     descriptionEnglish: "A window in an opening in the wall that lets in air from outside.",
-    x: 58, y: 30, w: 10, h: 13,
+    x: 63, y: 30, w: 10, h: 13,
   },
   {
     id: "litrato",
@@ -129,7 +129,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Sofa",
     descriptionBisaya: "Ang sopa kay humok nga lingkuranan para sa pahuway ug pagstoryaanay.",
     descriptionEnglish: "A sofa is a soft seat used or resting and conversation.",
-    x: 53, y: 46, w: 18, h: 12,
+    x: 50, y: 48, w: 18, h: 12,
   },
   {
     id: "book",
@@ -137,7 +137,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Book",
     descriptionBisaya: "Ang libro kay mga pahina nga naay mga pulong ug hulagway nga mabasa nimo.",
     descriptionEnglish: "A book is a set of pages with words and pictures that you can read.",
-    x: 58, y: 57, w: 6, h: 6,
+    x: 52, y: 57, w: 6, h: 6,
   },
   {
     id: "lamesa",
@@ -146,7 +146,7 @@ export const LIVING_ROOM_LABELS = [
     descriptionBisaya: "Ang coffee table kay mubo nga lamesa. Gibutang kini atubangan sa sopa.",
     descriptionEnglish: "A coffee table is a low table placed in front of a sofa.",
     imageKey: "lamesa_sala",
-    x: 55, y: 58, w: 16, h: 9,
+    x: 53, y: 58, w: 16, h: 9,
   },
   {
     id: "alfombra",
@@ -189,7 +189,7 @@ export const LIVING_ROOM_LABELS = [
     labelEnglish: "Doormat",
     descriptionBisaya: "Ang talamakan kay makita sa pultahan aron ipahid ang hugaw sa sapatos.",
     descriptionEnglish: "A doormat is a mat placed near a door where you wipe your shoes or feet.",
-    x: -1, y: 82, w: 15, h: 12,
+    x: 1, y: 87, w: 15, h: 12,
   },
   {
     id: "salog",
