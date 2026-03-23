@@ -285,14 +285,16 @@
 }
 
 .house-quest-incoming-bisaya {
-  font-family: 'Pixelify Sans', sans-serif;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 500;
   font-size: 20px;
   color: #fcd765;
   line-height: 1.3;
 }
 
 .house-quest-incoming-english {
-  font-family: 'Pixelify Sans', sans-serif;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 500;
   font-size: 18px;
   color: #c8b99a;
   font-style: italic;
@@ -303,7 +305,8 @@
 .house-quest-incoming-inline {
   display: block;
   margin-top: 8px;
-  font-family: 'Pixelify Sans', sans-serif;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 500;
   font-size: 16px;
   color: #fcd765;
   opacity: 0.85;

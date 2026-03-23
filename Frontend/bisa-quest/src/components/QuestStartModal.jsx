@@ -92,8 +92,7 @@ const QuestStartModal = ({
       case "forest_npc_3":
         return "Help Diwata restore the balance of the forest!";
 
-      case "forest_npc_4":
-        return "This magical deer looks lost. Tabangi siya!";
+
 
       // =====================
       // CASTLE NPCS

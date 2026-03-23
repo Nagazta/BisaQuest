@@ -1,7 +1,7 @@
 // components/LazyImage.jsx
 // Drop-in replacement for <img> tags that supports lazy loading via AssetManager
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useAsset } from "../hooks/useAsset";
 import "./LazyImage.css";
 

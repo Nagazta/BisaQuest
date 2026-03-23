@@ -24,8 +24,8 @@ const DragAndDrop = () => {
   const location = useLocation();
 
   const questId = location.state?.questId || null;
-  const npcId = location.state?.npcId || "forest_npc_4";
-  const npcName = location.state?.npcName || "Deer";
+  const npcId = location.state?.npcId || "forest_npc_1";
+  const npcName = location.state?.npcName || "Guide";
   const returnTo = location.state?.returnTo || "/student/forest";
   const sceneParam = location.state?.sceneType || "forest-scene";
 
@@ -244,11 +244,6 @@ const DragAndDrop = () => {
             onDragStart={handleDragStart}
           />
         ))}
-
-        {/* NPC */}
-        <div className="dad-npc-wrap">
-          <img src={null} alt={npcName} className="dad-npc-img" draggable={false} />
-        </div>
 
         {/* Complete button */}
         <button

@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { hasLibroPage, getLibroPageCountForEnv } from "../../utils/playerStorage";
 import "../../pages/Village/HousePage.css";
@@ -9,10 +8,6 @@ const VillageTransitionModal = ({ isOpen, currentRoom, onClose, onProceedToFores
     
     if (!isOpen) return null;
 
-    const completedHouse = hasLibroPage('village', 'village_house');
-    const completedBedroom = hasLibroPage('village', 'village_bedroom');
-    const completedKitchen = hasLibroPage('village', 'village_kitchen');
-    
     const allCompleted = getLibroPageCountForEnv('village') >= 3;
 
     return (

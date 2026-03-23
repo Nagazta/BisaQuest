@@ -178,10 +178,10 @@
 
 .tooltip-content {
   position: relative;
-  padding: 18px 20px 16px;
+  padding: 22px 26px 20px;
   border-radius: 6px;
-  min-width: 240px;
-  max-width: 300px;
+  min-width: 300px;
+  max-width: 380px;
 
   /* Layered wood/parchment background */
   background:
@@ -232,7 +232,7 @@
 /* ── Title ─────────────────────────────────────────────────────────────── */
 .tooltip-content h3 {
   font-family: 'Fredoka One', cursive;
-  font-size: 17px;
+  font-size: 20px;
   color: var(--gold-bright);
   margin: 4px 0 4px;
   text-align: center;
@@ -243,6 +243,7 @@
     0 0 12px rgba(255, 200, 0, 0.25);
   line-height: 1.25;
 }
+
 
 /* Engraved divider under title */
 .tooltip-content h3::after {
@@ -265,11 +266,11 @@
   font-family: 'Pixelify Sans', monospace;
   color: #c8a060;
   margin: 4px 0 10px;
-  font-size: 11px;
+  font-size: 16px;
   text-align: center;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  opacity: 0.85;
+  opacity: 1;
 }
 
 /* ── Progress bar ───────────────────────────────────────────────────────── */
@@ -311,13 +312,15 @@
   }
 }
 
-.progress-text {
+.map-progress-text {
   font-family: 'Pixelify Sans', monospace;
-  color: #81c784;
-  font-size: 11px;
+  color: #fcd765;
+  font-size: 16px;
   font-weight: bold;
   letter-spacing: 0.5px;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+  display: block;
+  margin-top: 4px;
 }
 
 /* ── Lock status line ───────────────────────────────────────────────────── */
@@ -325,7 +328,7 @@
   font-family: 'Pixelify Sans', monospace;
   color: #ff6b6b;
   margin: 8px 0 0;
-  font-size: 11px;
+  font-size: 14px;
   text-align: center;
   letter-spacing: 0.5px;
   text-shadow: 0 1px 4px rgba(180, 0, 0, 0.5);
@@ -339,7 +342,7 @@
   font-family: 'Pixelify Sans', monospace;
   color: #81c784;
   margin: 8px 0 0;
-  font-size: 11px;
+  font-size: 14px;
   text-align: center;
   letter-spacing: 0.5px;
   text-shadow: 0 1px 4px rgba(0, 130, 0, 0.4);

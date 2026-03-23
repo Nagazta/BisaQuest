@@ -129,7 +129,7 @@ import ForestBackground from "../assets/images/environments/Forest.png";
 import DiwataCharacter from "../assets/images/characters/diwata.png";
 import ForestGuardianCharacter from "../assets/images/characters/forest_guardian.png";
 import WanderingBardCharacter from "../assets/images/characters/wandering_bard.png";
-import DeerCharacter from "../assets/images/characters/deer.png";
+
 
 import forestSceneImg from "../assets/images/environments/scenario/forest-scene.png";
 import forkedPathImg from "../assets/images/environments/scenario/forked-path.png";
@@ -230,9 +230,6 @@ import DashboardBg from "../assets/images/bg-dashboard.png";
 import DashboardMapImg from "../assets/images/environments/Dashboard.png";
 import LoginBg from "../assets/images/bg-login.png";
 import BisaTitle from "../assets/images/bisaquest-title.png";
-import VillageCard from "../assets/images/cardsImage/village.png";
-import ForestCard from "../assets/images/cardsImage/forest.png";
-import KingdomCard from "../assets/images/cardsImage/kingdom.png";
 import ArrowImg from "../assets/images/signs/arrow.png";
 import GuardImg from "../assets/images/environments/scenario/security.png";
 import LoadingBoyImg from "../assets/images/characters/loading_screen_boy.png";
@@ -390,7 +387,7 @@ const AssetManifest = {
             forest_guardian: ForestGuardianCharacter,
             forest_guardian_hungry: forestGuardianHungry,
             wandering_bard: WanderingBardCharacter,
-            deer: DeerCharacter,
+
         },
         scenarios: {
             forestScene: forestSceneImg,
@@ -501,9 +498,6 @@ const AssetManifest = {
         dashboardMap: DashboardMapImg,
         loginBg: LoginBg,
         title: BisaTitle,
-        villageCard: VillageCard,
-        forestCard: ForestCard,
-        kingdomCard: KingdomCard,
         arrow: ArrowImg,
         guard: GuardImg,
         loadingBoy: LoadingBoyImg,
