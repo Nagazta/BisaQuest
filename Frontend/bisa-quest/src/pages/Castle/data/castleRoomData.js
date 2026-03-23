@@ -38,7 +38,7 @@ export const CASTLE_QUESTS = {
       items: [
         {
           id: "drawbridge",
-          labelBisaya: "Tulay / Bridge",
+          labelBisaya: "Tulay",
           labelEnglish: "Drawbridge",
           descriptionBisaya: "Usa ka tulay nga mahimong itaas o ipaubos ibabaw sa moat para kontrol-on ang pagsulod sa kastilyo.",
           descriptionEnglish: "A bridge that can be raised or lowered over a moat to allow or block entry into the castle.",
@@ -55,7 +55,7 @@ export const CASTLE_QUESTS = {
         },
         {
           id: "doorway",
-          labelBisaya: "Purtahan / Door",
+          labelBisaya: "Purtahan",
           labelEnglish: "Doorway",
           descriptionBisaya: "Usa ka bukas nga parte sa dingding nga adunay purtahan, mao ang panguna nga pagsulod sa kastilyo.",
           descriptionEnglish: "An opening in a wall fitted with a door, serving as the main entrance to the castle.",
@@ -72,7 +72,7 @@ export const CASTLE_QUESTS = {
         },
         {
           id: "keyhole",
-          labelBisaya: "Yawi / Key",
+          labelBisaya: "Yawi",
           labelEnglish: "Keyhole",
           descriptionBisaya: "Usa ka gamay nga buho sa kandado diin isulod ang tamang yawi para ablihi kini.",
           descriptionEnglish: "A small slot in a lock through which the correct key is inserted to open it.",
@@ -89,7 +89,7 @@ export const CASTLE_QUESTS = {
         },
         {
           id: "pathway",
-          labelBisaya: "Agianan / Pathway",
+          labelBisaya: "Agianan",
           labelEnglish: "Pathway",
           descriptionBisaya: "Usa ka makitid nga agianan nga bato nga gihimo para ligtas nga malaktan padulong sa kastilyo.",
           descriptionEnglish: "A narrow stone walkway built for people to walk along safely toward the castle.",
@@ -106,7 +106,7 @@ export const CASTLE_QUESTS = {
         },
         {
           id: "waterway",
-          labelBisaya: "Agianan sa Tubig / Waterway",
+          labelBisaya: "Agianan sa Tubig",
           labelEnglish: "Waterway",
           descriptionBisaya: "Usa ka natural o gihimong agianan sa tubig, sama sa moat sa palibot sa kastilyo.",
           descriptionEnglish: "A natural or man-made channel of water, like the moat that surrounds the castle.",
@@ -123,7 +123,7 @@ export const CASTLE_QUESTS = {
         },
         {
           id: "grassland",
-          labelBisaya: "Damuhan / Grass",
+          labelBisaya: "Damuhan",
           labelEnglish: "Grassland",
           descriptionBisaya: "Usa ka dapit nga puno og sagbot ug berde nga mga tanom sa palibot sa kastilyo.",
           descriptionEnglish: "A wide open area of land covered with grass growing around the castle.",
@@ -140,7 +140,7 @@ export const CASTLE_QUESTS = {
         },
         {
           id: "stonework",
-          labelBisaya: "Bato / Stone",
+          labelBisaya: "Bato",
           labelEnglish: "Stonework",
           descriptionBisaya: "Ang kahanas sa pagtukod gamit ang mga bato, makita sa mga dingding sa kastilyo.",
           descriptionEnglish: "The craft of constructing structures using shaped and fitted stone, seen in the castle walls.",
@@ -178,7 +178,7 @@ export const CASTLE_QUESTS = {
       items: [
         {
           id: "flagpole",
-          labelBisaya: "Poste sa Bandila / Flagpole",
+          labelBisaya: "Poste sa Bandila",
           labelEnglish: "Flagpole",
           descriptionBisaya: "Usa ka taas nga poste nga adunay bandila sa ibabaw, makita sa courtyard sa kastilyo.",
           descriptionEnglish: "A tall pole with a flag at the top, found standing in the castle courtyard.",
@@ -195,7 +195,7 @@ export const CASTLE_QUESTS = {
         },
         {
           id: "courtyard",
-          labelBisaya: "Korte / Patio",
+          labelBisaya: "Korte",
           labelEnglish: "Courtyard",
           descriptionBisaya: "Usa ka abli nga lugar nga gilibutan og mga dingding o mga bilding, sama sa espasyo sa kastilyo.",
           descriptionEnglish: "An open area of ground surrounded by walls or buildings, like the open space of the castle.",
@@ -212,7 +212,7 @@ export const CASTLE_QUESTS = {
         },
         {
           id: "rooftop",
-          labelBisaya: "Atop sa Bilding / Rooftop",
+          labelBisaya: "Atop sa Bilding",
           labelEnglish: "Rooftop",
           descriptionBisaya: "Ang pinaka-tass nga bahin sa atop sa kastilyo, makita gikan sa courtyard.",
           descriptionEnglish: "The very top surface of the castle roof, visible from the courtyard below.",
@@ -230,7 +230,7 @@ export const CASTLE_QUESTS = {
         },
         {
           id: "archway",
-          labelBisaya: "Arko nga Agianan / Archway",
+          labelBisaya: "Arko nga Agianan",
           labelEnglish: "Archway",
           descriptionBisaya: "Usa ka arko nga sudlan or agianan nga gihimo sa bato, kasagaran makita sa mga kastilyo.",
           descriptionEnglish: "A curved stone entrance or passage commonly found in castles and old buildings.",
@@ -247,7 +247,7 @@ export const CASTLE_QUESTS = {
         },
         {
           id: "sunlight",
-          labelBisaya: "Kahayag sa Adlaw / Sunlight",
+          labelBisaya: "Kahayag sa Adlaw",
           labelEnglish: "Sunlight",
           descriptionBisaya: "Ang kahayag nga gikan sa adlaw nga naghatag og init ug liwanag sa tibuok courtyard.",
           descriptionEnglish: "The light that comes from the sun, filling the courtyard with warmth and brightness.",
@@ -286,7 +286,7 @@ export const CASTLE_QUESTS = {
         //  All library items use the visual drag mechanic 
         {
           id: "bookshelf",
-          labelBisaya: "Estante sa Libro / Bookshelf",
+          labelBisaya: "Estante sa Libro",
           labelEnglish: "Bookshelf",
           descriptionBisaya: "Usa ka taas nga muwebles nga adunay mga patag na suporta para sa pagtago sa mga libro.",
           descriptionEnglish: "A tall piece of furniture with flat horizontal supports used for storing books.",
@@ -303,7 +303,7 @@ export const CASTLE_QUESTS = {
         },
         {
           id: "candlelight",
-          labelBisaya: "Chandelier / Kandila",
+          labelBisaya: "Kandila",
           labelEnglish: "Candlelight",
           descriptionBisaya: "Ang mahumok ug init nga kahayag nga gikan sa nagdilaab nga mga kandila. Maganda siya sa gabii!",
           descriptionEnglish: "The soft, warm glow that comes from burning candles. It makes the room feel cosy at night!",
@@ -320,7 +320,7 @@ export const CASTLE_QUESTS = {
         },
         {
           id: "fireplace",
-          labelBisaya: "Sunoganan / Fireplace",
+          labelBisaya: "Sunoganan",
           labelEnglish: "Fireplace",
           descriptionBisaya: "Usa ka istraktura nga gitukod sa dingding para sa kalayo. Nagpainit kini sa tibuok lawak sa tingtugnaw.",
           descriptionEnglish: "A structure built into the wall that holds a fire. It warms the whole room during cold weather.",
@@ -337,7 +337,7 @@ export const CASTLE_QUESTS = {
         },
         {
           id: "candlestick",
-          labelBisaya: "Kandelero / Candlestick",
+          labelBisaya: "Kandelero",
           labelEnglish: "Candlestick",
           descriptionBisaya: "Usa ka suportahan nga gigamit para itindog ang kandila samtang nagsiga. Makita kini sa mga lamesa sa library.",
           descriptionEnglish: "A holder designed to support a candle upright while it burns. You can see them on the library table.",
@@ -354,7 +354,7 @@ export const CASTLE_QUESTS = {
         },
         {
           id: "storybook",
-          labelBisaya: "Libro sa Istorya / Storybook",
+          labelBisaya: "Libro sa Istorya",
           labelEnglish: "Storybook",
           descriptionBisaya: "Usa ka libro nga adunay mga istorya, kasagaran adunay mga hulagway, para basahon sa mga bata.",
           descriptionEnglish: "A book containing stories, often with pictures, meant to be read by children.",
@@ -371,7 +371,7 @@ export const CASTLE_QUESTS = {
         },
         {
           id: "sunlight",
-          labelBisaya: "Kahayag sa Adlaw / Sunlight",
+          labelBisaya: "Kahayag sa Adlaw",
           labelEnglish: "Sunlight",
           descriptionBisaya: "Ang kahayag nga gikan sa adlaw nga naghatag og init ug liwanag sa sulod sa library.",
           descriptionEnglish: "The light that comes from the sun, filling the library with warmth and brightness.",
