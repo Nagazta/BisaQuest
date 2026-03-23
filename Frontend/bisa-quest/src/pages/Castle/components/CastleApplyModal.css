@@ -51,30 +51,6 @@
   border-color: #f87171;
 }
 
-/*  Scene canvas  */
-.cam-canvas {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 7;
-  overflow: hidden;
-  touch-action: none;
-}
-
-/*  Scene backgrounds  */
-.cam-scene-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  user-select: none;
-}
-
-/* After image fades in on top */
-.cam-scene-bg--after {
-  animation: cam-fade-in 0.6s ease both;
-}
 
 /*  Drop zone  */
 .cam-dropzone {
@@ -96,7 +72,7 @@
 .cam-card {
   position: absolute;
   background: rgba(252, 215, 101, 0.93);
-  border: 3px solid #6d28d9;
+  border: 3px solid #a07a10;
   border-radius: 14px;
   padding: 10px 16px;
   min-width: 72px;
@@ -104,18 +80,18 @@
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  box-shadow: 0 5px 0 #6d28d9, 0 6px 14px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 5px 0 #a07a10, 0 6px 14px rgba(0, 0, 0, 0.4);
   user-select: none;
   touch-action: none;
 }
 
 .cam-card:not(.cam-card--dragging):hover {
   transform: translate(-50%, calc(-50% - 6px)) !important;
-  box-shadow: 0 11px 0 #6d28d9, 0 12px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 11px 0 #a07a10, 0 12px 20px rgba(0, 0, 0, 0.4);
 }
 
 .cam-card--dragging {
-  box-shadow: 0 2px 0 #6d28d9, 0 12px 30px rgba(0, 0, 0, 0.6) !important;
+  box-shadow: 0 2px 0 #a07a10, 0 12px 30px rgba(0, 0, 0, 0.6) !important;
   transform: translate(-50%, -50%) scale(1.08) rotate(2deg) !important;
 }
 
@@ -140,7 +116,7 @@
 .cam-card-word {
   font-family: 'Fredoka One', cursive;
   font-size: clamp(12px, 1.6vw, 16px);
-  color: #3a1a6e;
+  color: #3a1a00;
   letter-spacing: 0.5px;
 }
 
@@ -153,12 +129,12 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(8, 4, 28, 0.82);
-  border: 2.5px solid #86efac;
+  background: rgba(30, 15, 4, 0.88);
+  border: 2.5px solid #fcd765;
   border-radius: 30px;
   padding: 10px 28px;
   backdrop-filter: blur(10px);
-  box-shadow: 0 0 40px rgba(134, 239, 172, 0.4);
+  box-shadow: 0 0 40px rgba(252, 215, 101, 0.35);
   white-space: nowrap;
   pointer-events: none;
   animation: cam-result-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
@@ -186,68 +162,17 @@
 .cam-result-op {
   font-family: 'Fredoka One', cursive;
   font-size: clamp(16px, 2vw, 22px);
-  color: #c4b5fd;
+  color: #fcd765;
 }
 
 .cam-result-word {
   font-family: 'Fredoka One', cursive;
   font-size: clamp(18px, 2.8vw, 30px);
-  color: #86efac;
-  letter-spacing: 2px;
-  text-shadow: 0 0 16px rgba(134, 239, 172, 0.8);
-}
-
-/* ── Dialogue bar ─────────────────────────────────────────────────────────── */
-.cam-dialogue {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 20px;
-  background: #120b2e;
-  border-top: 2px solid rgba(168, 85, 247, 0.3);
-}
-
-.cam-npc-img {
-  height: 64px;
-  width: 64px;
-  object-fit: contain;
-  flex-shrink: 0;
-  filter: drop-shadow(0 3px 8px rgba(168, 85, 247, 0.5));
-}
-
-.cam-dialogue-bubble {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.cam-dialogue-name {
-  font-family: 'Fredoka One', cursive;
-  font-size: 15px;
   color: #fcd765;
+  letter-spacing: 2px;
+  text-shadow: 0 0 16px rgba(252, 215, 101, 0.8);
 }
 
-.cam-dialogue-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.cam-text-bisaya {
-  font-family: 'Fredoka One', cursive;
-  font-size: 14px;
-  color: #f3f4f6;
-  line-height: 1.4;
-}
-
-.cam-text-english {
-  font-family: 'Pixelify Sans', sans-serif;
-  font-size: 12px;
-  color: #9ca3af;
-  font-style: italic;
-  line-height: 1.4;
-}
 
 /* ── Keyframes ────────────────────────────────────────────────────────────── */
 @keyframes cam-fade-in {
@@ -322,20 +247,6 @@
 
 /* ── Responsive ───────────────────────────────────────────────────────────── */
 @media (max-width: 580px) {
-  .cam-canvas {
-    aspect-ratio: 4 / 3;
-  }
-
-  .cam-dialogue {
-    padding: 10px 14px;
-    gap: 10px;
-  }
-
-  .cam-npc-img {
-    height: 50px;
-    width: 50px;
-  }
-
   .cam-card {
     padding: 7px 12px;
     min-width: 56px;

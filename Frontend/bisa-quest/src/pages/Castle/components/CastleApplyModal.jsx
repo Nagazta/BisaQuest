@@ -1,9 +1,10 @@
 import { useState, useRef } from "react";
 import Button from "../../../components/Button";
+import "../../../game/components/ItemQuestModal.css";
 import "./CastleApplyModal.css";
 
 const CastleApplyModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
-  const { compoundWord, applyGame } = item;
+  const { compoundWord, applyGame, labelBisaya, labelEnglish } = item;
   const { sceneBefore, sceneAfter, draggable, dropZone, hintBisaya, hintEnglish } = applyGame;
 
   const [pos, setPos] = useState({ x: draggable.startX, y: draggable.startY });
@@ -60,27 +61,34 @@ const CastleApplyModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="cam-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="cam-modal">
+    <div className="iqm-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="iqm-modal iqm-modal--scene">
 
         {/* Close */}
-        <button className="cam-close" onClick={onClose} aria-label="Close">✕</button>
+        <button className="iqm-close" onClick={onClose} aria-label="Close">✕</button>
+
+        {/* ── Header ───────────────────────────────────────────────────────── */}
+        <div className="iqm-header">
+          <span className="iqm-header-bisaya">{labelBisaya}</span>
+          <span className="iqm-header-english">{labelEnglish}</span>
+          <span className="iqm-mechanic-badge iqm-mechanic-badge--scene_drag">Drag &amp; Place</span>
+        </div>
 
         {/* ── Scene canvas ─────────────────────────────────────────────────── */}
-        <div className="cam-canvas" ref={containerRef}>
+        <div className="iqm-scene-canvas" ref={containerRef}>
 
           {/* Background — crossfades to sceneAfter on solve */}
           <img
             src={sceneBefore}
             alt="scene"
-            className="cam-scene-bg"
+            className="iqm-scene-bg"
             draggable={false}
           />
           {solved && (
             <img
               src={sceneAfter}
               alt="scene solved"
-              className="cam-scene-bg cam-scene-bg--after"
+              className="iqm-scene-bg iqm-scene-bg--reveal"
               draggable={false}
             />
           )}
@@ -147,17 +155,17 @@ const CastleApplyModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
         {/* ── End scene canvas ─────────────────────────────────────────────── */}
 
         {/* ── Dialogue bar ─────────────────────────────────────────────────── */}
-        <div className="cam-dialogue">
-          <img src={npcImage} alt={npcName} className="cam-npc-img" draggable={false} />
-          <div className="cam-dialogue-bubble">
-            <div className="cam-dialogue-name">{npcName}</div>
+        <div className="iqm-dialogue-row">
+          <img src={npcImage} alt={npcName} className="iqm-npc-img" draggable={false} />
+          <div className="iqm-dialogue-bubble">
+            <div className="iqm-dialogue-speaker">{npcName}</div>
             {solved ? (
               <>
-                <div className="cam-dialogue-text">
-                  <span className="cam-text-bisaya">
+                <div className="iqm-dialogue-text">
+                  <span className="iqm-dialogue-bisaya">
                     Sakto! <strong>{compoundWord.result}</strong> — na diskobre nimo! 🎉
                   </span>
-                  <span className="cam-text-english">
+                  <span className="iqm-dialogue-english">
                     Correct! You discovered <strong>{compoundWord.result}</strong>! 🎉
                   </span>
                 </div>
@@ -166,9 +174,9 @@ const CastleApplyModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
                 </Button>
               </>
             ) : (
-              <div className="cam-dialogue-text">
-                <span className="cam-text-bisaya">{hintBisaya}</span>
-                <span className="cam-text-english">{hintEnglish}</span>
+              <div className="iqm-dialogue-text">
+                <span className="iqm-dialogue-bisaya">{hintBisaya}</span>
+                <span className="iqm-dialogue-english">{hintEnglish}</span>
               </div>
             )}
           </div>
