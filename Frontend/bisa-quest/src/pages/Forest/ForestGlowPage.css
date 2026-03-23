@@ -45,7 +45,7 @@
 /* ── NPC ─────────────────────────────────────────────────────── */
 .glow-npc-wrap {
   position: absolute;
-  right: 50px;
+  right: 30px;
   bottom: 80px;
   z-index: 20;
   pointer-events: none;
@@ -163,13 +163,14 @@
 .glow-hover-tooltip-bisaya {
   font-weight: 700;
   color: #e0b0ff;
+  font-size: 17px;
   display: block;
 }
 
 .glow-hover-tooltip-english {
   font-weight: 400;
   color: #c8b0dd;
-  font-size: 11px;
+  font-size: 17px;
   display: block;
 }
 

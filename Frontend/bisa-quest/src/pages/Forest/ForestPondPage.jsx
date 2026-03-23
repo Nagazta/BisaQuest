@@ -61,9 +61,6 @@ const ForestPondPage = () => {
   const introLine = !introDone ? INTRO_DIALOGUE[introStep] : null;
   const currentLine =
     introDone && activeItem ? buildPondDialogue(activeItem)[dialogueStep] : null;
-  const isLastDialogueLine = activeItem
-    ? dialogueStep === buildPondDialogue(activeItem).length - 1
-    : false;
 
   // ── Handlers ──────────────────────────────────────────────────────────────
   const handleBack = () => navigate(returnTo);
@@ -266,11 +263,6 @@ const ForestPondPage = () => {
               <span className="house-bilingual-english">
                 {currentLine.englishText}
               </span>
-              {isLastDialogueLine && (
-                <span className="pond-quest-incoming-inline">
-                  🎮 Mini-game sunod! · Mini-game coming up!
-                </span>
-              )}
             </span>
           }
           isNarration={false}

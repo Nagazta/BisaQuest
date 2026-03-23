@@ -18,8 +18,8 @@ export const GLOW_ITEMS = [
   },
   {
     id: "langob",
-    labelBisaya: "Ngitngit na Langob",
-    labelEnglish: "Dark Cave",
+    labelBisaya: "Langob",
+    labelEnglish: "Cave",
     descriptionBisaya: "Ngitngit kaayo ang langob. Kinahanglan ang kahayag aron mapuno kini.",
     descriptionEnglish: "The cave is very dark. It needs light to be filled again.",
     x: 72, y: 60, w: 8, h: 10,

@@ -20,14 +20,12 @@
 .pond-placeholder-bg {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    #1a3a2a 0%,
-    #1e4d3a 30%,
-    #1b5e4b 50%,
-    #1a6b5a 70%,
-    #0d4f5c 100%
-  );
+  background: linear-gradient(180deg,
+      #1a3a2a 0%,
+      #1e4d3a 30%,
+      #1b5e4b 50%,
+      #1a6b5a 70%,
+      #0d4f5c 100%);
 }
 
 .pond-placeholder-bg::after {
@@ -37,12 +35,10 @@
   left: 0;
   right: 0;
   height: 40%;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(30, 90, 120, 0.4) 60%,
-    rgba(20, 70, 100, 0.6) 100%
-  );
+  background: linear-gradient(180deg,
+      transparent 0%,
+      rgba(30, 90, 120, 0.4) 60%,
+      rgba(20, 70, 100, 0.6) 100%);
   border-radius: 60% 60% 0 0;
 }
 
@@ -89,10 +85,12 @@
 }
 
 @keyframes pond-npc-bob {
+
   0%,
   100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-8px);
   }
@@ -112,10 +110,12 @@
     transform: scale(1);
     opacity: 0.8;
   }
+
   50% {
     transform: scale(1.5);
     opacity: 0.4;
   }
+
   100% {
     transform: scale(1);
     opacity: 0.8;
@@ -199,13 +199,14 @@
 .pond-hover-tooltip-bisaya {
   font-weight: 700;
   color: #a8e6cf;
+  font-size: 17px;
   display: block;
 }
 
 .pond-hover-tooltip-english {
   font-weight: 400;
   color: #c8ddd0;
-  font-size: 11px;
+  font-size: 17px;
   display: block;
 }
 
@@ -274,10 +275,12 @@
 }
 
 @keyframes pond-bounce-hint {
+
   0%,
   100% {
     transform: translateX(-50%) translateY(0);
   }
+
   50% {
     transform: translateX(-50%) translateY(-5px);
   }
@@ -296,10 +299,12 @@
 }
 
 @keyframes pond-loading-pulse {
+
   0%,
   100% {
     opacity: 0.6;
   }
+
   50% {
     opacity: 1;
   }

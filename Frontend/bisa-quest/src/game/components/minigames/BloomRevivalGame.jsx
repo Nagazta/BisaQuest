@@ -83,14 +83,14 @@ const BloomRevivalGame = ({ quest, item, npcName, npcImage, onClose, onComplete 
               pointerEvents: stage === "intro" ? "none" : "auto"
             }}>
               {/* Crossfade flower images: base → bloomed at balancedCount 3 */}
-              <div style={{ position: "relative", width: 300, height: "auto" }}>
+              <div style={{ position: "relative", width: 350, height: "auto" }}>
                 {/* Base image — always present, dims as sliders fill */}
                 <img
                   src={flowerImg}
                   alt="Flowers"
                   draggable={false}
                   style={{
-                    width: 300,
+                    width: 350,
                     height: "auto",
                     left: 5,
                     display: "block",
@@ -109,7 +109,7 @@ const BloomRevivalGame = ({ quest, item, npcName, npcImage, onClose, onComplete 
                   alt="Flowers bloomed"
                   draggable={false}
                   style={{
-                    width: 300,
+                    width: 350,
                     height: "auto",
                     left: 5,
                     position: "absolute",
