@@ -17,7 +17,7 @@ import "../../pages/Village/HousePage.css";
 
 const API = import.meta.env.VITE_API_URL !== undefined ? import.meta.env.VITE_API_URL : (import.meta.env.PROD ? '' : 'http://localhost:5000');
 const CASTLE_NPCS = [
-    { npcId: "castle_npc_1", name: "Princess Hara", x: 50, y: 45, character: AssetManifest.castle.npcs.princess_hara, showName: true, quest: "compound_words", scenePath: "/castle/gate" },
+    { npcId: "castle_npc_1", name: "Princess Hara", x: 20, y: 65, character: AssetManifest.castle.npcs.princess_hara, showName: true, quest: "compound_words", scenePath: "/castle/gate" },
 ];
 
 const CastlePage = () => {
@@ -198,9 +198,9 @@ const CastlePage = () => {
     };
 
     // ── Scene picker — determine which scenes are unlocked ─────────────────
-    const gateUnlocked      = true;
+    const gateUnlocked = true;
     const courtyardUnlocked = hasLibroPage("castle", "castle_gate");
-    const libraryUnlocked   = hasLibroPage("castle", "castle_courtyard");
+    const libraryUnlocked = hasLibroPage("castle", "castle_courtyard");
 
     const handleStartQuest = () => {
         setShowModal(false);
@@ -284,61 +284,61 @@ const CastlePage = () => {
 
             {showScenePicker && (
                 <div className="house-door-overlay" onClick={handleCloseScenePicker}>
-                  <div className="house-door-modal" onClick={e => e.stopPropagation()}>
-                    <button className="house-door-close" onClick={handleCloseScenePicker}>✕</button>
+                    <div className="house-door-modal" onClick={e => e.stopPropagation()}>
+                        <button className="house-door-close" onClick={handleCloseScenePicker}>✕</button>
 
-                    <div className="house-door-header">
-                      <div className="house-door-title">Asa ka moadto? 🏰</div>
+                        <div className="house-door-header">
+                            <div className="house-door-title">Asa ka moadto? 🏰</div>
+                        </div>
+
+                        <div className="house-door-body">
+                            <div className="house-door-grid">
+
+                                {/* Gate — always unlocked */}
+                                <button
+                                    className="house-door-btn"
+                                    onClick={() => handleGoToScene("/castle/gate")}
+                                >
+                                    <span className="house-door-btn-icon">🚪</span>
+                                    <div className="house-door-btn-name">Gate</div>
+                                    <div className="house-door-btn-sub">
+                                        {hasLibroPage("castle", "castle_gate") ? "✅ Nahuman na!" : "Sugdi diri!"}
+                                    </div>
+                                </button>
+
+                                {/* Courtyard */}
+                                <button
+                                    className={`house-door-btn ${!courtyardUnlocked ? "house-door-btn--locked" : ""}`}
+                                    onClick={() => courtyardUnlocked && handleGoToScene("/castle/courtyard")}
+                                    style={!courtyardUnlocked ? { opacity: 0.5, cursor: "not-allowed" } : {}}
+                                >
+                                    <span className="house-door-btn-icon">{courtyardUnlocked ? "🌳" : "🔒"}</span>
+                                    <div className="house-door-btn-name">Courtyard</div>
+                                    <div className="house-door-btn-sub">
+                                        {!courtyardUnlocked
+                                            ? "Complete the Gate first!"
+                                            : hasLibroPage("castle", "castle_courtyard") ? "✅ Nahuman na!" : "Explore!"}
+                                    </div>
+                                </button>
+
+                                {/* Library */}
+                                <button
+                                    className={`house-door-btn ${!libraryUnlocked ? "house-door-btn--locked" : ""}`}
+                                    onClick={() => libraryUnlocked && handleGoToScene("/castle/library")}
+                                    style={!libraryUnlocked ? { opacity: 0.5, cursor: "not-allowed" } : {}}
+                                >
+                                    <span className="house-door-btn-icon">{libraryUnlocked ? "📚" : "🔒"}</span>
+                                    <div className="house-door-btn-name">Library</div>
+                                    <div className="house-door-btn-sub">
+                                        {!libraryUnlocked
+                                            ? "Complete the Courtyard first!"
+                                            : hasLibroPage("castle", "castle_library") ? "✅ Nahuman na!" : "Explore!"}
+                                    </div>
+                                </button>
+
+                            </div>
+                        </div>
                     </div>
-
-                    <div className="house-door-body">
-                      <div className="house-door-grid">
-
-                        {/* Gate — always unlocked */}
-                        <button
-                          className="house-door-btn"
-                          onClick={() => handleGoToScene("/castle/gate")}
-                        >
-                          <span className="house-door-btn-icon">🚪</span>
-                          <div className="house-door-btn-name">Gate</div>
-                          <div className="house-door-btn-sub">
-                            {hasLibroPage("castle", "castle_gate") ? "✅ Nahuman na!" : "Sugdi diri!"}
-                          </div>
-                        </button>
-
-                        {/* Courtyard */}
-                        <button
-                          className={`house-door-btn ${!courtyardUnlocked ? "house-door-btn--locked" : ""}`}
-                          onClick={() => courtyardUnlocked && handleGoToScene("/castle/courtyard")}
-                          style={!courtyardUnlocked ? { opacity: 0.5, cursor: "not-allowed" } : {}}
-                        >
-                          <span className="house-door-btn-icon">{courtyardUnlocked ? "🌳" : "🔒"}</span>
-                          <div className="house-door-btn-name">Courtyard</div>
-                          <div className="house-door-btn-sub">
-                            {!courtyardUnlocked
-                              ? "Complete the Gate first!"
-                              : hasLibroPage("castle", "castle_courtyard") ? "✅ Nahuman na!" : "Explore!"}
-                          </div>
-                        </button>
-
-                        {/* Library */}
-                        <button
-                          className={`house-door-btn ${!libraryUnlocked ? "house-door-btn--locked" : ""}`}
-                          onClick={() => libraryUnlocked && handleGoToScene("/castle/library")}
-                          style={!libraryUnlocked ? { opacity: 0.5, cursor: "not-allowed" } : {}}
-                        >
-                          <span className="house-door-btn-icon">{libraryUnlocked ? "📚" : "🔒"}</span>
-                          <div className="house-door-btn-name">Library</div>
-                          <div className="house-door-btn-sub">
-                            {!libraryUnlocked
-                              ? "Complete the Courtyard first!"
-                              : hasLibroPage("castle", "castle_library") ? "✅ Nahuman na!" : "Explore!"}
-                          </div>
-                        </button>
-
-                      </div>
-                    </div>
-                  </div>
                 </div>
             )}
 

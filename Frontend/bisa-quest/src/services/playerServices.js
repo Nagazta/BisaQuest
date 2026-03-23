@@ -1,5 +1,3 @@
-// services/playerService.js
-// Replaces autoUserService.js — all API calls use /api/player and player_id
 
 const BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:5000');
 

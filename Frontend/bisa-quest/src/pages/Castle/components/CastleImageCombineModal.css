@@ -1,6 +1,4 @@
-/* CastleImageCombineModal.css — image-based compound word drag game */
-
-/* ── Overlay ──────────────────────────────────────────────────────────────── */
+/*  Overlay  */
 .cicm-overlay {
   position: fixed;
   inset: 0;
@@ -13,7 +11,7 @@
   animation: cicm-fade-in 0.25s ease both;
 }
 
-/* ── Modal shell ──────────────────────────────────────────────────────────── */
+/*  Modal shell  */
 .cicm-modal {
   position: relative;
   background: #0d0a1a;

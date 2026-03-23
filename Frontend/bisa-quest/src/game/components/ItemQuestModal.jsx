@@ -42,7 +42,7 @@ const ITEM_QUESTS = {
         instructionEnglish: "Drag the broom to sweep the dirt on the floor!",
         draggable: {
             id: "broom_item",
-            label: "Silhig",
+            label: "Silhig/Broom",
             imageKey: "walis",
             startX: 20,
             startY: 55,
@@ -71,7 +71,7 @@ const ITEM_QUESTS = {
         instructionEnglish: "Mop up the water spills on the floor!",
         draggable: {
             id: "mop_item",
-            label: "Mop",
+            label: "Mop",  // keeping Mop/Mop?
             imageKey: "mop",
             startX: 20,
             startY: 55,
@@ -130,7 +130,7 @@ const ITEM_QUESTS = {
         instructionEnglish: "Wipe your shoes on the doormat!",
         draggable: {
             id: "shoes_item",
-            label: "Sapatos",
+            label: "Sapatos/Shoes",
             imageKey: "shoes",
             startX: 40,
             startY: 40,
@@ -155,7 +155,7 @@ const ITEM_QUESTS = {
         instructionEnglish: "Wipe Ligaya's sweat using the towel!",
         draggable: {
             id: "towel_item",
-            label: "Toalya",
+            label: "Toalya/Towel",
             imageKey: "towel",
             startX: 20,
             startY: 50,
@@ -188,7 +188,7 @@ const ITEM_QUESTS = {
         successEnglish: "The plant is fresh now! Well done! 🎉",
         wateringCan: {
             id: "watering_can_item",
-            label: "Watering Can",
+            label: "Regadera/Watering Can",
             imageKey: "watering_can",
             startX: 20,
             startY: 70,
@@ -218,7 +218,7 @@ const ITEM_QUESTS = {
         instructionEnglish: "Clean the curtain using the dust feather!",
         draggable: {
             id: "paspas_item",
-            label: "Paspas",
+            label: "Paspas/Dust Feather",
             imageKey: "paspas",
             startX: 20, startY: 60,
         },
@@ -249,7 +249,7 @@ const ITEM_QUESTS = {
         instructionEnglish: "Wipe the window to clean it!",
         draggable: {
             id: "rag_item",
-            label: "Trapo",
+            label: "Trapo/Rag",
             imageKey: "rag",
             startX: 20, startY: 60,
         },
@@ -321,10 +321,10 @@ const ITEM_QUESTS = {
         instructionEnglish: "Put the items on the shelf!",
         successText: "Awesome!",
         draggableItems: [
-            { id: "dz_book", imageKey: "book", label: "Libro", startX: 20, startY: 80 },
-            { id: "dz_plant", imageKey: "potted_plant", label: "Tanum", startX: 75, startY: 82 },
+            { id: "dz_book", imageKey: "book", label: "Libro/Book", startX: 20, startY: 80 },
+            { id: "dz_plant", imageKey: "potted_plant", label: "Tanum/Plant", startX: 75, startY: 82 },
         ],
-        dropZone: { x: 12, y: 28, w: 20, h: 14, emoji: "📚", label: "Estante" },
+        dropZone: { x: 12, y: 28, w: 20, h: 14, emoji: "📚", label: "Estante/Shelf" },
     },
     aparador: {
         mechanic: "drag_to_zone",
@@ -333,11 +333,11 @@ const ITEM_QUESTS = {
         instructionEnglish: "Put the clothes in the cabinet!",
         successText: "Napuno na ang Aparador!",
         draggableItems: [
-            { id: "dz_shirt", imageKey: "baro", label: "Baro", startX: 15, startY: 80 },
-            { id: "dz_pants", imageKey: "sinina", label: "Sinina", startX: 50, startY: 82 },
-            { id: "dz_dress", imageKey: "dress", label: "Dress", startX: 85, startY: 78 },
+            { id: "dz_shirt", imageKey: "baro", label: "Baro/Shirt", startX: 15, startY: 80 },
+            { id: "dz_pants", imageKey: "sinina", label: "Sinina/Pants", startX: 50, startY: 82 },
+            { id: "dz_dress", imageKey: "dress", label: "Bistida/Dress", startX: 85, startY: 78 },
         ],
-        dropZone: { x: 75, y: 52, w: 14, h: 20, emoji: "🗄️", label: "Aparador" },
+        dropZone: { x: 75, y: 52, w: 14, h: 20, emoji: "🗄️", label: "Aparador/Cabinet" },
     },
     lamesa: {
         mechanic: "drag_to_zone",
@@ -348,9 +348,9 @@ const ITEM_QUESTS = {
         draggableItems: [
             { id: "dz_plate", imageKey: "plato", label: "Plato/Plate", startX: 15, startY: 80 },
             { id: "dz_cup", imageKey: "tasa", label: "Tasa/Cup", startX: 50, startY: 82 },
-            { id: "dz_spoon", imageKey: "spoon", label: "Spoon/Kutsara", startX: 85, startY: 78 },
+            { id: "dz_spoon", imageKey: "spoon", label: "Kutsara/Spoon", startX: 85, startY: 78 },
         ],
-        dropZone: { x: 48, y: 56, w: 20, h: 14, emoji: "🍽️", label: "Lamesa" },
+        dropZone: { x: 48, y: 56, w: 20, h: 14, emoji: "🍽️", label: "Lamesa/Table" },
     },
     alfombra: {
         mechanic: "wash_and_mop",
@@ -396,7 +396,7 @@ const ITEM_QUESTS = {
         instructionEnglish: "Clean the picture frame using the rag!",
         draggable: {
             id: "rag_item",
-            label: "Trapo",
+            label: "Trapo/Rag",
             imageKey: "rag",
             startX: 20, startY: 60,
         },
@@ -441,11 +441,11 @@ const ITEM_QUESTS = {
         instructionEnglish: "Prepare the food on the plate!",
         successText: "Andam na ang Pagkaon!",
         draggableItems: [
-            { id: "dz_kplate", imageKey: "plato", label: "Plato", startX: 80, startY: 78 },
-            { id: "dz_kcup", imageKey: "tasa", label: "Tasa", startX: 85, startY: 40 },
-            { id: "dz_kladle", imageKey: "sandok", label: "Sandok", startX: 12, startY: 80 },
+            { id: "dz_kplate", imageKey: "plato", label: "Plato/Plate", startX: 80, startY: 78 },
+            { id: "dz_kcup", imageKey: "tasa", label: "Tasa/Cup", startX: 85, startY: 40 },
+            { id: "dz_kladle", imageKey: "sandok", label: "Luwag/Ladle", startX: 12, startY: 80 },
         ],
-        dropZone: { x: 18, y: 50, w: 28, h: 22, emoji: "🍽️", label: "Lamesa" },
+        dropZone: { x: 18, y: 50, w: 28, h: 22, emoji: "🍽️", label: "Lamesa/Table" },
     },
     estante_wala: {
         mechanic: "drag_to_zone",
@@ -454,11 +454,11 @@ const ITEM_QUESTS = {
         instructionEnglish: "Put the plates on the shelves!",
         successText: "Napuno na ang Estante!",
         draggableItems: [
-            { id: "dz_eplate", imageKey: "plato", label: "Plato", startX: 15, startY: 78 },
-            { id: "dz_ecup", imageKey: "tasa", label: "Tasa", startX: 50, startY: 82 },
-            { id: "dz_epot", imageKey: "kaldero", label: "Kaldero", startX: 85, startY: 75 },
+            { id: "dz_eplate", imageKey: "plato", label: "Plato/Plate", startX: 15, startY: 78 },
+            { id: "dz_ecup", imageKey: "tasa", label: "Tasa/Cup", startX: 50, startY: 82 },
+            { id: "dz_epot", imageKey: "kaldero", label: "Kaldero/Pot", startX: 85, startY: 75 },
         ],
-        dropZone: { x: 23, y: 25, w: 22, h: 20, emoji: "🍽️", label: "Estante" },
+        dropZone: { x: 23, y: 25, w: 22, h: 20, emoji: "🍽️", label: "Estante/Shelf" },
     },
     basket_kitchen: {
         mechanic: "drag_to_zone",
@@ -467,11 +467,11 @@ const ITEM_QUESTS = {
         instructionEnglish: "Put the fruits and vegetables in the basket!",
         successText: "Napuno na ang Bukag!",
         draggableItems: [
-            { id: "dz_carrot", imageKey: "carrot", label: "Karot", startX: 15, startY: 80 },
-            { id: "dz_potato", imageKey: "potato", label: "Patatas", startX: 50, startY: 82 },
-            { id: "dz_onion", imageKey: "onion", label: "Sibuyas", startX: 85, startY: 78 },
+            { id: "dz_carrot", imageKey: "carrot", label: "Karot/Carrot", startX: 15, startY: 80 },
+            { id: "dz_potato", imageKey: "potato", label: "Patatas/Potato", startX: 50, startY: 82 },
+            { id: "dz_onion", imageKey: "onion", label: "Sibuyas/Onion", startX: 85, startY: 78 },
         ],
-        dropZone: { x: 50, y: 50, w: 40, h: 35, emoji: "🧺", label: "Bukag" },
+        dropZone: { x: 50, y: 50, w: 40, h: 35, emoji: "🧺", label: "Bukag/Basket" },
     },
     estante_tuo: {
         mechanic: "drag_to_zone",
@@ -480,10 +480,10 @@ const ITEM_QUESTS = {
         instructionEnglish: "Put the big items on the large shelf!",
         successText: "Napuno na ang Estante!",
         draggableItems: [
-            { id: "dz_tpot", imageKey: "kaldero", label: "Kaldero", startX: 15, startY: 78 },
-            { id: "dz_tpan", imageKey: "kawali", label: "Kawali", startX: 45, startY: 82 },
+            { id: "dz_tpot", imageKey: "kaldero", label: "Kaldero/Pot", startX: 15, startY: 78 },
+            { id: "dz_tpan", imageKey: "kawali", label: "Kaha/Frying Pan", startX: 45, startY: 82 },
         ],
-        dropZone: { x: 78, y: 22, w: 20, h: 38, emoji: "🗄️", label: "Estante" },
+        dropZone: { x: 78, y: 22, w: 20, h: 38, emoji: "🗄️", label: "Estante/Shelf" },
     },
 
     // ── BEDROOM — drag-to-zone games ──────────────────────────────────────────
@@ -494,10 +494,10 @@ const ITEM_QUESTS = {
         instructionEnglish: "Fix the bed! Place the pillow and blanket!",
         successText: "Limpyo na ang Katre!",
         draggableItems: [
-            { id: "dz_pillow", imageKey: "pillow", label: "Unan", startX: 15, startY: 80 },
-            { id: "dz_habol", imageKey: "habol", label: "Habol", startX: 75, startY: 82 },
+            { id: "dz_pillow", imageKey: "pillow", label: "Unan/Pillow", startX: 15, startY: 80 },
+            { id: "dz_habol", imageKey: "habol", label: "Habol/Blanket", startX: 75, startY: 82 },
         ],
-        dropZone: { x: 22, y: 52, w: 36, h: 18, emoji: "🛏️", label: "Katre" },
+        dropZone: { x: 22, y: 52, w: 36, h: 18, emoji: "🛏️", label: "Katre/Bed" },
     },
     drawer_bedroom: {
         mechanic: "drag_to_zone",
@@ -506,10 +506,10 @@ const ITEM_QUESTS = {
         instructionEnglish: "Put the clothes in the drawer!",
         successText: "Napuno na ang Kahon!",
         draggableItems: [
-            { id: "dz_dshirt", imageKey: "baro", label: "Baro", startX: 50, startY: 82 },
-            { id: "dz_dpants", imageKey: "sinina", label: "Sinina", startX: 80, startY: 78 },
+            { id: "dz_dshirt", imageKey: "baro", label: "Baro/Shirt", startX: 50, startY: 82 },
+            { id: "dz_dpants", imageKey: "sinina", label: "Sinina/Pants", startX: 80, startY: 78 },
         ],
-        dropZone: { x: 15, y: 58, w: 12, h: 20, emoji: "🗄️", label: "Kahon" },
+        dropZone: { x: 15, y: 58, w: 12, h: 20, emoji: "🗄️", label: "Kahon/Drawer" },
     },
     aparador_bedroom: {
         mechanic: "drag_to_zone",
@@ -518,11 +518,11 @@ const ITEM_QUESTS = {
         instructionEnglish: "Put the clothes in the cabinet!",
         successText: "Napuno na ang Aparador!",
         draggableItems: [
-            { id: "dz_adress", imageKey: "dress", label: "Dress", startX: 15, startY: 80 },
-            { id: "dz_atowel", imageKey: "towel", label: "Tuwalya", startX: 50, startY: 82 },
-            { id: "dz_ashoes", imageKey: "shoes", label: "Sapatos", startX: 85, startY: 78 },
+            { id: "dz_adress", imageKey: "dress", label: "Bistida/Dress", startX: 15, startY: 80 },
+            { id: "dz_atowel", imageKey: "towel", label: "Toalya/Towel", startX: 50, startY: 82 },
+            { id: "dz_ashoes", imageKey: "shoes", label: "Sapatos/Shoes", startX: 85, startY: 78 },
         ],
-        dropZone: { x: 68, y: 50, w: 14, h: 24, emoji: "🗄️", label: "Aparador" },
+        dropZone: { x: 68, y: 50, w: 14, h: 24, emoji: "🗄️", label: "Aparador/Cabinet" },
     },
     bentilador_bedroom: {
         mechanic: "fan_speed",
@@ -541,11 +541,11 @@ const ITEM_QUESTS = {
         instructionEnglish: "Put the dirty clothes in the laundry basket!",
         successText: "Napuno na ang Bukag!",
         draggableItems: [
-            { id: "dz_lshirt", imageKey: "baro", label: "Baro", startX: 30, startY: 40 },
-            { id: "dz_lpants", imageKey: "sinina", label: "Sinina", startX: 55, startY: 35 },
-            { id: "dz_ltowel", imageKey: "towel", label: "Tuwalya", startX: 40, startY: 78 },
+            { id: "dz_lshirt", imageKey: "baro", label: "Baro/Shirt", startX: 30, startY: 40 },
+            { id: "dz_lpants", imageKey: "sinina", label: "Sinina/Pants", startX: 55, startY: 35 },
+            { id: "dz_ltowel", imageKey: "towel", label: "Toalya/Towel", startX: 40, startY: 78 },
         ],
-        dropZone: { x: 80, y: 62, w: 16, h: 24, emoji: "🧺", label: "Bukag" },
+        dropZone: { x: 80, y: 62, w: 16, h: 24, emoji: "🧺", label: "Bukag/Basket" },
     },
     paspas: {
         mechanic: "wipe",
@@ -553,7 +553,7 @@ const ITEM_QUESTS = {
         instructionEnglish: "Clean the corners of the room!",
         draggable: {
             id: "paspas_item",
-            label: "Paspas",
+            label: "Paspas/Dust Feather",
             imageKey: "paspas",
             startX: 20, startY: 60,
         },
@@ -582,7 +582,7 @@ const ITEM_QUESTS = {
         instructionEnglish: "Wipe the window to clean it!",
         draggable: {
             id: "rag_item",
-            label: "Trapo",
+            label: "Trapo/Rag",
             imageKey: "rag",
             startX: 20, startY: 60,
         },
@@ -684,10 +684,10 @@ const ITEM_QUESTS = {
         instructionBisaya: "Pilia ang husto nga tubag!",
         instructionEnglish: "Choose the correct answer!",
         items: [
-            { id: "q_broom", label: "Silhig", imageKey: "walis", isCorrect: true },
-            { id: "q_pot", label: "Kaldero", imageKey: "kaldero", isCorrect: false },
-            { id: "q_pillow", label: "Unan", imageKey: "pillow", isCorrect: false },
-            { id: "q_towel", label: "Toalya", imageKey: "towel", isCorrect: false },
+            { id: "q_broom", label: "Silhig/Broom", imageKey: "walis", isCorrect: true },
+            { id: "q_pot", label: "Kaldero/Pot", imageKey: "kaldero", isCorrect: false },
+            { id: "q_pillow", label: "Unan/Pillow", imageKey: "pillow", isCorrect: false },
+            { id: "q_towel", label: "Toalya/Towel", imageKey: "towel", isCorrect: false },
         ],
     },
 };

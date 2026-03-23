@@ -1,24 +1,11 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  CaveLightGame.jsx — "Firefly Line-Up"
-//  Drag 6 animated fireflies onto a diagonal guide line (smallest → largest)
-//  to illuminate the Dark Cave.
-//
-//  Flow: intro → playing → checking → feedback (if wrong) / done (if correct)
-//
-//  Drag: pointer-events (same pattern as FrogBridgeGame).
-//  Each firefly has a continuous CSS float animation while not placed.
-//  Drop zones sit along a diagonal SVG guide line at low opacity.
-// ─────────────────────────────────────────────────────────────────────────────
 import React, { useState, useRef, useCallback, useEffect } from "react";
-import caveGameBg   from "../../../assets/images/environments/scenario/dark-cave-game.png";
+import caveGameBg from "../../../assets/images/environments/scenario/dark-cave-game.png";
 import glowingCaveBg from "../../../assets/items/glowing-cave.png";
-import fireflyImg   from "../../../assets/items/firefly.png";
+import fireflyImg from "../../../assets/items/firefly.png";
 
-// ── Firefly sizes (px widths) in correct order smallest → largest ─────────────
+//  Firefly sizes (px widths) in correct order smallest → largest 
 const FIREFLY_SIZES = [24, 34, 44, 56, 68, 80];
 
-// Starting scattered positions (% of canvas). Each has { left, top }.
-// These are the idle float anchor points — CSS animation adds ±6px oscillation.
 const IDLE_POSITIONS = [
   { left: 12, top: 22 },
   { left: 75, top: 18 },
@@ -28,10 +15,10 @@ const IDLE_POSITIONS = [
   { left: 18, top: 45 },
 ];
 
-// ── Diagonal guide line endpoints (% of canvas) ───────────────────────────────
+//  Diagonal guide line endpoints (% of canvas) 
 // Start: bottom-left area → End: upper-right centre (pointing toward cave mouth)
-const LINE_START = { x: 8,  y: 88 };
-const LINE_END   = { x: 62, y: 28 };
+const LINE_START = { x: 8, y: 88 };
+const LINE_END = { x: 62, y: 28 };
 
 // Compute 6 evenly-spaced drop zone centres along the line
 function computeZoneCentres() {
@@ -46,9 +33,9 @@ function computeZoneCentres() {
   return zones;
 }
 const ZONE_CENTRES = computeZoneCentres();
-const DROP_RADIUS_PX = 38; // px — how close a firefly centre must be to snap
+const DROP_RADIUS_PX = 38;
 
-// ── Shuffle helper ─────────────────────────────────────────────────────────────
+//  Shuffle helper 
 function shuffled(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -64,7 +51,7 @@ function buildFireflies() {
   return order.map((sizeIdx, i) => ({
     id: i,                     // stable id
     sizeIdx,                   // index into FIREFLY_SIZES
-    size:  FIREFLY_SIZES[sizeIdx],
+    size: FIREFLY_SIZES[sizeIdx],
     idlePos: IDLE_POSITIONS[i], // anchor for float animation
     cur: { ...IDLE_POSITIONS[i] }, // current rendered position (% of canvas)
     placed: false,             // true once snapped into a zone
@@ -72,7 +59,7 @@ function buildFireflies() {
   }));
 }
 
-// ── Component ─────────────────────────────────────────────────────────────────
+//  Component 
 const CaveLightGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) => {
   const {
     introDialogue,
@@ -85,25 +72,25 @@ const CaveLightGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) 
   const doneLines = completionDialogue
     || [...(synonymDialogue || []), ...(antonymDialogue || [])];
 
-  const [stage,        setStage]        = useState("intro");
+  const [stage, setStage] = useState("intro");
   const [dialogueStep, setDialogueStep] = useState(0);
-  const [fireflies,    setFireflies]    = useState(() => buildFireflies());
-  const [zones,        setZones]        = useState(Array(6).fill(null)); // zone[i] = fireflyId or null
-  const [draggingId,   setDraggingId]   = useState(null);
+  const [fireflies, setFireflies] = useState(() => buildFireflies());
+  const [zones, setZones] = useState(Array(6).fill(null)); // zone[i] = fireflyId or null
+  const [draggingId, setDraggingId] = useState(null);
 
-  const canvasRef   = useRef(null);
-  const dragOffset  = useRef({ x: 0, y: 0 });
+  const canvasRef = useRef(null);
+  const dragOffset = useRef({ x: 0, y: 0 });
 
   // Track dragging state in a ref too (stable for pointer callbacks)
   const draggingIdRef = useRef(null);
   useEffect(() => { draggingIdRef.current = draggingId; }, [draggingId]);
 
-  // ── Dialogue helpers ──────────────────────────────────────────────────────
+  //  Dialogue helpers 
   const currentLines =
-    stage === "intro"     ? introDialogue :
-    stage === "feedback"  ? feedbackDialogue :
-    stage === "done"      ? doneLines :
-    null;
+    stage === "intro" ? introDialogue :
+      stage === "feedback" ? feedbackDialogue :
+        stage === "done" ? doneLines :
+          null;
   const dialogueLine = currentLines?.[dialogueStep] ?? null;
 
   const handleDialogueNext = () => {
@@ -135,7 +122,7 @@ const CaveLightGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) 
     const rect = e.currentTarget.getBoundingClientRect();
     dragOffset.current = {
       x: e.clientX - rect.left - rect.width / 2,
-      y: e.clientY - rect.top  - rect.height / 2,
+      y: e.clientY - rect.top - rect.height / 2,
     };
 
     // Remove from zone if was placed
@@ -162,15 +149,17 @@ const CaveLightGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) 
     if (!canvas) return;
     const cr = canvas.getBoundingClientRect();
 
-    const leftPct = ((e.clientX - dragOffset.current.x - cr.left) / cr.width)  * 100;
-    const topPct  = ((e.clientY - dragOffset.current.y - cr.top)  / cr.height) * 100;
+    const leftPct = ((e.clientX - dragOffset.current.x - cr.left) / cr.width) * 100;
+    const topPct = ((e.clientY - dragOffset.current.y - cr.top) / cr.height) * 100;
 
     setFireflies(prev => prev.map(f =>
       f.id === flyId
-        ? { ...f, cur: {
+        ? {
+          ...f, cur: {
             left: Math.min(Math.max(leftPct, 2), 96),
-            top:  Math.min(Math.max(topPct,  2), 95),
-          }}
+            top: Math.min(Math.max(topPct, 2), 95),
+          }
+        }
         : f
     ));
   }, []);
@@ -179,7 +168,7 @@ const CaveLightGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) 
     const flyId = draggingIdRef.current;
     if (flyId === null) return;
 
-    try { e?.currentTarget?.releasePointerCapture(e.pointerId); } catch (_) {}
+    try { e?.currentTarget?.releasePointerCapture(e.pointerId); } catch (_) { }
     setDraggingId(null);
 
     const canvas = canvasRef.current;
@@ -220,8 +209,10 @@ const CaveLightGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) 
 
       setFireflies(prev => prev.map(f =>
         f.id === flyId
-          ? { ...f, placed: true, zoneIdx: bestZone,
-              cur: { ...ZONE_CENTRES[bestZone] } }
+          ? {
+            ...f, placed: true, zoneIdx: bestZone,
+            cur: { ...ZONE_CENTRES[bestZone] }
+          }
           : f
       ));
 
@@ -253,11 +244,11 @@ const CaveLightGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) 
   }, []);
 
   const placedCount = zones.filter(z => z !== null).length;
-  const isGlowing   = stage === "done";
+  const isGlowing = stage === "done";
 
   // ── Playing stage dialogue ─────────────────────────────────────────────────
   const playingDialogueLine = {
-    bisayaText:  `I-drag ang mga alitaptap gikan gamay ngadto sa dako! (${placedCount}/6)`,
+    bisayaText: `I-drag ang mga alitaptap gikan gamay ngadto sa dako! (${placedCount}/6)`,
     englishText: `Drag the fireflies from smallest to largest! (${placedCount}/6)`,
   };
 
@@ -269,7 +260,7 @@ const CaveLightGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) 
         <div className="iqm-header">
           <span className="iqm-header-bisaya">{item.labelBisaya}</span>
           <span className="iqm-header-english">{item.labelEnglish}</span>
-          <span className="iqm-mechanic-badge" style={{ background:"#1a237e", color:"#e8eaf6" }}>Firefly Line-Up</span>
+          <span className="iqm-mechanic-badge" style={{ background: "#1a237e", color: "#e8eaf6" }}>Firefly Line-Up</span>
         </div>
 
         {/* ── Game Canvas ──────────────────────────────────────────────────── */}
@@ -304,7 +295,7 @@ const CaveLightGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) 
               {/* Dashed diagonal guide line */}
               <line
                 x1={LINE_START.x} y1={LINE_START.y}
-                x2={LINE_END.x}   y2={LINE_END.y}
+                x2={LINE_END.x} y2={LINE_END.y}
                 stroke="rgba(255,230,120,0.9)"
                 strokeWidth="0.6"
                 strokeDasharray="2 1.5"
@@ -344,7 +335,7 @@ const CaveLightGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) 
                   style={{
                     position: "absolute",
                     left: `${fly.cur.left}%`,
-                    top:  `${fly.cur.top}%`,
+                    top: `${fly.cur.top}%`,
                     transform: "translate(-50%, -50%)",
                     width: fly.size,
                     height: fly.size,

@@ -46,7 +46,7 @@ const WashDishesGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
         else setStage("wash");
     };
 
-    // ── Sponge Drag (wash stage) ─────────────────────────────────────────────
+    // Sponge Drag (wash stage) 
     const handleSpongeDown = (e) => {
         if (stage !== "wash") return;
         e.preventDefault();

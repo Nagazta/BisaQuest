@@ -17,7 +17,7 @@ import {
 import BookCollectModal from "../../game/components/BookCollectModal";
 import "./ForestScenePage.css";
 
-// ── Eager-load every image in assets/items/ so we can resolve by key ────────
+// Eager-load every image in assets/items/ so we can resolve by key 
 const itemModules = {
     ...import.meta.glob("../../assets/items/*.png", { eager: true }),
     ...import.meta.glob("../../assets/items/*.jpg", { eager: true }),

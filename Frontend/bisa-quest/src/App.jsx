@@ -45,12 +45,12 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/loading" element={<ResourceLoadingScreen />} />
 
-                {/* ── Player setup flow (public) ───────────────────────────── */}
+                {/*  Player setup flow (public)  */}
                 <Route path="/student/characterSelection" element={<CharacterSelection />} />
                 <Route path="/student/cutscene" element={<StoryCutscene type="story" />} />
                 <Route path="/cutscene/:type" element={<StoryCutscene />} />
 
-                {/* ── Protected routes ─────────────────────────────────────── */}
+                {/*  Protected routes  */}
                 <Route path="/student/village" element={<ProtectedRoute><VillagePage /></ProtectedRoute>} />
                 <Route path="/student/forest" element={<ProtectedRoute><ForestPage /></ProtectedRoute>} />
                 <Route path="/student/castle" element={<ProtectedRoute><CastlePage /></ProtectedRoute>} />
@@ -72,7 +72,7 @@ function App() {
                 <Route path="/student/item-association" element={<ProtectedRoute><ItemAssociation /></ProtectedRoute>} />
 
 
-                {/* ── Dashboard ────────────────────────────────────────────── */}
+                {/*  Dashboard  */}
                 <Route
                     path="/dashboard"
                     element={player ? <StudentDashboard /> : <Navigate to="/login" replace />}

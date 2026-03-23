@@ -1,9 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  CastleLibraryPage.jsx  —  Scene 3 of 3: Castle Library
-//  Compound words: bookshelf, candlelight, windowsill, fireplace,
-//                  candlestick, storybook, armchair
-//  Mechanic: visual drag-and-drop (CastleVisualDragModal)
-// ─────────────────────────────────────────────────────────────────────────────
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Button from "../../components/Button";
@@ -24,9 +18,9 @@ import {
 } from "../../utils/playerStorage";
 import "./CastleLibraryPage.css";
 
-const QUEST_INDEX  = 2;
-const NPC_ID       = "castle_npc_1";
-const NPC_NAME     = "Princess Hara";
+const QUEST_INDEX = 2;
+const NPC_ID = "castle_npc_1";
+const NPC_NAME = "Princess Hara";
 const TOTAL_SCENES = 3;
 const REQUIRED_QUESTS = 3;
 
@@ -36,22 +30,22 @@ const CastleLibraryPage = () => {
   const returnTo = location.state?.returnTo || "/student/castle";
 
   const NpcImage = CASTLE_NPC_IMAGES[NPC_ID];
-  const quest    = getQuestData(NPC_ID, QUEST_INDEX);
+  const quest = getQuestData(NPC_ID, QUEST_INDEX);
 
   // ── State ───────────────────────────────────────────────────────────────────
-  const [debugMode, setDebugMode]           = useState(false);
+  const [debugMode, setDebugMode] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState(null);
-  const [introStep, setIntroStep]           = useState(0);
-  const [activeItem, setActiveItem]         = useState(null);
-  const [dialogueStep, setDialogueStep]     = useState(0);
-  const [questItem, setQuestItem]           = useState(null);
+  const [introStep, setIntroStep] = useState(0);
+  const [activeItem, setActiveItem] = useState(null);
+  const [dialogueStep, setDialogueStep] = useState(0);
+  const [questItem, setQuestItem] = useState(null);
   const [completedItems, setCompletedItems] = useState(new Set());
 
   // Book & transition modals
-  const [showPageModal, setShowPageModal]   = useState(false);
-  const [collectedPage, setCollectedPage]   = useState(null);
+  const [showPageModal, setShowPageModal] = useState(false);
+  const [collectedPage, setCollectedPage] = useState(null);
   const [showTransition, setShowTransition] = useState(false);
-  const [progressSaved, setProgressSaved]   = useState(false);
+  const [progressSaved, setProgressSaved] = useState(false);
 
   const pendingQuestRef = useRef(null);
 
@@ -63,9 +57,9 @@ const CastleLibraryPage = () => {
   }, [activeItem]);
 
   // ── Derived ─────────────────────────────────────────────────────────────────
-  const introDone     = introStep === null;
+  const introDone = introStep === null;
   const introDialogue = quest?.introDialogue ?? [];
-  const introLine     = !introDone ? introDialogue[introStep] : null;
+  const introLine = !introDone ? introDialogue[introStep] : null;
 
   const currentLine = introDone && activeItem
     ? buildCastleDialogue(activeItem, NPC_NAME)[dialogueStep]
@@ -165,7 +159,7 @@ const CastleLibraryPage = () => {
         {Array.from({ length: TOTAL_SCENES }).map((_, i) => (
           <span key={i} className={[
             "croom-quest-dot",
-            i < QUEST_INDEX   ? "croom-quest-dot--done"   : "",
+            i < QUEST_INDEX ? "croom-quest-dot--done" : "",
             i === QUEST_INDEX ? "croom-quest-dot--active" : "",
           ].filter(Boolean).join(" ")} />
         ))}
@@ -250,18 +244,18 @@ const CastleLibraryPage = () => {
       {questItem && (
         questItem.applyGame
           ? <CastleApplyModal
+            item={questItem} npcName={NPC_NAME} npcImage={NpcImage}
+            onClose={handleQuestClose} onComplete={handleQuestComplete}
+          />
+          : questItem.mechanic === "visual_drag"
+            ? <CastleVisualDragModal
               item={questItem} npcName={NPC_NAME} npcImage={NpcImage}
               onClose={handleQuestClose} onComplete={handleQuestComplete}
             />
-          : questItem.mechanic === "visual_drag"
-            ? <CastleVisualDragModal
-                item={questItem} npcName={NPC_NAME} npcImage={NpcImage}
-                onClose={handleQuestClose} onComplete={handleQuestComplete}
-              />
             : <CastleCompoundWordModal
-                item={questItem} npcName={NPC_NAME} npcImage={NpcImage}
-                onClose={handleQuestClose} onComplete={handleQuestComplete}
-              />
+              item={questItem} npcName={NPC_NAME} npcImage={NpcImage}
+              onClose={handleQuestClose} onComplete={handleQuestComplete}
+            />
       )}
 
       <BookCollectModal

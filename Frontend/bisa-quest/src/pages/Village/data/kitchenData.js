@@ -39,14 +39,7 @@ export const KITCHEN_LABELS = [
     imageKey: "drumin",
     x: 66, y: 50, w: 9, h: 19,
   },
-  {
-    id: "bintana_kitchen",
-    labelBisaya: "Bintana",
-    labelEnglish: "Window",
-    descriptionBisaya: "Bukas nga parte sa dingding para hangin og suga.",
-    descriptionEnglish: "Opening in the wall for air and light.",
-    x: 46, y: 28, w: 9, h: 17,
-  },
+
   {
     id: "lamesa_kitchen",
     labelBisaya: "Banggera / Lamesa",

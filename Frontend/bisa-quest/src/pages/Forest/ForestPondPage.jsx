@@ -1,6 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  ForestPondPage.jsx — Lunti's exploration page (mirrors HousePage pattern)
-// ─────────────────────────────────────────────────────────────────────────────
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Button from "../../components/Button";

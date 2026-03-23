@@ -1,15 +1,10 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  BloomRevivalGame.jsx — "Flower Balance"
-//  Adjust 3 sliders (Light, Water, Wind) into the target range.
-//  Simple flow: intro dialogue → playing → done.
-// ─────────────────────────────────────────────────────────────────────────────
 import React, { useState, useRef } from "react";
 import bloomGameBg from "../../../assets/images/environments/scenario/magic-wiltedflower-game.png";
 import flowerImg from "../../../assets/items/forest-glow-flowers.png";
 import flowerImg1 from "../../../assets/items/forest-glow-flowers1.png";
 
 
-// ── Slider ────────────────────────────────────────────────────────────────────
+// Slider 
 const BalanceSlider = ({ slider, value, onChange, inRange }) => (
   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
     <span style={{ fontSize: 20 }}>{slider.emoji}</span>
@@ -21,7 +16,7 @@ const BalanceSlider = ({ slider, value, onChange, inRange }) => (
   </div>
 );
 
-// ── Component ─────────────────────────────────────────────────────────────────
+// Component 
 const BloomRevivalGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) => {
   const { introDialogue, completionDialogue, synonymDialogue, antonymDialogue, sliders } = quest;
 
@@ -83,8 +78,10 @@ const BloomRevivalGame = ({ quest, item, npcName, npcImage, onClose, onComplete 
           <div style={{ position: "absolute", inset: 0, background: "rgba(5,10,5,0.45)", pointerEvents: "none" }} />
 
           {(stage === "intro" || stage === "playing") && (
-            <div style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
-              pointerEvents: stage === "intro" ? "none" : "auto" }}>
+            <div style={{
+              position: "relative", zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
+              pointerEvents: stage === "intro" ? "none" : "auto"
+            }}>
               {/* Crossfade flower images: base → bloomed at balancedCount 3 */}
               <div style={{ position: "relative", width: 300, height: "auto" }}>
                 {/* Base image — always present, dims as sliders fill */}

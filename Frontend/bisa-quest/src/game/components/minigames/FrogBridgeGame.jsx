@@ -1,28 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  FrogBridgeGame.jsx — "Lily Pad Bridge"
-//  Drag the frog from START onto the safe lily pad in each column.
-//  Cannot skip columns. Flow: intro (preview) → playing → done.
-//
-//  Drag system: Pointer events (onPointerDown/Move/Up) — same approach as
-//  TurtleShellGame. The frog visually follows the cursor in real-time;
-//  no browser ghost image, no cursor icon change.
-//
-//  Hit-testing: on pointerUp we check the frog's centre against each
-//  lily-pad's bounding rect to decide which pad (if any) was targeted.
-//
-//  ┌─── POSITION TUNING GUIDE ───────────────────────────────────────────────┐
-//  │ START spot (frog initial position):                                      │
-//  │   → FROG_START_LEFT / FROG_START_TOP (% of canvas, lines below)         │
-//  │                                                                          │
-//  │ Lily pad column container:                                               │
-//  │   → PAD_AREA_LEFT  — how far from left edge                              │
-//  │   → PAD_AREA_RIGHT — how far from right edge                             │
-//  │   → PAD_AREA_TOP   — vertical centre of columns                         │
-//  │                                                                          │
-//  │ Lily pad image size:                                                     │
-//  │   → PAD_SIZE_PX    — width in pixels of each pad image                  │
-//  └─────────────────────────────────────────────────────────────────────────┘
-// ─────────────────────────────────────────────────────────────────────────────
 import React, { useState, useRef, useCallback } from "react";
 import frogGameBg from "../../../assets/images/environments/scenario/frog-game.png";
 
@@ -37,13 +12,13 @@ import lilyWilt3 from "../../../assets/items/lily-wilt3.png";
 const SAFE_IMGS = [lily1, lily2, lily3];
 const WILT_IMGS = [lilyWilt1, lilyWilt2, lilyWilt3];
 
-// ── Tunable layout constants ──────────────────────────────────────────────────
-const PAD_SIZE_PX = 88;        // width of each lily pad image (px)
-const FROG_START_LEFT = 20;       // frog start X (% of canvas width)
-const FROG_START_TOP = 55;       // frog start Y (% of canvas height)
-const PAD_AREA_LEFT = "28%";     // left edge of pad column container
-const PAD_AREA_RIGHT = "8%";      // right edge of pad column container
-const PAD_AREA_TOP = "50%";     // vertical centre of pad column container
+//  Tunable layout constants 
+const PAD_SIZE_PX = 88;
+const FROG_START_LEFT = 20;
+const FROG_START_TOP = 55;
+const PAD_AREA_LEFT = "28%";
+const PAD_AREA_RIGHT = "8%";
+const PAD_AREA_TOP = "50%";
 
 // NPC line shown when frog falls off an unsafe pad
 const FELL_OFF_LINE = {
@@ -51,7 +26,7 @@ const FELL_OFF_LINE = {
   englishText: "The frog fell off and had to swim back to the safe lily pad!",
 };
 
-// ── Component ─────────────────────────────────────────────────────────────────
+//  Component 
 const FrogBridgeGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) => {
   const { introDialogue, completionDialogue, synonymDialogue, antonymDialogue, padRows } = quest;
 
@@ -87,7 +62,7 @@ const FrogBridgeGame = ({ quest, item, npcName, npcImage, onClose, onComplete })
   // Store last committed frog position so we can snap back on bad drops
   const lastSafePos = useRef({ leftPct: FROG_START_LEFT, topPct: FROG_START_TOP });
 
-  // ── Dialogue ──────────────────────────────────────────────────────────────
+  // Dialogue 
   const currentLines = stage === "intro" ? introDialogue : stage === "done" ? doneLines : null;
   const dialogueLine = currentLines?.[dialogueStep] ?? null;
 
@@ -101,14 +76,14 @@ const FrogBridgeGame = ({ quest, item, npcName, npcImage, onClose, onComplete })
     }
   };
 
-  // ── Show fell-off feedback for a limited time ─────────────────────────────
+  //  Show fell-off feedback for a limited time 
   const showFellOff = () => {
     if (feedbackTimer.current) clearTimeout(feedbackTimer.current);
     setFeedbackLine(FELL_OFF_LINE);
     feedbackTimer.current = setTimeout(() => setFeedbackLine(null), 2500);
   };
 
-  // ── Pointer events (frog) ─────────────────────────────────────────────────
+  // ── Pointer events (frog) 
   const handlePointerDown = useCallback((e) => {
     if (stage !== "playing") return;
     e.preventDefault();
@@ -208,7 +183,7 @@ const FrogBridgeGame = ({ quest, item, npcName, npcImage, onClose, onComplete })
   const isIntro = stage === "intro";
   const showGame = stage === "intro" || stage === "playing";
 
-  // ── Dialogue line shown in playing stage ──────────────────────────────────
+  //  Dialogue line shown in playing stage 
   const playingDialogue = feedbackLine ?? {
     bisayaText: `I-drag ang baki sa luwas nga dahon! (${clearedCols.length}/${rows.length})`,
     englishText: `Drag the frog onto the safe lily pad! (${clearedCols.length}/${rows.length})`,
@@ -225,7 +200,7 @@ const FrogBridgeGame = ({ quest, item, npcName, npcImage, onClose, onComplete })
           <span className="iqm-mechanic-badge" style={{ background: "#2e7d32" }}>Lily Pad Bridge</span>
         </div>
 
-        {/* ── Game Canvas ─────────────────────────────────────────────────── */}
+        {/*  Game Canvas  */}
         <div
           ref={canvasRef}
           className="iqm-scene-canvas"
@@ -290,7 +265,7 @@ const FrogBridgeGame = ({ quest, item, npcName, npcImage, onClose, onComplete })
                 <img src={frogImg} alt="Frog" draggable={false} style={{ width: "100%", height: "auto", display: "block" }} />
               </div>
 
-              {/* ── Lily pad columns ── */}
+              {/*  Lily pad columns  */}
               <div style={{
                 position: "absolute",
                 left: PAD_AREA_LEFT, right: PAD_AREA_RIGHT, top: PAD_AREA_TOP,
@@ -362,7 +337,7 @@ const FrogBridgeGame = ({ quest, item, npcName, npcImage, onClose, onComplete })
           )}
         </div>
 
-        {/* ── NPC Dialogue ─────────────────────────────────────────────────── */}
+        {/*  NPC Dialogue  */}
         <div className="iqm-dialogue-row">
           <img src={npcImage} alt={npcName} className="iqm-npc-img" draggable={false} />
           <div className="iqm-dialogue-bubble">
