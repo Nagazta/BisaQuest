@@ -228,12 +228,12 @@ const PlayerLobby = () => {
 
             <div style={{
                 position: "fixed",
-                top: "16px",
+                top: "20px",
                 left: "16px",
                 background: "rgba(0,0,0,0.5)",
                 color: "#f5d89a",
                 fontFamily: "'Pixelify Sans', sans-serif",
-                fontSize: "14px",
+                fontSize: "16px",
                 padding: "6px 16px",
                 borderRadius: "20px",
                 zIndex: 100,
