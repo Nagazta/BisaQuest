@@ -56,13 +56,6 @@ export const getProgress = async (playerId) => {
     return result.data;
 };
 
-export const getStats = async (playerId) => {
-    const response = await fetch(`${BASE_URL}/api/player/${playerId}/stats`);
-    const result = await response.json();
-    if (!result.success) throw new Error(result.error || 'Failed to get stats');
-    return result.data;
-};
-
 export const resetProgress = async (playerId) => {
     const response = await fetch(`${BASE_URL}/api/player/${playerId}/reset`, {
         method: 'DELETE'

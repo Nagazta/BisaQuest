@@ -304,7 +304,7 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
                 <div className="progress-bar-container">
                   <div className="progress-bar-fill" style={{ width: `${moduleProgress[hoveredQuest.id]}%` }} />
                 </div>
-                <span className="progress-text">{Math.round(moduleProgress[hoveredQuest.id])}% Complete</span>
+                <span className="map-progress-text">{Math.round(moduleProgress[hoveredQuest.id])}% Complete</span>
               </div>
             )}
             {/* Lock message — only if actually locked */}

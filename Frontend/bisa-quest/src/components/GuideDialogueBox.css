@@ -10,16 +10,17 @@
 }
 
 .dialogue-name {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Silkscreen', sans-serif;
   font-size: 20px;
-  font-weight: bold;
+  font-weight: 700;
   color: #FFF8DC;
   margin-bottom: 10px;
   text-align: center;
 }
 
 .dialogue-text {
-  font-family: 'Nunito', sans-serif !important;
+  font-family: 'Baloo 2', cursive !important;
+  font-weight: 500;
   font-size: 14px;
   color: #ffffff !important;
   line-height: 1.6;

@@ -15,7 +15,6 @@ import {
   getLibroPageCount,
   getLibroPageCountForEnv,
 } from "../../utils/playerStorage";
-import AssetManifest from "../../services/AssetManifest";
 import "./CastleCourtyardPage.css";
 
 const QUEST_INDEX  = 1;

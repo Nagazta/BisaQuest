@@ -13,7 +13,6 @@ import {
 import {
   getPlayerId,
   saveNPCProgress,
-  shouldAwardForestFragment,
   awardLibroPage,
   getLibroPageCount,
   getLibroPageCountForEnv,

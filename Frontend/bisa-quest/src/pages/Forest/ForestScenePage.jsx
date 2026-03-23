@@ -41,7 +41,7 @@ const NPC_IMAGES = {
     forest_npc_1: AssetManifest.forest.npcs.forest_guardian,
     forest_npc_2: AssetManifest.forest.npcs.wandering_bard,
     forest_npc_3: AssetManifest.forest.npcs.diwata,
-    forest_npc_4: AssetManifest.forest.npcs.deer,
+
 };
 
 const SCENE_BG = {
@@ -53,7 +53,7 @@ const SCENE_BG = {
 };
 const DEFAULT_BG = AssetManifest.forest.scenarios.forestScene;
 
-const isDeerNpc = (id) => id === "forest_npc_4";
+
 
 const isIAMechanic = (m) => typeof m === "string" && m.startsWith("item_association");
 
@@ -99,12 +99,12 @@ const ForestScenePage = () => {
     const API = import.meta.env.VITE_API_URL || "";
 
     const questId = location.state?.questId ?? null;
-    const npcId = location.state?.npcId ?? "forest_npc_4";
-    const npcName = location.state?.npcName ?? "Deer";
+    const npcId = location.state?.npcId ?? "forest_npc_1";
+    const npcName = location.state?.npcName ?? "Guide";
     const returnTo = location.state?.returnTo ?? "/student/forest";
 
-    const NpcImage = NPC_IMAGES[npcId] || AssetManifest.forest.npcs.deer;
-    const useBackpack = isDeerNpc(npcId);
+    const NpcImage = NPC_IMAGES[npcId] || AssetManifest.forest.npcs.forest_guardian;
+
 
     const [gameMechanic, setGameMechanic] = useState(null);
     const [background, setBackground] = useState(DEFAULT_BG);
@@ -210,7 +210,7 @@ const ForestScenePage = () => {
                 setMainIdx(i => i + 1);
             } else {
                 if (isIAMechanic(gameMechanic)) setPhase("ia_scene");
-                else if (useBackpack) setPhase("backpack");
+
                 else setPhase("items_on_screen");
             }
         } else if (phase === "branch" || phase === "ia_branch") {
@@ -227,14 +227,12 @@ const ForestScenePage = () => {
                     setIaLockedId(null);
                     setIaRoundKey(k => k + 1);
                     setPhase("ia_scene");
-                } else if (useBackpack) {
-                    setPhase("backpack");
                 } else {
                     setPhase("items_on_screen");
                 }
             }
         }
-    }, [phase, mainIdx, branchIdx, branchKey, flowGroups, gameMechanic, useBackpack]);
+    }, [phase, mainIdx, branchIdx, branchKey, flowGroups, gameMechanic]);
 
     const handleIAItemClick = useCallback((item, isCorrect) => {
         if (phase !== "ia_scene") return;
@@ -334,9 +332,8 @@ const ForestScenePage = () => {
 
     const showDialogueBar = (phase === "dialogue" || phase === "branch" || phase === "ia_branch") && currentRow;
     const showIAItems = isIAMechanic(gameMechanic) && phase === "ia_scene";
-    const showBackpack = useBackpack && !isIAMechanic(gameMechanic) && phase === "backpack";
-    const showOnScreenItems = !useBackpack && !isIAMechanic(gameMechanic) && phase === "items_on_screen";
-    const npcIsDropTarget = !isIAMechanic(gameMechanic) && (phase === "backpack" || phase === "items_on_screen");
+    const showOnScreenItems = !isIAMechanic(gameMechanic) && phase === "items_on_screen";
+    const npcIsDropTarget = !isIAMechanic(gameMechanic) && phase === "items_on_screen";
 
     const currentSpeaker = currentRow?.speaker || null;
     const dialogueSpeaker = currentRow
@@ -359,7 +356,7 @@ const ForestScenePage = () => {
                     onDrop={npcIsDropTarget ? onDrop : undefined}
                 >
                     <img src={NpcImage} alt={npcName} className="fsp-npc-img" draggable={false} />
-                    {(phase === "backpack" || phase === "items_on_screen") && (
+                    {phase === "items_on_screen" && (
                         <div className="fsp-npc-hint">Drop an item here</div>
                     )}
                 </div>
@@ -445,8 +442,7 @@ const ForestScenePage = () => {
                 />
             )}
 
-            {/* Drag & Drop backpack (Deer only) */}
-            {showBackpack && <BackpackItems items={items} />}
+
 
             {/* Quest complete */}
             {phase === "done" && (

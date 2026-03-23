@@ -82,7 +82,8 @@
 }
 
 .book-collect-npc {
-    font-family: 'Pixelify Sans', sans-serif;
+    font-family: 'Baloo 2', cursive;
+    font-weight: 500;
     font-size: 13px;
     color: #e0c89a;
     margin: 0 0 16px;

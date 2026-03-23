@@ -222,7 +222,7 @@ const INTERNAL_NPC_META = {
         forest_npc_1: { name: "Lunti" },
         forest_npc_2: { name: "Ronaldo" },
         forest_npc_3: { name: "Diwata" },
-        forest_npc_4: { name: "Deer" },
+
     },
     castle: {
         castle_npc_1: { name: "Princess Hara" },

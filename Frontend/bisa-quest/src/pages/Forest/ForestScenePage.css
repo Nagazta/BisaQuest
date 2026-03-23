@@ -79,41 +79,7 @@
   animation: hint-pulse 1.4s ease-in-out infinite;
 }
 
-/* ── Legacy aliases (keep old class names working) ───────────── */
-.fsp-deer-wrap {
-  position: absolute;
-  left: 50%;
-  top: 70%;
-  transform: translate(-50%, -60%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  z-index: 20;
-  transition: filter 0.2s ease;
-}
 
-.fsp-deer-wrap--target {
-  filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
-}
-
-.fsp-deer-img {
-  height: 340px;
-  object-fit: contain;
-  animation: npc-bob 3s ease-in-out infinite;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
-}
-
-.fsp-deer-hint {
-  font-family: 'Pixelify Sans', sans-serif;
-  font-size: 16px;
-  color: #FCD765;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 6px 16px;
-  border-radius: 20px;
-  border: 2px solid #FCD765;
-  animation: hint-pulse 1.4s ease-in-out infinite;
-}
 
 /* ── On-screen draggable item cards ──────────────────────────── */
 .fsp-scene-item {
@@ -243,17 +209,6 @@
   }
 }
 
-@keyframes deer-bob {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-8px);
-  }
-}
 
 @keyframes hint-pulse {
 

@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { getLearnedWords } from "../../utils/playerStorage";
 import "../../pages/Village/HousePage.css";
