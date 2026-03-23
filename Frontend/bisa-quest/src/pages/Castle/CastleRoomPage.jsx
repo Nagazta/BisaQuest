@@ -1,10 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  CastleRoomPage.jsx
-//  Castle room exploration — mirrors HousePage structure.
-//  Each NPC has 3 quests. Each quest = one scene with ~5 items.
-//  Items in each scene are things that actually belong in that room.
-//  Mini-game: compound-word drag-and-drop (CastleCompoundWordModal).
-// ─────────────────────────────────────────────────────────────────────────────
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Button from "../../components/Button";
@@ -25,9 +18,9 @@ const CastleRoomPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const npcId    = location.state?.npcId     || "castle_npc_1";
-  const npcName  = location.state?.npcName   || "Princess Hara";
-  const returnTo = location.state?.returnTo  || "/student/castle";
+  const npcId = location.state?.npcId || "castle_npc_1";
+  const npcName = location.state?.npcName || "Princess Hara";
+  const returnTo = location.state?.returnTo || "/student/castle";
   const startIdx = location.state?.questIndex ?? 0;
 
   const NpcImage =
@@ -36,13 +29,13 @@ const CastleRoomPage = () => {
   const totalQuests = getTotalQuests(npcId);
 
   // ── State ─────────────────────────────────────────────────────────────────
-  const [questIndex]                       = useState(startIdx);
-  const [debugMode, setDebugMode]         = useState(false);
+  const [questIndex] = useState(startIdx);
+  const [debugMode, setDebugMode] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState(null);
-  const [introStep, setIntroStep]         = useState(0);   // null = intro done
-  const [activeItem, setActiveItem]       = useState(null);
-  const [dialogueStep, setDialogueStep]   = useState(0);
-  const [questItem, setQuestItem]         = useState(null);
+  const [introStep, setIntroStep] = useState(0);   // null = intro done
+  const [activeItem, setActiveItem] = useState(null);
+  const [dialogueStep, setDialogueStep] = useState(0);
+  const [questItem, setQuestItem] = useState(null);
   const [completedItems, setCompletedItems] = useState(new Set());
   const [showRoomComplete, setShowRoomComplete] = useState(false);
 
@@ -346,19 +339,19 @@ const CastleRoomPage = () => {
       {questItem && (
         questItem.mechanic === "visual_drag"
           ? <CastleVisualDragModal
-              item={questItem}
-              npcName={npcName}
-              npcImage={NpcImage}
-              onClose={handleQuestClose}
-              onComplete={handleQuestComplete}
-            />
+            item={questItem}
+            npcName={npcName}
+            npcImage={NpcImage}
+            onClose={handleQuestClose}
+            onComplete={handleQuestComplete}
+          />
           : <CastleCompoundWordModal
-              item={questItem}
-              npcName={npcName}
-              npcImage={NpcImage}
-              onClose={handleQuestClose}
-              onComplete={handleQuestComplete}
-            />
+            item={questItem}
+            npcName={npcName}
+            npcImage={NpcImage}
+            onClose={handleQuestClose}
+            onComplete={handleQuestComplete}
+          />
       )}
 
       {/* ── Room Complete overlay ─────────────────────────────────────────── */}

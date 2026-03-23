@@ -1,11 +1,7 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  DiwataQuestModal.jsx — Routes to the correct Diwata mini-game
-//  Mirrors PondQuestModal.jsx but for Diwata's restoration games.
-// ─────────────────────────────────────────────────────────────────────────────
-import BloomRevivalGame  from "./minigames/BloomRevivalGame";
-import CaveLightGame     from "./minigames/CaveLightGame";
-import RiverFlowGame     from "./minigames/RiverFlowGame";
-import LanternGuideGame  from "./minigames/LanternGuideGame";
+import BloomRevivalGame from "./minigames/BloomRevivalGame";
+import CaveLightGame from "./minigames/CaveLightGame";
+import RiverFlowGame from "./minigames/RiverFlowGame";
+import LanternGuideGame from "./minigames/LanternGuideGame";
 
 import {
   BLOOM_DATA,

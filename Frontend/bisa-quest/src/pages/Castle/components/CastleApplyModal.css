@@ -1,6 +1,4 @@
-/* CastleApplyModal.css — visual "apply piece to scene" compound word game */
-
-/* ── Overlay ──────────────────────────────────────────────────────────────── */
+/*  Overlay  */
 .cam-overlay {
   position: fixed;
   inset: 0;
@@ -13,7 +11,7 @@
   animation: cam-fade-in 0.25s ease both;
 }
 
-/* ── Modal shell ──────────────────────────────────────────────────────────── */
+/*  Modal shell  */
 .cam-modal {
   position: relative;
   background: #0d0a1a;
@@ -27,7 +25,7 @@
   animation: cam-card-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-/* ── Close button ─────────────────────────────────────────────────────────── */
+/*  Close button  */
 .cam-close {
   position: absolute;
   top: 10px;
@@ -46,13 +44,14 @@
   justify-content: center;
   transition: background 0.15s, color 0.15s;
 }
+
 .cam-close:hover {
   background: rgba(255, 80, 80, 0.2);
   color: #f87171;
   border-color: #f87171;
 }
 
-/* ── Scene canvas ─────────────────────────────────────────────────────────── */
+/*  Scene canvas  */
 .cam-canvas {
   position: relative;
   width: 100%;
@@ -61,7 +60,7 @@
   touch-action: none;
 }
 
-/* ── Scene backgrounds ────────────────────────────────────────────────────── */
+/*  Scene backgrounds  */
 .cam-scene-bg {
   position: absolute;
   inset: 0;
@@ -77,7 +76,7 @@
   animation: cam-fade-in 0.6s ease both;
 }
 
-/* ── Drop zone ────────────────────────────────────────────────────────────── */
+/*  Drop zone  */
 .cam-dropzone {
   position: absolute;
   border: 3px dashed rgba(252, 215, 101, 0.7);
@@ -93,7 +92,7 @@
   animation: cam-shake 0.45s ease, cam-pulse 1.6s ease-in-out infinite;
 }
 
-/* ── Draggable card ───────────────────────────────────────────────────────── */
+/*  Draggable card  */
 .cam-card {
   position: absolute;
   background: rgba(252, 215, 101, 0.93);
@@ -252,37 +251,93 @@
 
 /* ── Keyframes ────────────────────────────────────────────────────────────── */
 @keyframes cam-fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes cam-card-pop {
-  from { transform: scale(0.65); opacity: 0; }
-  to   { transform: scale(1);    opacity: 1; }
+  from {
+    transform: scale(0.65);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes cam-result-pop {
-  from { transform: translate(-50%, -50%) scale(0.4); opacity: 0; }
-  to   { transform: translate(-50%, -50%) scale(1);   opacity: 1; }
+  from {
+    transform: translate(-50%, -50%) scale(0.4);
+    opacity: 0;
+  }
+
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes cam-pulse {
-  0%, 100% { box-shadow: 0 0 0   0   rgba(252, 215, 101, 0.4); }
-  50%       { box-shadow: 0 0 18px 6px rgba(252, 215, 101, 0.35); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(252, 215, 101, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 18px 6px rgba(252, 215, 101, 0.35);
+  }
 }
 
 @keyframes cam-shake {
-  0%, 100% { transform: translateX(0); }
-  20%       { transform: translateX(-6px); }
-  40%       { transform: translateX(6px); }
-  60%       { transform: translateX(-4px); }
-  80%       { transform: translateX(4px); }
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-6px);
+  }
+
+  40% {
+    transform: translateX(6px);
+  }
+
+  60% {
+    transform: translateX(-4px);
+  }
+
+  80% {
+    transform: translateX(4px);
+  }
 }
 
 /* ── Responsive ───────────────────────────────────────────────────────────── */
 @media (max-width: 580px) {
-  .cam-canvas    { aspect-ratio: 4 / 3; }
-  .cam-dialogue  { padding: 10px 14px; gap: 10px; }
-  .cam-npc-img   { height: 50px; width: 50px; }
-  .cam-card      { padding: 7px 12px; min-width: 56px; }
+  .cam-canvas {
+    aspect-ratio: 4 / 3;
+  }
+
+  .cam-dialogue {
+    padding: 10px 14px;
+    gap: 10px;
+  }
+
+  .cam-npc-img {
+    height: 50px;
+    width: 50px;
+  }
+
+  .cam-card {
+    padding: 7px 12px;
+    min-width: 56px;
+  }
 }

@@ -1,12 +1,7 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  TurtleShellGame.jsx — "Shell Repair"
-//  Drag 5 correct shell pieces to the turtle centre.
-//  Simple flow: intro dialogue → playing → done (success overlay + ✓ button).
-// ─────────────────────────────────────────────────────────────────────────────
 import React, { useState, useRef, useCallback } from "react";
 import turtleGameBg from "../../../assets/images/environments/scenario/turtle-game.png";
 
-// ── Shell piece SVG renderer ──────────────────────────────────────────────────
+//  Shell piece SVG renderer 
 const ShellPiece = ({ variant, size = 54, dragging, shake, bounce }) => {
   const s = size;
   const cx = s / 2, cy = s / 2;

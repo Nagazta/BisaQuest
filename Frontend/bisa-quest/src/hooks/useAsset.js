@@ -1,4 +1,3 @@
-// hooks/useAsset.js
 // React hook for lazy-loading a single image via AssetManager
 
 import { useState, useEffect } from "react";

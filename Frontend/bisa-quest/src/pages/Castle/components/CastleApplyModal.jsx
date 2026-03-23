@@ -1,20 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  CastleApplyModal.jsx
-//  Visual "apply piece to scene" compound word game.
-//  Shows a before/after scene image. Student drags one emoji/image card
-//  onto the glowing drop zone. On correct drop → scene switches to sceneAfter
-//  → compound word result pops up.
-//
-//  item.applyGame shape:
-//  {
-//    sceneBefore: <url>,          // locked / before image
-//    sceneAfter:  <url>,          // unlocked / after image
-//    draggable:   { emoji, label, startX, startY },
-//    dropZone:    { x, y, w, h },  // % of canvas
-//    hintBisaya:  string,
-//    hintEnglish: string,
-//  }
-// ─────────────────────────────────────────────────────────────────────────────
 import { useState, useRef } from "react";
 import Button from "../../../components/Button";
 import "./CastleApplyModal.css";
@@ -23,14 +6,14 @@ const CastleApplyModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
   const { compoundWord, applyGame } = item;
   const { sceneBefore, sceneAfter, draggable, dropZone, hintBisaya, hintEnglish } = applyGame;
 
-  const [pos, setPos]             = useState({ x: draggable.startX, y: draggable.startY });
+  const [pos, setPos] = useState({ x: draggable.startX, y: draggable.startY });
   const [isDragging, setIsDragging] = useState(false);
-  const [placed, setPlaced]       = useState(false);
-  const [solved, setSolved]       = useState(false);
+  const [placed, setPlaced] = useState(false);
+  const [solved, setSolved] = useState(false);
   const [wrongFlash, setWrongFlash] = useState(false);
 
   const containerRef = useRef(null);
-  const dragOffset   = useRef({ x: 0, y: 0 });
+  const dragOffset = useRef({ x: 0, y: 0 });
 
   // ── Pointer drag ────────────────────────────────────────────────────────────
   const handlePointerDown = (e) => {
@@ -39,7 +22,7 @@ const CastleApplyModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
     const rect = containerRef.current.getBoundingClientRect();
     dragOffset.current = {
       x: e.clientX - (rect.left + (pos.x / 100) * rect.width),
-      y: e.clientY - (rect.top  + (pos.y / 100) * rect.height),
+      y: e.clientY - (rect.top + (pos.y / 100) * rect.height),
     };
     setIsDragging(true);
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -49,8 +32,8 @@ const CastleApplyModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
     if (!isDragging) return;
     e.preventDefault();
     const rect = containerRef.current.getBoundingClientRect();
-    const x = ((e.clientX - dragOffset.current.x - rect.left) / rect.width)  * 100;
-    const y = ((e.clientY - dragOffset.current.y - rect.top)  / rect.height) * 100;
+    const x = ((e.clientX - dragOffset.current.x - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - dragOffset.current.y - rect.top) / rect.height) * 100;
     setPos({ x: Math.min(Math.max(x, 2), 96), y: Math.min(Math.max(y, 2), 94) });
   };
 
@@ -107,9 +90,9 @@ const CastleApplyModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
             <div
               className={`cam-dropzone ${wrongFlash ? "cam-dropzone--wrong" : ""}`}
               style={{
-                left:   `${dropZone.x}%`,
-                top:    `${dropZone.y}%`,
-                width:  `${dropZone.w}%`,
+                left: `${dropZone.x}%`,
+                top: `${dropZone.y}%`,
+                width: `${dropZone.w}%`,
                 height: `${dropZone.h}%`,
               }}
             />
@@ -136,15 +119,15 @@ const CastleApplyModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
             <div
               className={[
                 "cam-card",
-                isDragging  ? "cam-card--dragging" : "",
-                wrongFlash  ? "cam-card--wrong"    : "",
+                isDragging ? "cam-card--dragging" : "",
+                wrongFlash ? "cam-card--wrong" : "",
               ].filter(Boolean).join(" ")}
               style={{
-                left:      `${pos.x}%`,
-                top:       `${pos.y}%`,
+                left: `${pos.x}%`,
+                top: `${pos.y}%`,
                 transform: "translate(-50%, -50%)",
-                zIndex:    isDragging ? 30 : 10,
-                cursor:    isDragging ? "grabbing" : "grab",
+                zIndex: isDragging ? 30 : 10,
+                cursor: isDragging ? "grabbing" : "grab",
                 transition: isDragging ? "none" : "box-shadow 0.15s, transform 0.15s",
               }}
               onPointerDown={handlePointerDown}

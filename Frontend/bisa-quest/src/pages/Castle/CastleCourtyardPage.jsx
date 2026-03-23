@@ -1,7 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  CastleCourtyardPage.jsx  —  Scene 2 of 3: Castle Courtyard
-//  Compound words: sunflower, waterfall, sunshine, raindrop, courtyard
-// ─────────────────────────────────────────────────────────────────────────────
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Button from "../../components/Button";

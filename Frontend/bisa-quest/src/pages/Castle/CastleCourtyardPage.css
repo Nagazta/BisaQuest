@@ -1,5 +1,3 @@
-/* CastleCourtyardPage.css — Scene 2: Castle Courtyard */
-
 .croom-container {
   position: fixed;
   inset: 0;
@@ -17,7 +15,7 @@
   user-select: none;
 }
 
-/* ── Back button ─────────────────────────────────────────────── */
+/*  Back button  */
 .croom-back {
   position: absolute;
   top: 16px;
@@ -25,7 +23,7 @@
   z-index: 50;
 }
 
-/* ── Scene label ─────────────────────────────────────────────── */
+/*  Scene label  */
 .croom-scene-label {
   position: absolute;
   top: 10px;
@@ -43,7 +41,7 @@
   white-space: nowrap;
 }
 
-/* ── Progress dots ───────────────────────────────────────────── */
+/*  Progress dots  */
 .croom-quest-dots {
   position: absolute;
   top: 38px;
@@ -96,8 +94,15 @@
 }
 
 @keyframes croom-npc-bob {
-  0%,  100% { transform: translateY(0);    }
-  50%        { transform: translateY(-4px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
 }
 
 /* ── Hover / clickable regions ───────────────────────────────── */
@@ -110,9 +115,20 @@
 
 /* ── Pulse dot ───────────────────────────────────────────────── */
 @keyframes croom-pulse-dot {
-  0%   { transform: scale(1);   opacity: 0.8; }
-  50%  { transform: scale(1.5); opacity: 0.4; }
-  100% { transform: scale(1);   opacity: 0.8; }
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scale(1.5);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
 }
 
 .croom-item-dot {
@@ -195,8 +211,13 @@
 }
 
 /* ── Active / done region states ─────────────────────────────── */
-.croom-hover-region--active { z-index: 10; }
-.croom-hover-region--active .croom-item-dot { display: none; }
+.croom-hover-region--active {
+  z-index: 10;
+}
+
+.croom-hover-region--active .croom-item-dot {
+  display: none;
+}
 
 .croom-hover-region--done .croom-item-dot,
 .croom-item-dot--done {
@@ -271,8 +292,15 @@
 }
 
 @keyframes croom-bounce-hint {
-  0%,  100% { transform: translateX(-50%) translateY(0);    }
-  50%        { transform: translateX(-50%) translateY(-5px); }
+
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  50% {
+    transform: translateX(-50%) translateY(-5px);
+  }
 }
 
 /* ── Bilingual dialogue text ─────────────────────────────────── */
@@ -310,8 +338,15 @@
 }
 
 @keyframes croom-pulse {
-  0%,  100% { opacity: 0.9; }
-  50%        { opacity: 0.4; }
+
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
 }
 
 /* ── Scene complete overlay ──────────────────────────────────── */
@@ -372,8 +407,15 @@
 }
 
 @keyframes croom-key-pop {
-  from { transform: scale(0); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .croom-complete-title {
@@ -412,11 +454,23 @@
 }
 
 @keyframes croom-fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes croom-card-pop {
-  from { transform: scale(0.7); opacity: 0; }
-  to   { transform: scale(1);   opacity: 1; }
+  from {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }

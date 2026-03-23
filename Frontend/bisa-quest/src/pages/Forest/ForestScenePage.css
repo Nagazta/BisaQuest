@@ -1,4 +1,3 @@
-/* ── Full-screen wrapper ──────────────────────────────────────── */
 .fsp-wrapper {
   position: fixed;
   inset: 0;
@@ -16,8 +15,6 @@
   user-select: none;
 }
 
-/* ── Scene canvas — mirrors object-fit: cover coordinate space ── */
-/*    Assumes background images are 16:9. Adjust ratio if needed.  */
 .fsp-scene-canvas {
   position: absolute;
   top: 50%;

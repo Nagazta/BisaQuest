@@ -1,7 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  dragDropUtils.js
 //  Pure helper functions for the Drag & Drop game.
-// ─────────────────────────────────────────────────────────────────────────────
 import { ITEM_IMAGE_MAP } from "./dragDropConstants";
 
 /**
@@ -77,10 +74,10 @@ export const buildAllDropZones = (sceneType, sceneZones, zoneRegistry) => {
  */
 export const mapRawItems = (rawItems, startPositions) =>
   rawItems.map((row, i) => ({
-    id:     String(row.item_id),
-    label:  row.label,
-    zone:   row.correct_zone,
+    id: String(row.item_id),
+    label: row.label,
+    zone: row.correct_zone,
     startX: startPositions[i]?.x ?? 50,
     startY: startPositions[i]?.y ?? 60,
-    image:  resolveItemImage(row.label),
+    image: resolveItemImage(row.label),
   }));

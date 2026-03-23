@@ -1,9 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  CastleImageCombineModal.jsx
-//  Image-based compound word game — drag emoji word cards onto two slots.
-//  4 shuffled cards (word1, word2, distractor1, distractor2) are placed on
-//  the scene background. Student drags the correct two into the slots.
-// ─────────────────────────────────────────────────────────────────────────────
 import { useState, useRef, useMemo } from "react";
 import Button from "../../../components/Button";
 import "./CastleImageCombineModal.css";
@@ -55,18 +49,18 @@ const CastleImageCombineModal = ({
     Object.fromEntries(cards.map((c, i) => [c.id, { ...START_POS[i] }]))
   );
   const [slotContent, setSlotContent] = useState({ slot1: null, slot2: null }); // slotId → cardId
-  const [draggingId, setDraggingId]   = useState(null);
-  const [wrongSlot, setWrongSlot]     = useState(null);
+  const [draggingId, setDraggingId] = useState(null);
+  const [wrongSlot, setWrongSlot] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
 
   const containerRef = useRef(null);
-  const dragOffset   = useRef({ x: 0, y: 0 });
+  const dragOffset = useRef({ x: 0, y: 0 });
 
   // ── Helpers ────────────────────────────────────────────────────────────────
-  const isPlaced   = (id) => Object.values(slotContent).includes(id);
-  const slotCard   = (slotId) => cards.find((c) => c.id === slotContent[slotId]) ?? null;
-  const slot1Card  = slotCard("slot1");
-  const slot2Card  = slotCard("slot2");
+  const isPlaced = (id) => Object.values(slotContent).includes(id);
+  const slotCard = (slotId) => cards.find((c) => c.id === slotContent[slotId]) ?? null;
+  const slot1Card = slotCard("slot1");
+  const slot2Card = slotCard("slot2");
   const bothFilled = !!slot1Card && !!slot2Card;
 
   // ── Pointer drag ───────────────────────────────────────────────────────────
@@ -76,7 +70,7 @@ const CastleImageCombineModal = ({
     const rect = containerRef.current.getBoundingClientRect();
     dragOffset.current = {
       x: e.clientX - (rect.left + (pos[id].x / 100) * rect.width),
-      y: e.clientY - (rect.top  + (pos[id].y / 100) * rect.height),
+      y: e.clientY - (rect.top + (pos[id].y / 100) * rect.height),
     };
     setDraggingId(id);
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -86,8 +80,8 @@ const CastleImageCombineModal = ({
     if (!draggingId) return;
     e.preventDefault();
     const rect = containerRef.current.getBoundingClientRect();
-    const x = ((e.clientX - dragOffset.current.x - rect.left) / rect.width)  * 100;
-    const y = ((e.clientY - dragOffset.current.y - rect.top)  / rect.height) * 100;
+    const x = ((e.clientX - dragOffset.current.x - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - dragOffset.current.y - rect.top) / rect.height) * 100;
     setPos((prev) => ({
       ...prev,
       [draggingId]: {
@@ -99,7 +93,7 @@ const CastleImageCombineModal = ({
 
   const handlePointerUp = (e) => {
     if (!draggingId) return;
-    const card    = cards.find((c) => c.id === draggingId);
+    const card = cards.find((c) => c.id === draggingId);
     const cardPos = pos[draggingId];
 
     const hitSlot = SLOTS.find(
@@ -109,7 +103,7 @@ const CastleImageCombineModal = ({
     );
 
     if (hitSlot) {
-      const occupied  = !!slotContent[hitSlot.id];
+      const occupied = !!slotContent[hitSlot.id];
       const isCorrect = card.correctSlot === hitSlot.id;
 
       if (!occupied && isCorrect) {
@@ -152,15 +146,15 @@ const CastleImageCombineModal = ({
 
           {/* Drop slots */}
           {SLOTS.map((slot) => {
-            const filled  = slotCard(slot.id);
+            const filled = slotCard(slot.id);
             const isWrong = wrongSlot === slot.id;
             return (
               <div
                 key={slot.id}
                 className={[
                   "cicm-slot",
-                  filled  ? "cicm-slot--filled" : "",
-                  isWrong ? "cicm-slot--wrong"  : "",
+                  filled ? "cicm-slot--filled" : "",
+                  isWrong ? "cicm-slot--wrong" : "",
                 ].filter(Boolean).join(" ")}
                 style={{
                   left: `${slot.x}%`, top: `${slot.y}%`,
@@ -204,7 +198,7 @@ const CastleImageCombineModal = ({
                 className={["cicm-card", isDragging ? "cicm-card--dragging" : ""].filter(Boolean).join(" ")}
                 style={{
                   left: `${pos[card.id].x}%`,
-                  top:  `${pos[card.id].y}%`,
+                  top: `${pos[card.id].y}%`,
                   transform: "translate(-50%, -50%)",
                   zIndex: isDragging ? 30 : 10,
                   cursor: isDragging ? "grabbing" : "grab",

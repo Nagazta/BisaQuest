@@ -2,10 +2,6 @@ import { useState, useCallback, useEffect } from "react";
 import CleaningAnimation from "./CleaningAnimation";
 import "./ClickableItem.css";
 
-/**
- * mode="absolute"  — positioned via left/top % on a background (ForestScenePage)
- * mode="grid"      — sits inside a CSS grid, no absolute positioning (HousePage IA)
- */
 const ClickableItem = ({ item, onClick, locked, mode = "absolute" }) => {
   const [state, setState] = useState("idle");
   const [showAnim, setShowAnim] = useState(false);

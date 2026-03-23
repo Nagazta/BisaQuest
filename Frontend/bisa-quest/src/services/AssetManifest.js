@@ -1,4 +1,3 @@
-// services/AssetManifest.js
 // Centralized asset registry — all Vite-resolved URLs in one place
 // Group assets by environment so we can preload per-level
 

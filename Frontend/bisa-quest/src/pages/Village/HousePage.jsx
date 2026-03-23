@@ -1,6 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  HousePage.jsx
-// ─────────────────────────────────────────────────────────────────────────────
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Button from "../../components/Button";
@@ -163,7 +160,7 @@ const HousePage = () => {
         setSelectedRegion={setSelectedRegion}
       />
 
-      {/* ── Hover / clickable regions ─────────────────────────────────────── */}
+      {/*  Hover / clickable regions  */}
       {introDone && LIVING_ROOM_LABELS.map(region => {
         const isDone = completedItems.has(region.id);
         return (
@@ -206,7 +203,7 @@ const HousePage = () => {
         );
       })}
 
-      {/* ── NPC sprite ────────────────────────────────────────────────────── */}
+      {/*  NPC sprite  */}
       <div className="house-npc-wrap">
         <img
           src={NpcImage}
@@ -219,7 +216,7 @@ const HousePage = () => {
         />
       </div>
 
-      {/* ── Intro DialogueBox ─────────────────────────────────────────────── */}
+      {/* Intro DialogueBox  */}
       {introLine && (
         <DialogueBox
           title={introLine.speaker}
@@ -303,17 +300,17 @@ const HousePage = () => {
         currentRoom="house"
         onClose={() => setShowDoorChoice(false)}
         onProceedToForest={() => {
-            setShowDoorChoice(false);
-            setShowSummary(true);
+          setShowDoorChoice(false);
+          setShowSummary(true);
         }}
       />
-      
+
       <VillageSummaryModal
         isOpen={showSummary}
         onClose={() => setShowSummary(false)}
         onProceed={() => {
-            markCompleteDismissed("village");
-            setFogActive(true);
+          markCompleteDismissed("village");
+          setFogActive(true);
         }}
       />
 

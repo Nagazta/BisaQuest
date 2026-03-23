@@ -2,14 +2,6 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import CleaningAnimation from "./CleaningAnimation";
 import "./SceneItem.css";
 
-/**
- * mode="absolute"  — positioned via left/top % inside fsp-scene-canvas (ForestScenePage)
- * mode="grid"      — sits inside a CSS grid, no absolute positioning
- *
- * debugMode=true   — enables drag-to-reposition + resize handle.
- *                    Console logs the updated position_x, position_y,
- *                    width_percent, height_percent for Supabase.
- */
 const SceneItem = ({ item, onClick, locked, mode = "absolute", debugMode = false }) => {
     const [state, setState] = useState("idle");
     const [showAnim, setShowAnim] = useState(false);

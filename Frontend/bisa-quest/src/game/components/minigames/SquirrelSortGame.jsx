@@ -1,9 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  SquirrelSortGame.jsx — Drag nuts to the antonym zone
-//  Two squirrel tree hollows (left & right), each with a word label.
-//  Nuts in the centre carry words — drag each to the hollow whose label
-//  is the ANTONYM of the nut's word.
-// ─────────────────────────────────────────────────────────────────────────────
 import React, { useState, useRef, useCallback } from "react";
 
 const SquirrelSortGame = ({ quest, item, npcName, npcImage, onClose, onComplete }) => {
@@ -79,7 +73,7 @@ const SquirrelSortGame = ({ quest, item, npcName, npcImage, onClose, onComplete 
       if (draggedId !== id) return;
       setDraggedId(null);
       if (e?.currentTarget && e.pointerId != null) {
-        try { e.currentTarget.releasePointerCapture(e.pointerId); } catch (_) {}
+        try { e.currentTarget.releasePointerCapture(e.pointerId); } catch (_) { }
       }
 
       const nut = nuts.find((n) => n.id === id);

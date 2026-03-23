@@ -1,4 +1,3 @@
-// utils/playerStorage.js
 // Centralized localStorage management for BisaQuest player data
 
 const KEYS = {

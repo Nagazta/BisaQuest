@@ -1,9 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  CastleCompoundWordModal.jsx
-//  Compound-word drag-and-drop mini-game for the Castle Room.
-//  Given an item with a compoundWord config, shows 4 shuffled word tiles and
-//  asks the player to drag the 2 correct parts into the slots to combine them.
-// ─────────────────────────────────────────────────────────────────────────────
 import { useState } from "react";
 import Button from "../../../components/Button";
 import "./CastleCompoundWordModal.css";
@@ -68,7 +62,7 @@ const CastleCompoundWordModal = ({ item, npcName, npcImage, onClose, onComplete 
   const previewWord =
     slots[0] && slots[1]
       ? (tiles.find((t) => t.id === slots[0])?.label ?? "") +
-        (tiles.find((t) => t.id === slots[1])?.label ?? "")
+      (tiles.find((t) => t.id === slots[1])?.label ?? "")
       : null;
 
   return (

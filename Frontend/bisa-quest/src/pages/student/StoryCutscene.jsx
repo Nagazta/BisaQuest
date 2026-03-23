@@ -1,7 +1,3 @@
-// src/pages/student/StoryCutscene.jsx
-// Generic cutscene player — reads type from URL param /cutscene/:type
-// All slide data lives in src/data/cutsceneData.js
-
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { hasCutsceneSeen, markCutsceneSeen } from "../../utils/playerStorage";
@@ -9,25 +5,26 @@ import { CUTSCENES } from "./data/cutsceneData";
 import "./StoryCutscene.css";
 
 const StoryCutscene = ({ type: typeProp }) => {
-    const navigate          = useNavigate();
-    const { type: urlType } = useParams();   // from /cutscene/:type — undefined on /student/cutscene
-    const type              = typeProp || urlType || "story";
-    const cutscene          = CUTSCENES[type] ?? CUTSCENES.story;  // safe fallback
+    const navigate = useNavigate();
+    const { type: urlType } = useParams();
+    const type = typeProp || urlType || "story";
+    const cutscene = CUTSCENES[type] ?? CUTSCENES.story;
 
     const { slides, key: cutsceneKey, destination, finalLabel } = cutscene;
 
-    const [current,   setCurrent]   = useState(0);
+    const [current, setCurrent] = useState(0);
     const [animating, setAnimating] = useState(false);
     const [fadeClass, setFadeClass] = useState("fade-in");
+    const [lang, setLang] = useState("bis");
 
-    // ── Guard: skip if already seen ──────────────────────────────────────────
+    //  Guard: skip if already seen 
     useEffect(() => {
         if (hasCutsceneSeen(cutsceneKey)) {
             navigate(destination, { replace: true });
         }
     }, [navigate, cutsceneKey, destination]);
 
-    // ── Slide transition ─────────────────────────────────────────────────────
+    // Slide transition 
     const goToSlide = useCallback((nextIndex) => {
         if (animating || nextIndex === current) return;
         setAnimating(true);
@@ -39,13 +36,13 @@ const StoryCutscene = ({ type: typeProp }) => {
         }, 500);
     }, [animating, current]);
 
-    // ── Finish — mark seen, navigate directly (fog already played before entry) ──
+    //  Finish — mark seen, navigate directly (fog already played before entry) 
     const finish = useCallback(() => {
         markCutsceneSeen(cutsceneKey);
         navigate(destination, { replace: true });
     }, [navigate, cutsceneKey, destination]);
 
-    // ── Keyboard navigation ──────────────────────────────────────────────────
+    // Keyboard navigation   
     useEffect(() => {
         const handleKey = (e) => {
             if (e.key === "ArrowRight" || e.key === " ") {
@@ -60,7 +57,7 @@ const StoryCutscene = ({ type: typeProp }) => {
         return () => window.removeEventListener("keydown", handleKey);
     }, [current, goToSlide, finish, slides.length]);
 
-    const slide  = slides[current];
+    const slide = slides[current];
     const isLast = current === slides.length - 1;
 
     return (
@@ -77,7 +74,7 @@ const StoryCutscene = ({ type: typeProp }) => {
                         ? <img className="cutscene-image" src={slide.image} alt={`Slide ${current + 1}`} draggable={false} />
                         : <div className="cutscene-placeholder-art">
                             <span style={{ fontSize: "80px" }}>{slide.emoji || "✨"}</span>
-                          </div>
+                        </div>
                     }
                 </div>
 
@@ -87,7 +84,21 @@ const StoryCutscene = ({ type: typeProp }) => {
                     {slide.speaker && (
                         <p className="cutscene-speaker">{slide.speaker}</p>
                     )}
-                    <p className="cutscene-caption-text">{slide.text}</p>
+                    <div className="cutscene-caption-row">
+                        <p className="cutscene-caption-text">
+                            {lang === "bis" ? (slide.textBisaya || slide.text) : (slide.textEnglish || slide.text)}
+                        </p>
+                        <button
+                            className="cutscene-lang-toggle"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setLang(l => l === "bis" ? "eng" : "bis");
+                            }}
+                            title="Toggle Translation"
+                        >
+                            {lang === "bis" ? "🇺🇸 EN" : "🇵🇭 BIS"}
+                        </button>
+                    </div>
                 </div>
             </div>
 
