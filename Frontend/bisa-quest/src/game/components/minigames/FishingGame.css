@@ -84,7 +84,7 @@
 .fishing-fish-img {
   width: 100%;
   height: auto;
-  mix-blend-mode: multiply; /* Removes white background from JPGs */
+  /* mix-blend-mode removed — causes black backgrounds on deployed version */
   transform: scaleX(-1); /* Face left by default usually looks better */
 }
 

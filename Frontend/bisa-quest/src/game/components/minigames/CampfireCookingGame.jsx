@@ -176,7 +176,6 @@ const CampfireCookingGame = ({ quest, item, npcName, npcImage, onClose, onComple
                 style={{
                   width: "100%",
                   height: "auto",
-                  mixBlendMode: "multiply",
                   filter: stage === "cooked" || stage === "eating"
                     ? "sepia(0.6) brightness(0.7) contrast(1.2)"
                     : "none"
