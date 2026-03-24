@@ -125,7 +125,7 @@
   background: rgba(8, 4, 28, 0.9);
   color: #fff;
   font-family: 'Pixelify Sans', sans-serif;
-  font-size: 12px;
+  font-size: 16px;
   line-height: 1.5;
   padding: 7px 16px;
   border-radius: 10px;
@@ -157,12 +157,13 @@
   font-weight: 700;
   color: #fcd765;
   display: block;
+  font-size: 18px !important;
 }
 
 .croom-hover-tooltip-english {
   font-weight: 400;
   color: #d1d5db;
-  font-size: 11px;
+  font-size: 16px !important;
   display: block;
 }
 
@@ -178,7 +179,7 @@
 .croom-hover-tooltip-done {
   display: block;
   margin-top: 4px;
-  font-size: 10px;
+  font-size: 13px;
   color: #86efac;
   font-weight: bold;
 }
