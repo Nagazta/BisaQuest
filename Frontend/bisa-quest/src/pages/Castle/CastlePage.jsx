@@ -99,11 +99,17 @@ const CastlePage = () => {
     useEffect(() => {
         const play = () => { if (audioRef.current) { audioRef.current.volume = 0.3; audioRef.current.play().catch(() => { }); } };
         play();
-        const onInteract = () => { play(); document.removeEventListener("click", onInteract); };
-        document.addEventListener("click", onInteract);
+        const onInteract = () => {
+    play();
+    document.removeEventListener("click", onInteract);
+    document.removeEventListener("keydown", onInteract);
+};
+document.addEventListener("click", onInteract);
+document.addEventListener("keydown", onInteract);
         return () => {
             if (audioRef.current) { audioRef.current.pause(); audioRef.current.currentTime = 0; }
             document.removeEventListener("click", onInteract);
+document.removeEventListener("keydown", onInteract);
         };
     }, []);
 
