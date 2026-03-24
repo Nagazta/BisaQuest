@@ -84,6 +84,8 @@
 .fishing-fish-img {
   width: 100%;
   height: auto;
+  mix-blend-mode: normal !important;
+  background-color: transparent !important;
   /* mix-blend-mode removed — causes black backgrounds on deployed version */
   transform: scaleX(-1); /* Face left by default usually looks better */
 }
