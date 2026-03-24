@@ -241,9 +241,6 @@ const CastleGatePage = () => {
             <span className="croom-bilingual">
               <span className="croom-bilingual-bisaya">{currentLine.bisayaText}</span>
               <span className="croom-bilingual-english">{currentLine.englishText}</span>
-              {isLastDialogueLine && (
-                <span className="croom-quest-incoming-inline">🎮 Mini-game sunod! · Mini-game coming up!</span>
-              )}
             </span>
           }
           introItem={dialogueStep === 0 ? { label: activeItem.labelBisaya, imageKey: activeItem.id } : null}

@@ -870,3 +870,14 @@
 .iqm-clock-hand--active .iqm-clock-hand-visual {
     background: #fcd765;
 }
+
+/* ── Castle overrides ─────────────────────────────────────────────────────── */
+.iqm-modal--castle .iqm-mechanic-badge--scene_drag {
+    color: #b66efa;
+    border-color: #c07cff;
+    background: rgba(168, 85, 247, 0.1);
+}
+
+.iqm-modal--castle .iqm-dialogue-speaker {
+    color: #c4b5fd;
+}
