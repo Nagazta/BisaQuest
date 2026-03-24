@@ -1,23 +1,23 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Navigate } from "react-router-dom";
 import { useCharacterPreference } from "../../hooks/useCharacterPreference";
 import EnvironmentPage from "../../components/EnvironmentPage";
 import Button from "../../components/Button";
+import ProgressBar from "../../components/ProgressBar";
 import ParticleEffects from "../../components/ParticleEffects";
 import { environmentApi } from "../../services/environmentServices.js";
-import { getPlayerId } from "../../utils/playerStorage";
+import { getPlayerId, getProgress, getLearnedWords, markCompleteDismissed, isCompleteDismissed, hasCutsceneSeen, getLibroPageCountForEnv, hasLibroPage } from "../../utils/playerStorage";
+import EnvironmentCompleteModal from "../../components/EnvironmentCompleteModal";
+import FogTransition from "../../components/FogTransition";
 import AssetManifest from "../../services/AssetManifest";
 import bgMusic from "../../assets/music/bg-music.mp3";
 import QuestStartModal from "../../components/QuestStartModal";
 import "./CastlePage.css";
+import "../../pages/Village/HousePage.css";
 
 const API = import.meta.env.VITE_API_URL !== undefined ? import.meta.env.VITE_API_URL : (import.meta.env.PROD ? '' : 'http://localhost:5000');
-const CASTLE_HINT = "Enter the Castle! Complete all tasks to master compound words";
-
 const CASTLE_NPCS = [
-    { npcId: "castle_npc_3", name: "Gulo", x: 28, y: 60, character: AssetManifest.castle.npcs.gulo, showName: true, quest: "compound_words", scenePath: "/student/library" },
-    { npcId: "castle_npc_1", name: "Princess Hara", x: 50, y: 45, character: AssetManifest.castle.npcs.princess_hara, showName: true, quest: "compound_words", scenePath: "/student/library" },
-    { npcId: "castle_npc_2", name: "Manong Kwill", x: 72, y: 55, character: AssetManifest.castle.npcs.manong_kwill, showName: true, quest: "compound_words", scenePath: "/student/library" },
+    { npcId: "castle_npc_1", name: "Princess Hara", x: 20, y: 65, character: AssetManifest.castle.npcs.princess_hara, showName: true, quest: "compound_words", scenePath: "/castle/gate" },
 ];
 
 const CastlePage = () => {
@@ -36,6 +36,12 @@ const CastlePage = () => {
     const [showExitConfirm, setShowExitConfirm] = useState(false);
     const [showSummaryButton, setShowSummaryButton] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
+    const [showCompleteModal, setShowCompleteModal] = useState(false);
+    const [learnedWords, setLearnedWords] = useState([]);
+    const [fogActive, setFogActive] = useState(false);
+    const [castleProgress, setCastleProgress] = useState(getProgress().castle_progress || 0);
+    const [showScenePicker, setShowScenePicker] = useState(false);
+    const [questLoading, setQuestLoading] = useState(false);
 
     // ── NPC position editor (dev tool) ────────────────────────────────────────
     const [npcEditMode, setNpcEditMode] = useState(false);
@@ -106,9 +112,26 @@ const CastlePage = () => {
     // ── Init ──────────────────────────────────────────────────────────────────
     useEffect(() => { initializeCastle(); }, [refreshKey]);
 
+    const loadCastleProgress = () => {
+        const progress = getProgress();
+        const pct = progress.castle_progress || 0;
+        const castlePages = getLibroPageCountForEnv("castle");
+
+        // Page-based progress: each page = 33%
+        const effectivePct = Math.max(pct, Math.min(Math.round((castlePages / 3) * 100), 100));
+        setCastleProgress(effectivePct);
+
+        if (effectivePct >= 100 && !isCompleteDismissed("castle")) {
+            const words = getLearnedWords("castle");
+            setLearnedWords(words);
+            setShowCompleteModal(true);
+        }
+    };
+
     const initializeCastle = async () => {
         if (!playerId) return;
         setCastleNPCs(CASTLE_NPCS);
+        loadCastleProgress();
         try {
             await environmentApi.initializeEnvironment("castle", playerId);
             await checkEnvironmentProgress();
@@ -145,9 +168,25 @@ const CastlePage = () => {
 
     const handleNPCClick = (npc) => { setSelectedNPC(npc); setShowModal(true); };
     const handleCloseModal = () => { setShowModal(false); setSelectedNPC(null); };
+    const handleCloseScenePicker = () => { setShowScenePicker(false); };
     const handleBackClick = () => setShowExitConfirm(true);
     const handleConfirmExit = () => { setShowExitConfirm(false); navigate("/dashboard"); };
     const handleCancelExit = () => setShowExitConfirm(false);
+
+    // ── "Adto sa Dashboard!" button handler ──────────────────────────────────
+    const handleGoToDashboard = () => {
+        markCompleteDismissed("castle");
+        setShowCompleteModal(false);
+        setFogActive(true);
+    };
+
+    const handleFogDone = () => {
+        if (!hasCutsceneSeen("castle_complete")) {
+            navigate("/cutscene/castle_complete", { replace: true });
+        } else {
+            navigate("/dashboard", { replace: true });
+        }
+    };
 
     const handleViewSummary = async () => {
         if (!playerId) return;
@@ -158,34 +197,47 @@ const CastlePage = () => {
         } catch (e) { console.error(e); }
     };
 
-    const handleStartQuest = async () => {
-        if (!selectedNPC || !playerId) return;
-        try {
-            await environmentApi.logNPCInteraction({ playerId, npcName: selectedNPC.name });
-            await environmentApi.startNPCInteraction({ npcId: selectedNPC.npcId, challengeType: selectedNPC.quest, playerId });
-        } catch (err) { console.error(err); }
+    // ── Scene picker — determine which scenes are unlocked ─────────────────
+    const gateUnlocked = true;
+    const courtyardUnlocked = hasLibroPage("castle", "castle_gate");
+    const libraryUnlocked = hasLibroPage("castle", "castle_courtyard");
 
-        // Fetch the actual quest_id for this NPC from the DB
-        let npcQuestId = questId;
-        try {
-            const res = await fetch(`${API}/api/challenge/npc/${selectedNPC.npcId}/quest`);
-            const result = await res.json();
-            if (result.data?.length) npcQuestId = result.data[0].quest_id;
-        } catch (err) { console.warn("[CastlePage] quest lookup failed, using default:", err); }
-
-        navigate(selectedNPC.scenePath, { state: { npcId: selectedNPC.npcId, npcName: selectedNPC.name, questId: npcQuestId, returnTo: "/student/castle" } });
+    const handleStartQuest = () => {
+        setShowModal(false);
+        setShowScenePicker(true);
     };
 
+    const handleGoToScene = (route) => {
+        setShowScenePicker(false);
+        setSelectedNPC(null);
+        navigate(route, { state: { returnTo: "/student/castle" } });
+    };
+
+    if (!hasCutsceneSeen("castle_entry")) return <Navigate to="/cutscene/castle_entry" replace />;
     if (charLoading) return <div className="castle-page-wrapper"><div className="loading-message">Loading...</div></div>;
 
     return (
         <div className="castle-page-wrapper">
             <audio ref={audioRef} loop><source src={bgMusic} type="audio/mpeg" /></audio>
             <ParticleEffects enableMouseTrail={false} />
+            <div className="village-progress-bar-wrap">
+                <ProgressBar progress={castleProgress} variant="castle" showLabel={true} />
+            </div>
             <button className="music-toggle-button" onClick={toggleMute}>{isMuted ? "🔇" : "🔊"}</button>
 
             <Button variant="back" className="back-button-castle-overlay" onClick={handleBackClick}>← Back</Button>
             {showSummaryButton && <Button variant="primary" className="view-summary-button" onClick={handleViewSummary}>View Summary</Button>}
+
+            <FogTransition active={fogActive} onDone={handleFogDone} label="✨ Quest Complete..." />
+
+            <EnvironmentCompleteModal
+                isOpen={showCompleteModal}
+                environment="castle"
+                learnedWords={learnedWords}
+                nextEnv="Dashboard"
+                onStay={() => { markCompleteDismissed("castle"); setShowCompleteModal(false); }}
+                onAdvance={handleGoToDashboard}
+            />
 
             <EnvironmentPage
                 key={refreshKey}
@@ -197,7 +249,6 @@ const CastlePage = () => {
                 characterType={character === "roberta" ? "girl" : "boy"}
                 debugMode={false}
                 playerId={playerId}
-                hintMessage={CASTLE_HINT}
             />
 
             {/* NPC position editor overlay */}
@@ -220,7 +271,75 @@ const CastlePage = () => {
             </div>
 
             {showModal && selectedNPC && (
-                <QuestStartModal npcName={selectedNPC.name} npcImage={selectedNPC.character} questType={selectedNPC.quest} onStart={handleStartQuest} onClose={handleCloseModal} />
+                <QuestStartModal
+                    npcName={selectedNPC.name}
+                    npcImage={selectedNPC.character}
+                    npcId={selectedNPC.npcId}
+                    questType={selectedNPC.quest}
+                    onStart={handleStartQuest}
+                    onClose={handleCloseModal}
+                    loading={questLoading}
+                />
+            )}
+
+            {showScenePicker && (
+                <div className="house-door-overlay" onClick={handleCloseScenePicker}>
+                    <div className="house-door-modal" onClick={e => e.stopPropagation()}>
+                        <button className="house-door-close" onClick={handleCloseScenePicker}>✕</button>
+
+                        <div className="house-door-header">
+                            <div className="house-door-title">Asa ka moadto? 🏰</div>
+                        </div>
+
+                        <div className="house-door-body">
+                            <div className="house-door-grid">
+
+                                {/* Gate — always unlocked */}
+                                <button
+                                    className="house-door-btn"
+                                    onClick={() => handleGoToScene("/castle/gate")}
+                                >
+                                    <span className="house-door-btn-icon">🚪</span>
+                                    <div className="house-door-btn-name">Gate</div>
+                                    <div className="house-door-btn-sub">
+                                        {hasLibroPage("castle", "castle_gate") ? "✅ Nahuman na!" : "Sugdi diri!"}
+                                    </div>
+                                </button>
+
+                                {/* Courtyard */}
+                                <button
+                                    className={`house-door-btn ${!courtyardUnlocked ? "house-door-btn--locked" : ""}`}
+                                    onClick={() => courtyardUnlocked && handleGoToScene("/castle/courtyard")}
+                                    style={!courtyardUnlocked ? { opacity: 0.5, cursor: "not-allowed" } : {}}
+                                >
+                                    <span className="house-door-btn-icon">{courtyardUnlocked ? "🌳" : "🔒"}</span>
+                                    <div className="house-door-btn-name">Courtyard</div>
+                                    <div className="house-door-btn-sub">
+                                        {!courtyardUnlocked
+                                            ? "Complete the Gate first!"
+                                            : hasLibroPage("castle", "castle_courtyard") ? "✅ Nahuman na!" : "Explore!"}
+                                    </div>
+                                </button>
+
+                                {/* Library */}
+                                <button
+                                    className={`house-door-btn ${!libraryUnlocked ? "house-door-btn--locked" : ""}`}
+                                    onClick={() => libraryUnlocked && handleGoToScene("/castle/library")}
+                                    style={!libraryUnlocked ? { opacity: 0.5, cursor: "not-allowed" } : {}}
+                                >
+                                    <span className="house-door-btn-icon">{libraryUnlocked ? "📚" : "🔒"}</span>
+                                    <div className="house-door-btn-name">Library</div>
+                                    <div className="house-door-btn-sub">
+                                        {!libraryUnlocked
+                                            ? "Complete the Courtyard first!"
+                                            : hasLibroPage("castle", "castle_library") ? "✅ Nahuman na!" : "Explore!"}
+                                    </div>
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
 
             {showExitConfirm && (

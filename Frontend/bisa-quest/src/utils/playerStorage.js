@@ -1,4 +1,3 @@
-// utils/playerStorage.js
 // Centralized localStorage management for BisaQuest player data
 
 const KEYS = {
@@ -39,7 +38,7 @@ export const savePreferences = (preferences) => {
  * Also auto-unlocks the NEXT environment when this one hits 100%.
  *
  * @param {string}   environment  'village' | 'forest' | 'castle'
- * @param {string}   npcId        e.g. 'village_npc_1'
+ * @param {string}   npcId        e.g. 'village_npc_2'
  * @param {number}   score        items/words answered correctly
  * @param {boolean}  passed       whether the challenge counts as complete
  * @param {number}   npcCount     total NPCs in this environment (default 3)
@@ -92,6 +91,8 @@ export const saveEnvironmentUnlock = (environment) => {
 
 export const isEnvironmentUnlocked = (environment) => {
     if (environment === 'village') return true;
+    if (environment === 'forest' && getLibroPageCountForEnv('village') >= 3) return true;
+    if (environment === 'castle' && getLibroPageCountForEnv('forest') >= 3) return true;
     return !!getUnlocks()[environment];
 };
 
@@ -212,15 +213,21 @@ export const hasLibroPage = (environment, npcId) => {
 // NPC display-name lookup per environment
 const INTERNAL_NPC_META = {
     village: {
-        village_npc_1: { name: "Vicente" },
         village_npc_2: { name: "Ligaya" },
-        village_npc_3: { name: "Nando" },
+        village_house: { name: "Ligaya" },
+        village_kitchen: { name: "Ligaya" },
+        village_bedroom: { name: "Ligaya" },
     },
     forest: {
         forest_npc_1: { name: "Lunti" },
         forest_npc_2: { name: "Ronaldo" },
         forest_npc_3: { name: "Diwata" },
-        forest_npc_4: { name: "Deer" },
+
+    },
+    castle: {
+        castle_npc_1: { name: "Princess Hara" },
+        castle_npc_2: { name: "Manong Kwill" },
+        castle_npc_3: { name: "Gulo" },
     },
 };
 
@@ -272,7 +279,7 @@ export const shouldAwardForestFragment = (npcId) => {
     const progress = getProgress();
     const npcData = progress['forest_npcs']?.[npcId];
     if (!npcData) return false;
-    return (npcData.encounters >= 4) || (npcData.completed === true);
+    return (npcData.encounters >= 3) || (npcData.completed === true);
 };
 
 // ─── Clear ───────────────────────────────────────────────────────────────────

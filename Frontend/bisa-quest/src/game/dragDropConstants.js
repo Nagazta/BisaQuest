@@ -1,7 +1,10 @@
+import AssetManifest from "../services/AssetManifest";
+
+
 //Scene backgrounds 
-import houseBackground from "../assets/images/environments/scenario/house.jpg";
-import kitchenBackground from "../assets/images/environments/scenario/kitchen.jpg";
-import bedroomBackground from "../assets/images/environments/scenario/bedroom.jpg";
+import houseBackground from "../assets/images/environments/scenario/house.png";
+import kitchenBackground from "../assets/images/environments/scenario/kitchen.png";
+import bedroomBackground from "../assets/images/environments/scenario/bedroom.png";
 
 //Item images — Living Room
 import BroomImg from "../assets/items/broom.png";
@@ -16,9 +19,26 @@ import TowelImg from "../assets/items/towel.png";
 import BedsheetImg from "../assets/items/bedsheet.png";
 import HabolImg from "../assets/items/habol.png";
 import HandfanImg from "../assets/items/hand_fan.png";
-import electricFanImg from "../assets/items/electricfanRed.png";
 import bucketImg from "../assets/items/bucket.png";
-import lampImg from "../assets/items/lamp.png";
+import BookImg from "../assets/items/book.png";
+import KalendaryoImg from "../assets/items/kalendaryo.png";
+import PurtahanImg from "../assets/items/purtahan.png";
+import RugImg from "../assets/items/rug.png";
+import PlangganaImg from "../assets/items/planggana.png";
+import LamesaSalaImg from "../assets/items/lamesa_sala.png";
+import BookshelfItemImg from "../assets/items/bookshelf_item.png";
+import SopaImg from "../assets/items/sopa.png";
+import BulakImg from "../assets/items/bulak.png";
+import ToalyaImg from "../assets/items/toalya.png";
+import BaldiImg from "../assets/items/baldi.png";
+import LitratoImg from "../assets/items/litrato.png";
+import BintanaImg from "../assets/items/bintana.png";
+import KurtinaImg from "../assets/items/kurtina.png";
+import BayongImg from "../assets/items/bayong.png";
+import SalaCeilingImg from "../assets/items/sala_ceiling.png";
+import SalogImg from "../assets/items/salog.png";
+import DoormatImg from "../assets/items/doormat.png";
+import EstanteWallImg from "../assets/items/estante_wall.png";
 
 //Item images — Kitchen
 import PotImg from "../assets/items/pot.png";
@@ -26,34 +46,39 @@ import PanImg from "../assets/items/pan.png";
 import LadleImg from "../assets/items/ladle.png";
 import KnifeImg from "../assets/items/knife.png";
 import PlateImg from "../assets/items/plate.png";
+import SpoonImg from "../assets/items/spoon.jpg";
 import CupImg from "../assets/items/cup.png";
+import KahoyImg from "../assets/items/kahoy.png";
+import DruminImg from "../assets/items/drumin.png";
+import RedCrateImg from "../assets/items/red_crate.png";
+import Lababo from "../assets/items/lababo.png";
+import LamesaImg from "../assets/items/lamesa.png";
+import ShelfImg from "../assets/items/shelf.png";
+import BigShelfImg from "../assets/items/big_shelf.png";
+import DapoganImg from "../assets/items/dapogan.png";
+import CarrotImg from "../assets/items/carrot.png";
+import PotatoImg from "../assets/items/potato.png";
+import OnionImg from "../assets/items/onion.png";
 
 // Item images — Bedroom
 import ShirtImg from "../assets/items/shirts.png";
 import PantsImg from "../assets/items/pants.png";
 import DressImg from "../assets/items/dress.jpg";
 import ShoesImg from "../assets/items/shoes.png";
+import electricFanImg from "../assets/items/electricfan.png";
+import LaundryBasketImg from "../assets/items/laundry_basket.png";
+import KatreImg from "../assets/items/katre.png";
+import AparadorImg from "../assets/items/aparador.png";
+import DustFeatherImg from "../assets/items/dust_feather.png";
+import IronImg from "../assets/items/iron.png";
+import LampOnImg from "../assets/items/lamp_on.png";
+import LampOffImg from "../assets/items/lamp_off.png";
+import BoxMatchImg from "../assets/items/box_match.jpg";
+import LitMatchImg from "../assets/items/lit_match.jpg";
+import MatchImg from "../assets/items/match.jpg";
+import ReloImg from "../assets/items/relo.png";
+import KisameImg from "../assets/items/kisame.png";
 
-// Item images — Market Stall (fruits)
-import MangoRipeImg from "../assets/items/mango.jpg";
-import MangoUnripeImg from "../assets/items/mango_notripe.jpg";
-import BananaRipeImg from "../assets/items/banana.jpg";
-import BananaUnripeImg from "../assets/items/banana_notripe.jpg";
-import watermelonImg from "../assets/items/fruit_watermelon.png";
-import santolImg from "../assets/items/fruit_santol.png";
-import lansonsesImg from "../assets/items/fruit_lansones.png";
-
-//Item images - Farm
-import WateringCanImg from "../assets/items/wateringCan.png";
-import shovelImg from "../assets/items/shovel.png";
-import kahoyImg from "../assets/items/kahoy.png";
-import carabaoImg from "../assets/items/carabao.png";
-import carabaoPlowImg from "../assets/items/carabao_nag-araro.png";
-import chickenImg from "../assets/items/chicken.jpg";
-
-// Scene backgrounds - Farm
-import farmBackground from "../assets/images/environments/scenario/farm.png";
-import emptyFarmBackground from "../assets/items/emptyFarm.png";
 
 export const ITEM_IMAGE_MAP = {
   // Living room
@@ -74,9 +99,39 @@ export const ITEM_IMAGE_MAP = {
   slipper: SlipperImg,
   trash: TrashImg,
   basura: TrashImg,
-  Bentilador: electricFanImg,
   bucket: bucketImg,
-  lamp: lampImg,
+  lamp: LampOffImg,
+  book: BookImg,
+  libro: BookImg,
+  kalendaryo: KalendaryoImg,
+  purtahan: PurtahanImg,
+  alfombra: RugImg,
+  planggana: PlangganaImg,
+  lamesa_sala: LamesaSalaImg,
+  relo: ReloImg,
+  kisame: KisameImg,
+  bookshelf: BookshelfItemImg,
+  sopa: SopaImg,
+  bulak: BulakImg,
+  toalya: ToalyaImg,
+  baldi: BaldiImg,
+  litrato: LitratoImg,
+  bintana: BintanaImg,
+  kurtina: KurtinaImg,
+  bag: BayongImg,
+  sala_ceiling: SalaCeilingImg,
+  salog: SalogImg,
+  doormat: DoormatImg,
+  estante_wall: EstanteWallImg,
+  watering_can: AssetManifest.village.items.wateringCan,
+  watering_can_pour: AssetManifest.village.items.wateringCanPour,
+  hammer: AssetManifest.village.items.hammer,
+  nail: AssetManifest.village.items.nail,
+  kahoy: AssetManifest.village.items.kahoy,
+  rag: AssetManifest.village.items.rag,
+  dust_feather: AssetManifest.village.items.dust_feather,
+  lampaso: AssetManifest.village.items.lampaso,
+  shoes: AssetManifest.village.items.shoes,
 
   // Kitchen
   pot: PotImg,
@@ -89,8 +144,23 @@ export const ITEM_IMAGE_MAP = {
   kutsilyo: KnifeImg,
   plate: PlateImg,
   plato: PlateImg,
+  spoon: SpoonImg,
   cup: CupImg,
   tasa: CupImg,
+  carrot: CarrotImg,
+  potato: PotatoImg,
+  onion: OnionImg,
+  kahoy: KahoyImg,
+  drumin: DruminImg,
+  red_crate: RedCrateImg,
+  basket_kitchen: AssetManifest.village.scenarios.basket,
+  lababo: Lababo,
+  lamesa: LamesaImg,
+  shelf: ShelfImg,
+  big_shelf: BigShelfImg,
+  firewood: KahoyImg,
+  dapogan: DapoganImg,
+
   // Bedroom
   almohada: PillowImg,
   bedsheet: BedsheetImg,
@@ -99,32 +169,38 @@ export const ITEM_IMAGE_MAP = {
   tuwalya: TowelImg,
   dress: DressImg,
   shoes: ShoesImg,
-  // Market Stall — fruits
-  mangga: MangoRipeImg,
-  mango: MangoRipeImg,
-  mangga_ripe: MangoRipeImg,
-  mangga_unripe: MangoUnripeImg,
-  mango_notripe: MangoUnripeImg,
-  fruit_sour: MangoUnripeImg,   // comprehension wrong choice (sour/unripe)
-  saging: BananaRipeImg,
-  banana: BananaRipeImg,
-  saging_ripe: BananaRipeImg,
-  saging_unripe: BananaUnripeImg,
-  banana_notripe: BananaUnripeImg,
-  fruit_round: BananaUnripeImg,  // comprehension wrong choice (round/unripe)
-  pakwan: watermelonImg,
-  santol: santolImg,
-  lansones: lansonsesImg,
+  laundry_basket: LaundryBasketImg,
+  katre: KatreImg,
+  Bentilador: electricFanImg,
+  aparador: AparadorImg,
+  paspas: DustFeatherImg,
+  dust_feather: DustFeatherImg,
+  iron: IronImg,
+  plantsa: IronImg,
+  lamp_on: LampOnImg,
+  lamp_off: LampOffImg,
+  box_match: BoxMatchImg,
+  lit_match: LitMatchImg,
+  match: MatchImg,
 
-  // Farm
-  regadera: WateringCanImg,
-  pala: shovelImg,
-  kahoy: kahoyImg,
-  kabaw: carabaoImg,
-  carabao: carabaoImg,
-  kabaw_river: carabaoImg,
-  manok: chickenImg,
-  chicken: chickenImg,
+  // Castle library
+  sunlight: AssetManifest.castle.scenarios.sun,
+  candlelight: AssetManifest.castle.scenarios.candleStick,
+  fireplace: AssetManifest.castle.scenarios.introFireplace,
+  candlestick: AssetManifest.castle.scenarios.introCandlestick,
+  bookshelf: AssetManifest.castle.scenarios.introBookshelf,
+  keyhole: AssetManifest.castle.scenarios.key,
+  doorway: AssetManifest.castle.scenarios.door,
+  stonework: AssetManifest.castle.scenarios.introStone,
+  grassland: AssetManifest.castle.scenarios.grass,
+  pathway: AssetManifest.castle.scenarios.introPathway,
+  waterway: AssetManifest.castle.scenarios.introWaterway,
+  drawbridge: AssetManifest.castle.scenarios.introBridge,
+  flagpole: AssetManifest.castle.scenarios.introFlagpole,
+  archway: AssetManifest.castle.scenarios.introArchway,
+  rooftop: AssetManifest.castle.scenarios.roof,
+  courtyard: AssetManifest.castle.scenarios.introPatio,
+
 };
 
 // Scene backgrounds
@@ -132,8 +208,7 @@ export const SCENE_BACKGROUNDS = {
   living_room: houseBackground,
   kitchen: kitchenBackground,
   bedroom: bedroomBackground,
-  farm: farmBackground,
-  empty_farm: emptyFarmBackground,
+
   living_room_spill: null,  // imported directly in HousePage
 };
 

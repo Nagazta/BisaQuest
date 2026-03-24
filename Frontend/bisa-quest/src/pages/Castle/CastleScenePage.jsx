@@ -3,18 +3,19 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Button from "../../components/Button";
 import DialogueBox from "../../components/instructions/DialogueBox";
 import AssetManifest from "../../services/AssetManifest";
-import { getPlayerId, saveNPCProgress } from "../../utils/playerStorage";
+import { getPlayerId, saveNPCProgress, awardLibroPage, getLibroPageCount, getLibroPageCountForEnv } from "../../utils/playerStorage";
+import BookCollectModal from "../../game/components/BookCollectModal";
 import "./CastleScenePage.css";
 
 const SCENE_BG = {
-    "castle-library":  AssetManifest.castle.scenarios.library,
+    "castle-library": AssetManifest.castle.scenarios.library,
     "garden-fountain": AssetManifest.castle.scenarios.garden,
-    "night-garden":    AssetManifest.castle.scenarios.nightGarden,
+    "night-garden": AssetManifest.castle.scenarios.nightGarden,
     "castle-courtyard": AssetManifest.castle.scenarios.courtyard,
-    "castle-firewood":  AssetManifest.castle.scenarios.firewood,
-    "castle-firework":      AssetManifest.castle.scenarios.firework,
+    "castle-firewood": AssetManifest.castle.scenarios.firewood,
+    "castle-firework": AssetManifest.castle.scenarios.firework,
     "castle-moonlight-room": AssetManifest.castle.scenarios.moonlightRoom,
-    "castle-rainbow":        AssetManifest.castle.scenarios.rainbow,
+    "castle-rainbow": AssetManifest.castle.scenarios.rainbow,
 };
 
 // NPC character sprites (null = no character shown)
@@ -82,39 +83,42 @@ const CastleScenePage = () => {
     const playerId = getPlayerId();
     const API = import.meta.env.VITE_API_URL || "";
 
-    const questId  = location.state?.questId  ?? null;
-    const npcId    = location.state?.npcId    ?? "castle_npc_1";
-    const npcName  = location.state?.npcName  ?? "Princess Hara";
+    const questId = location.state?.questId ?? null;
+    const npcId = location.state?.npcId ?? "castle_npc_1";
+    const npcName = location.state?.npcName ?? "Princess Hara";
     const returnTo = location.state?.returnTo ?? "/student/castle";
 
     const [background, setBackground] = useState(DEFAULT_BG);
     const [flowGroups, setFlowGroups] = useState({});
-    const [items, setItems]           = useState([]);
-    const [loading, setLoading]       = useState(true);
-    const [error, setError]           = useState(null);
+    const [items, setItems] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     // Quest chaining
-    const [npcQuests, setNpcQuests]         = useState([]);
+    const [npcQuests, setNpcQuests] = useState([]);
     const [currentQuestId, setCurrentQuestId] = useState(null);
 
     // Phase: "dialogue" | "combine" | "branch" | "done"
-    const [phase, setPhase]         = useState("dialogue");
-    const [mainIdx, setMainIdx]     = useState(0);
+    const [phase, setPhase] = useState("dialogue");
+    const [mainIdx, setMainIdx] = useState(0);
     const [branchKey, setBranchKey] = useState(null);
     const [branchIdx, setBranchIdx] = useState(0);
 
     // Spell-circle drag & drop state
-    const [slots, setSlots]               = useState([null, null]); // [itemId, itemId]
-    const [dragItemId, setDragItemId]     = useState(null);
-    const [combining, setCombining]       = useState(false);
+    const [slots, setSlots] = useState([null, null]); // [itemId, itemId]
+    const [dragItemId, setDragItemId] = useState(null);
+    const [combining, setCombining] = useState(false);
     const [combineRound, setCombineRound] = useState(0);
     const [showTryAgain, setShowTryAgain] = useState(false);
-    const [isLit, setIsLit]               = useState(false);
+    const [isLit, setIsLit] = useState(false);
+
+    // ── Fragment modal state ──────────────────────────────────────────────────
+    const [collectedPage, setCollectedPage] = useState(null);
 
     const currentRow =
         phase === "dialogue" ? (flowGroups.main?.[mainIdx] ?? null) :
-        phase === "branch"   ? (flowGroups[branchKey]?.[branchIdx] ?? null) :
-        null;
+            phase === "branch" ? (flowGroups[branchKey]?.[branchIdx] ?? null) :
+                null;
 
     // ── Reset game state on quest change ──────────────────────────────────────
     useEffect(() => {
@@ -168,7 +172,7 @@ const CastleScenePage = () => {
                 if (!iRes.ok) throw new Error(`Items: ${iRes.status}`);
 
                 const { data: dialogues } = await dRes.json();
-                const { data: rawItems }  = await iRes.json();
+                const { data: rawItems } = await iRes.json();
 
                 if (cancelled) return;
 
@@ -193,11 +197,11 @@ const CastleScenePage = () => {
 
                 const mapped = (rawItems ?? []).map(r => ({
                     ...r,
-                    id:        String(r.item_id),
-                    label:     r.label,
+                    id: String(r.item_id),
+                    label: r.label,
                     isCorrect: r.is_correct,
-                    hint:      r.hint ?? null,
-                    emoji:     r.emoji ?? toEmoji(r.label),
+                    hint: r.hint ?? null,
+                    emoji: r.emoji ?? toEmoji(r.label),
                 }));
 
                 setItems(mapped);
@@ -266,9 +270,9 @@ const CastleScenePage = () => {
 
         setCombining(true);
 
-        const selected   = items.filter(i => slots.includes(i.id));
+        const selected = items.filter(i => slots.includes(i.id));
         const allCorrect = selected.every(i => i.isCorrect);
-        const wrongKeys  = Object.keys(flowGroups).filter(k => k.startsWith("wrong_"));
+        const wrongKeys = Object.keys(flowGroups).filter(k => k.startsWith("wrong_"));
 
         setTimeout(() => {
             if (allCorrect) {
@@ -297,7 +301,10 @@ const CastleScenePage = () => {
     // ── Submit progress ────────────────────────────────────────────────────────
     const submitProgress = () => {
         if (!playerId || !currentQuestId) return;
-        saveNPCProgress?.("castle", npcId, items.length, true);
+        const correctItems = items.filter(i => i.isCorrect);
+        const compoundWord = correctItems.map(i => i.label.toUpperCase()).join("");
+        const words = compoundWord ? [compoundWord] : [];
+        saveNPCProgress?.("castle", npcId, items.length, true, 3, words);
         fetch(`${API}/api/challenge/quest/submit`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -306,6 +313,13 @@ const CastleScenePage = () => {
                 score: items.length, maxScore: items.length, passed: true,
             }),
         }).catch(err => console.warn("[CastleScenePage] submit failed:", err));
+
+        const isNewPage = awardLibroPage("castle", npcId);
+        if (isNewPage) {
+            const pageNumber = getLibroPageCountForEnv("castle");
+            const totalCollected = getLibroPageCount();
+            setCollectedPage({ pageNumber, totalCollected });
+        }
     };
 
     const handleTryAgain = () => {
@@ -318,11 +332,11 @@ const CastleScenePage = () => {
     const handleBack = () => navigate(returnTo);
 
     const handleDoneClose = () => {
-        const idx  = npcQuests.findIndex(q => String(q.quest_id) === String(currentQuestId));
+        const idx = npcQuests.findIndex(q => String(q.quest_id) === String(currentQuestId));
         const next = npcQuests[idx + 1];
         if (next) {
             // Chain to next quest for same NPC — navigate pushes new location.state
-            navigate("/student/library", {
+            navigate("/castle/scene", {
                 state: { npcId, npcName, questId: next.quest_id, returnTo },
             });
         } else {
@@ -349,9 +363,9 @@ const CastleScenePage = () => {
     );
 
     const showDialogueBar = (phase === "dialogue" || phase === "branch") && currentRow;
-    const showCombine     = phase === "combine";
+    const showCombine = phase === "combine";
 
-    const currentSpeaker  = currentRow?.speaker || null;
+    const currentSpeaker = currentRow?.speaker || null;
     const dialogueSpeaker = currentRow
         ? resolveSpeaker(currentSpeaker, npcName)
         : npcName;
@@ -469,17 +483,14 @@ const CastleScenePage = () => {
             )}
 
             {/* Quest complete */}
-            {phase === "done" && (
-                <div className="csp-complete-overlay">
-                    <div className="csp-complete-card">
-                        <div className="csp-libro-fragment">📖</div>
-                        <div className="csp-complete-stars">✨✨✨</div>
-                        <h2>Quest Complete!</h2>
-                        <p>A Libro fragment floats into your hands!</p>
-                        <Button variant="primary" onClick={handleDoneClose}>Continue →</Button>
-                    </div>
-                </div>
-            )}
+            <BookCollectModal
+                isOpen={phase === "done"}
+                npcName={npcName}
+                pageNumber={collectedPage?.pageNumber}
+                totalPages={collectedPage?.totalCollected}
+                environment="castle"
+                onClose={handleDoneClose}
+            />
         </div>
     );
 };

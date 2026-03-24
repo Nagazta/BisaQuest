@@ -1,16 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  components/ZoneDebugOverlay.jsx
-//  Developer tool — toggle with the 🐛 Debug button in DragAndDrop.
-//
-//  Shows ALL zones in ZONE_REGISTRY overlaid on the scene background so you
-//  can visually verify and tune zone coordinates without a live quest.
-//
-//  Visual guide:
-//    Green solid border   = zone used by the current quest's items  (active)
-//    Orange dashed border = zone exists in registry but not in quest (inactive)
-//    Live cursor readout  = real-time x%/y% as you move the mouse
-// ─────────────────────────────────────────────────────────────────────────────
-
 import { useState, useEffect } from "react";
 import { ZONE_REGISTRY } from "../dragDropConstants";
 
@@ -24,8 +11,8 @@ const ZoneDebugOverlay = ({ activeZoneIds, containerRef }) => {
     const onMove = (e) => {
       const rect = el.getBoundingClientRect();
       setCursorPct({
-        x: (((e.clientX - rect.left) / rect.width)  * 100).toFixed(1),
-        y: (((e.clientY - rect.top)  / rect.height) * 100).toFixed(1),
+        x: (((e.clientX - rect.left) / rect.width) * 100).toFixed(1),
+        y: (((e.clientY - rect.top) / rect.height) * 100).toFixed(1),
       });
     };
     el.addEventListener("pointermove", onMove);
@@ -41,16 +28,16 @@ const ZoneDebugOverlay = ({ activeZoneIds, containerRef }) => {
           <div
             key={id}
             style={{
-              position:      "absolute",
-              left:          `${zone.x}%`,
-              top:           `${zone.y}%`,
-              width:         `${zone.w}%`,
-              height:        `${zone.h}%`,
-              border:        isActive ? "2px solid #00ff88" : "2px dashed #ff9900",
-              background:    isActive ? "rgba(0,255,136,0.12)" : "rgba(255,153,0,0.10)",
-              boxSizing:     "border-box",
+              position: "absolute",
+              left: `${zone.x}%`,
+              top: `${zone.y}%`,
+              width: `${zone.w}%`,
+              height: `${zone.h}%`,
+              border: isActive ? "2px solid #00ff88" : "2px dashed #ff9900",
+              background: isActive ? "rgba(0,255,136,0.12)" : "rgba(255,153,0,0.10)",
+              boxSizing: "border-box",
               pointerEvents: "none",
-              zIndex:        50,
+              zIndex: 50,
             }}
           >
             {/* Zone id — top-left */}

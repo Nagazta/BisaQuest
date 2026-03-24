@@ -11,6 +11,7 @@ import {
     hasCutsceneSeen,
     markCompleteDismissed,
     isCompleteDismissed,
+    getLibroPageCountForEnv,
 } from "../../utils/playerStorage";
 import AssetManifest from "../../services/AssetManifest";
 import bgMusic from "../../assets/music/bg-music.mp3";
@@ -22,9 +23,8 @@ import "./ForestPage.css";
 
 const FOREST_NPCS = [
     { npcId: "forest_npc_1", name: "Lunti", x: 25, y: 35, character: AssetManifest.forest.npcs.forest_guardian, showName: true, quest: "synonym_antonym" },
-    // { npcId: "forest_npc_2", name: "Ronaldo", x: 65, y: 45, character: AssetManifest.forest.npcs.wandering_bard,   showName: true, quest: "synonym_antonym" }, // TODO: no quests yet
-    { npcId: "forest_npc_3", name: "Diwata", x: 50, y: 70, character: AssetManifest.forest.npcs.diwata, showName: true, quest: "synonym_antonym" },
-    { npcId: "forest_npc_4", name: "Deer", x: 40, y: 50, character: AssetManifest.forest.npcs.deer, showName: true, quest: "drag_drop" },
+    // { npcId: "forest_npc_2", name: "Ronaldo", x: 72, y: 35, character: AssetManifest.forest.npcs.wandering_bard, showName: true, quest: "synonym_antonym" }, // TODO: no quests yet
+    { npcId: "forest_npc_3", name: "Diwata", x: 45, y: 45, character: AssetManifest.forest.npcs.diwata, showName: true, quest: "synonym_antonym" },
 ];
 
 const shuffleFirst = (arr) => {
@@ -74,9 +74,14 @@ const ForestPage = () => {
     const loadForestProgress = () => {
         const progress = getProgress();
         const pct = progress.forest_progress || 0;
-        setForestProgress(pct);
+        const forestPages = getLibroPageCountForEnv("forest");
 
-        if (pct >= 100 && !isCompleteDismissed("forest")) {
+        // Show real page-based progress: each page = 33%
+        const effectivePct = Math.max(pct, Math.min(Math.round((forestPages / 3) * 100), 100));
+        setForestProgress(effectivePct);
+
+        // Trigger completion when 3+ forest libro pages collected
+        if (effectivePct >= 100 && !isCompleteDismissed("forest")) {
             const words = getLearnedWords("forest");
             setLearnedWords(words);
             setShowCompleteModal(true);
@@ -138,7 +143,15 @@ const ForestPage = () => {
 
         setQuestLoading(false);
         const state = { questId: resolvedQuestId, npcId: selectedNPC.npcId, npcName: selectedNPC.name, returnTo: "/student/forest" };
-        navigate("/forest/scene", { state });
+
+        // Lunti → ForestPondPage, Diwata → ForestGlowPage, others → ForestScenePage
+        if (selectedNPC.npcId === "forest_npc_1") {
+            navigate("/student/forest-pond", { state });
+        } else if (selectedNPC.npcId === "forest_npc_3") {
+            navigate("/student/forest-glow", { state });
+        } else {
+            navigate("/forest/scene", { state });
+        }
     };
 
     if (charLoading) return <div className="forest-page-wrapper"><div className="loading-message">Loading...</div></div>;
@@ -169,6 +182,17 @@ const ForestPage = () => {
             <button className="music-toggle-button" onClick={toggleMute}>{isMuted ? "🔇" : "🔊"}</button>
 
             <Button variant="back" className="back-button-forest-overlay" onClick={handleBackClick}>← Back</Button>
+
+            {forestProgress >= 100 && (
+                <Button
+                    variant="primary"
+                    className="proceed-forest-btn"
+                    onClick={handleGoToCastle}
+                    style={{ marginLeft: "20px" }}
+                >
+                    🏰 Proceed to Castle
+                </Button>
+            )}
 
             <EnvironmentPage
                 key={refreshKey}

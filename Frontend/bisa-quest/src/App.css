@@ -1,4 +1,18 @@
-body {
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Grandstander:wght@400;500;600;700&family=Fredoka+One&family=Baloo+2:wght@400;500;600;700&display=swap');
+
+/* FIND */
+.dialogue-text {
+  font-family: 'Baloo 2', cursive !important;
+  font-weight: 500;
+}
+
+body .dialogue-text {
+  font-family: 'Baloo 2', cursive !important;
+  font-weight: 500;
+  font-size: 14px !important;
+}
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }

@@ -103,7 +103,8 @@
   bottom:         2%;  /* sits above the 90px dialogue bar */
   right:          20px;
   z-index:        50;
-  font-family:    'Fredoka One', 'Nunito', cursive;
+  font-family:    'Baloo 2', 'Nunito', cursive;
+  font-weight:    500;
   font-size:      16px;
   font-weight:    700;
   letter-spacing: 0.5px;
@@ -173,7 +174,8 @@
 }
 
 .dad-completion-card h2 {
-  font-family:    'Fredoka One', cursive;
+  font-family:    'Baloo 2', cursive;
+  font-weight:    500;
   font-size:      32px;
   color:          #15803d;
   margin:         0 0 8px;
@@ -201,7 +203,8 @@
 }
 
 .dad-loading span {
-  font-family: 'Fredoka One', cursive;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 500;
   font-size:   22px;
   color:       #fff;
   text-shadow: 0 2px 8px rgba(0,0,0,0.5);
@@ -209,7 +212,8 @@
 }
 
 .dad-error p {
-  font-family: 'Fredoka One', cursive;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 500;
   font-size:   20px;
   color:       #fff;
   text-shadow: 0 2px 8px rgba(0,0,0,0.5);

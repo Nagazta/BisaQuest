@@ -1,0 +1,254 @@
+/*  Overlay  */
+.cam-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 4, 28, 0.88);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  animation: cam-fade-in 0.25s ease both;
+}
+
+/*  Modal shell  */
+.cam-modal {
+  position: relative;
+  background: #0d0a1a;
+  border: 3px solid #a855f7;
+  border-radius: 20px;
+  width: min(860px, 96vw);
+  overflow: hidden;
+  box-shadow: 0 8px 0 #6d28d9, 0 24px 60px rgba(168, 85, 247, 0.45);
+  display: flex;
+  flex-direction: column;
+  animation: cam-card-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/*  Close button  */
+.cam-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 50;
+  background: none;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: #d1d5db;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+
+.cam-close:hover {
+  background: rgba(255, 80, 80, 0.2);
+  color: #f87171;
+  border-color: #f87171;
+}
+
+
+/*  Drop zone  */
+.cam-dropzone {
+  position: absolute;
+  border: 3px dashed rgba(252, 215, 101, 0.7);
+  border-radius: 14px;
+  background: rgba(252, 215, 101, 0.08);
+  animation: cam-pulse 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.cam-dropzone--wrong {
+  border-color: #f87171 !important;
+  background: rgba(248, 113, 113, 0.18) !important;
+  animation: cam-shake 0.45s ease, cam-pulse 1.6s ease-in-out infinite;
+}
+
+/*  Draggable card  */
+.cam-card {
+  position: absolute;
+  background: rgba(252, 215, 101, 0.93);
+  border: 3px solid #a07a10;
+  border-radius: 14px;
+  padding: 10px 16px;
+  min-width: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 5px 0 #a07a10, 0 6px 14px rgba(0, 0, 0, 0.4);
+  user-select: none;
+  touch-action: none;
+}
+
+.cam-card:not(.cam-card--dragging):hover {
+  transform: translate(-50%, calc(-50% - 6px)) !important;
+  box-shadow: 0 11px 0 #a07a10, 0 12px 20px rgba(0, 0, 0, 0.4);
+}
+
+.cam-card--dragging {
+  box-shadow: 0 2px 0 #a07a10, 0 12px 30px rgba(0, 0, 0, 0.6) !important;
+  transform: translate(-50%, -50%) scale(1.08) rotate(2deg) !important;
+}
+
+.cam-card--wrong {
+  animation: cam-shake 0.45s ease;
+  border-color: #f87171 !important;
+  background: rgba(255, 200, 200, 0.93) !important;
+}
+
+.cam-card-emoji {
+  font-size: clamp(26px, 4.5vw, 44px);
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+}
+
+.cam-card-img {
+  width: clamp(40px, 6vw, 64px);
+  height: clamp(40px, 6vw, 64px);
+  object-fit: contain;
+}
+
+.cam-card-word {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(12px, 1.6vw, 16px);
+  color: #3a1a00;
+  letter-spacing: 0.5px;
+}
+
+/* ── Result banner ────────────────────────────────────────────────────────── */
+.cam-result-banner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(30, 15, 4, 0.88);
+  border: 2.5px solid #fcd765;
+  border-radius: 30px;
+  padding: 10px 28px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 40px rgba(252, 215, 101, 0.35);
+  white-space: nowrap;
+  pointer-events: none;
+  animation: cam-result-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.cam-result-part {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.cam-result-emoji {
+  font-size: clamp(20px, 3vw, 32px);
+  line-height: 1;
+}
+
+.cam-result-label {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(11px, 1.4vw, 15px);
+  color: #fcd765;
+  letter-spacing: 0.5px;
+}
+
+.cam-result-op {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(16px, 2vw, 22px);
+  color: #fcd765;
+}
+
+.cam-result-word {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(18px, 2.8vw, 30px);
+  color: #fcd765;
+  letter-spacing: 2px;
+  text-shadow: 0 0 16px rgba(252, 215, 101, 0.8);
+}
+
+
+/* ── Keyframes ────────────────────────────────────────────────────────────── */
+@keyframes cam-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cam-card-pop {
+  from {
+    transform: scale(0.65);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes cam-result-pop {
+  from {
+    transform: translate(-50%, -50%) scale(0.4);
+    opacity: 0;
+  }
+
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes cam-pulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(252, 215, 101, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 18px 6px rgba(252, 215, 101, 0.35);
+  }
+}
+
+@keyframes cam-shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-6px);
+  }
+
+  40% {
+    transform: translateX(6px);
+  }
+
+  60% {
+    transform: translateX(-4px);
+  }
+
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 580px) {
+  .cam-card {
+    padding: 7px 12px;
+    min-width: 56px;
+  }
+}

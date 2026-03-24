@@ -1,0 +1,872 @@
+/*  Overlay    */
+.iqm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 5, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    animation: iqm-fade-in 0.2s ease both;
+}
+
+@keyframes iqm-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/*  Modal panel  */
+.iqm-modal {
+    position: relative;
+    background: #1e0f04;
+    border: 3px solid #fcd765;
+    border-radius: 20px;
+    width: min(680px, 94vw);
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 24px 28px 20px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+    animation: iqm-pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+@keyframes iqm-pop-in {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/*  Close button  */
+.iqm-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: none;
+    border: none;
+    color: #fcd765;
+    font-size: 18px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 6px;
+    border-radius: 6px;
+    transition: background 0.15s;
+}
+
+.iqm-close:hover {
+    background: rgba(252, 215, 101, 0.15);
+}
+
+/*  Header  */
+.iqm-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.iqm-header-bisaya {
+    font-family: 'Fredoka One', cursive;
+    font-size: 27px;
+    color: #fcd765;
+}
+
+.iqm-header-english {
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 25px;
+    color: #c8b99a;
+    font-style: italic;
+}
+
+.iqm-mechanic-badge {
+    margin-left: auto;
+    font-family: 'Silkscreen', sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1.5px solid;
+}
+
+.iqm-mechanic-badge--drag_drop {
+    color: #7dd3fc;
+    border-color: #7dd3fc;
+    background: rgba(125, 211, 252, 0.1);
+}
+
+.iqm-mechanic-badge--item_association {
+    color: #86efac;
+    border-color: #86efac;
+    background: rgba(134, 239, 172, 0.1);
+}
+
+/*  Game area  */
+.iqm-game-area {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(252, 215, 101, 0.2);
+    border-radius: 14px;
+    padding: 20px;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/*  Intro placeholder  */
+.iqm-intro-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.iqm-intro-icon {
+    font-size: 64px;
+    font-family: 'Pixelify Sans', sans-serif;
+    line-height: 1;
+    animation: iqm-bob 2s ease-in-out infinite;
+}
+
+.iqm-intro-icon--drag_drop {
+    color: #7dd3fc;
+}
+
+.iqm-intro-icon--item_association {
+    color: #86efac;
+}
+
+@keyframes iqm-bob {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+/*  Item Association grid  */
+.iqm-ia-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 14px;
+    width: 100%;
+}
+
+.iqm-ia-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 2.5px solid rgba(252, 215, 101, 0.4);
+    border-radius: 14px;
+    padding: 14px 8px;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.iqm-ia-card:hover:not(:disabled) {
+    border-color: #fcd765;
+    background: rgba(252, 215, 101, 0.12);
+    transform: translateY(-3px);
+}
+
+.iqm-ia-card:disabled {
+    cursor: default;
+}
+
+.iqm-ia-card--correct {
+    border-color: #22c55e !important;
+    background: rgba(34, 197, 94, 0.2) !important;
+    animation: iqm-correct-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.iqm-ia-card--wrong {
+    border-color: #ef4444 !important;
+    background: rgba(239, 68, 68, 0.15) !important;
+    animation: iqm-shake 0.45s ease;
+}
+
+@keyframes iqm-correct-pop {
+    from {
+        transform: scale(0.9);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
+
+@keyframes iqm-shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    20% {
+        transform: translateX(-6px);
+    }
+
+    40% {
+        transform: translateX(6px);
+    }
+
+    60% {
+        transform: translateX(-4px);
+    }
+
+    80% {
+        transform: translateX(4px);
+    }
+}
+
+.iqm-ia-img {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+}
+
+.iqm-ia-emoji {
+    font-size: 40px;
+}
+
+.iqm-ia-label {
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 15px;
+    color: #fdf6e3;
+    text-align: center;
+}
+
+/* ── Drag & Drop area ───────────────────────────────────────────── */
+.iqm-dd-area {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+}
+
+.iqm-dd-cards {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.iqm-dd-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(252, 215, 101, 0.5);
+    border-radius: 12px;
+    padding: 10px 14px;
+    cursor: grab;
+    transition: transform 0.15s, opacity 0.15s;
+}
+
+.iqm-dd-card:hover {
+    transform: translateY(-3px);
+    border-color: #fcd765;
+}
+
+.iqm-dd-card--dragging {
+    opacity: 0.45;
+    cursor: grabbing;
+}
+
+.iqm-dd-card--placed {
+    opacity: 0.3;
+    cursor: default;
+    pointer-events: none;
+}
+
+.iqm-dd-card--shake {
+    animation: iqm-shake 0.45s ease;
+}
+
+.iqm-dd-card-img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+}
+
+.iqm-dd-card-emoji {
+    font-size: 36px;
+}
+
+.iqm-dd-card-label {
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 18px;
+    color: #fdf6e3;
+    text-align: center;
+}
+
+/* Drop zones row */
+.iqm-dd-zones {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.iqm-dd-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 130px;
+    min-height: 90px;
+    border: 3px dashed rgba(252, 215, 101, 0.5);
+    border-radius: 14px;
+    background: rgba(252, 215, 101, 0.05);
+    padding: 12px;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.iqm-dd-zone--hover {
+    border-color: #fcd765;
+    background: rgba(252, 215, 101, 0.18);
+    border-style: solid;
+}
+
+.iqm-dd-zone--filled {
+    border-color: #22c55e;
+    background: rgba(34, 197, 94, 0.12);
+    border-style: solid;
+}
+
+.iqm-dd-zone-label {
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 18px;
+    color: rgba(252, 215, 101, 0.6);
+    text-align: center;
+}
+
+.iqm-dd-zone-img {
+    width: 54px;
+    height: 54px;
+    object-fit: contain;
+}
+
+.iqm-dd-chip {
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 15px;
+    color: #22c55e;
+    font-weight: bold;
+    border: 1.5px solid #22c55e;
+    border-radius: 20px;
+    padding: 2px 10px;
+}
+
+/* ── Dialogue row ───────────────────────────────────────────────── */
+.iqm-dialogue-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1.5px solid rgba(252, 215, 101, 0.3);
+    border-radius: 14px;
+    padding: 10px 14px;
+}
+
+.iqm-npc-img {
+    height: 140px;
+    object-fit: contain;
+    flex-shrink: 0;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+.iqm-dialogue-bubble {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+}
+
+.iqm-dialogue-speaker {
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 22px;
+    color: #fcd765;
+    margin-bottom: 2px;
+}
+
+.iqm-dialogue-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.iqm-dialogue-bisaya {
+    font-family: 'Baloo 2', cursive;
+    font-weight: 500;
+    font-size: 18px;
+    color: #fdf6e3;
+    font-weight: bold;
+    line-height: 1.4;
+}
+
+.iqm-dialogue-english {
+    font-family: 'Baloo 2', cursive;
+    font-weight: 500;
+    font-size: 18px;
+    color: #c8b99a;
+    font-style: italic;
+    line-height: 1.4;
+}
+
+.iqm-next-btn {
+    align-self: flex-end;
+    margin-top: 6px;
+    background: #fcd765;
+    color: #1e0f04;
+    border: none;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    font-size: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 3px 0 #a07a10;
+}
+
+.iqm-next-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 0 #a07a10;
+}
+
+.iqm-next-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 #a07a10;
+}
+
+/* ── Scene drag modal — wider to fit background ─────────────── */
+.iqm-modal--scene {
+    width: min(860px, 96vw);
+    max-width: 96vw;
+}
+
+.iqm-modal--full {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+}
+
+/* ── Scene canvas ────────────────────────────────────────────── */
+.iqm-scene-canvas {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #1a0d04;
+    flex-shrink: 0;
+}
+
+.iqm-scene-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.6s ease;
+}
+
+.iqm-scene-bg--reveal {
+    animation: iqm-clean-reveal 0.7s ease both;
+}
+
+@keyframes iqm-clean-reveal {
+    from {
+        opacity: 0;
+        transform: scale(1.03);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ── Dirt spots ──────────────────────────────────────────────── */
+.iqm-dirt-spot {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(80, 50, 20, 0.75) 0%, rgba(60, 35, 10, 0.4) 60%, transparent 100%);
+    border: 2px dashed rgba(252, 215, 101, 0.8);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    animation: iqm-pulse-dirt 2s infinite ease-in-out;
+    pointer-events: none;
+    z-index: 4;
+}
+
+@keyframes iqm-pulse-dirt {
+
+    0%,
+    100% {
+        box-shadow: 0 0 4px rgba(252, 215, 101, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 0 12px rgba(252, 215, 101, 0.8);
+        border-color: rgba(252, 215, 101, 1);
+    }
+}
+
+.iqm-dirt-spot--swept {
+    opacity: 0;
+    transform: scale(1.4);
+}
+
+/* ── Water spill variant (mop quest) ─────────────────────────── */
+.iqm-dirt-spot--spill {
+    background: radial-gradient(ellipse,
+            rgba(100, 160, 220, 0.6) 0%,
+            rgba(80, 130, 200, 0.3) 50%,
+            transparent 100%);
+    border-radius: 60% 40% 55% 45% / 50% 60% 40% 50%;
+}
+
+/* ── Sweat variant (toalya quest) ───────────────────────────── */
+.iqm-dirt-spot--sweat {
+    background: radial-gradient(ellipse,
+            rgba(180, 220, 255, 0.6) 0%,
+            rgba(140, 190, 240, 0.3) 50%,
+            transparent 100%);
+    border-color: rgba(180, 220, 255, 0.6);
+    border-style: solid;
+}
+
+.iqm-sweep-progress {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.45);
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(252, 215, 101, 0.3);
+}
+
+.iqm-sweep-pip {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(80, 50, 20, 0.8);
+    border: 1.5px solid rgba(252, 215, 101, 0.4);
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.iqm-sweep-pip--done {
+    background: #22c55e;
+    border-color: #16a34a;
+}
+
+/* ── Draggable broom on scene ────────────────────────────────── */
+.iqm-scene-broom {
+    position: absolute;
+    z-index: 8;
+    touch-action: none;
+    transition: opacity 0.3s;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
+}
+
+.iqm-scene-broom--dragging {
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.7)) brightness(1.1);
+}
+
+.iqm-scene-broom--hidden {
+    opacity: 0;
+}
+
+.iqm-scene-broom-img {
+    width: 300px;
+    height: 300px;
+    object-fit: contain;
+    display: block;
+}
+
+/* ── Drag Indicator ──────────────────────────────────────────── */
+.iqm-drag-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    animation: iqm-bounce-drag 1.5s infinite;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fcd765;
+    box-shadow: 0 0 12px rgba(252, 215, 101, 0.5);
+    z-index: 10;
+}
+
+.iqm-drag-hand {
+    font-size: 24px;
+    margin-top: 2px;
+    /* Slight visual adjust for emoji center */
+}
+
+@keyframes iqm-bounce-drag {
+
+    0%,
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.15);
+    }
+}
+
+/* ── Success overlay on scene ────────────────────────────────── */
+.iqm-scene-success-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(2px);
+    z-index: 20;
+    animation: iqm-fade-in 0.3s ease both;
+}
+
+/* ── Reward card ───────────────────────────────────────────── */
+
+.iqm-scene-success-card {
+    background: linear-gradient(145deg, #2b1605, #1a0c02);
+    border: 3px solid #fcd765;
+    border-radius: 18px;
+    padding: 24px 40px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(252, 215, 101, 0.4);
+    animation: iqm-pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+        iqm-glow 1.5s ease-in-out infinite;
+}
+
+/* ── Trophy / stars ────────────────────────────────────────── */
+
+.iqm-scene-success-stars {
+    font-size: 48px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 4px rgba(252, 215, 101, 0.4);
+    animation: iqm-bounce 1s ease-in-out infinite;
+}
+
+/* ── Text ─────────────────────────────────────────────────── */
+
+.iqm-scene-success-text {
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 28px;
+    color: #fcd765;
+    letter-spacing: 1px;
+}
+
+/* ── Animations ───────────────────────────────────────────── */
+
+@keyframes iqm-bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-12px);
+    }
+}
+
+@keyframes iqm-glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 15px rgba(252, 215, 101, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 30px rgba(252, 215, 101, 0.7);
+    }
+}
+
+/* ── scene_drag mechanic badge ───────────────────────────────── */
+.iqm-mechanic-badge--scene_drag {
+    color: #fcd765;
+    border-color: #fcd765;
+    background: rgba(252, 215, 101, 0.1);
+}
+
+/* ── Scene Drag Drop (scattered items on background) ─────────── */
+.iqm-sdd-zone {
+    position: absolute;
+    /* border: 2px dashed rgba(255, 0, 0, 0.5); /* Uncomment to debug zones */
+    pointer-events: none;
+    z-index: 5;
+}
+
+.iqm-sdd-item {
+    position: absolute;
+    cursor: grab;
+    transition: transform 0.15s ease, filter 0.15s ease;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5));
+    touch-action: none;
+}
+
+.iqm-sdd-item-img {
+    width: 100px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.iqm-sdd-item--dragging {
+    cursor: grabbing;
+    transform: translate(-50%, -50%) scale(1.15) rotate(5deg) !important;
+    filter: drop-shadow(0 8px 16px rgba(252, 215, 101, 0.6));
+    z-index: 20;
+}
+
+.iqm-sdd-item--placed {
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0.5) !important;
+    transition: all 0.4s ease-out;
+}
+
+/* ── Clock mechanic ─────────────────────────────────────────── */
+.iqm-scene-canvas--clock {
+    background: #e2d5b8;
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.2);
+}
+
+.iqm-clock {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background: #fff;
+    border: 12px solid #5a3c1e;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.iqm-clock-face {
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: #fffaea;
+    border: 2px solid rgba(0, 0, 0, 0.05);
+}
+
+.iqm-clock-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    background: #332211;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.iqm-clock-marker {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+}
+
+.iqm-clock-marker span {
+    display: block;
+    margin-top: 8px;
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 20px;
+    color: #4a331a;
+}
+
+.iqm-clock-hand {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    transform-origin: bottom center;
+    cursor: grab;
+    z-index: 5;
+    /* Expanded invisible hit area */
+    padding: 0 12px;
+    margin-left: -12px;
+}
+
+.iqm-clock-hand:active,
+.iqm-clock-hand--active {
+    cursor: grabbing;
+}
+
+.iqm-clock-hand-visual {
+    background: #332211;
+    border-radius: 4px;
+    width: 100%;
+    height: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: background 0.15s;
+}
+
+.iqm-clock-hand--hour {
+    width: 32px;
+    height: 60px;
+}
+
+.iqm-clock-hand--hour .iqm-clock-hand-visual {
+    width: 8px;
+    margin: 0 auto;
+}
+
+.iqm-clock-hand--minute {
+    width: 28px;
+    height: 85px;
+    z-index: 6;
+}
+
+.iqm-clock-hand--minute .iqm-clock-hand-visual {
+    width: 4px;
+    margin: 0 auto;
+    background: #a93c3c;
+}
+
+.iqm-clock-hand--active .iqm-clock-hand-visual {
+    background: #fcd765;
+}

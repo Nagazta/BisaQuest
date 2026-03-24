@@ -1,15 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  ItemAssociation.jsx — generic item-association game component
-//  Used by: ForestScenePage (and any future scene)
-//  NOT used by Village — HousePage handles that inline.
-//
-//  Props via location.state:
-//    questId       — quest to load items from
-//    npcId / npcName
-//    returnTo      — where Back button goes
-//    sceneType     — used to pick background & scene images
-// ─────────────────────────────────────────────────────────────────────────────
-
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -50,8 +38,8 @@ const ItemAssociation = () => {
   const location = useLocation();
 
   const questId    = location.state?.questId   || null;
-  const npcId      = location.state?.npcId     || "forest_npc_4";
-  const npcName    = location.state?.npcName   || "Deer";
+  const npcId      = location.state?.npcId     || "forest_npc_1";
+  const npcName    = location.state?.npcName   || "Guide";
   const returnTo   = location.state?.returnTo  || "/student/forest";
 
   const playerId = getPlayerId();
@@ -251,11 +239,6 @@ const ItemAssociation = () => {
             ⚠️ Round {currentRound + 1} has no items!
           </div>
         )}
-
-        {/* NPC */}
-        <div className="ia-npc-wrap">
-          <img src={null} alt={npcName} className="ia-npc-img" draggable={false} />
-        </div>
 
         <DialogueBox
           title={npcName}

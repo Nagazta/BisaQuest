@@ -43,11 +43,11 @@ const SaveProgressModal = ({
   const confirmMessages = {
     newGame: {
       title: "Start New Game?",
-      message: "Are you sure you want to start a new game? Your current progress will be lost."
+      message: "Mawad-an ang tanan nimo nga progress. Are you sure?"
     },
     switchPlayer: {
       title: "Switch Player?",
-      message: "This will log you out and let someone else play. Your progress is saved!"
+      message: "Mag-switch og player? Your progress is saved!"
     }
   };
 
@@ -58,7 +58,7 @@ const SaveProgressModal = ({
           <div className="modal-scroll-border">
             <div className="modal-content-progess">
               <h2 className="modal-title">
-                {mode === "exit" ? "Leaving already?" : "Save Progress Detected"}
+                {mode === "exit" ? "Leaving already?" : "Continue your quest?"}
               </h2>
 
               <div className="modal-character-container">

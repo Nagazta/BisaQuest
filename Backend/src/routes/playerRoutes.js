@@ -8,7 +8,6 @@ import {
     updateCharacter,
     getProgress,
     updateProgress,
-    getStats,
     resetProgress
 } from '../controllers/playerController.js';
 
@@ -31,9 +30,6 @@ router.get('/:playerId/progress', getProgress);
 
 // Update progress
 router.put('/:playerId/progress', updateProgress);
-
-// Get stats
-router.get('/:playerId/stats', getStats);
 
 // Reset progress
 router.delete('/:playerId/reset', resetProgress);

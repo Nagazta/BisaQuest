@@ -2,14 +2,14 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import InteractiveMap from "../../components/InteractiveMap";
-import AssetManifest from "../../services/AssetManifest";
+
 import QuestStartModal from "../../components/QuestStartModal";
 import SaveProgressModal from "../../components/progress/SaveProgressModal";
 import Notification from "../../components/Notification";
 import ParticleEffects from "../../components/ParticleEffects";
 import {
     getPlayerId, getProgress, isEnvironmentUnlocked,
-    hasCutsceneSeen, clearPlayerData,
+    hasCutsceneSeen, clearPlayerData, getLibroPageCountForEnv,
 } from "../../utils/playerStorage";
 import Button from "../../components/Button";
 
@@ -64,10 +64,18 @@ const PlayerLobby = () => {
 
     const fetchModuleProgress = () => {
         const progress = getProgress();
+        const forestNpcPct = progress.forest_progress || 0;
+        const forestPages  = getLibroPageCountForEnv("forest");
+        const forestPct    = Math.max(forestNpcPct, Math.min(Math.round((forestPages / 3) * 100), 100));
+
+        const castleNpcPct = progress.castle_progress || 0;
+        const castlePages  = getLibroPageCountForEnv("castle");
+        const castlePct    = Math.max(castleNpcPct, Math.min(Math.round((castlePages / 3) * 100), 100));
+
         setModuleProgress({
             1: progress.village_progress || 0,
-            2: progress.forest_progress  || 0,
-            3: progress.castle_progress  || 0,
+            2: forestPct,
+            3: castlePct,
         });
     };
 
@@ -91,9 +99,9 @@ const PlayerLobby = () => {
     const handleSwitchPlayer = () => { setShowExitModal(false); startNewGame(); navigate("/login"); };
 
     const quests = [
-        { id: 1, title: "Vocabulary Quest",          subtitle: "Village Theme", description: "Explore the village and learn new words", progress: moduleProgress[1] || 0, image: AssetManifest.ui.villageCard },
-        { id: 2, title: "Synonyms & Antonyms Quest", subtitle: "Forest Theme",  description: "Journey through the magical forest",      progress: moduleProgress[2] || 0, image: AssetManifest.ui.forestCard  },
-        { id: 3, title: "Compound Quest",            subtitle: "Castle Theme",  description: "Master word building in the Castle",      progress: moduleProgress[3] || 0, image: AssetManifest.ui.kingdomCard },
+        { id: 1, title: "Vocabulary Quest",          subtitle: "Village Theme", description: "Explore the village and learn new words", progress: moduleProgress[1] || 0 },
+        { id: 2, title: "Synonyms & Antonyms Quest", subtitle: "Forest Theme",  description: "Journey through the magical forest",      progress: moduleProgress[2] || 0 },
+        { id: 3, title: "Compound Quest",            subtitle: "Castle Theme",  description: "Master word building in the Castle",      progress: moduleProgress[3] || 0 },
     ];
 
     // ── Quest lock logic ──────────────────────────────────────────────────────
@@ -220,12 +228,12 @@ const PlayerLobby = () => {
 
             <div style={{
                 position: "fixed",
-                top: "16px",
+                top: "20px",
                 left: "16px",
                 background: "rgba(0,0,0,0.5)",
                 color: "#f5d89a",
                 fontFamily: "'Pixelify Sans', sans-serif",
-                fontSize: "14px",
+                fontSize: "16px",
                 padding: "6px 16px",
                 borderRadius: "20px",
                 zIndex: 100,

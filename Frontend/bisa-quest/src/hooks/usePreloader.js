@@ -1,6 +1,4 @@
-// hooks/usePreloader.js
 // Hook for preloading all assets for a specific environment
-
 import { useState, useEffect } from "react";
 import AssetManager from "../services/AssetManager";
 import { getAssetsForEnvironment } from "../services/AssetManifest";

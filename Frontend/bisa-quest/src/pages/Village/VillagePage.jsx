@@ -11,6 +11,7 @@ import {
     hasCutsceneSeen,
     markCompleteDismissed,
     isCompleteDismissed,
+    getLibroPageCountForEnv,
 } from "../../utils/playerStorage";
 import AssetManifest from "../../services/AssetManifest";
 import "./VillagePage.css";
@@ -22,17 +23,13 @@ import QuestStartModal from "../../components/QuestStartModal";
 
 const NPC_DB_ID = {
     ligaya: "village_npc_2",
-    nando: "village_npc_3",
-    vicente: "village_npc_1",
 };
 
 // ── DEBUG: Hardcode a quest_id to skip random selection ───────────────────
 // Set the value to a quest_id number (e.g. 42) to force that quest.
 // Set to null to use the normal random logic.
 const DEBUG_QUEST_OVERRIDE = {
-    village_npc_1: null,   // Vicente
     village_npc_2: null,   // Ligaya
-    village_npc_3: null,   // Nando
 };
 
 const randomPick = (arr) => {
@@ -93,8 +90,8 @@ const VillagePage = () => {
 
     // ── Load village progress ─────────────────────────────────────────────────
     const loadVillageProgress = () => {
-        const progress = getProgress();
-        const pct = progress.village_progress || 0;
+        const books = getLibroPageCountForEnv('village');
+        const pct = Math.round((books / 3) * 100);
         setVillageProgress(pct);
 
         // Only show the modal if at 100% AND the player hasn't dismissed it yet
@@ -111,8 +108,6 @@ const VillagePage = () => {
     const initializeVillage = () => {
         setVillageNPCs([
             { npcId: "ligaya", dbNpcId: "village_npc_2", name: "Ligaya", x: 35, y: 30, character: AssetManifest.village.npcs.ligaya, showName: true, quest: "word_association" },
-            { npcId: "nando", dbNpcId: "village_npc_3", name: "Nando", x: 80, y: 41, character: AssetManifest.village.npcs.nando, showName: true, quest: "farm" },
-            { npcId: "vicente", dbNpcId: "village_npc_1", name: "Vicente", x: 20, y: 60, character: AssetManifest.village.npcs.vicente, showName: true, quest: "market_stall" },
         ]);
         loadVillageProgress();
     };
@@ -140,6 +135,12 @@ const VillagePage = () => {
         }
     };
 
+    const handleEdgeWalk = (direction) => {
+        if (direction === 'right' && villageProgress >= 100 && !fogActive) {
+            handleGoToForest();
+        }
+    };
+
     // ── NPC / modal handlers ──────────────────────────────────────────────────
     const handleNPCClick = (npc) => { setSelectedNPC(npc); setShowModal(true); };
     const handleCloseModal = () => { setShowModal(false); setSelectedNPC(null); };
@@ -153,8 +154,7 @@ const VillagePage = () => {
         setQuestLoading(true);
 
         const dbNpcId = selectedNPC.dbNpcId || NPC_DB_ID[selectedNPC.npcId] || selectedNPC.npcId;
-        const isMarket = selectedNPC.quest === "market_stall";
-        const isFarm = selectedNPC.quest === "farm";
+
 
         let resolvedQuestId = null;
         let resolvedKitchenQuestId = null;
@@ -188,17 +188,7 @@ const VillagePage = () => {
                     });
                     console.groupEnd();
 
-                    if (isMarket) {
-                        const pool = data.filter(q => q.scene_type === "market_stall");
-                        resolvedQuestId = randomPick(pool)?.quest_id ?? null;
-                        console.log(`[Village] 🎯 ${selectedNPC.name} (market) — pool size: ${pool.length}, selected quest_id: ${resolvedQuestId}`);
-
-                    } else if (isFarm) {
-                        const pool = data.filter(q => q.scene_type === "farm" || q.scene_type === "empty_farm");
-                        resolvedQuestId = randomPick(pool)?.quest_id ?? null;
-                        console.log(`[Village] 🎯 ${selectedNPC.name} (farm) — pool size: ${pool.length}, selected quest_id: ${resolvedQuestId}`);
-
-                    } else {
+                    {
                         const livingPool = data.filter(q =>
                             q.game_mechanic === "drag_drop" &&
                             (q.scene_type === "living_room" || q.scene_type === "living_room_dirty" || q.scene_type === "living_room_spill")
@@ -240,21 +230,17 @@ const VillagePage = () => {
             npcId: dbNpcId,
             npcName: selectedNPC.name,
             returnTo: "/student/village",
-            sceneType: isMarket ? "market_stall" : isFarm ? "farm" : "living_room",
-            questSequence: isMarket ? [{ type: "any", sceneType: "market_stall", questId: resolvedQuestId }]
-                : isFarm ? [{ type: "any", sceneType: "farm", questId: resolvedQuestId }]
-                    : [
-                        resolvedQuestId && { type: "drag_drop", sceneType: "living_room", questId: resolvedQuestId },
-                        resolvedIaLivingQuestId && { type: "item_association", sceneType: "living_room", questId: resolvedIaLivingQuestId },
-                    ].filter(Boolean),
+            sceneType: "living_room",
+            questSequence: [
+                resolvedQuestId && { type: "drag_drop", sceneType: "living_room", questId: resolvedQuestId },
+                resolvedIaLivingQuestId && { type: "item_association", sceneType: "living_room", questId: resolvedIaLivingQuestId },
+            ].filter(Boolean),
             sequenceIndex: 0,
         };
 
         console.log(`[Village] 🚀 Navigating for ${selectedNPC.name} →`, state);
 
-        if (selectedNPC.quest === "market_stall") navigate("/student/market", { state });
-        else if (selectedNPC.quest === "farm") navigate("/student/farm", { state });
-        else if (selectedNPC.quest === "word_association") navigate("/student/house", { state });
+        if (selectedNPC.quest === "word_association") navigate("/student/house", { state });
     };
 
     if (charLoading) return (
@@ -294,6 +280,16 @@ const VillagePage = () => {
                 ← {language === "ceb" ? "Balik" : "Back"}
             </Button>
 
+            {villageProgress >= 100 && (
+                <Button
+                    variant="primary"
+                    className="proceed-forest-btn"
+                    onClick={handleGoToForest}
+                >
+                    🌲 Proceed to Forest
+                </Button>
+            )}
+
             <EnvironmentPage
                 key={refreshKey}
                 environmentType="village"
@@ -304,6 +300,7 @@ const VillagePage = () => {
                 characterType={character === "roberta" ? "girl" : "boy"}
                 debugMode={false}
                 playerId={playerId}
+                onEdgeWalk={handleEdgeWalk}
             />
 
             <div className="decorative-clouds">

@@ -69,7 +69,7 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
 
   // ── Tooltip lock message ───────────────────────────────────────────────────
   const getLockMessage = (areaId) => {
-    if (areaId === 2) return "Complete all Village quests to unlock";
+    if (areaId === 2) return "Complete 3 Village Scenarios to unlock";
     if (areaId === 3) return "Complete the Forest to unlock";
     return "Complete previous quest to unlock";
   };
@@ -304,7 +304,7 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
                 <div className="progress-bar-container">
                   <div className="progress-bar-fill" style={{ width: `${moduleProgress[hoveredQuest.id]}%` }} />
                 </div>
-                <span className="progress-text">{Math.round(moduleProgress[hoveredQuest.id])}% Complete</span>
+                <span className="map-progress-text">{Math.round(moduleProgress[hoveredQuest.id])}% Complete</span>
               </div>
             )}
             {/* Lock message — only if actually locked */}

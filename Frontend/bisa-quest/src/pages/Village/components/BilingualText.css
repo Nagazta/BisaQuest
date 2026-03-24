@@ -1,0 +1,22 @@
+/* ── Bilingual instruction in dialogue ──────────────────────── */
+.house-bilingual-instruction {
+  text-align: center;
+  line-height: 1.6;
+}
+
+.house-bilingual-bisaya {
+  display: block;
+  font-weight: 300;
+  color: #fcd765;
+  font-family: 'Fredoka One', cursive;
+  font-size: 22px;
+}
+
+.house-bilingual-english {
+  display: block;
+  font-weight: 300;
+  color: #e8e0d0;
+  font-family: 'Fredoka One', cursive;
+  font-size: 22px;
+  margin-top: 2px;
+}

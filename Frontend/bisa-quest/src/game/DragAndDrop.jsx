@@ -1,23 +1,10 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  DragAndDrop.jsx — generic drag-and-drop game component
-//  Used by: ForestScenePage (and any future scene)
-//  NOT used by Village — HousePage handles that inline.
-//
-//  Props via location.state:
-//    questId       — quest to load items from
-//    npcId / npcName
-//    returnTo      — where Back button goes
-//    sceneType     — "forest-scene" | "forked-path" | etc.
-//    onComplete    — optional callback; falls back to navigate(returnTo)
-// ─────────────────────────────────────────────────────────────────────────────
-
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-import Button           from "../components/Button";
-import DialogueBox      from "../components/instructions/DialogueBox";
-import DraggableItem    from "./components/DraggableItem";
-import DropZone         from "./components/DropZone";
+import Button from "../components/Button";
+import DialogueBox from "../components/instructions/DialogueBox";
+import DraggableItem from "./components/DraggableItem";
+import DropZone from "./components/DropZone";
 import ZoneDebugOverlay from "./components/ZoneDebugOverlay";
 
 import {
@@ -36,34 +23,34 @@ const DragAndDrop = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const questId    = location.state?.questId   || null;
-  const npcId      = location.state?.npcId     || "forest_npc_4";
-  const npcName    = location.state?.npcName   || "Deer";
-  const returnTo   = location.state?.returnTo  || "/student/forest";
+  const questId = location.state?.questId || null;
+  const npcId = location.state?.npcId || "forest_npc_1";
+  const npcName = location.state?.npcName || "Guide";
+  const returnTo = location.state?.returnTo || "/student/forest";
   const sceneParam = location.state?.sceneType || "forest-scene";
 
   const API = import.meta.env.VITE_API_URL || "";
 
-  const [debugMode,    setDebugMode]    = useState(false);
-  const [items,        setItems]        = useState([]);
-  const [dropZones,    setDropZones]    = useState([]);
-  const [background,   setBackground]   = useState(DEFAULT_BACKGROUND);
+  const [debugMode, setDebugMode] = useState(false);
+  const [items, setItems] = useState([]);
+  const [dropZones, setDropZones] = useState([]);
+  const [background, setBackground] = useState(DEFAULT_BACKGROUND);
   const [instructions, setInstructions] = useState(null);
-  const [sceneType,    setSceneType]    = useState(sceneParam);
-  const [loading,      setLoading]      = useState(true);
-  const [fetchError,   setFetchError]   = useState(null);
-  const [placements,   setPlacements]   = useState({});
-  const [dragging,     setDragging]     = useState(null);
-  const [dragPos,      setDragPos]      = useState({ x: 0, y: 0 });
-  const [activeZone,   setActiveZone]   = useState(null);
-  const [feedback,     setFeedback]     = useState(null);
-  const [shakeItem,    setShakeItem]    = useState(null);
-  const [completed,    setCompleted]    = useState(false);
+  const [sceneType, setSceneType] = useState(sceneParam);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
+  const [placements, setPlacements] = useState({});
+  const [dragging, setDragging] = useState(null);
+  const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
+  const [activeZone, setActiveZone] = useState(null);
+  const [feedback, setFeedback] = useState(null);
+  const [shakeItem, setShakeItem] = useState(null);
+  const [completed, setCompleted] = useState(false);
 
   const feedbackTimer = useRef(null);
-  const containerRef  = useRef(null);
+  const containerRef = useRef(null);
 
-  const allCorrect     = items.length > 0 && items.every(i => placements[i.id]?.correct === true);
+  const allCorrect = items.length > 0 && items.every(i => placements[i.id]?.correct === true);
   const correctZoneIds = [...new Set(items.map(i => i.zone))];
 
   // ── Load quest data ────────────────────────────────────────────────────────
@@ -96,7 +83,7 @@ const DragAndDrop = () => {
         if (!itemsRes.ok) throw new Error(`Items fetch failed: ${itemsRes.status}`);
 
         const { data: questMeta } = await questRes.json();
-        const { data: rawItems }  = await itemsRes.json();
+        const { data: rawItems } = await itemsRes.json();
 
         const scene = questMeta?.scene_type || sceneParam;
         setSceneType(scene);
@@ -135,8 +122,8 @@ const DragAndDrop = () => {
     setDragPos({ x: e.clientX, y: e.clientY });
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
-    const px = ((e.clientX - rect.left) / rect.width)  * 100;
-    const py = ((e.clientY - rect.top)  / rect.height) * 100;
+    const px = ((e.clientX - rect.left) / rect.width) * 100;
+    const py = ((e.clientY - rect.top) / rect.height) * 100;
     const hovered = dropZones.find(z =>
       px >= z.x && px <= z.x + z.w && py >= z.y && py <= z.y + z.h
     );
@@ -147,13 +134,13 @@ const DragAndDrop = () => {
     if (!dragging) return;
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) { setDragging(null); return; }
-    const px = ((e.clientX - rect.left) / rect.width)  * 100;
-    const py = ((e.clientY - rect.top)  / rect.height) * 100;
+    const px = ((e.clientX - rect.left) / rect.width) * 100;
+    const py = ((e.clientY - rect.top) / rect.height) * 100;
     const targetZone = dropZones.find(z =>
       px >= z.x && px <= z.x + z.w && py >= z.y && py <= z.y + z.h
     );
     if (targetZone) {
-      const item    = items.find(i => i.id === dragging);
+      const item = items.find(i => i.id === dragging);
       const correct = item?.zone === targetZone.id;
       if (correct) {
         setPlacements(prev => ({ ...prev, [dragging]: { placedZone: targetZone.id, correct: true } }));
@@ -172,10 +159,10 @@ const DragAndDrop = () => {
   useEffect(() => {
     if (!dragging) return;
     window.addEventListener("pointermove", handlePointerMove);
-    window.addEventListener("pointerup",   handlePointerUp);
+    window.addEventListener("pointerup", handlePointerUp);
     return () => {
       window.removeEventListener("pointermove", handlePointerMove);
-      window.removeEventListener("pointerup",   handlePointerUp);
+      window.removeEventListener("pointerup", handlePointerUp);
     };
   }, [dragging, handlePointerMove, handlePointerUp]);
 
@@ -257,11 +244,6 @@ const DragAndDrop = () => {
             onDragStart={handleDragStart}
           />
         ))}
-
-        {/* NPC */}
-        <div className="dad-npc-wrap">
-          <img src={null} alt={npcName} className="dad-npc-img" draggable={false} />
-        </div>
 
         {/* Complete button */}
         <button

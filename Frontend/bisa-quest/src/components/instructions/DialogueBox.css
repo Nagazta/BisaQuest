@@ -17,7 +17,8 @@
   box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.4);
   z-index: 30;
   display: flex;
-  align-items: stretch;       /* children fill height */
+  align-items: stretch;
+  /* children fill height */
   padding: 0;
   box-sizing: border-box;
   overflow: hidden;
@@ -52,8 +53,8 @@
 
 .dialogue-title {
   margin: 0;
-  font-family: 'Pixelify Sans', sans-serif !important;
-  font-size: 20px !important;
+  font-family: 'Silkscreen', sans-serif !important;
+  font-size: 25px !important;
   font-weight: bold;
   color: #FFF9E6;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
@@ -67,11 +68,13 @@
   height: 100%;
   padding: 14px 28px;
   position: relative;
-  overflow: hidden;           /* no scroll for short text */
+  overflow: hidden;
+  /* no scroll for short text */
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: center;    /* vertically center short text */
+  justify-content: center;
+  /* vertically center short text */
 }
 
 /* Overflow mode — enable manual scroll, align to top */
@@ -86,17 +89,19 @@
 .dialogue-content--overflow::-webkit-scrollbar {
   width: 6px;
 }
+
 .dialogue-content--overflow::-webkit-scrollbar-track {
   background: #3a2008;
   border-radius: 4px;
 }
+
 .dialogue-content--overflow::-webkit-scrollbar-thumb {
   background: #FCD765;
   border-radius: 4px;
 }
 
 .dialogue-text {
-  font-family: 'Grandstander', cursive !important;
+  font-family: 'Nunito', sans-serif !important;
   font-size: 22px !important;
   line-height: 1.6;
   color: #F5E6D3;
@@ -113,7 +118,7 @@
   left: 0;
   right: 0;
   text-align: center;
-  font-family: 'Grandstander', cursive;
+  font-family: 'Nunito', sans-serif;
   font-size: 13px;
   color: #FCD765;
   background: linear-gradient(transparent, #6B3E1D 60%);
@@ -125,8 +130,17 @@
 }
 
 @keyframes hint-pulse {
-  0%, 100% { opacity: 0.55; transform: translateY(0);   }
-  50%       { opacity: 1;    transform: translateY(2px); }
+
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(2px);
+  }
 }
 
 /* ── Right — next arrow button ───────────────────────────────── */
@@ -135,8 +149,8 @@
   flex-shrink: 0;
   align-self: center;
   margin-right: 20px;
-  width: 60px !important;
-  height: 60px !important;
+  width: 70px !important;
+  height: 70px !important;
   background: #FCD765 !important;
   border: 3px solid #3a2008 !important;
   border-radius: 50% !important;
@@ -145,7 +159,7 @@
   justify-content: center;
   cursor: pointer;
   transition: transform 0.15s ease, background 0.2s ease,
-              box-shadow 0.2s ease, opacity 0.2s ease, filter 0.2s ease;
+    box-shadow 0.2s ease, opacity 0.2s ease, filter 0.2s ease;
   box-shadow: 0 4px 0 #3a2008;
   padding: 0 !important;
 }
@@ -177,8 +191,8 @@
 
 /* Normal arrow icon */
 .next-arrow-btn .arrow-icon {
-  width: 28px;
-  height: 28px;
+  width: 40px;
+  height: 40px;
   display: block;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
@@ -198,7 +212,7 @@
 }
 
 .dialogue-text--narration {
-  font-family: 'Grandstander', cursive !important;
+  font-family: 'Nunito', sans-serif !important;
   font-size: 22px !important;
   font-style: italic;
   color: #d4b896 !important;
@@ -327,16 +341,37 @@
 }
 
 @keyframes dlg-intro-pop {
-  from { transform: scale(0.5) translateY(20px); opacity: 0; }
-  to   { transform: scale(1)   translateY(0);    opacity: 1; }
+  from {
+    transform: scale(0.5) translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
 }
 
 @keyframes dlg-intro-float {
-  0%, 100% { transform: translateY(0);    }
-  50%       { transform: translateY(-10px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 @keyframes dlg-intro-sparkle {
-  from { transform: scale(0.8) rotate(-10deg); opacity: 0.6; }
-  to   { transform: scale(1.2) rotate( 10deg); opacity: 1.0; }
+  from {
+    transform: scale(0.8) rotate(-10deg);
+    opacity: 0.6;
+  }
+
+  to {
+    transform: scale(1.2) rotate(10deg);
+    opacity: 1.0;
+  }
 }

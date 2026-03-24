@@ -1,16 +1,9 @@
-// hooks/useCharacterPreference.js
-// Updated to use bisaquest_player_id and /api/player/:playerId/character
-
 import { useState, useEffect } from 'react';
 import { updateCharacter as updateCharacterAPI } from '../services/playerServices';
 import { getPlayerId, getCharacter, saveCharacter } from '../utils/playerStorage';
 
 const API = import.meta.env.VITE_API_URL !== undefined ? import.meta.env.VITE_API_URL : (import.meta.env.PROD ? '' : 'http://localhost:5000');
 
-/**
- * Hook to manage a player's character selection
- * Reads from localStorage first, falls back to DB
- */
 export const useCharacterPreference = () => {
     const [character, setCharacterState] = useState('male');
     const [loading, setLoading] = useState(true);

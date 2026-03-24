@@ -74,7 +74,8 @@
 }
 
 .quest-modal-instructions {
-  font-family: 'Grandstander', cursive;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 500;
   font-size: 20px;
   font-weight: 600;
   color: #5a2c0c;
@@ -84,7 +85,8 @@
 }
 
 .quest-modal-message {
-  font-family: 'Grandstander', cursive;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 500;
   font-size: 18px;
   font-weight: 600;
   color: #5a2c0c;
@@ -126,7 +128,8 @@
 }
 
 .quest-modal-encouragement {
-  font-family: 'Grandstander', cursive;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 500;
   font-size: 20px;
   font-weight: 600;
   color: #5a2c0c;

@@ -1,5 +1,3 @@
-// services/playerService.js
-// Replaces autoUserService.js — all API calls use /api/player and player_id
 
 const BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:5000');
 
@@ -55,13 +53,6 @@ export const getProgress = async (playerId) => {
     const response = await fetch(`${BASE_URL}/api/player/${playerId}/progress`);
     const result = await response.json();
     if (!result.success) throw new Error(result.error || 'Failed to get progress');
-    return result.data;
-};
-
-export const getStats = async (playerId) => {
-    const response = await fetch(`${BASE_URL}/api/player/${playerId}/stats`);
-    const result = await response.json();
-    if (!result.success) throw new Error(result.error || 'Failed to get stats');
     return result.data;
 };
 

@@ -5,9 +5,6 @@ import ParticleEffects from "../components/ParticleEffects";
 
 const HeroSection = () => {
   const navigate = useNavigate();
-  const AboutUs = () => {
-    navigate("/about");
-  };
   const goToLogin = () => {
     navigate("/login");
   };

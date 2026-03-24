@@ -1,574 +1,510 @@
-/* HousePage.css — scenario-driven: story → comprehension → DD → feedback
-   Dialogue bar comes from DialogueBox.css automatically. */
+/* HousePage.css — Cleaned version */
 
 .house-container {
   position: fixed;
-  inset:    0;
+  inset: 0;
   overflow: hidden;
 }
 
 .house-background {
-  position:        absolute;
-  inset:           0;
-  width:           100%;
-  height:          100%;
-  object-fit:      cover;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   object-position: center;
-  user-select:     none;
+  user-select: none;
 }
 
 /* ── Back button ─────────────────────────────────────────────── */
 .house-back {
   position: absolute;
-  top:      16px;
-  left:     16px;
-  z-index:  50;
+  top: 16px;
+  left: 16px;
+  z-index: 50;
 }
 
 /* ── Phase badge ─────────────────────────────────────────────── */
 .house-scene-label {
-  position:      absolute;
-  top:           10px;
-  left:          50%;
-  transform:     translateX(-50%);
-  background:    rgba(0,0,0,0.6);
-  color:         #fff;
-  font-size:     12px;
-  font-weight:   bold;
-  font-family:   'Pixelify Sans', sans-serif;
-  padding:       4px 14px;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  font-family: 'Silkscreen', sans-serif;
+  padding: 4px 14px;
   border-radius: 20px;
-  border:        1px solid rgba(255,255,255,0.2);
-  z-index:       30;
-  white-space:   nowrap;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 30;
+  white-space: nowrap;
 }
 
 /* ── NPC — floats above the 90px dialogue bar ───────────────── */
 .house-npc-wrap {
-  position:       absolute;
-  left:           60px;
-  bottom:         90px;
-  z-index:        20;
+  position: absolute;
+  left: 170px;
+  bottom: 40px;
+  z-index: 20;
   pointer-events: none;
-  animation:      house-npc-bob 3s ease-in-out infinite;
+  animation: house-npc-bob 3s ease-in-out infinite;
 }
 
 .house-npc-image {
-  height:     300px;
+  height: 300px;
   object-fit: contain;
-  filter:     drop-shadow(0 8px 16px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
 }
 
 @keyframes house-npc-bob {
-  0%, 100% { transform: translateY(0);    }
-  50%       { transform: translateY(-8px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
-/* ── Phase 2: Comprehension items — absolutely placed via DB x/y ─ */
-.house-comp-item {
-  position:   absolute;
-  z-index:    20;
-  transform:  translate(-50%, -50%);
-}
-
-/* ── Phase 3: Drag & Drop scene ──────────────────────────────── */
-.house-dd-scene {
+/* ── Background hover labels (tooltip) ──────────────────────── */
+.house-hover-region {
   position: absolute;
-  top:      0;
-  left:     0;
-  right:    0;
-  bottom:   90px;   /* stop at dialogue bar */
-  z-index:  10;
+  z-index: 5;
+  cursor: default;
+  pointer-events: auto;
 }
 
-/* Drop zone — positioned via inline style from DB, centered on coordinate */
-.house-dd-dropzone {
-  position:        absolute;
-  transform:       translate(-50%, -50%);
-  width:           240px;
-  min-height:      160px;
-  background:      rgba(255,255,240,0.15);
-  border:          3px dashed rgba(252,215,101,0.6);
-  border-radius:   20px;
-  display:         flex;
-  flex-direction:  column;
-  align-items:     center;
-  justify-content: center;
-  gap:             10px;
-  transition:      background 0.2s, border-color 0.2s;
-  z-index:         15;
+/* Pulse animation for the item dot */
+@keyframes house-pulse-dot {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scale(1.5);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
 }
 
-.house-dd-dropzone--hover {
-  background:   rgba(252,215,101,0.2);
-  border-color: #FCD765;
-  border-style: solid;
-}
-
-.house-dd-dropzone--complete {
-  background:   rgba(34,197,94,0.15);
-  border-style: solid;
-}
-
-.house-dd-dropzone-label {
-  font-family: 'Fredoka One', cursive;
-  font-size:   18px;
-  color:       #FFF9E6;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
-  text-align:  center;
-  padding:     0 12px;
-}
-
-/* Placed word chips inside drop zone */
-.house-dd-placed-chips {
-  display:  flex;
-  gap:      8px;
-  flex-wrap: wrap;
-  justify-content: center;
-  padding:  4px;
-}
-
-.house-dd-chip {
-  font-family:   'Pixelify Sans', sans-serif;
-  font-size:     15px;
-  font-weight:   bold;
-  padding:       6px 16px;
-  border-radius: 50px;
-  border:        2px solid;
-}
-
-.house-dd-chip--correct {
-  color:        #15803d;
-  border-color: #15803d;
-}
-
-/* Word cards — absolutely positioned on the scene from DB x/y */
-.house-dd-card {
+.house-item-dot {
   position: absolute;
-  cursor: pointer;
-}
-
-
-
-.house-dd-card--dragging {
-  opacity:   0.5;
-  transform: scale(0.95);
-  cursor:    grabbing;
-}
-
-.house-dd-card--placed {
-  border-color: #15803d;
-  color:        #15803d;
-  cursor:       default;
-  opacity:      0.7;
-}
-
-.house-dd-card--shake {
-  animation: house-shake 0.5s ease;
-}
-
-/* Complete button — inside rightSlot of DialogueBox */
-.house-complete-btn {
-  flex-shrink:   0;
-  font-family:   'Fredoka One', 'Nunito', cursive;
-  font-size:     15px;
-  font-weight:   700;
-  padding:       10px 24px;
-  border-radius: 14px;
-  border:        3px solid #2d2d2d;
-  cursor:        pointer;
-  transition:    background 0.2s ease, box-shadow 0.2s ease,
-                 transform 0.15s ease, opacity 0.2s ease;
-}
-
-.house-complete-btn--disabled {
-  background: #d1d5db;
-  color:      #9ca3af;
-  box-shadow: 0 4px 0 #9ca3af;
-  cursor:     not-allowed;
-  opacity:    0.6;
-}
-
-.house-complete-btn--active {
-  background: #22c55e;
-  color:      #fff;
-  box-shadow: 0 5px 0 #15803d;
-  animation:  house-btn-pulse 1.6s ease-in-out infinite;
-}
-
-.house-complete-btn--active:hover {
-  background: #16a34a;
-  transform:  translateY(-2px);
-  box-shadow: 0 7px 0 #15803d;
-  animation:  none;
-}
-
-.house-complete-btn--active:active {
-  transform:  translateY(2px);
-  box-shadow: 0 2px 0 #15803d;
-}
-
-/* ── Done / transition overlay ───────────────────────────────── */
-.house-overlay {
-  position:        absolute;
-  inset:           0;
-  background:      rgba(0,0,0,0.55);
-  backdrop-filter: blur(3px);
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  z-index:         100;
-  animation:       house-overlay-in 0.3s ease both;
-}
-
-.house-card {
-  background:    #fffef5;
-  border:        4px solid #2d2d2d;
-  border-radius: 24px;
-  padding:       40px 56px;
-  text-align:    center;
-  box-shadow:    0 8px 0 #2d2d2d, 0 20px 60px rgba(0,0,0,0.4);
-  animation:     house-card-pop 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
-}
-
-.house-card-stars {
-  font-size:     48px;
-  line-height:   1;
-  margin-bottom: 12px;
-  animation:     house-stars-spin 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
-}
-
-.house-card h2 {
-  font-family:    'Fredoka One', cursive;
-  font-size:      32px;
-  color:          #15803d;
-  margin:         0 0 8px;
-  letter-spacing: 0.5px;
-}
-
-.house-card p {
-  font-family: 'Nunito', cursive;
-  font-size:   16px;
-  color:       #4b5563;
-  margin:      0;
-}
-
-/* ── Loading state ───────────────────────────────────────────── */
-.house-loading {
-  position:        absolute;
-  inset:           0;
-  display:         flex;
-  flex-direction:  column;
-  align-items:     center;
-  justify-content: center;
-  gap:             16px;
-  z-index:         10;
-}
-
-.house-loading span {
-  font-family: 'Fredoka One', cursive;
-  font-size:   22px;
-  color:       #fff;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-  animation:   house-loading-pulse 1.2s ease-in-out infinite;
-}
-
-/* ── Keyframes ───────────────────────────────────────────────── */
-@keyframes house-npc-bob {
-  0%, 100% { transform: translateY(0);    }
-  50%       { transform: translateY(-8px); }
-}
-
-@keyframes house-btn-pulse {
-  0%,  100% { box-shadow: 0 5px 0 #15803d, 0 0 0  0   rgba(34,197,94,0.4); }
-  50%        { box-shadow: 0 5px 0 #15803d, 0 0 0 10px rgba(34,197,94,0);   }
-}
-
-@keyframes house-overlay-in {
-  from { opacity: 0; } to { opacity: 1; }
-}
-
-@keyframes house-card-pop {
-  from { transform: scale(0.6) rotate(-4deg); opacity: 0; }
-  to   { transform: scale(1)   rotate(0deg);  opacity: 1; }
-}
-
-@keyframes house-stars-spin {
-  from { transform: rotate(-30deg) scale(0.5); opacity: 0; }
-  to   { transform: rotate(0deg)   scale(1);   opacity: 1; }
-}
-
-@keyframes house-loading-pulse {
-  0%,  100% { opacity: 1;   }
-  50%        { opacity: 0.4; }
-}
-
-@keyframes house-shake {
-  0%, 100% { transform: translateX(0);    }
-  20%       { transform: translateX(-8px); }
-  40%       { transform: translateX(8px);  }
-  60%       { transform: translateX(-6px); }
-  80%       { transform: translateX(6px);  }
-}
-
-/* ── Dev grid overlay ────────────────────────────────────────── */
-.house-grid-btn {
-  position:      absolute;
-  top:           16px;
-  right:         16px;
-  z-index:       200;
-  font-family:   'Pixelify Sans', sans-serif;
-  font-size:     13px;
-  font-weight:   bold;
-  padding:       6px 14px;
-  border-radius: 10px;
-  border:        2px solid #3a2008;
-  background:    #fffef5;
-  color:         #3a2008;
-  cursor:        pointer;
-  box-shadow:    0 3px 0 #3a2008;
-  transition:    background 0.15s, transform 0.1s;
-}
-.house-grid-btn--on {
-  background: #fcd765;
-  color:      #3a2008;
-}
-.house-grid-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #3a2008; }
-
-.house-grid-overlay {
-  position: absolute;
-  inset:    0 0 90px 0;   /* stop at dialogue bar */
-  z-index:  90;
-  pointer-events: all;
-  cursor:   crosshair;
-}
-
-/* Grid lines */
-.house-grid-line {
-  position:   absolute;
-  background: rgba(252, 215, 101, 0.35);
-}
-.house-grid-line--v {
-  top: 0; bottom: 0;
-  width: 1px;
-}
-.house-grid-line--h {
-  left: 0; right: 0;
-  height: 1px;
-}
-
-/* Axis labels */
-.house-grid-label {
-  position:    absolute;
-  font-family: 'Pixelify Sans', monospace;
-  font-size:   10px;
-  color:       rgba(255,255,220,0.75);
-  pointer-events: none;
-  transform:   translateX(-50%);
-  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-}
-.house-grid-label--y {
-  transform: translateY(-50%);
-}
-
-/* Live crosshair */
-.house-grid-crosshair {
-  position:   absolute;
-  background: rgba(255, 80, 80, 0.7);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  background-color: #fcd45c;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 8px rgba(255, 203, 47, 0.8);
+  animation: house-pulse-dot 2s infinite ease-in-out;
   pointer-events: none;
 }
-.house-grid-crosshair--v {
-  top: 0; bottom: 0;
-  width: 1px;
-  transform: translateX(-50%);
-}
-.house-grid-crosshair--h {
-  left: 0; right: 0;
-  height: 1px;
-  transform: translateY(-50%);
+
+.house-hover-region:hover .house-item-dot {
+  background-color: #fff;
+  border-color: #000;
+  box-shadow: 0 0 12px #fff;
 }
 
-/* Coordinate tooltip */
-.house-grid-coord {
-  position:      absolute;
-  background:    rgba(0,0,0,0.85);
-  color:         #fcd765;
-  font-family:   'Pixelify Sans', monospace;
-  font-size:     13px;
-  font-weight:   bold;
-  padding:       4px 10px;
-  border-radius: 8px;
-  border:        1px solid #fcd765;
-  pointer-events: none;
-  white-space:   nowrap;
-  z-index:       99;
-}
-/* ── Phase 2: Comprehension grid ──────────────────────────────────────────── */
-.house-comp-grid {
-  position:        absolute;
-  bottom:          110px;          /* sits above the dialogue bar */
-  left:            50%;
-  transform:       translateX(-50%);
-  display:         flex;
-  gap:             20px;
-  z-index:         20;
-}
-
-/* ── Phase 3: DD cards row ────────────────────────────────────────────────── */
-.house-dd-scene {
+.house-hover-tooltip {
   position: absolute;
-  inset:    0;
-  z-index:  15;
-}
-
-.house-dd-cards-row {
-  position:        absolute;
-  bottom:          115px;          /* above dialogue bar */
-  left:            50%;
-  transform:       translateX(-50%);
-  display:         flex;
-  gap:             16px;
-  z-index:         20;
-}
-
-
-
-.house-dd-card:hover             { transform: scale(1.05); border-color: #f0a500; }
-.house-dd-card--dragging         { opacity: 0.5; cursor: grabbing; }
-.house-dd-card--placed           { opacity: 0.35; cursor: default; pointer-events: none; }
-.house-dd-card--shake            { animation: dd-shake 0.55s ease-out; }
-
-@keyframes dd-shake {
-  0%,100% { transform: translateX(0); }
-  15%     { transform: translateX(-7px); }
-  30%     { transform: translateX( 7px); }
-  45%     { transform: translateX(-5px); }
-  60%     { transform: translateX( 5px); }
-  75%     { transform: translateX(-3px); }
-  90%     { transform: translateX( 3px); }
-}
-
-/* ── Drop zone — centered on scene ───────────────────────────────────────── */
-.house-dd-dropzone {
-  position:        absolute;
-  top:             35%;
-  left:            50%;
-  transform:       translate(-50%, -50%);
-  min-width:       160px;
-  min-height:      80px;
-  border:          3px dashed rgba(240,165,0,0.6);
-  border-radius:   16px;
-  background:      rgba(255,255,255,0.25);
-  display:         flex;
-  flex-direction:  column;
-  align-items:     center;
-  justify-content: center;
-  gap:             8px;
-  z-index:         18;
-  transition:      background 0.2s, border-color 0.2s;
-}
-
-.house-dd-dropzone--hover    { background: rgba(240,165,0,0.2); border-color: #f0a500; }
-.house-dd-dropzone--complete { background: rgba(46,204,113,0.2); border-color: #2ecc71; }
-
-.house-dd-dropzone-label {
-  font-size:   12px;
-  color:       rgba(255,255,255,0.7);
-  font-weight: 600;
-}
-
-.house-dd-placed-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
-
-.house-dd-chip {
-  padding:       4px 10px;
-  border-radius: 8px;
-  font-size:     13px;
-  font-weight:   700;
-}
-
-.house-dd-chip--correct { background: #2ecc71; color: #fff; }
-
-/* ── Dialogue bar: equip slot + complete button wrapper ──────── */
-.house-dd-bar-slot-wrap {
-  display:     flex;
-  align-items: center;
-  gap:         12px;
-  flex-shrink: 0;
-  margin-top: 25px;
-}
-
-/* Equip slot — drag target inside the dialogue bar */
-.house-dd-equip-slot {
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  width:           160px;
-  height:          62px;
-  border:          3px dashed #FCD765;
-  border-radius:   14px;
-  background:      rgba(252,215,101,0.1);
-  padding:         0 12px;
-  transition:      background 0.2s, border-color 0.2s, box-shadow 0.2s;
-  cursor:          copy;
-  box-shadow:      inset 0 0 0 1px rgba(252,215,101,0.2);
-}
-
-.house-dd-equip-slot--hover {
-  background:   rgba(252,215,101,0.25);
-  border-color: #FCD765;
-  border-style: solid;
-  box-shadow:   inset 0 0 0 1px #FCD765, 0 0 12px rgba(252,215,101,0.4);
-}
-
-.house-dd-equip-slot--complete {
-  background:   rgba(34,197,94,0.2);
-  border-color: #22c55e;
-  border-style: solid;
-  box-shadow:   inset 0 0 0 1px #22c55e, 0 0 12px rgba(34,197,94,0.4);
-}
-
-.house-dd-equip-hint {
-  font-family: 'Fredoka One', cursive;
-  font-size:   14px;
-  color:       rgba(252,215,101,0.7);
-  white-space: nowrap;
-  letter-spacing: 0.3px;
-}
-
-.house-dd-equip-chips {
-  display:         flex;
-  gap:             6px;
-  flex-wrap:       wrap;
-  justify-content: center;
-  align-items:     center;
-}
-
-/* ── DD card with image ───────────────────────────────────────── */
-.house-dd-card {
-  flex-direction: column;
-  align-items:    center;
-  gap:            6px;
-}
-
-.house-dd-card-img {
-  width:      264px;
-  height:     164px;
-  object-fit: contain;
-  display:    block;
-  filter:     drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-}
-
-.house-dd-card-emoji {
-  font-size:   40px;
-  line-height: 1;
-  display:     block;
-}
-
-.house-dd-card-label {
+  left: 50%;
+  bottom: calc(50% + 16px);
+  transform: translateX(-50%) scale(0.9);
+  background: rgba(0, 0, 0, 0.82);
+  color: #fff;
   font-family: 'Pixelify Sans', sans-serif;
-  font-size:   13px;
-  font-weight: bold;
-  color:       inherit;
-  text-align:  center;
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(252, 215, 101, 0.4);
   white-space: nowrap;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.house-hover-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.82);
+}
+
+.house-hover-region:hover .house-hover-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+.house-hover-tooltip-bisaya {
+  font-weight: 700;
+  font-size: 17px;
+  color: #fcd765;
+  display: block;
+
+}
+
+.house-hover-tooltip-english {
+  font-weight: 400;
+  color: #e0e0e0;
+  font-size: 17px;
+  display: block;
+}
+
+/* Add some transparency when another item is active */
+.house-hover-region--active {
+  z-index: 10;
+}
+
+.house-hover-region--active .house-item-dot {
+  display: none;
+}
+
+/* ── Debug mode specific styling ───────────────────────────── */
+.house-hover-region--debug {
+  background: rgba(46, 204, 113, 0.2);
+  border: 1px solid #2ecc71;
+}
+
+.house-hover-region--selected {
+  background: rgba(241, 196, 15, 0.4);
+  border: 2px dashed #f1c40f;
+  z-index: 60;
+}
+
+.house-debug-badge {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  font-size: 10px;
+  font-family: monospace;
+  padding: 2px 4px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+/* ── Idle Hint ─────────────────────────────────────────────── */
+.house-idle-hint {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: #fcd765;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  animation: house-bounce-hint 2s infinite ease-in-out;
+  pointer-events: none;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.house-idle-hint-bisaya {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fcd765;
+  line-height: 1.3;
+}
+
+.house-idle-hint-english {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 17px;
+  font-weight: normal;
+  color: #c8b99a;
+  font-style: italic;
+  line-height: 1.3;
+}
+
+@keyframes house-bounce-hint {
+
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  50% {
+    transform: translateX(-50%) translateY(-5px);
+  }
+}
+
+/* ── Completed item dot variant ──────────────────────────────── */
+.house-hover-region--done .house-item-dot,
+.house-item-dot--done {
+  background-color: #22c55e;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
+}
+
+/* ── Completed checkmark in tooltip ─────────────────────────── */
+.house-hover-tooltip-done {
+  display: block;
+  margin-top: 4px;
+  font-size: 10px;
+  color: #22c55e;
+  font-weight: bold;
+}
+
+/* ── Mini-game incoming hint (rightSlot of DialogueBox) ──────── */
+.house-quest-incoming {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 12px;
+  border: 1.5px solid rgba(252, 215, 101, 0.4);
+  border-radius: 10px;
+  background: rgba(252, 215, 101, 0.08);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.house-quest-incoming-bisaya {
+  font-family: 'Baloo 2', cursive;
+  font-weight: 500;
+  font-size: 20px;
+  color: #fcd765;
+  line-height: 1.3;
+}
+
+.house-quest-incoming-english {
+  font-family: 'Baloo 2', cursive;
+  font-weight: 500;
+  font-size: 18px;
+  color: #c8b99a;
+  font-style: italic;
+  line-height: 1.3;
+}
+
+/* ── Inline mini-game hint inside dialogue text ──────────────── */
+.house-quest-incoming-inline {
+  display: block;
+  margin-top: 8px;
+  font-family: 'Baloo 2', cursive;
+  font-weight: 500;
+  font-size: 16px;
+  color: #fcd765;
+  opacity: 0.85;
+  letter-spacing: 0.3px;
+  animation: house-loading-pulse 1.8s ease-in-out infinite;
+}
+
+/* ── Scene sprites (visible item images on background) ───────── */
+.house-scene-sprite {
+  position: absolute;
+  object-fit: contain;
+  z-index: 6;
+  cursor: pointer;
+  transform: translateX(-50%) translateY(-100%);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+  transition: transform 0.15s ease, filter 0.15s ease;
+  pointer-events: auto;
+}
+
+.house-scene-sprite:hover {
+  transform: translateX(-50%) translateY(-100%) scale(1.1);
+  filter: drop-shadow(0 6px 14px rgba(252, 215, 101, 0.55));
+}
+
+.house-scene-sprite--active {
+  filter: drop-shadow(0 6px 14px rgba(252, 215, 101, 0.8)) brightness(1.1);
+  transform: translateX(-50%) translateY(-100%) scale(1.05);
+}
+
+.house-scene-sprite--done {
+  filter: drop-shadow(0 4px 8px rgba(34, 197, 94, 0.55)) brightness(0.9);
+}
+
+.house-scene-sprite--debug {
+  outline: 2px solid #fcd765;
+  outline-offset: 2px;
+}
+
+/* ── Door Choice Modal ────────────────────────────────────────── */
+.house-door-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+.house-door-modal {
+  background: #f3e6cb;
+  padding: 30px;
+  border-radius: 16px;
+  width: min(450px, 90vw);
+  border: 4px solid #3a2010;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  position: relative;
+  min-width: 300px;
+  animation: house-door-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes house-door-pop {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.house-door-close {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  background: #e74c3c;
+  color: white;
+  border: 2px solid #3a2010;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 0 #c0392b;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.house-door-close:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 #c0392b;
+}
+
+.house-door-title {
+  color: #3a2010;
+  font-family: 'Pixelify Sans', sans-serif;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.house-door-subtitle {
+  font-family: 'Pixelify Sans', sans-serif;
+  color: #666;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.house-door-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.house-door-btn {
+  background: #fcd765;
+  border: 3px solid #3a2010;
+  border-radius: 12px;
+  padding: 15px 20px;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #3a2010;
+  cursor: pointer;
+  box-shadow: 0 6px 0 #d4a72c;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.house-door-btn:hover {
+  filter: brightness(1.05);
+}
+
+.house-door-btn:active {
+  transform: translateY(6px);
+  box-shadow: 0 0 0 #d4a72c;
+}
+
+.house-bilingual-english {
+  font-style: italic;
+  display: block;
+  color: #ebe0c9;
+  /* optional: matches your other English text */
+  font-size: 18px;
+}
+
+.house-door-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.house-door-grid .house-door-btn:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.house-door-btn-sub {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 14px;
+  color: #7a4a20;
+  font-style: italic;
+  font-weight: normal;
+}
+
+.house-door-btn--forest {
+  background: #b8f0d8;
+  border-color: #2d6a4f;
+  box-shadow: 0 6px 0 #1b4332;
+}
+
+.house-door-btn--forest:hover {
+  background: #c8f5e0;
+}
+
+.house-door-btn-icon {
+  font-size: 40px;
+  line-height: 1;
+}
+
+.house-door-stay {
+  background: #dfe6e9;
+  border: 3px solid #7a7a7a;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 18px;
+  color: #555;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #7a7a7a;
+  width: 100%;
+  font-weight: bold;
+  transition: transform 0.1s, box-shadow 0.1s;
 }

@@ -1,0 +1,415 @@
+/*  Overlay  */
+.ccwm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 4, 28, 0.75);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  animation: ccwm-fade-in 0.25s ease both;
+}
+
+/*  Card  */
+.ccwm-card {
+  background: #1a0f3c;
+  border: 3px solid #a855f7;
+  border-radius: 28px;
+  padding: 28px 36px 32px;
+  max-width: 560px;
+  width: 92%;
+  box-shadow: 0 8px 0 #6d28d9, 0 20px 60px rgba(168, 85, 247, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  animation: ccwm-card-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  position: relative;
+}
+
+/*  Header  */
+.ccwm-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ccwm-npc-img {
+  height: 72px;
+  width: 72px;
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: drop-shadow(0 4px 10px rgba(168, 85, 247, 0.6));
+}
+
+.ccwm-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.ccwm-header-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: 22px;
+  color: #fcd765;
+  text-shadow: 0 2px 8px rgba(252, 215, 101, 0.5);
+  line-height: 1.2;
+}
+
+.ccwm-header-sub {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 12px;
+  color: #c4b5fd;
+  line-height: 1.4;
+}
+
+.ccwm-header-sub--en {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.ccwm-close-btn {
+  background: none;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: #d1d5db;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.ccwm-close-btn:hover {
+  background: rgba(255, 80, 80, 0.2);
+  color: #f87171;
+  border-color: #f87171;
+}
+
+/*  Divider  */
+.ccwm-divider {
+  border: none;
+  border-top: 1.5px solid rgba(168, 85, 247, 0.3);
+  margin: -4px 0;
+}
+
+/*  Game area  */
+.ccwm-game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/*  Hint  */
+.ccwm-hint {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 13px;
+  color: #e0d4ff;
+  text-align: center;
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 12px;
+  padding: 8px 16px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.ccwm-hint-en {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/*  Drop slots  */
+.ccwm-slots-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
+
+.ccwm-slot {
+  width: 140px;
+  height: 72px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.ccwm-slot--empty {
+  border: 3px dashed rgba(252, 215, 101, 0.4);
+  background: rgba(0, 0, 0, 0.3);
+  cursor: default;
+}
+
+.ccwm-slot--filled {
+  border: 3px solid #a855f7;
+  background: rgba(168, 85, 247, 0.2);
+  cursor: pointer;
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.4);
+}
+
+.ccwm-slot--filled:hover {
+  border-color: #f87171;
+  box-shadow: 0 0 14px rgba(248, 113, 113, 0.35);
+}
+
+.ccwm-slot-word {
+  font-family: 'Fredoka One', cursive;
+  font-size: 18px;
+  color: #fcd765;
+  letter-spacing: 1px;
+}
+
+.ccwm-slot-placeholder {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 12px;
+  color: rgba(252, 215, 101, 0.35);
+}
+
+/* ── Preview ──────────────────────────────────────────────────────────────── */
+.ccwm-preview {
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(168, 85, 247, 0.35);
+  border-radius: 14px;
+  padding: 8px 24px;
+  min-width: 180px;
+  text-align: center;
+}
+
+.ccwm-preview-word {
+  font-family: 'Fredoka One', cursive;
+  font-size: 22px;
+  color: #fcd765;
+  letter-spacing: 2px;
+  text-shadow: 0 0 12px rgba(252, 215, 101, 0.5);
+}
+
+.ccwm-preview-empty {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* ── Word tiles ───────────────────────────────────────────────────────────── */
+.ccwm-tiles {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ccwm-tile {
+  font-family: 'Fredoka One', cursive;
+  font-size: 16px;
+  color: #1a0f3c;
+  background: #fcd765;
+  border: 3px solid #6d28d9;
+  border-radius: 12px;
+  padding: 10px 18px;
+  box-shadow: 0 4px 0 #6d28d9;
+  cursor: grab;
+  user-select: none;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+  letter-spacing: 1px;
+}
+
+.ccwm-tile:hover:not(.ccwm-tile--used) {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 0 #6d28d9;
+}
+
+.ccwm-tile:active:not(.ccwm-tile--used) {
+  cursor: grabbing;
+  transform: scale(0.95);
+}
+
+.ccwm-tile--used {
+  opacity: 0.3;
+  cursor: not-allowed;
+  border-style: dashed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* ── Combine button ───────────────────────────────────────────────────────── */
+.ccwm-combine-btn {
+  font-family: 'Fredoka One', cursive;
+  font-size: 18px;
+  padding: 13px 40px;
+  border-radius: 50px;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 4px;
+}
+
+.ccwm-combine-btn--ready {
+  background: #a855f7;
+  color: #fff;
+  border-color: #6d28d9;
+  box-shadow: 0 5px 0 #6d28d9, 0 8px 20px rgba(168, 85, 247, 0.4);
+}
+
+.ccwm-combine-btn--ready:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 0 #6d28d9;
+}
+
+.ccwm-combine-btn--ready:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #6d28d9;
+}
+
+.ccwm-combine-btn--disabled {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.15);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ── Result views ─────────────────────────────────────────────────────────── */
+.ccwm-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 0 4px;
+}
+
+.ccwm-result-emoji {
+  font-size: 64px;
+  animation: ccwm-float 2.5s ease-in-out infinite;
+  filter: drop-shadow(0 4px 12px rgba(252, 215, 101, 0.6));
+}
+
+.ccwm-success-equation {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ccwm-eq-part {
+  font-family: 'Fredoka One', cursive;
+  font-size: 20px;
+  color: #fcd765;
+  background: rgba(252, 215, 101, 0.15);
+  border: 2px solid rgba(252, 215, 101, 0.4);
+  border-radius: 10px;
+  padding: 6px 14px;
+  letter-spacing: 1px;
+}
+
+.ccwm-eq-op {
+  font-family: 'Fredoka One', cursive;
+  font-size: 22px;
+  color: #c4b5fd;
+}
+
+.ccwm-eq-result {
+  font-family: 'Fredoka One', cursive;
+  font-size: 24px;
+  color: #86efac;
+  background: rgba(134, 239, 172, 0.15);
+  border: 2px solid rgba(134, 239, 172, 0.4);
+  border-radius: 10px;
+  padding: 6px 18px;
+  letter-spacing: 2px;
+  text-shadow: 0 0 12px rgba(134, 239, 172, 0.5);
+}
+
+.ccwm-result-label {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 15px;
+  color: #c4b5fd;
+  margin: 0;
+}
+
+.ccwm-result-msg {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 15px;
+  color: #fca5a5;
+  text-align: center;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.ccwm-result-msg--en {
+  font-size: 13px;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* ── Keyframes ────────────────────────────────────────────────────────────── */
+@keyframes ccwm-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ccwm-card-pop {
+  from {
+    transform: scale(0.65);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes ccwm-float {
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+
+  50% {
+    transform: translateY(-10px) rotate(3deg);
+  }
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .ccwm-card {
+    padding: 20px 18px 24px;
+  }
+
+  .ccwm-slot {
+    width: 110px;
+    height: 60px;
+  }
+
+  .ccwm-slot-word {
+    font-size: 15px;
+  }
+
+  .ccwm-tile {
+    font-size: 14px;
+    padding: 8px 14px;
+  }
+
+  .ccwm-preview-word {
+    font-size: 18px;
+  }
+
+  .ccwm-eq-result {
+    font-size: 18px;
+  }
+}
