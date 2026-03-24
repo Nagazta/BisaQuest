@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import AssetManifest from "../../../services/AssetManifest";
 import { buildQuestDialogue } from "../questHelpers";
 import cupImg from "../../../assets/items/cup.png";
-import spongeImg from "../../../assets/items/sponge.jpg";
+import spongeImg from "../../../assets/items/sponge.png";
 
 const WASH_ITEMS = [
     { id: "plate", labelBisaya: "Plato", labelEnglish: "Plate", image: AssetManifest.village.items.plateWashing },
