@@ -210,6 +210,11 @@ export const INTRO_DIALOGUE = [
     bisayaText: "I-click lang ang mga butang sa palibot!",
     englishText: "Just click the items on the surroundings!",
   },
+  {
+    speaker: "Lunti",
+    bisayaText: "Humanon ang 6 ka quest para makuha nimo ang duha ka libro!",
+    englishText: "Complete the 6 quests to get the two books!",
+  },
 ];
 
 // ── Per-item dialogue builder (2 steps like Ligaya) ───────────────────────────

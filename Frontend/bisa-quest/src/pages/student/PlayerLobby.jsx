@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import InteractiveMap from "../../components/InteractiveMap";
-
+import AssetManifest from "../../services/AssetManifest";
 import QuestStartModal from "../../components/QuestStartModal";
 import SaveProgressModal from "../../components/progress/SaveProgressModal";
 import Notification from "../../components/Notification";
@@ -13,7 +13,7 @@ import {
 } from "../../utils/playerStorage";
 import Button from "../../components/Button";
 
-// ── Import CUTSCENES so we can check if a cutscene actually exists ────────────
+//  Import CUTSCENES so we can check if a cutscene actually exists 
 import { CUTSCENES } from "./data/cutsceneData";
 
 // Quest ID → direct environment route (used on return visits)
@@ -41,13 +41,13 @@ const PlayerLobby = () => {
     const { player, startNewGame } = useAuth();
     const navigate = useNavigate();
 
-    const [showQuestModal,  setShowQuestModal]  = React.useState(false);
-    const [showSaveModal,   setShowSaveModal]   = React.useState(false);
-    const [savedProgress,   setSavedProgress]   = React.useState(null);
-    const [selectedQuest,   setSelectedQuest]   = React.useState(null);
-    const [notification,    setNotification]    = React.useState(null);
-    const [moduleProgress,  setModuleProgress]  = React.useState({});
-    const [showExitModal,   setShowExitModal]   = React.useState(false);
+    const [showQuestModal, setShowQuestModal] = React.useState(false);
+    const [showSaveModal, setShowSaveModal] = React.useState(false);
+    const [savedProgress, setSavedProgress] = React.useState(null);
+    const [selectedQuest, setSelectedQuest] = React.useState(null);
+    const [notification, setNotification] = React.useState(null);
+    const [moduleProgress, setModuleProgress] = React.useState({});
+    const [showExitModal, setShowExitModal] = React.useState(false);
 
     // 🛠️ DEV MODE — unlocks all quests
     const [devMode, setDevMode] = React.useState(false);
@@ -65,12 +65,12 @@ const PlayerLobby = () => {
     const fetchModuleProgress = () => {
         const progress = getProgress();
         const forestNpcPct = progress.forest_progress || 0;
-        const forestPages  = getLibroPageCountForEnv("forest");
-        const forestPct    = Math.max(forestNpcPct, Math.min(Math.round((forestPages / 3) * 100), 100));
+        const forestPages = getLibroPageCountForEnv("forest");
+        const forestPct = Math.max(forestNpcPct, Math.min(Math.round((forestPages / 3) * 100), 100));
 
         const castleNpcPct = progress.castle_progress || 0;
-        const castlePages  = getLibroPageCountForEnv("castle");
-        const castlePct    = Math.max(castleNpcPct, Math.min(Math.round((castlePages / 3) * 100), 100));
+        const castlePages = getLibroPageCountForEnv("castle");
+        const castlePct = Math.max(castleNpcPct, Math.min(Math.round((castlePages / 3) * 100), 100));
 
         setModuleProgress({
             1: progress.village_progress || 0,
@@ -95,13 +95,13 @@ const PlayerLobby = () => {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, []);
 
-    const handleBackToMenu   = () => { setShowExitModal(false); navigate("/"); };
+    const handleBackToMenu = () => { setShowExitModal(false); navigate("/"); };
     const handleSwitchPlayer = () => { setShowExitModal(false); startNewGame(); navigate("/login"); };
 
     const quests = [
-        { id: 1, title: "Vocabulary Quest",          subtitle: "Village Theme", description: "Explore the village and learn new words", progress: moduleProgress[1] || 0 },
-        { id: 2, title: "Synonyms & Antonyms Quest", subtitle: "Forest Theme",  description: "Journey through the magical forest",      progress: moduleProgress[2] || 0 },
-        { id: 3, title: "Compound Quest",            subtitle: "Castle Theme",  description: "Master word building in the Castle",      progress: moduleProgress[3] || 0 },
+        { id: 1, title: "Vocabulary Quest", subtitle: "Village Theme", description: "Explore the village and learn new words", progress: moduleProgress[1] || 0, image: AssetManifest.ui.villageCard },
+        { id: 2, title: "Synonyms & Antonyms Quest", subtitle: "Forest Theme", description: "Journey through the magical forest", progress: moduleProgress[2] || 0, image: AssetManifest.ui.forestCard },
+        { id: 3, title: "Compound Quest", subtitle: "Castle Theme", description: "Master word building in the Castle", progress: moduleProgress[3] || 0, image: AssetManifest.ui.kingdomCard },
     ];
 
     // ── Quest lock logic ──────────────────────────────────────────────────────
@@ -133,8 +133,8 @@ const PlayerLobby = () => {
     // ── Check saved progress — localStorage only, no API ─────────────────────
     const checkForSavedProgress = (questId) => {
         const progress = getProgress();
-        const envKey   = QUEST_ENV[questId];
-        const pct      = progress[`${envKey}_progress`] || 0;
+        const envKey = QUEST_ENV[questId];
+        const pct = progress[`${envKey}_progress`] || 0;
 
         if (pct > 0) {
             setSavedProgress({ progress: pct, environment: envKey });
@@ -163,7 +163,7 @@ const PlayerLobby = () => {
     const handleConfirmQuest = () => {
         setShowQuestModal(false);
 
-        const id          = selectedQuest?.id;
+        const id = selectedQuest?.id;
         const cutsceneKey = CUTSCENE_KEYS[id];
         const destination = QUEST_ROUTES[id] || "/student/village";
 
@@ -172,7 +172,7 @@ const PlayerLobby = () => {
         //   2. That cutscene actually exists in CUTSCENES data
         //   3. The player hasn't seen it yet
         const cutsceneExists = cutsceneKey && CUTSCENES[cutsceneKey];
-        const shouldPlay     = cutsceneExists && !hasCutsceneSeen(cutsceneKey);
+        const shouldPlay = cutsceneExists && !hasCutsceneSeen(cutsceneKey);
 
         if (shouldPlay) {
             navigate(`/cutscene/${cutsceneKey}`);
@@ -187,7 +187,7 @@ const PlayerLobby = () => {
         <div className="dashboard-container">
             <ParticleEffects enableMouseTrail={false} />
 
-            {/* 🛠️ DEV MODE TOGGLE — remove before production */}
+            {/* 🛠️ DEV MODE TOGGLE — remove before production
             <button
                 onClick={() => setDevMode(p => !p)}
                 style={{
@@ -211,7 +211,7 @@ const PlayerLobby = () => {
                 }}>
                     All quests unlocked
                 </div>
-            )}
+            )} */}
 
             <InteractiveMap
                 quests={quests}
@@ -228,12 +228,12 @@ const PlayerLobby = () => {
 
             <div style={{
                 position: "fixed",
-                top: "20px",
+                top: "16px",
                 left: "16px",
                 background: "rgba(0,0,0,0.5)",
                 color: "#f5d89a",
                 fontFamily: "'Pixelify Sans', sans-serif",
-                fontSize: "16px",
+                fontSize: "14px",
                 padding: "6px 16px",
                 borderRadius: "20px",
                 zIndex: 100,
