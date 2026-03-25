@@ -11,7 +11,8 @@ import BookCollectModal from "../../game/components/BookCollectModal";
 import VillageTransitionModal from "../../game/components/VillageTransitionModal";
 import VillageSummaryModal from "../../game/components/VillageSummaryModal";
 import FogTransition from "../../components/FogTransition";
-import { awardLibroPage, getLibroPageCount, hasCutsceneSeen, markCompleteDismissed, saveNPCProgress, getNPCWords } from "../../utils/playerStorage";
+import { awardLibroPage, getLibroPageCount, hasCutsceneSeen, markCompleteDismissed, saveNPCProgress, getNPCWords, getPlayerId } from "../../utils/playerStorage";
+import { submitChallenge } from "../../services/playerServices";
 import "./HousePage.css"; // Reuse house CSS for now as the layout is identical
 
 const BedroomPage = () => {
@@ -21,6 +22,7 @@ const BedroomPage = () => {
   const npcId = location.state?.npcId || "village_npc_2";
   const npcName = location.state?.npcName || "Ligaya";
   const returnTo = location.state?.returnTo || "/student/village";
+  const playerId = getPlayerId();
 
   const NpcImage = NPC_IMAGES[npcId] || AssetManifest.village.npcs.ligaya;
 
@@ -108,27 +110,33 @@ const BedroomPage = () => {
     }
   };
 
-  const handleQuestComplete = (region) => {
+  const handleQuestComplete = async (region) => {
     setQuestItem(null);
-    setCompletedItems(prev => {
-      const next = new Set([...prev, region.id]);
+    const next = new Set([...completedItems, region.id]);
+    setCompletedItems(next);
 
-      // Save this word
-      const word = `${region.labelBisaya} (${region.labelEnglish})`;
-      saveNPCProgress("village", "village_bedroom", next.size, next.size >= 3, 3, [word]);
+    const word = `${region.labelBisaya} (${region.labelEnglish})`;
+    const passed = next.size >= 3;
+    await saveNPCProgress("village", "village_bedroom", next.size, passed, 3, [word]);
 
-      if (next.size >= 3) {
-        const isNew = awardLibroPage('village', 'village_bedroom');
-        if (isNew) {
-          setCollectedPage({
-            npcName: npcName,
-            pageNumber: getLibroPageCount(),
-          });
-          setShowPageModal(true);
-        }
+    if (playerId && location.state?.questId) {
+      try {
+        await submitChallenge(playerId, location.state.questId, npcId, next.size, 3, passed);
+      } catch (err) {
+        console.error("[BedroomPage] submitChallenge failed:", err);
       }
-      return next;
-    });
+    }
+
+    if (next.size >= 3) {
+      const isNew = awardLibroPage('village', 'village_bedroom');
+      if (isNew) {
+        setCollectedPage({
+          npcName: npcName,
+          pageNumber: getLibroPageCount(),
+        });
+        setShowPageModal(true);
+      }
+    }
   };
 
   const handleQuestClose = () => {
