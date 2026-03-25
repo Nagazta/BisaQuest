@@ -11,7 +11,7 @@ import BookCollectModal from "../../game/components/BookCollectModal";
 import VillageTransitionModal from "../../game/components/VillageTransitionModal";
 import VillageSummaryModal from "../../game/components/VillageSummaryModal";
 import FogTransition from "../../components/FogTransition";
-import { awardLibroPage, getLibroPageCount, hasCutsceneSeen, markCompleteDismissed, saveNPCProgress } from "../../utils/playerStorage";
+import { awardLibroPage, getLibroPageCount, hasCutsceneSeen, markCompleteDismissed, saveNPCProgress, getNPCWords } from "../../utils/playerStorage";
 import "./HousePage.css"; // Reuse house CSS for now as the layout is identical
 
 const BedroomPage = () => {
@@ -45,6 +45,21 @@ const BedroomPage = () => {
       pendingQuestRef.current = null;
     }
   }, [activeItem]);
+
+  // ── Load progress on mount ────────────────────────────────────────────────
+  useEffect(() => {
+    const savedWords = getNPCWords("village", "village_bedroom");
+    if (savedWords.length > 0) {
+      const restored = new Set();
+      BEDROOM_LABELS.forEach(region => {
+        const word = `${region.labelBisaya} (${region.labelEnglish})`;
+        if (savedWords.includes(word)) {
+          restored.add(region.id);
+        }
+      });
+      if (restored.size > 0) setCompletedItems(restored);
+    }
+  }, []);
 
   const introDone = introStep === null;
   const introLine = !introDone ? INTRO_DIALOGUE[introStep] : null;
@@ -100,7 +115,7 @@ const BedroomPage = () => {
 
       // Save this word
       const word = `${region.labelBisaya} (${region.labelEnglish})`;
-      saveNPCProgress("village", "village_bedroom", next.size, true, 3, [word]);
+      saveNPCProgress("village", "village_bedroom", next.size, next.size >= 3, 3, [word]);
 
       if (next.size >= 3) {
         const isNew = awardLibroPage('village', 'village_bedroom');

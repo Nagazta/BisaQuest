@@ -17,6 +17,7 @@ import {
   awardLibroPage,
   getLibroPageCount,
   getLibroPageCountForEnv,
+  getNPCWords,
 } from "../../utils/playerStorage";
 import BookCollectModal from "../../game/components/BookCollectModal";
 import ForestTransitionModal from "../../game/components/ForestTransitionModal";
@@ -56,6 +57,21 @@ const ForestPondPage = () => {
     }
   }, [activeItem]);
 
+  // ── Load progress on mount ────────────────────────────────────────────────
+  useEffect(() => {
+    const savedWords = getNPCWords("forest", npcId);
+    if (savedWords.length > 0) {
+      const restored = new Set();
+      POND_ITEMS.forEach(region => {
+        const word = `${region.labelBisaya} (${region.labelEnglish})`;
+        if (savedWords.includes(word)) {
+          restored.add(region.id);
+        }
+      });
+      if (restored.size > 0) setCompletedItems(restored);
+    }
+  }, [npcId]);
+
   // ── Derived ───────────────────────────────────────────────────────────────
   const introDone = introStep === null;
   const introLine = !introDone ? INTRO_DIALOGUE[introStep] : null;
@@ -92,8 +108,8 @@ const ForestPondPage = () => {
     }
   };
 
-  // Two milestones: 1st book at 3 quests, 2nd book at 6 quests
-  const MILESTONES = [3, 6];
+  // Award both books at once only after completing all 6 quests
+  const MILESTONES = [6];
 
   const handleQuestComplete = (region) => {
     setQuestItem(null);
@@ -103,14 +119,17 @@ const ForestPondPage = () => {
 
       // Save this word
       const word = `${region.labelBisaya} (${region.labelEnglish})`;
-      saveNPCProgress("forest", npcId, POND_ITEMS.length, true, 3, [word]);
+      saveNPCProgress("forest", npcId, next.size, next.size >= 6, 6, [word]);
 
       if (milestone && next.size >= milestone) {
-        const pageKey = `${npcId}_page${milestonesAwarded + 1}`;
-        setMilestonesAwarded((m) => m + 1);
+        // Award both fragments at once
+        const page1Key = `${npcId}_page1`;
+        const page2Key = `${npcId}_page2`;
+        
+        const awarded1 = awardLibroPage("forest", page1Key);
+        const awarded2 = awardLibroPage("forest", page2Key);
 
-        const isNewPage = awardLibroPage("forest", pageKey);
-        if (isNewPage) {
+        if (awarded1 || awarded2) {
           const pageNumber = getLibroPageCountForEnv("forest");
           const totalCollected = getLibroPageCount();
           setCollectedPage({ pageNumber, totalCollected });

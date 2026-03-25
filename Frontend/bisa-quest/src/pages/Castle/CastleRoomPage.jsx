@@ -12,6 +12,7 @@ import {
   getTotalQuests,
   buildCastleDialogue,
 } from "./data/castleRoomData";
+import { saveNPCProgress, getNPCWords } from "../../utils/playerStorage";
 import "./CastleRoomPage.css";
 
 const CastleRoomPage = () => {
@@ -62,6 +63,27 @@ const CastleRoomPage = () => {
       pendingQuestRef.current = null;
     }
   }, [activeItem]);
+
+  // ── Load progress on room change ──────────────────────────────────────────
+  useEffect(() => {
+    const roomSuffixMap = { 0: "gate", 1: "courtyard", 2: "library" };
+    const roomSuffix = roomSuffixMap[questIndex] || `room${questIndex}`;
+    const saveNpcId = `${npcId}_${roomSuffix}`;
+
+    const savedWords = getNPCWords("castle", saveNpcId);
+    if (savedWords.length > 0) {
+      const restored = new Set();
+      quest.items.forEach(region => {
+        const word = `${region.labelBisaya} (${region.labelEnglish})`;
+        if (savedWords.includes(word)) {
+          restored.add(region.id);
+        }
+      });
+      setCompletedItems(restored);
+    } else {
+      setCompletedItems(new Set());
+    }
+  }, [npcId, questIndex, quest]);
 
   // ── Check if all items are done ───────────────────────────────────────────
   useEffect(() => {
@@ -128,7 +150,18 @@ const CastleRoomPage = () => {
 
   const handleQuestComplete = (region) => {
     setQuestItem(null);
-    setCompletedItems((prev) => new Set([...prev, region.id]));
+    setCompletedItems((prev) => {
+      const next = new Set([...prev, region.id]);
+      
+      const word = `${region.labelBisaya} (${region.labelEnglish})`;
+      const roomSuffixMap = { 0: "gate", 1: "courtyard", 2: "library" };
+      const roomSuffix = roomSuffixMap[questIndex] || `room${questIndex}`;
+      const saveNpcId = `${npcId}_${roomSuffix}`;
+
+      saveNPCProgress("castle", saveNpcId, next.size, next.size >= quest.items.length, quest.items.length, [word]);
+      
+      return next;
+    });
   };
 
   const handleQuestClose = () => setQuestItem(null);
