@@ -15,11 +15,13 @@ import {
   awardLibroPage,
   getLibroPageCount,
   getLibroPageCountForEnv,
+  getNPCWords,
 } from "../../utils/playerStorage";
 import "./CastleLibraryPage.css";
 
 const QUEST_INDEX = 2;
 const NPC_ID = "castle_npc_1";
+const SAVE_NPC_ID = "castle_npc_1_library";
 const NPC_NAME = "Princess Hara";
 const TOTAL_SCENES = 3;
 const REQUIRED_QUESTS = 3;
@@ -55,6 +57,21 @@ const CastleLibraryPage = () => {
       pendingQuestRef.current = null;
     }
   }, [activeItem]);
+
+  // ── Load progress on mount ────────────────────────────────────────────────
+  useEffect(() => {
+    const savedWords = getNPCWords("castle", SAVE_NPC_ID);
+    if (savedWords.length > 0) {
+      const restored = new Set();
+      quest.items.forEach(region => {
+        const word = `${region.labelBisaya} (${region.labelEnglish})`;
+        if (savedWords.includes(word)) {
+          restored.add(region.id);
+        }
+      });
+      if (restored.size > 0) setCompletedItems(restored);
+    }
+  }, [quest]);
 
   // ── Derived ─────────────────────────────────────────────────────────────────
   const introDone = introStep === null;
@@ -103,7 +120,7 @@ const CastleLibraryPage = () => {
 
       // Save this word
       const word = `${region.labelBisaya} (${region.labelEnglish})`;
-      saveNPCProgress("castle", NPC_ID, next.size, true, 3, [word]);
+      saveNPCProgress("castle", SAVE_NPC_ID, next.size, next.size >= REQUIRED_QUESTS, 3, [word]);
 
       if (next.size >= REQUIRED_QUESTS && !progressSaved) {
         setProgressSaved(true);
@@ -234,11 +251,20 @@ const CastleLibraryPage = () => {
         />
       )}
 
+      {/* Idle hint or Proceed button */}
       {introDone && !activeItem && !questItem && !debugMode && (
-        <div className="croom-idle-hint">
-          <span className="croom-idle-hint-bisaya">💬 I-drag ang mga butang para makat-on og Compound Words!</span>
-          <span className="croom-idle-hint-english">Drag the items to learn about Compound Words!</span>
-        </div>
+        completedItems.size >= REQUIRED_QUESTS ? (
+          <div className="croom-proceed-wrap">
+            <Button variant="primary" onClick={handleGoBack}>
+              Human na tanan! · All done! →
+            </Button>
+          </div>
+        ) : (
+          <div className="croom-idle-hint">
+            <span className="croom-idle-hint-bisaya">💬 I-drag ang mga butang para makat-on og Compound Words!</span>
+            <span className="croom-idle-hint-english">Drag the items to learn about Compound Words!</span>
+          </div>
+        )
       )}
 
       {questItem && (

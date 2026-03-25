@@ -60,9 +60,7 @@ export const saveNPCProgress = (environment, npcId, score, passed, npcCount = 3,
             completed: passed || prev.completed,
             score: Math.max(score, prev.score),
             encounters: prev.encounters + 1,
-            words: passed
-                ? [...new Set([...(prev.words || []), ...words])]
-                : (prev.words || []),
+            words: [...new Set([...(prev.words || []), ...words])],
         },
     };
 
@@ -208,6 +206,16 @@ export const hasLibroPage = (environment, npcId) => {
     return (getLibroPages()[environment] || []).includes(npcId);
 };
 
+/**
+ * getNPCWords
+ * Returns the array of words completed for a specific NPC.
+ */
+export const getNPCWords = (environment, npcId) => {
+    const progress = getProgress();
+    const npcKey = `${environment}_npcs`;
+    return progress[npcKey]?.[npcId]?.words || [];
+};
+
 // ─── Word summary helper ──────────────────────────────────────────────────────
 
 // NPC display-name lookup per environment
@@ -226,6 +234,9 @@ const INTERNAL_NPC_META = {
     },
     castle: {
         castle_npc_1: { name: "Princess Hara" },
+        castle_npc_1_gate: { name: "Princess Hara" },
+        castle_npc_1_courtyard: { name: "Princess Hara" },
+        castle_npc_1_library: { name: "Princess Hara" },
         castle_npc_2: { name: "Manong Kwill" },
         castle_npc_3: { name: "Gulo" },
     },

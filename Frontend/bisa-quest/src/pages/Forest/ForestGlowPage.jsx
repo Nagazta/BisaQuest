@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Button from "../../components/Button";
 import DialogueBox from "../../components/instructions/DialogueBox";
@@ -16,6 +16,7 @@ import {
   awardLibroPage,
   getLibroPageCount,
   getLibroPageCountForEnv,
+  getNPCWords,
 } from "../../utils/playerStorage";
 import BookCollectModal from "../../game/components/BookCollectModal";
 import ForestTransitionModal from "../../game/components/ForestTransitionModal";
@@ -55,6 +56,21 @@ const ForestGlowPage = () => {
       pendingQuestRef.current = null;
     }
   };
+
+  // ── Load progress on mount ────────────────────────────────────────────────
+  useEffect(() => {
+    const savedWords = getNPCWords("forest", npcId);
+    if (savedWords.length > 0) {
+      const restored = new Set();
+      GLOW_ITEMS.forEach(region => {
+        const word = `${region.labelBisaya} (${region.labelEnglish})`;
+        if (savedWords.includes(word)) {
+          restored.add(region.id);
+        }
+      });
+      if (restored.size > 0) setCompletedItems(restored);
+    }
+  }, [npcId]);
 
   // ── Derived ─────────────────────────────────────────────────────────────────
   const introDone = introStep === null;
@@ -103,7 +119,7 @@ const ForestGlowPage = () => {
 
       // Save this word
       const word = `${region.labelBisaya} (${region.labelEnglish})`;
-      saveNPCProgress("forest", npcId, GLOW_ITEMS.length, true, 3, [word]);
+      saveNPCProgress("forest", npcId, next.size, next.size >= 3, 3, [word]);
 
       // Save progress & award fragment after 3 unique items (matching Village pattern)
       if (next.size >= 3 && !progressSaved) {
