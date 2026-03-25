@@ -29,7 +29,6 @@ import castle2 from "../../../assets/images/cutscene/castle/castle_2.png";
 import castle3 from "../../../assets/images/cutscene/castle/castle_3.png";
 import castle4 from "../../../assets/images/cutscene/castle/castle_4.png";
 
-
 export const CUTSCENES = {
 
     //Story intro (after character creation → /dashboard)
@@ -110,7 +109,7 @@ export const CUTSCENES = {
             {
                 image: villageEntry9,
                 textBisaya: '"Sa sulod sa lasang, adunay lain pang misteryo. Ang mga pulong didto magmurag-parehas apan lahi ang buot ipasabot."',
-                textEnglish: '"Inside the forest, there is another mystery. The words there may look the same but they mean differently."',
+                textEnglish: '"Inside the forest, there is another mystery. The words there may look alike, but they have different meanings."',
             },
             {
                 image: villageEntry10,
@@ -131,7 +130,7 @@ export const CUTSCENES = {
             { image: castle4, textBisaya: "Miabot ka na sa Kastilyo — ang pinaka-nindot nga lugar sa Baryo Bulawan. Dako ug hayag ang mga tore niini, ug ang bato nga pader kay sinaw sa kahayag sa gabii.", textEnglish: "You have arrived at the Castle — the most beautiful place in Baryo Bulawan. Its towers are big and bright, and the stone walls shine in the night." },
             { image: castle1, textBisaya: "Dinhi gitipigan ang mga espesyal nga pulong sa tibuok baryo. Apan tungod ni Gulo, nagkatag ang mga panid sa Libro — ang mga compound words nahisagol ug nawala.", textEnglish: "This is where the village's special words are kept. But because of Gulo, the pages of the Book scattered — the compound words got mixed up and lost." },
             { image: castle3, textBisaya: "Ang mga pulong sa Kastilyo nagkagubot. Kinahanglan nimo ipares ang mga pulong aron mahibaloan pag-usab ang ilang kahulogan.", textEnglish: "The words in the Castle are all mixed up. You need to match the words to bring back their meanings." },
-            { image: castle3, textBisaya: "Tulo ka tawo ang nanginahanglan sa imong tabang — si Princess Hara, Manong Kwill, ug si Gulo mismo. Tabangi sila ug ibalik ang mga panid sa Libro!", textEnglish: "Three people need your help — Princess Hara, Manong Kwill, and Gulo himself. Help them and return the pages of the Book!" },
+            { image: castle3, textBisaya: "Tulo ka tawo ang nanginahanglan sa imong tabang — si Princess Hara, tabangi siya ug ibalik ang mga panid sa Libro!", textEnglish: "Three people need your help — Princess Hara, Manong Kwill, and Gulo himself. Help them and return the pages of the Book!" },
         ],
     },
 
@@ -145,7 +144,7 @@ export const CUTSCENES = {
         slides: [
             { image: castle1, textBisaya: "Nahuman na! Ang tanan nga compound words sa Kastilyo nabalik na sa Libro. Ang mga panid natigom na pag-usab.", textEnglish: "It is done! All the compound words in the Castle have returned to the Book. The pages are whole once more." },
             { image: castle2, textBisaya: "Ang Kastilyo nahimong malinawon pag-usab — ang mga pulong buhi na usab. Nalipay ang tanan.", textEnglish: "The Castle is peaceful again — the words are alive once more. Everyone is happy." },
-            { image: castle3, textBisaya: "Ang Libro sa mga Pulong kompleto na. Ang tanan nga tipik gikan sa Baryo, Lasang, ug Kastilyo natigom na, ug nalipay na usab ang mga tawo.", textEnglish: "The Book of Words is complete. All fragments from the Village, Forest, and Castle are gathered, and the people are happy once again." },
+            { image: castle3, textBisaya: "Ang Libro sa mga Pulong kompleto na. Ang tanan nga tipik gikan sa Baryo, Lasang, ug Kastilyo natigom na, ug nalipay na usab ang mga tawo.", textEnglish: "The Book of Words is complete. All the pieces from the Village, Forest, and Castle are now together, and the people are happy once again." },
         ],
     },
 

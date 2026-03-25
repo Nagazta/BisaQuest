@@ -150,7 +150,20 @@ class ChallengeService {
     const { data: npc, error: npcErr } = await supabase.from('npcs').select('environment_name').eq('npc_id', npcId).single();
     if (npcErr) throw npcErr;
     const environmentName = npc.environment_name;
-    const { data: envNPCs } = await supabase.from('npcs').select('npc_id').eq('environment_name', environmentName);
+
+    // Only count NPCs that have at least one quest with challenge items
+    const { data: allEnvNPCs } = await supabase.from('npcs').select('npc_id').eq('environment_name', environmentName);
+    const allEnvNpcIds = allEnvNPCs?.map(n => n.npc_id) || [];
+    const { data: questsWithItems } = await supabase
+      .from('quests')
+      .select('npc_id, challenge_items(item_id)')
+      .in('npc_id', allEnvNpcIds);
+    const activeNpcIds = [...new Set(
+      (questsWithItems || [])
+        .filter(q => q.challenge_items && q.challenge_items.length > 0)
+        .map(q => q.npc_id)
+    )];
+    const { data: envNPCs } = await supabase.from('npcs').select('npc_id').eq('environment_name', environmentName).in('npc_id', activeNpcIds);
     const totalNPCs = envNPCs?.length || 1;
     const envNpcIds = envNPCs?.map(n => n.npc_id) || [];
     const { data: doneNPCs } = await supabase.from('player_npc_progress')

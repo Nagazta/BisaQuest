@@ -20,14 +20,15 @@ export const useWalkingAnimation = (characterType = "boy", keysPressed = {}) => 
 
     //  Determine direction from keys 
     useEffect(() => {
-        if (keysPressed["a"]) setDirection("left");
-        else if (keysPressed["d"]) setDirection("right");
-        else if (keysPressed["w"] || keysPressed["s"]) setDirection("down");
+        if (keysPressed["a"] || keysPressed["ArrowLeft"]) setDirection("left");
+        else if (keysPressed["d"] || keysPressed["ArrowRight"]) setDirection("right");
+        else if (keysPressed["w"] || keysPressed["s"] || keysPressed["ArrowUp"] || keysPressed["ArrowDown"]) setDirection("down");
         // If nothing pressed, keep last direction (idle pose)
     }, [keysPressed]);
 
     //  Animate frames while moving 
-    const isMoving = keysPressed["w"] || keysPressed["a"] || keysPressed["s"] || keysPressed["d"];
+    const isMoving = keysPressed["w"] || keysPressed["a"] || keysPressed["s"] || keysPressed["d"]
+        || keysPressed["ArrowUp"] || keysPressed["ArrowLeft"] || keysPressed["ArrowDown"] || keysPressed["ArrowRight"];
 
     useEffect(() => {
         if (isMoving) {

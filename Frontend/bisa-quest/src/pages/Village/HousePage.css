@@ -155,7 +155,7 @@
 
 .house-hover-tooltip-bisaya {
   font-weight: 700;
-  font-size: 17px;
+  font-size: 19px;
   color: #fcd765;
   display: block;
 
@@ -164,7 +164,7 @@
 .house-hover-tooltip-english {
   font-weight: 400;
   color: #e0e0e0;
-  font-size: 17px;
+  font-size: 19px;
   display: block;
 }
 
@@ -265,7 +265,7 @@
 .house-hover-tooltip-done {
   display: block;
   margin-top: 4px;
-  font-size: 10px;
+  font-size: 14px;
   color: #22c55e;
   font-weight: bold;
 }

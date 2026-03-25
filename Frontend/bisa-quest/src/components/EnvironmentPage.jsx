@@ -107,13 +107,20 @@ const EnvironmentPage = ({
 
     // ── Keyboard controls ─────────────────────────────────────────────────────
     useEffect(() => {
-        const handleKeyDown = (e) => {
+       const handleKeyDown = (e) => {
             const key = e.key.toLowerCase();
-            if (["w", "a", "s", "d"].includes(key)) { e.preventDefault(); setKeysPressed(prev => ({ ...prev, [key]: true })); }
+            const arrowKeys = ["arrowup", "arrowdown", "arrowleft", "arrowright"];
+            if (["w", "a", "s", "d"].includes(key) || arrowKeys.includes(key)) {
+                e.preventDefault();
+                setKeysPressed(prev => ({ ...prev, [e.key]: true, [key]: true }));
+            }
         };
         const handleKeyUp = (e) => {
             const key = e.key.toLowerCase();
-            if (["w", "a", "s", "d"].includes(key)) setKeysPressed(prev => ({ ...prev, [key]: false }));
+            const arrowKeys = ["arrowup", "arrowdown", "arrowleft", "arrowright"];
+            if (["w", "a", "s", "d"].includes(key) || arrowKeys.includes(key)) {
+                setKeysPressed(prev => ({ ...prev, [e.key]: false, [key]: false }));
+            }
         };
         window.addEventListener("keydown", handleKeyDown);
         window.addEventListener("keyup", handleKeyUp);
@@ -127,10 +134,10 @@ const EnvironmentPage = ({
             setPlayerPosition((prev) => {
                 let newX = prev.x;
                 let newY = prev.y;
-                if (keysPressed["w"]) newY = prev.y - moveSpeed;
-                if (keysPressed["s"]) newY = prev.y + moveSpeed;
-                if (keysPressed["a"]) newX = prev.x - moveSpeed;
-                if (keysPressed["d"]) newX = prev.x + moveSpeed;
+                if (keysPressed["w"] || keysPressed["ArrowUp"]) newY = prev.y - moveSpeed;
+                if (keysPressed["s"] || keysPressed["ArrowDown"]) newY = prev.y + moveSpeed;
+                if (keysPressed["a"] || keysPressed["ArrowLeft"]) newX = prev.x - moveSpeed;
+                if (keysPressed["d"] || keysPressed["ArrowRight"]) newX = prev.x + moveSpeed;
                 
                 if (onEdgeWalk && newX > 98) {
                     onEdgeWalk('right');
@@ -208,7 +215,7 @@ const EnvironmentPage = ({
                 />
             )}
 
-            <div className="controls-hint">Use W, A, S, D to move • Press E to interact with NPCs</div>
+           <div className="controls-hint">Use W, A, S, D or Arrow Keys to move • Press E to interact with NPCs</div>
 
             {debugMode && (
                 <CollisionDebugger collisionZones={collisionConfig.zones} playerPosition={playerPosition} environmentType={environmentType} />
