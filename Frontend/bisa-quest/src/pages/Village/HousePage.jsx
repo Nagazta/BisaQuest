@@ -89,7 +89,7 @@ const HousePage = () => {
   };
 
   const handleItemClick = (region) => {
-    if (!introDone) return;
+    if (!introDone || activeItem) return;
     if (debugMode) {
       setSelectedRegion(selectedRegion?.id === region.id ? null : region);
       return;
@@ -203,7 +203,7 @@ const HousePage = () => {
               top: `${region.y}%`,
               width: `${region.w}%`,
               height: `${region.h}%`,
-              cursor: debugMode ? "crosshair" : "pointer",
+              cursor: debugMode ? "crosshair" : (!introDone || activeItem || questItem ? "default" : "pointer"),
             }}
             onClick={() => handleItemClick(region)}
           >
@@ -268,14 +268,10 @@ const HousePage = () => {
             </span>
           }
           rightSlot={null}
-          introItem={
-            dialogueStep === 0
-              ? {
-                label: activeItem.labelBisaya,
-                imageKey: activeItem.imageKey || activeItem.id,
-              }
-              : null
-          }
+          introItem={{
+            label: activeItem.labelBisaya,
+            imageKey: activeItem.imageKey || activeItem.id,
+          }}
           isNarration={false}
           isPlayer={false}
           showNextButton={true}

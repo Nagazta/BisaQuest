@@ -42,47 +42,11 @@ export const GLOW_ITEMS = [
   },
 ];
 
-// ── Diwata intro dialogue (10 lines) ─────────────────────────────────────────
 export const DIWATA_INTRO_DIALOGUE = [
   {
     speaker: "Diwata",
     bisayaText: "Kumusta... Ako si Diwata, tigbantay sa kalasangan parehas ni Lunti.",
     englishText: "Hello... I am Diwata, a guardian of the forest just like Lunti.",
-  },
-  {
-    speaker: "Diwata",
-    bisayaText: "Pasayloa ko sa akong kahimtang... medyo huyang na ang akong gahum.",
-    englishText: "Forgive my state... my power has become weak.",
-  },
-  {
-    speaker: "Diwata",
-    bisayaText: "Ang kalasangan diri kaniadto hayag ug puno sa kinabuhi.",
-    englishText: "This forest was once bright and full of life.",
-  },
-  {
-    speaker: "Diwata",
-    bisayaText: "Apan karon... ang mga bulak nalaya ug ang kahayag nagkagamay.",
-    englishText: "But now... the flowers have wilted and the light has faded.",
-  },
-  {
-    speaker: "Diwata",
-    bisayaText: "Nawala ang balanse sa mga butang nga mag-atbang.",
-    englishText: "The balance between opposite things has been lost.",
-  },
-  {
-    speaker: "Diwata",
-    bisayaText: "Ang uban nga mga butang kinahanglan magtinabangay pinaagi sa ilang kalahian.",
-    englishText: "Some things must work together through their differences.",
-  },
-  {
-    speaker: "Diwata",
-    bisayaText: "Ang mga pulong nga parehas ug kahulugan gitawag og SYNONYMS.",
-    englishText: "Words that mean the same are called SYNONYMS.",
-  },
-  {
-    speaker: "Diwata",
-    bisayaText: "Ang mga pulong nga magkasukwahi gitawag og ANTONYMS.",
-    englishText: "Words that are opposites are called ANTONYMS.",
   },
   {
     speaker: "Diwata",
@@ -127,23 +91,10 @@ export const BLOOM_DATA = {
     { bisayaText: "Kinahanglan niya og balanse aron mabuhi pag-usab.", englishText: "It needs balance to grow again." },
     { bisayaText: "Gamita ang mga elemento sa palibot aron ibalik ang iyang kusog.", englishText: "Use the elements around you to restore it." },
   ],
-  synonymDialogue: [
-    { bisayaText: "Maayo...", englishText: "Good..." },
-    { bisayaText: "Naibalik nimo ang balanse.", englishText: "You brought balance back." },
-    { bisayaText: "Ang magkasukwahi nga mga butang makatabang sa usag usa.", englishText: "Opposite elements can help each other." },
-    { bisayaText: "Sama sa mga pulong nga parehas ug kahulugan.", englishText: "Just like words that mean the same." },
-    { bisayaText: "Mao ni ang synonyms.", englishText: "These are synonyms." },
-  ],
-  antonymDialogue: [
-    { bisayaText: "Ug ang magkasukwahi?", englishText: "And the opposites?" },
-    { bisayaText: "Huyang ↔ Kusog. Uga ↔ Basa. Ngitngit ↔ Hayag.", englishText: "Weak ↔ Strong. Dry ↔ Wet. Dark ↔ Bright." },
-    { bisayaText: "Kining mga pares maoy gitawag og antonyms.", englishText: "These pairs are called antonyms." },
-    { bisayaText: "Ang mga antonyms makatabang sa pagbalik sa balanse.", englishText: "Antonyms help restore balance." },
-  ],
   completionDialogue: [
     { bisayaText: "Mibukad na ang bulak! Salamat kaayo!", englishText: "The flower has bloomed! Thank you!" },
-    { bisayaText: "Ang Huyang ug Kusog — magkasukwahi sila. Mao ni ang antonyms!", englishText: "Weak and Strong — they are opposites. These are antonyms!" },
-    { bisayaText: "Ang Nindot, Gwapa, Matahom — parehas ang kahulogan. Mao ni ang synonyms!", englishText: "Beautiful, Pretty, Lovely — same meaning. These are synonyms!" },
+    { bisayaText: "ANTONYMS: Huyang ug Kusog", englishText: "ANTONYMS: Weak and Strong" },
+    { bisayaText: "SYNONYMS: Nindot, Gwapa, Matahom", englishText: "SYNONYMS: Beautiful, Pretty, Lovely" },
   ],
   // Each slider: name, emoji, target zone [min, max] out of 0-100
   sliders: [
@@ -158,9 +109,7 @@ export const BLOOM_DATA = {
 export const CAVE_DATA = {
   introDialogue: [
     { bisayaText: "Ang langob puno sa kangitngit... gihigtan sa usa ka enchantment.", englishText: "The cave is filled with darkness... held by an enchantment." },
-    { bisayaText: "Apan adunay mga gamhanang alitaptap diri sa palibot.", englishText: "But there are powerful fireflies around us." },
-    { bisayaText: "Aron mabuksan ang langob, kinahanglan i-linya sila — gikan sa pinaka-gamay ngadto sa pinaka-dako.", englishText: "To open the cave, they must be lined up — from the smallest to the largest." },
-    { bisayaText: "I-drag ang matag alitaptap sa tamang dapit sa linya.", englishText: "Drag each firefly to the right spot on the line." },
+    { bisayaText: "Aron mabuksan ang langob, kinahanglan i-linya sila — gikan sa GAMAY ngadto sa DAKO.", englishText: "To open the cave, we must line them up — from the SMALLEST TO LARGEST." },
   ],
   feedbackDialogue: [
     { bisayaText: "Ang langob wala motubag...", englishText: "The cave did not respond..." },
@@ -168,8 +117,6 @@ export const CAVE_DATA = {
   ],
   completionDialogue: [
     { bisayaText: "Hayag na ang langob! Ang mga alitaptap gibutang sa hustong han-ay!", englishText: "The cave is illuminated! The fireflies were placed in the right order!" },
-    { bisayaText: "Gamay ↔ Dako — magkasukwahi. Mao ni ang antonyms!", englishText: "Small ↔ Large — opposites. These are antonyms!" },
-    { bisayaText: "Gamay, Diniyutay, Mugbo — parehas ang kahulogan. Mao ni ang synonyms!", englishText: "Small, Tiny, Little — same meaning. These are synonyms!" },
   ],
   // No zones/items — the firefly game builds its own internal state.
 };
@@ -181,23 +128,8 @@ export const RIVER_DATA = {
     { bisayaText: "Ang mga babag naghunong sa tubig — bato, kahoy, ug paragos nga sagbot.", englishText: "Obstacles have stopped the water — a boulder, a log, and dried grass." },
     { bisayaText: "I-hold ang matag babag aron tangtangon sila sa dalan sa suba.", englishText: "Hold down on each obstacle to remove it from the river's path." },
   ],
-  synonymDialogue: [
-    { bisayaText: "Maayo!", englishText: "Good!" },
-    { bisayaText: "Ang suba nakaagay na pag-usab.", englishText: "The river flows once more." },
-    { bisayaText: "Nagaagay ug Naglihok — parehas ang kahulogan. Mao ni ang synonyms!", englishText: "Flowing and Moving — same meaning. These are synonyms!" },
-    { bisayaText: "Ang duha ka pulong nga parehas og kahulogan gitawag og synonyms.", englishText: "Two words with the same meaning are called synonyms." },
-    { bisayaText: "Mao ni ang synonyms.", englishText: "These are synonyms." },
-  ],
-  antonymDialogue: [
-    { bisayaText: "Gibabagan ↔ Nagaagay.", englishText: "Blocked ↔ Flowing." },
-    { bisayaText: "Wala maglihok ↔ Naglihok.", englishText: "Still ↔ Moving." },
-    { bisayaText: "Kining mga pares magkasukwahi — mao ni ang antonyms.", englishText: "These pairs are opposites — these are antonyms." },
-    { bisayaText: "Ang pag-ayo sa suba nagpakita sa gahum sa mga antonyms.", englishText: "Restoring the river shows the power of antonyms." },
-  ],
   completionDialogue: [
     { bisayaText: "Nakaagay na ang suba! Salamat sa imong kusog!", englishText: "The river flows again! Thank you for your strength!" },
-    { bisayaText: "Nagaagay ug Naglihok — parehas ang kahulogan. Mao ni ang synonyms!", englishText: "Flowing and Moving — same meaning. These are synonyms!" },
-    { bisayaText: "Gibabagan ↔ Nagaagay — magkasukwahi. Mao ni ang antonyms!", englishText: "Blocked ↔ Flowing — opposites. These are antonyms!" },
   ],
   // 3 obstacles to clear (ids map to image assets in RiverFlowGame.jsx)
   obstacles: [
@@ -215,16 +147,6 @@ export const LANTERN_DATA = {
     { bisayaText: "Ang GAWAS: I-ikot hangtod ang amihan, habagat, silangan, ug kasadpan maabot sa hustong direksyon.", englishText: "The OUTER circle: Rotate it until north, south, east, and west align to the right direction." },
     { bisayaText: "Kung tama na ang duha, ang lampara magsiga ug makatabang sa tanan!", englishText: "When both are correct, the lamp will shine and guide everyone!" },
   ],
-  synonymDialogue: [
-    { bisayaText: "Hayag na! Gipadayag nimo ang kahayag sa lampara!", englishText: "It's bright! You awakened the lamp's light!" },
-    { bisayaText: "Ang kahayag ug giya — managsama ang buhat, managsama ang kahulugan.", englishText: "Light and guidance — they do the same thing, they share the same meaning." },
-    { bisayaText: "Sama sa mga synonyms — ang Hayag, Siga, ug Kusog nga Kahayag managsama.", englishText: "Like synonyms — Hayag (Light), Siga (Glow), and Kusog nga Kahayag (Bright Light) are alike." },
-  ],
-  antonymDialogue: [
-    { bisayaText: "Hayag ↔ Ngitngit. Walay hayag kung walay kangitngit.", englishText: "Light ↔ Dark. There is no light without darkness." },
-    { bisayaText: "Siga ↔ Patay. Glow ↔ Extinguished.", englishText: "Siga (Glowing) ↔ Patay (Extinguished)." },
-    { bisayaText: "Kini sila antonyms — magkasukwahi, apan nagkinabuhi sa usag usa.", englishText: "These are antonyms — opposites that depend on each other to exist." },
-  ],
   // Brightness ring: 3 snap positions (step = 120°)
   // 0° = no light, 120° = dim, 240° = bright (correct)
   brightnessCorrectAngle: 240,
@@ -234,7 +156,5 @@ export const LANTERN_DATA = {
   compassStep: 90,
   completionDialogue: [
     { bisayaText: "Nagsiga na ang lampara! Salamat!", englishText: "The lamp shines! Thank you!" },
-    { bisayaText: "Hayag, Siga, Maliwanag — parehas ang kahulogan. Mao ni ang synonyms!", englishText: "Hayag, Siga, Maliwanag — same meaning. These are synonyms!" },
-    { bisayaText: "Hayag ↔ Ngitngit — magkasukwahi. Mao ni ang antonyms!", englishText: "Light ↔ Dark — opposites. These are antonyms!" },
   ],
 };
