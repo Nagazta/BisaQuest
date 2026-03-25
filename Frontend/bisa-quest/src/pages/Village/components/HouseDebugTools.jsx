@@ -7,12 +7,12 @@ const HouseDebugTools = ({ debugMode, setDebugMode, selectedRegion, setSelectedR
   return (
     <>
       {/* ── Debug toggle ─────────────────────────────────────────────────── */}
-      <button
+      {/* <button
         className={`house-grid-btn ${debugMode ? "house-grid-btn--on" : ""}`}
         onClick={() => { setDebugMode(p => !p); setSelectedRegion(null); }}
       >
         {debugMode ? "📐 Debug ON" : "📐 Debug"}
-      </button>
+      </button> */}
 
       {/* ── Debug grid ───────────────────────────────────────────────────── */}
       {debugMode && (
