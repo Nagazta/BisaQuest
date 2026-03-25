@@ -90,7 +90,7 @@ const ForestPondPage = () => {
   };
 
   const handleItemClick = (region) => {
-    if (!introDone) return;
+    if (!introDone || activeItem) return;
     setActiveItem(region);
     setDialogueStep(0);
   };
@@ -200,7 +200,7 @@ const ForestPondPage = () => {
                 top: `${region.y}%`,
                 width: `${region.w}%`,
                 height: `${region.h}%`,
-                cursor: "pointer",
+                cursor: (!introDone || activeItem || questItem ? "default" : "pointer"),
               }}
               onClick={() => handleItemClick(region)}
             >

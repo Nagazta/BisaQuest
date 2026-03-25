@@ -95,7 +95,7 @@ const CastleLibraryPage = () => {
   };
 
   const handleItemClick = (region) => {
-    if (!introDone) return;
+    if (!introDone || activeItem) return;
     if (debugMode) { setSelectedRegion(selectedRegion?.id === region.id ? null : region); return; }
     setActiveItem(region);
     setDialogueStep(0);
@@ -199,7 +199,7 @@ const CastleLibraryPage = () => {
               !debugMode && activeItem?.id === region.id ? "croom-hover-region--active" : "",
               !debugMode && isDone ? "croom-hover-region--done" : "",
             ].filter(Boolean).join(" ")}
-            style={{ left: `${region.x}%`, top: `${region.y}%`, width: `${region.w}%`, height: `${region.h}%`, cursor: debugMode ? "crosshair" : "pointer" }}
+            style={{ left: `${region.x}%`, top: `${region.y}%`, width: `${region.w}%`, height: `${region.h}%`, cursor: debugMode ? "crosshair" : (!introDone || activeItem || questItem ? "default" : "pointer") }}
             onClick={() => handleItemClick(region)}
           >
             {debugMode && <span className="croom-debug-badge">{region.id}</span>}
@@ -245,7 +245,7 @@ const CastleLibraryPage = () => {
               )}
             </span>
           }
-          introItem={dialogueStep === 0 ? { label: activeItem.labelBisaya, imageKey: activeItem.id } : null}
+          introItem={{ label: activeItem.labelBisaya, imageKey: activeItem.id }}
           isNarration={false} isPlayer={false}
           showNextButton={true} onNext={handleDialogueNext}
         />
