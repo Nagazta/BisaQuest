@@ -56,8 +56,10 @@ const VillageTransitionModal = ({ isOpen, currentRoom, onClose, onProceedToFores
                 )}
 
                 {allCompleted && (
-                  <button className="house-door-btn house-door-btn--forest"
+                  <button className="house-door-btn house-door-btn--forest house-door-btn--highlight"
+                    style={{ position: 'relative' }}
                     onClick={onProceedToForest}>
+                    <div className="house-door-btn-badge">Next</div>
                     <span className="house-door-btn-icon">🌲</span>
                     <div className="house-door-btn-name" style={{ color: "#2d6a4f" }}>Forest</div>
                     <div className="house-door-btn-sub house-door-btn-sub--forest">Adto sa Kagubatan!</div>
