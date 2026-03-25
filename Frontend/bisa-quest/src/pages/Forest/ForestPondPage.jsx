@@ -45,7 +45,7 @@ const ForestPondPage = () => {
   const [showPageModal, setShowPageModal] = useState(false);
   const [collectedPage, setCollectedPage] = useState(null);
   const [showTransition, setShowTransition] = useState(false);
-  const [milestonesAwarded, setMilestonesAwarded] = useState(0);
+  const [progressSaved, setProgressSaved] = useState(false);
 
   // pendingQuest holds the region we want to open a quest for
   const pendingQuestRef = useRef(null);
@@ -108,20 +108,18 @@ const ForestPondPage = () => {
     }
   };
 
-  // Award both books at once only after completing all 6 quests
-  const MILESTONES = [6];
-
   const handleQuestComplete = (region) => {
     setQuestItem(null);
     setCompletedItems((prev) => {
       const next = new Set([...prev, region.id]);
-      const milestone = MILESTONES[milestonesAwarded]; // next target
 
       // Save this word
       const word = `${region.labelBisaya} (${region.labelEnglish})`;
-      saveNPCProgress("forest", npcId, next.size, next.size >= 6, 6, [word]);
+      saveNPCProgress("forest", npcId, next.size, next.size >= 3, 3, [word]);
 
-      if (milestone && next.size >= milestone) {
+      if (next.size >= 3 && !progressSaved) {
+        setProgressSaved(true);
+
         // Award both fragments at once
         const page1Key = `${npcId}_page1`;
         const page2Key = `${npcId}_page2`;
