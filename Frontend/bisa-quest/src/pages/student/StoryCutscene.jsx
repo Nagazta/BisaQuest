@@ -96,7 +96,7 @@ const StoryCutscene = ({ type: typeProp }) => {
                             }}
                             title="Toggle Translation"
                         >
-                            {lang === "bis" ? "🇺🇸 EN" : "🇵🇭 BIS"}
+                            {lang === "bis" ? "🇺🇸 Translate in English" : "🇵🇭 Translate in Bisaya"}
                         </button>
                     </div>
                 </div>

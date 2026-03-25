@@ -12,8 +12,8 @@ export const GLOW_ITEMS = [
     id: "bulak",
     labelBisaya: "Laya na Bulak",
     labelEnglish: "Wilted Flowers",
-    descriptionBisaya: "Kining mga bulak nalaya. Kinahanglan ang balanse aron mubukad sila pag-usab.",
-    descriptionEnglish: "These flowers have wilted. They need balance to bloom again.",
+    descriptionBisaya: "Kining mga bulak nalaya na. Kinahanglan og tabang aron mubukad sila pag-usab.",
+    descriptionEnglish: "These flowers have wilted. They need help to bloom again.",
     x: 65, y: 85, w: 8, h: 10,
   },
   {
@@ -21,7 +21,7 @@ export const GLOW_ITEMS = [
     labelBisaya: "Langob",
     labelEnglish: "Cave",
     descriptionBisaya: "Ngitngit kaayo ang langob. Kinahanglan ang kahayag aron mapuno kini.",
-    descriptionEnglish: "The cave is very dark. It needs light to be filled again.",
+    descriptionEnglish: "The cave is very dark. It needs light to shine again.",
     x: 72, y: 60, w: 8, h: 10,
   },
   {
@@ -64,7 +64,7 @@ export const DIWATA_INTRO_DIALOGUE = [
 export const buildGlowDialogue = (item) => {
   const map = {
     bulak: [
-      { speaker: "Diwata", bisayaText: "Tan-awa kining mga bulak... nalaya sila tungod sa kawalay balanse.", englishText: "Look at these flowers... they wilted because of lost balance." },
+      { speaker: "Diwata", bisayaText: "Tan-awa kining mga bulak... nalaya sila tungod wala na ang balanse.", englishText: "Look at these flowers... they wilted because of lost balance." },
       { speaker: "Diwata", bisayaText: "Tabangi sila nga mubukad pag-usab.", englishText: "Help them bloom again." },
     ],
     langob: [
@@ -109,7 +109,7 @@ export const BLOOM_DATA = {
 export const CAVE_DATA = {
   introDialogue: [
     { bisayaText: "Ang langob puno sa kangitngit... gihigtan sa usa ka enchantment.", englishText: "The cave is filled with darkness... held by an enchantment." },
-    { bisayaText: "Aron mabuksan ang langob, kinahanglan i-linya sila — gikan sa GAMAY ngadto sa DAKO.", englishText: "To open the cave, we must line them up — from the SMALLEST TO LARGEST." },
+    { bisayaText: "Aron mabuksan ang langob, kinahanglan i-linya sila — gikan sa GAMAY ngadto sa DAKO.", englishText: "To open the cave, we must line them up — from the SMALLEST TO BIGGEST." },
   ],
   feedbackDialogue: [
     { bisayaText: "Ang langob wala motubag...", englishText: "The cave did not respond..." },
@@ -125,8 +125,8 @@ export const CAVE_DATA = {
 export const RIVER_DATA = {
   introDialogue: [
     { bisayaText: "Ang suba dili na makaagay.", englishText: "The river can no longer flow." },
-    { bisayaText: "Ang mga babag naghunong sa tubig — bato, kahoy, ug paragos nga sagbot.", englishText: "Obstacles have stopped the water — a boulder, a log, and dried grass." },
-    { bisayaText: "I-hold ang matag babag aron tangtangon sila sa dalan sa suba.", englishText: "Hold down on each obstacle to remove it from the river's path." },
+    { bisayaText: "Ang mga babag naghunong sa tubig — bato, kahoy, ug paragos nga sagbot.", englishText: "Things are blocking the water — a rock, a log, and dried grass." },
+    { bisayaText: "I-hold ang matag babag aron tangtangon sila sa dalan sa suba.", englishText: "Hold down on each one to remove it from the river's path." },
   ],
   completionDialogue: [
     { bisayaText: "Nakaagay na ang suba! Salamat sa imong kusog!", englishText: "The river flows again! Thank you for your strength!" },
