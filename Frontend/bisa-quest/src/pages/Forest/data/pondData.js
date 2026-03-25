@@ -4,7 +4,6 @@ export const NPC_IMAGES = {
   forest_npc_1: AssetManifest.forest.npcs.forest_guardian,
 };
 
-// ── 5 Clickable pond items (placeholder positions — adjust when background is ready) ──
 export const POND_ITEMS = [
   {
     id: "tubig",
@@ -177,47 +176,11 @@ export const INTRO_DIALOGUE = [
   },
   {
     speaker: "Lunti",
-    bisayaText: "Nanginahanglan ko sa imong tabang, anak.",
-    englishText: "I need your help, child.",
-  },
-  {
-    speaker: "Lunti",
-    bisayaText: "Ang mga hayop dinhi kay nagkagubot na ug nagkalibogan!",
-    englishText: "The animals here are in chaos and confusion!",
-  },
-  {
-    speaker: "Lunti",
-    bisayaText: "Wala na sila nagkasinabtanay sa pagka-parehas ug kalahian sa mga pulong.",
-    englishText: "They're not understanding the similarities and differences of words.",
-  },
-  {
-    speaker: "Lunti",
-    bisayaText: "Ang uban nga mga pulong parehas ug kahulogan. Gitawag sila og SYNONYMS.",
-    englishText: "Some words are alike. They mean the same or similar. These are called SYNONYMS.",
-  },
-  {
-    speaker: "Lunti",
-    bisayaText: "Ang uban nga pulong kay lahi. Sila kay mag-atbang sa kahulogan. Gitawag sila ug ANTONYMNS.",
-    englishText: "Some words are very different. They are opposites. These are called ANTONYMS.",
-  },
-  {
-    speaker: "Lunti",
-    bisayaText: "Magkat-on ta nila!",
-    englishText: "Let's learn them together!",
-  },
-  {
-    speaker: "Lunti",
-    bisayaText: "I-click lang ang mga butang sa palibot!",
-    englishText: "Just click the items on the surroundings!",
-  },
-  {
-    speaker: "Lunti",
-    bisayaText: "Humanon ang 6 ka quest para makuha nimo ang duha ka libro!",
-    englishText: "Complete the 6 quests to get the two books!",
+    bisayaText: "Tabangi ko sa SYNONYMS ug ANTONYMS para sa mga hayop dinhi!",
+    englishText: "Help me with SYNONYMS and ANTONYMS for the animals here!",
   },
 ];
 
-// ── Per-item dialogue builder (2 steps like Ligaya) ───────────────────────────
 export const buildPondDialogue = (region) => [
   {
     speaker: "Lunti",
@@ -231,22 +194,18 @@ export const buildPondDialogue = (region) => [
   },
 ];
 
-// ── Word pair data for each mini-game ─────────────────────────────────────────
+
 
 export const FISH_FAMILIES_DATA = {
   // NPC intro dialogue (4 lines) shown before the dragging begins
   introDialogue: [
     {
-      bisayaText: "Kini sila kay mga pamilya nga isda.",
-      englishText: "These are fish families.",
+      bisayaText: "Ang GAMAY nga isda kay padulong sa GAMAY nga mama nga isda.",
+      englishText: "SMALL fishes go to SMALL mother fish.",
     },
     {
-      bisayaText: "Naa silay kaparehas nga grupo.",
-      englishText: "They belong with others like them.",
-    },
-    {
-      bisayaText: "Tan-awa kung unsa sila molihok ug unsa ilang dagway.",
-      englishText: "Look at how they move and act.",
+      bisayaText: "Ang DAKO nga isda kay padulong sa DAKO nga mama nga isda.",
+      englishText: "BIG fishes go to BIG mother fish.",
     },
     {
       bisayaText: "I-drag sila padulong sa ilang mama nga isda.",
@@ -254,43 +213,10 @@ export const FISH_FAMILIES_DATA = {
     },
   ],
 
-  // Post-completion lesson — synonyms
-  synonymDialogue: [
+  completionDialogue: [
     {
       bisayaText: "Maayo kaayo!",
       englishText: "Good job!",
-    },
-    {
-      bisayaText: "Bisan lahi-lahi gamay ang ilang dagway…",
-      englishText: "These fish may look a little different…",
-    },
-    {
-      bisayaText: "Parehas ra sila.",
-      englishText: "But they are the same kind.",
-    },
-    {
-      bisayaText: "Sama sa mga pulong nga parehas ug kahulugan. Mao ni ang synonyms.",
-      englishText: "Like words that mean the same. These are synonyms.",
-    },
-  ],
-
-  // Post-completion lesson — antonyms (contrast both groups)
-  antonymDialogue: [
-    {
-      bisayaText: "Tan-awa ang duha ka grupo.",
-      englishText: "Now look at both sides.",
-    },
-    {
-      bisayaText: "Ang dako ug gamay lahi kaayo.",
-      englishText: "Big and small are very different.",
-    },
-    {
-      bisayaText: "Magkasukwahi sila.",
-      englishText: "They are opposites.",
-    },
-    {
-      bisayaText: "Mao ni ang antonyms.",
-      englishText: "These are antonyms.",
     },
   ],
 
@@ -345,65 +271,14 @@ export const FROG_PATH_DATA = {
       englishText: "This frog wants to cross the pond.",
     },
     {
-      bisayaText: "Tabangi siya mulukso sa luwas nga dahon.",
-      englishText: "Help it jump on safe lily pads.",
-    },
-    {
-      bisayaText: "Tan-awa pag-ayo. Ang uban halos parehas.",
-      englishText: "Look carefully. Some pads are almost the same.",
-    },
-    {
-      bisayaText: "Ang uban lahi kaayo.",
-      englishText: "Some are too different.",
+      bisayaText: "Tabangi siya mulukso sa LUWAS nga dahon. Dili sa mga dahon nga delikado.",
+      englishText: "Help it jump on SAFE lily pads. Not on the dangerous ones.",
     },
   ],
   completionDialogue: [
-    { bisayaText: "Nakaabut na ang baki! Salamat sa imong tabang!", englishText: "The frog made it across! Thanks for your help!" },
-    { bisayaText: "Ang mga dahon nga halos parehas — synonyms ang ilang pulong!", englishText: "Pads that look almost alike — their words are synonyms!" },
-    { bisayaText: "Ang mga dahon nga lahi kaayo — antonyms ang ilang pulong!", englishText: "Pads that are very different — those words are antonyms!" },
-  ],
-
-  // Post-completion synonym lesson
-  synonymDialogue: [
     {
-      bisayaText: "Maayo kaayo.",
-      englishText: "Good job.",
-    },
-    {
-      bisayaText: "Lahi gamay ang mga dahon…",
-      englishText: "These pads look a little different…",
-    },
-    {
-      bisayaText: "Pero halos parehas sila.",
-      englishText: "But they are almost the same.",
-    },
-    {
-      bisayaText: "Sama sa mga pulong nga parehas ug kahulugan.",
-      englishText: "Like words that mean the same.",
-    },
-    {
-      bisayaText: "Mao ni ang synonyms.",
-      englishText: "These are synonyms.",
-    },
-  ],
-
-  // Post-synonym antonym lesson (4 lines)
-  antonymDialogue: [
-    {
-      bisayaText: "Apan kini lahi kaayo.",
-      englishText: "But this one is very different.",
-    },
-    {
-      bisayaText: "Dili siya parehas sa uban.",
-      englishText: "It is not like the others.",
-    },
-    {
-      bisayaText: "Magkasukwahi kini.",
-      englishText: "This is an opposite.",
-    },
-    {
-      bisayaText: "Mao ni ang antonyms.",
-      englishText: "These are antonyms.",
+      bisayaText: "Nakaabut na ang baki! Salamat sa imong tabang!",
+      englishText: "The frog made it across! Thanks for your help!"
     },
   ],
 
@@ -489,32 +364,9 @@ export const TURTLE_SHELL_DATA = {
       bisayaText: "Tabangi siya pinaagi sa pagpili sa sakto nga mga piraso.",
       englishText: "Help fix it by choosing the right pieces.",
     },
-    {
-      bisayaText: "Tan-awa pag-ayo. Ang uban parehas… ang uban lahi kaayo.",
-      englishText: "Look carefully. Some pieces are similar… some are very different.",
-    },
   ],
   completionDialogue: [
     { bisayaText: "Nataod na ang kabhang! Salamat kaayo!", englishText: "The shell is fixed! Thank you!" },
-    { bisayaText: "Ang mga piraso nga parehas ug dagway — synonyms sila!", englishText: "Pieces that look alike — they are synonyms!" },
-    { bisayaText: "Ang mga piraso nga lahi kaayo — antonyms sila!", englishText: "Pieces that are very different — those are antonyms!" },
-  ],
-
-  // Post-completion synonym lesson (5 lines)
-  synonymDialogue: [
-    { bisayaText: "Maayo kaayo.", englishText: "Good job." },
-    { bisayaText: "Lahi-lahi gamay ang mga kabhang…", englishText: "These shells look a little different…" },
-    { bisayaText: "Pero sakto gihapon sila magkuyog.", englishText: "But they still belong together." },
-    { bisayaText: "Sama sa mga pulong nga parehas ug kahulugan.", englishText: "Like words that mean the same." },
-    { bisayaText: "Mao ni ang synonyms.", englishText: "These are synonyms." },
-  ],
-
-  // Antonym lesson (4 lines)
-  antonymDialogue: [
-    { bisayaText: "Kini nga piraso lahi kaayo.", englishText: "This piece is very different." },
-    { bisayaText: "Dili siya angay dinhi.", englishText: "It does not belong here." },
-    { bisayaText: "Magkasukwahi siya.", englishText: "It is the opposite." },
-    { bisayaText: "Mao ni ang antonyms.", englishText: "These are antonyms." },
   ],
 
   // 10 shell pieces: 5 correct (synonym-concept), 3 neutral-wrong, 2 opposite-wrong
