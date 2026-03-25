@@ -32,10 +32,11 @@ const CastleTransitionModal = ({
             {/* Proceed to next scene (only shown when available) */}
             {onNextScene && nextSceneName && (
               <button
-                className="house-door-btn"
-                style={{ background: "#e8f5e9", borderColor: "#2e7d32" }}
+                className="house-door-btn house-door-btn--highlight"
+                style={{ position: 'relative' }}
                 onClick={onNextScene}
               >
+                <div className="house-door-btn-badge">Next</div>
                 <span className="house-door-btn-icon">🚪</span>
                 <div className="house-door-btn-name" style={{ color: "#2e7d32" }}>
                   {nextSceneName}

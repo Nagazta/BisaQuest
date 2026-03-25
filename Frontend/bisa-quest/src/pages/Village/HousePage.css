@@ -533,6 +533,42 @@
   background: #c8f5e0;
 }
 
+.house-door-btn--highlight {
+  background: #f1fbf1 !important;
+  border-color: #2e7d32 !important;
+  box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.4);
+  animation: next-stage-pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
+  transform: scale(1);
+}
+
+@keyframes next-stage-pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.4); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(46, 125, 50, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); }
+}
+
+.house-door-btn-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #2e7d32;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  z-index: 10;
+  border: 2px solid #fff;
+  animation: badge-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes badge-pop {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+
 .house-door-btn-icon {
   font-size: 40px;
   line-height: 1;
