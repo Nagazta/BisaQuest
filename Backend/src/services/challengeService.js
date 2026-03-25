@@ -151,19 +151,31 @@ class ChallengeService {
     if (npcErr) throw npcErr;
     const environmentName = npc.environment_name;
 
-    // Only count NPCs that have at least one quest with challenge items
-    const { data: allEnvNPCs } = await supabase.from('npcs').select('npc_id').eq('environment_name', environmentName);
-    const allEnvNpcIds = allEnvNPCs?.map(n => n.npc_id) || [];
-    const { data: questsWithItems } = await supabase
-      .from('quests')
-      .select('npc_id, challenge_items(item_id)')
-      .in('npc_id', allEnvNpcIds);
-    const activeNpcIds = [...new Set(
-      (questsWithItems || [])
-        .filter(q => q.challenge_items && q.challenge_items.length > 0)
-        .map(q => q.npc_id)
-    )];
-    const { data: envNPCs } = await supabase.from('npcs').select('npc_id').eq('environment_name', environmentName).in('npc_id', activeNpcIds);
+    let envNPCs;
+    if (environmentName === 'forest') {
+      // ── SPECIAL CASE: Forest only requires Lunti (1) and Diwata (3) ──────
+      const { data } = await supabase.from('npcs')
+        .select('npc_id')
+        .eq('environment_name', 'forest')
+        .in('npc_id', ['forest_npc_1', 'forest_npc_3']);
+      envNPCs = data;
+    } else {
+      // Default: Only count NPCs that have at least one quest with challenge items
+      const { data: allEnvNPCs } = await supabase.from('npcs').select('npc_id').eq('environment_name', environmentName);
+      const allEnvNpcIds = allEnvNPCs?.map(n => n.npc_id) || [];
+      const { data: questsWithItems } = await supabase
+        .from('quests')
+        .select('npc_id, challenge_items(item_id)')
+        .in('npc_id', allEnvNpcIds);
+      const activeNpcIds = [...new Set(
+        (questsWithItems || [])
+          .filter(q => q.challenge_items && q.challenge_items.length > 0)
+          .map(q => q.npc_id)
+      )];
+      const { data: filtered } = await supabase.from('npcs').select('npc_id').eq('environment_name', environmentName).in('npc_id', activeNpcIds);
+      envNPCs = filtered;
+    }
+
     const totalNPCs = envNPCs?.length || 1;
     const envNpcIds = envNPCs?.map(n => n.npc_id) || [];
     const { data: doneNPCs } = await supabase.from('player_npc_progress')

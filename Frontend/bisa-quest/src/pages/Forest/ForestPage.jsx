@@ -23,7 +23,6 @@ import "./ForestPage.css";
 
 const FOREST_NPCS = [
     { npcId: "forest_npc_1", name: "Lunti", x: 25, y: 35, character: AssetManifest.forest.npcs.forest_guardian, showName: true, quest: "synonym_antonym" },
-    // { npcId: "forest_npc_2", name: "Ronaldo", x: 72, y: 35, character: AssetManifest.forest.npcs.wandering_bard, showName: true, quest: "synonym_antonym" }, // TODO: no quests yet
     { npcId: "forest_npc_3", name: "Diwata", x: 45, y: 45, character: AssetManifest.forest.npcs.diwata, showName: true, quest: "synonym_antonym" },
 ];
 
@@ -78,30 +77,27 @@ document.removeEventListener("keydown", onInteract);
 
     // ── Load forest progress (localStorage, mirrors VillagePage) ──────────────
     const loadForestProgress = async () => {
+        let apiPct = 0;
         try {
             const res = await fetch(`${API}/api/forest/${playerId}`);
             const result = await res.json();
             if (result.success) {
-                const pct = result.data.forest_progress || 0;
-                setForestProgress(pct);
-                if (pct >= 100 && !isCompleteDismissed("forest")) {
-                    const words = getLearnedWords("forest");
-                    setLearnedWords(words);
-                    setShowCompleteModal(true);
-                }
-                return;
+                apiPct = result.data.forest_progress || 0;
             }
         } catch (err) {
-            console.error("[ForestPage] Failed to load progress from API, falling back to localStorage:", err);
+            console.error("[ForestPage] API error, falling back to local storage:", err);
+            apiPct = getProgress().forest_progress || 0;
         }
 
-        // Fallback to localStorage
-        const progress = getProgress();
-        const pct = progress.forest_progress || 0;
+        // Book-based progress: 3 books = 100%
         const forestPages = getLibroPageCountForEnv("forest");
-        const effectivePct = Math.max(pct, Math.min(Math.round((forestPages / 3) * 100), 100));
-        setForestProgress(effectivePct);
-        if (effectivePct >= 100 && !isCompleteDismissed("forest")) {
+        const bookPct = Math.min(Math.round((forestPages / 3) * 100), 100);
+
+        // Always show the higher of the two
+        const finalPct = Math.max(apiPct, bookPct);
+        setForestProgress(finalPct);
+
+        if (finalPct >= 100 && !isCompleteDismissed("forest")) {
             const words = getLearnedWords("forest");
             setLearnedWords(words);
             setShowCompleteModal(true);

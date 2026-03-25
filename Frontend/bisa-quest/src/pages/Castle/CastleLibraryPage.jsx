@@ -123,18 +123,19 @@ const CastleLibraryPage = () => {
 
     const word = `${region.labelBisaya} (${region.labelEnglish})`;
     const passed = next.size >= REQUIRED_QUESTS;
-    await saveNPCProgress("castle", SAVE_NPC_ID, next.size, passed, 3, [word]);
+
+    // Start background tasks
+    const progressPromise = saveNPCProgress("castle", SAVE_NPC_ID, next.size, passed, 3, [word]);
 
     if (playerId && location.state?.questId) {
-      try {
-        await submitChallenge(playerId, location.state.questId, NPC_ID, next.size, REQUIRED_QUESTS, passed);
-      } catch (err) {
-        console.error("[CastleLibraryPage] submitChallenge failed:", err);
-      }
+      submitChallenge(playerId, location.state.questId, NPC_ID, next.size, REQUIRED_QUESTS, passed)
+        .catch(err => console.error("[CastleLibraryPage] submitChallenge failed:", err));
     }
 
     if (next.size >= REQUIRED_QUESTS && !progressSaved) {
       setProgressSaved(true);
+
+      await progressPromise;
 
       const isNewPage = awardLibroPage("castle", "castle_library");
       if (isNewPage) {

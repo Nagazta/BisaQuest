@@ -123,16 +123,14 @@ const HousePage = () => {
 
     const word = `${region.labelBisaya} (${region.labelEnglish})`;
     const passed = next.size >= 3;
-    await saveNPCProgress("village", "village_house", next.size, passed, 3, [word]);
+    
+    // Start background tasks
+    saveNPCProgress("village", "village_house", next.size, passed, 3, [word]);
 
-    // Submit to Supabase via challengeService
-    console.log("[HousePage] submitChallenge params:", { playerId, questId: location.state?.questId, npcId, score: next.size, passed });
+    // Submit to Supabase via challengeService in the background
     if (playerId && location.state?.questId) {
-        try {
-            await submitChallenge(playerId, location.state.questId, npcId, next.size, 3, passed);
-        } catch (err) {
-            console.error("[HousePage] submitChallenge failed:", err);
-        }
+        submitChallenge(playerId, location.state.questId, npcId, next.size, 3, passed)
+            .catch(err => console.error("[HousePage] submitChallenge failed:", err));
     }
 
     if (next.size >= 3) {

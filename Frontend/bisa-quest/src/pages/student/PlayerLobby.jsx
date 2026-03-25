@@ -68,40 +68,51 @@ const PlayerLobby = () => {
 
         const API = import.meta.env.VITE_API_URL || '';
 
+        let villageApiPct = 0;
+        let forestApiPct = 0;
+        let castleApiPct = 0;
+
         try {
             const [villageRes, forestRes, castleRes] = await Promise.all([
-                fetch(`${API}/api/village/${playerId}`),
+                fetch(`${API}/api/village/${playerId}`).catch(() => null),
                 fetch(`${API}/api/forest/${playerId}`).catch(() => null),
                 fetch(`${API}/api/castle/${playerId}`).catch(() => null),
             ]);
 
-            const village = villageRes.ok ? await villageRes.json() : null;
-            const forest  = forestRes?.ok  ? await forestRes.json()  : null;
-            const castle  = castleRes?.ok  ? await castleRes.json()  : null;
-
-            setModuleProgress({
-                1: village?.data?.village_progress || 0,
-                2: forest?.data?.forest_progress   || 0,
-                3: castle?.data?.castle_progress   || 0,
-            });
-            return;
+            if (villageRes?.ok) {
+                const villageData = await villageRes.json();
+                villageApiPct = villageData?.data?.village_progress || 0;
+            }
+            if (forestRes?.ok) {
+                const forestData = await forestRes.json();
+                forestApiPct = forestData?.data?.forest_progress || 0;
+            }
+            if (castleRes?.ok) {
+                const castleData = await castleRes.json();
+                castleApiPct = castleData?.data?.castle_progress || 0;
+            }
         } catch (err) {
-            console.error("[PlayerLobby] Failed to load progress from API, falling back to localStorage:", err);
+            console.error("[PlayerLobby] Failed to load progress from API:", err);
+            const progress = getProgress();
+            villageApiPct = progress.village_progress || 0;
+            forestApiPct = progress.forest_progress || 0;
+            castleApiPct = progress.castle_progress || 0;
         }
 
-        // Fallback to localStorage
-        const progress = getProgress();
-        const forestNpcPct = progress.forest_progress || 0;
+        // Calculate book-based progress (3 books per env = 100%)
+        const villagePages = getLibroPageCountForEnv("village");
+        const villageBookPct = Math.min(Math.round((villagePages / 3) * 100), 100);
+
         const forestPages = getLibroPageCountForEnv("forest");
-        const forestPct = Math.max(forestNpcPct, Math.min(Math.round((forestPages / 3) * 100), 100));
-        const castleNpcPct = progress.castle_progress || 0;
+        const forestBookPct = Math.min(Math.round((forestPages / 3) * 100), 100);
+
         const castlePages = getLibroPageCountForEnv("castle");
-        const castlePct = Math.max(castleNpcPct, Math.min(Math.round((castlePages / 3) * 100), 100));
+        const castleBookPct = Math.min(Math.round((castlePages / 3) * 100), 100);
 
         setModuleProgress({
-            1: progress.village_progress || 0,
-            2: forestPct,
-            3: castlePct,
+            1: Math.max(villageApiPct, villageBookPct),
+            2: Math.max(forestApiPct, forestBookPct),
+            3: Math.max(castleApiPct, castleBookPct),
         });
     };
 
