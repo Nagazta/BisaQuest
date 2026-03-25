@@ -62,7 +62,7 @@ const CastleApplyModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div className="iqm-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="iqm-modal iqm-modal--scene">
+      <div className="iqm-modal iqm-modal--scene iqm-modal--castle">
 
         {/* Close */}
         <button className="iqm-close" onClick={onClose} aria-label="Close">✕</button>

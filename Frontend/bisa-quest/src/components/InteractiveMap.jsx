@@ -33,8 +33,8 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
       name: "Village",
       title: "Vocabulary Quest",
       polygon: [
-        { x: 36, y: 55 }, { x: 65, y: 55 },
-        { x: 65, y: 85 }, { x: 36, y: 85 }
+        { x: 38, y: 50 }, { x: 63, y: 50 },
+        { x: 63, y: 80 }, { x: 38, y: 80 }
       ],
       center: { x: 27.5, y: 85 }
     },
@@ -43,8 +43,8 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
       name: "Forest",
       title: "Synonyms & Antonyms Quest",
       polygon: [
-        { x: 70, y: 29 }, { x: 70, y: 50 },
-        { x: 45, y: 50 }, { x: 45, y: 29 }
+        { x: 70, y: 20 }, { x: 70, y: 45 },
+        { x: 45, y: 45 }, { x: 45, y: 20 }
       ],
       center: { x: 77.5, y: 72.5 }
     },
@@ -53,8 +53,8 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
       name: "Castle",
       title: "Compound Quest",
       polygon: [
-        { x: 38, y: 7 }, { x: 38, y: 29 },
-        { x: 20, y: 29 }, { x: 20, y: 7 }
+        { x: 40, y:  7 }, { x: 40, y: 29 },
+        { x: 25, y: 29 }, { x: 25, y:  7 }
       ],
       center: { x: 25, y: 25 }
     },
@@ -197,7 +197,7 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
             ))}
           </div>
         </div>
-      )}
+      )} */}
 
       <div
         ref={mapRef}
