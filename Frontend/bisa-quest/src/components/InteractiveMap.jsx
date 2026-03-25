@@ -53,8 +53,8 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
       name: "Castle",
       title: "Compound Quest",
       polygon: [
-        { x: 40, y:  7 }, { x: 40, y: 29 },
-        { x: 25, y: 29 }, { x: 25, y:  7 }
+        { x: 40, y: 7 }, { x: 40, y: 29 },
+        { x: 25, y: 29 }, { x: 25, y: 7 }
       ],
       center: { x: 25, y: 25 }
     },
@@ -197,7 +197,7 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
             ))}
           </div>
         </div>
-      )} */}
+      )}
 
       <div
         ref={mapRef}

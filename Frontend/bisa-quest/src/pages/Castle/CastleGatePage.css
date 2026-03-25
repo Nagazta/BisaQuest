@@ -461,3 +461,12 @@
     opacity: 1;
   }
 }
+
+.croom-proceed-wrap {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  animation: croom-bounce-hint 2s infinite ease-in-out;
+}
