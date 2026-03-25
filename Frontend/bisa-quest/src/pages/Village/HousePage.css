@@ -351,8 +351,10 @@
   inset: 0;
   background: rgba(0, 0, 0, 0.7);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 20px;
   z-index: 100;
   backdrop-filter: blur(4px);
 }
@@ -430,6 +432,7 @@
 }
 
 .house-door-btn {
+  position: relative;
   background: #fcd765;
   border: 3px solid #3a2010;
   border-radius: 12px;
@@ -471,6 +474,47 @@
   grid-column: 1 / -1;
 }
 
+.house-door-note {
+  font-family: 'Pixelify Sans', sans-serif;
+  font-size: 14px;
+  color: #7a4a20;
+  margin: 15px 0;
+  line-height: 1.5;
+  background: rgba(58, 32, 16, 0.05);
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px dashed rgba(58, 32, 16, 0.2);
+}
+
+.house-door-note--outside {
+  font-size: 19px;
+  max-width: 1080px;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 15px 25px;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  margin: 0;
+  animation: house-door-note-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes house-door-note-pop {
+  0% { 
+    transform: scale(0.85) translateY(20px); 
+    opacity: 0; 
+  }
+  100% { 
+    transform: scale(1) translateY(0); 
+    opacity: 1; 
+  }
+}
+
+.house-door-note--outside b {
+  color: #fcd765;
+  text-decoration: none;
+  font-weight: 800;
+}
+
 .house-door-btn-sub {
   font-family: 'Pixelify Sans', sans-serif;
   font-size: 14px;
@@ -507,4 +551,44 @@
   width: 100%;
   font-weight: bold;
   transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.house-door-btn-complete {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #22c55e;
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 2px solid #1b4332;
+  box-shadow: 0 3px 0 #1b4332;
+  font-family: 'Pixelify Sans', sans-serif;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  text-transform: uppercase;
+  animation: house-door-complete-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes house-door-complete-pop {
+  0% {
+    transform: scale(0);
+  }
+
+  70% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.house-door-btn--complete {
+  border-color: #22c55e !important;
+  background: #e1f7e9 !important;
 }

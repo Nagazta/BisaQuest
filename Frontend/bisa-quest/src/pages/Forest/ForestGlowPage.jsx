@@ -120,14 +120,13 @@ const ForestGlowPage = () => {
 
     const word = `${region.labelBisaya} (${region.labelEnglish})`;
     const passed = next.size >= 3;
-    await saveNPCProgress("forest", npcId, next.size, passed, 3, [word]);
+
+    // Start background tasks
+    const progressPromise = saveNPCProgress("forest", npcId, next.size, passed, 2, [word]);
 
     if (playerId && location.state?.questId) {
-      try {
-        await submitChallenge(playerId, location.state.questId, npcId, next.size, 3, passed);
-      } catch (err) {
-        console.error("[ForestGlowPage] submitChallenge failed:", err);
-      }
+      submitChallenge(playerId, location.state.questId, npcId, next.size, 3, passed)
+        .catch(err => console.error("[ForestGlowPage] submitChallenge failed:", err));
     }
 
     if (next.size >= 3 && !progressSaved) {

@@ -8,6 +8,9 @@ const VillageTransitionModal = ({ isOpen, currentRoom, onClose, onProceedToFores
     
     if (!isOpen) return null;
 
+    const isBedroomComplete = hasLibroPage('village', 'village_bedroom');
+    const isKitchenComplete = hasLibroPage('village', 'village_kitchen');
+    const isHouseComplete = hasLibroPage('village', 'village_house');
     const allCompleted = getLibroPageCountForEnv('village') >= 3;
 
     return (
@@ -23,8 +26,9 @@ const VillageTransitionModal = ({ isOpen, currentRoom, onClose, onProceedToFores
               <div className="house-door-grid">
 
                 {currentRoom !== 'bedroom' && (
-                  <button className="house-door-btn"
+                  <button className={`house-door-btn ${isBedroomComplete ? "house-door-btn--complete" : ""}`}
                     onClick={() => navigate("/student/bedroom", { state: { returnTo: location.pathname } })}>
+                    {isBedroomComplete && <div className="house-door-btn-complete">✓ Complete</div>}
                     <span className="house-door-btn-icon">🛏️</span>
                     <div className="house-door-btn-name">Kwarto</div>
                     <div className="house-door-btn-sub">Adto sa Bedroom!</div>
@@ -32,8 +36,9 @@ const VillageTransitionModal = ({ isOpen, currentRoom, onClose, onProceedToFores
                 )}
 
                 {currentRoom !== 'kitchen' && (
-                  <button className="house-door-btn"
+                  <button className={`house-door-btn ${isKitchenComplete ? "house-door-btn--complete" : ""}`}
                     onClick={() => navigate("/student/kitchen", { state: { returnTo: location.pathname } })}>
+                    {isKitchenComplete && <div className="house-door-btn-complete">✓ Complete</div>}
                     <span className="house-door-btn-icon">🍳</span>
                     <div className="house-door-btn-name">Kusina</div>
                     <div className="house-door-btn-sub">Adto sa Kitchen!</div>
@@ -41,8 +46,9 @@ const VillageTransitionModal = ({ isOpen, currentRoom, onClose, onProceedToFores
                 )}
 
                 {currentRoom !== 'house' && (
-                  <button className="house-door-btn"
+                  <button className={`house-door-btn ${isHouseComplete ? "house-door-btn--complete" : ""}`}
                     onClick={() => navigate("/student/house", { state: { returnTo: location.pathname } })}>
+                    {isHouseComplete && <div className="house-door-btn-complete">✓ Complete</div>}
                     <span className="house-door-btn-icon">🛋️</span>
                     <div className="house-door-btn-name">Sala</div>
                     <div className="house-door-btn-sub">Adto sa Living Room!</div>
@@ -67,6 +73,13 @@ const VillageTransitionModal = ({ isOpen, currentRoom, onClose, onProceedToFores
               </button>
             </div>
           </div>
+
+          {allCompleted && (
+            <div className="house-door-note house-door-note--outside">
+              If you want to proceed to the next stage enter <b>forest</b> <br/>
+              or if you want to explore more on the house click <b>Stay here / Dili muna</b>
+            </div>
+          )}
         </div>
     );
 };

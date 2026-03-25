@@ -117,31 +117,13 @@ document.removeEventListener("keydown", onInteract);
     // ── Init ──────────────────────────────────────────────────────────────────
     useEffect(() => { initializeCastle(); }, [refreshKey]);
 
-    const loadCastleProgress = async () => {
-        try {
-            const res = await fetch(`${API}/api/castle/${playerId}`);
-            const result = await res.json();
-            if (result.success) {
-                const pct = result.data.castle_progress || 0;
-                setCastleProgress(pct);
-                if (pct >= 100 && !isCompleteDismissed("castle")) {
-                    const words = getLearnedWords("castle");
-                    setLearnedWords(words);
-                    setShowCompleteModal(true);
-                }
-                return;
-            }
-        } catch (err) {
-            console.error("[CastlePage] Failed to load progress from API, falling back to localStorage:", err);
-        }
-
-        // Fallback to localStorage
-        const progress = getProgress();
-        const pct = progress.castle_progress || 0;
+    const loadCastleProgress = () => {
         const castlePages = getLibroPageCountForEnv("castle");
-        const effectivePct = Math.max(pct, Math.min(Math.round((castlePages / 3) * 100), 100));
-        setCastleProgress(effectivePct);
-        if (effectivePct >= 100 && !isCompleteDismissed("castle")) {
+        const finalPct = Math.min(Math.round((castlePages / 3) * 100), 100);
+        
+        setCastleProgress(finalPct);
+
+        if (finalPct >= 100 && !isCompleteDismissed("castle")) {
             const words = getLearnedWords("castle");
             setLearnedWords(words);
             setShowCompleteModal(true);

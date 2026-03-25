@@ -107,7 +107,7 @@ const EnvironmentPage = ({
 
     // ── Keyboard controls ─────────────────────────────────────────────────────
     useEffect(() => {
-       const handleKeyDown = (e) => {
+        const handleKeyDown = (e) => {
             const key = e.key.toLowerCase();
             const arrowKeys = ["arrowup", "arrowdown", "arrowleft", "arrowright"];
             if (["w", "a", "s", "d"].includes(key) || arrowKeys.includes(key)) {
@@ -138,7 +138,7 @@ const EnvironmentPage = ({
                 if (keysPressed["s"] || keysPressed["ArrowDown"]) newY = prev.y + moveSpeed;
                 if (keysPressed["a"] || keysPressed["ArrowLeft"]) newX = prev.x - moveSpeed;
                 if (keysPressed["d"] || keysPressed["ArrowRight"]) newX = prev.x + moveSpeed;
-                
+
                 if (onEdgeWalk && newX > 98) {
                     onEdgeWalk('right');
                 }
@@ -215,7 +215,7 @@ const EnvironmentPage = ({
                 />
             )}
 
-           <div className="controls-hint">Use W, A, S, D or Arrow Keys to move • Press E to interact with NPCs</div>
+            <div className="controls-hint">Use W, A, S, D or Arrow Keys to move • Press E to interact with NPCs</div>
 
             {debugMode && (
                 <CollisionDebugger collisionZones={collisionConfig.zones} playerPosition={playerPosition} environmentType={environmentType} />

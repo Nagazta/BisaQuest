@@ -119,14 +119,13 @@ const ForestPondPage = () => {
 
     const word = `${region.labelBisaya} (${region.labelEnglish})`;
     const passed = next.size >= 6;
-    await saveNPCProgress("forest", npcId, next.size, passed, 6, [word]);
+    
+    // Start background tasks
+    const progressPromise = saveNPCProgress("forest", npcId, next.size, passed, 2, [word]);
 
     if (playerId && location.state?.questId) {
-      try {
-        await submitChallenge(playerId, location.state.questId, npcId, next.size, 6, passed);
-      } catch (err) {
-        console.error("[ForestPondPage] submitChallenge failed:", err);
-      }
+      submitChallenge(playerId, location.state.questId, npcId, next.size, 6, passed)
+        .catch(err => console.error("[ForestPondPage] submitChallenge failed:", err));
     }
 
     const milestone = MILESTONES[milestonesAwarded];
