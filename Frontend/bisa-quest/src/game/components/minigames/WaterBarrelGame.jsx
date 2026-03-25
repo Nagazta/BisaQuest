@@ -123,15 +123,15 @@ const WaterBarrelGame = ({ quest, npcName, npcImage, onComplete, onClose, item }
     // Adjust instructions based on mode
     const getInstructionText = () => {
         if (stage === "success") return {
-            bisayaText: mode === "FILL" ? "Puno na ang drumin! Maayo!" : "Bawas na ang tubig! Nahuman na!",
+            bisayaText: mode === "FILL" ? "Puno na ang baril! Maayo!" : "Bawas na ang tubig! Nahuman na!",
             englishText: mode === "FILL" ? "The barrel is full! Great job!" : "Water is out! All done!",
         };
         if (mode === "FILL") return {
-            bisayaText: "Punoa ang drumin og tubig gamit ang timba!",
+            bisayaText: "Punoa ang baril og tubig gamit ang timba!",
             englishText: "Fill the barrel with water using the bucket!",
         };
         return {
-            bisayaText: "Kuhaa ang tubig sa drumin gamit ang timba!",
+            bisayaText: "Kuhaa ang tubig sa baril gamit ang timba!",
             englishText: "Get the water out of the barrel using the bucket!",
         };
     };

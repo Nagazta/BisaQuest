@@ -69,8 +69,8 @@ export const BEDROOM_LABELS = [
     id: "bentilador_bedroom",
     labelBisaya: "Bentilador",
     labelEnglish: "Electric Fan",
-    descriptionBisaya: "Gamit pampabugnaw kung puwerte kainit.",
-    descriptionEnglish: "Used to cool down when it's very hot.",
+    descriptionBisaya: "Gamit kini sa pampabugnaw sa palibot kung puwerte na kainit.",
+    descriptionEnglish: "Used to cool down the area when it's very hot.",
     imageKey: "Bentilador",
     x: 16, y: 50, w: 10, h: 20,
   },
@@ -101,16 +101,21 @@ export const INTRO_DIALOGUE = [
   },
   {
     speaker: "Ligaya",
-    bisayaText: "Dire mi mupahulay og matulog. I-click ang pultahan para mubalik sa sala.",
-    englishText: "This is where we rest and sleep. Click the door to go back to the living room.",
+    bisayaText: "Dire ko mag-ilis og sanina, mupahulay, og matulog.",
+    englishText: "This is where I change my clothes, rest, and sleep.",
+  },
+  {
+    speaker: "Ligaya",
+    bisayaText: "I-click ang arrow para sa mini-games. Para mubalik sa sala, i-click ang purtahan.",
+    englishText: "Click the arrow and proceed to the mini-games. Click the door to go back to the living room.",
   }
 ];
 
 export const buildDialogue = (region) => [
   {
     speaker: "Ligaya",
-    bisayaText: `Kini ang "${region.labelBisaya}"!`,
-    englishText: `This is the "${region.labelEnglish}"!`,
+    bisayaText: `Kini ang ${region.labelBisaya}!`,
+    englishText: `This is the ${region.labelEnglish}!`,
   },
   {
     speaker: "Ligaya",
