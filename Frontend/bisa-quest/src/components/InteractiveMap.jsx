@@ -12,19 +12,19 @@ const QUEST_ENV = {
 };
 
 const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false }) => {
-  const [hoveredQuest,    setHoveredQuest]    = useState(null);
+  const [hoveredQuest, setHoveredQuest] = useState(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const mapRef = useRef(null);
 
   // Debug mode state
-  const [debugMode,     setDebugMode]     = useState(false);
+  const [debugMode, setDebugMode] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   // Pan/Drag state
-  const [isPanning,    setIsPanning]    = useState(false);
-  const [startPan,     setStartPan]     = useState({ x: 0, y: 0 });
-  const [mapPosition,  setMapPosition]  = useState({ x: 0, y: 0 });
-  const [dragStarted,  setDragStarted]  = useState(false);
+  const [isPanning, setIsPanning] = useState(false);
+  const [startPan, setStartPan] = useState({ x: 0, y: 0 });
+  const [mapPosition, setMapPosition] = useState({ x: 0, y: 0 });
+  const [dragStarted, setDragStarted] = useState(false);
 
 
   const clickableAreas = [
@@ -53,8 +53,8 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
       name: "Castle",
       title: "Compound Quest",
       polygon: [
-        { x: 38, y:  7 }, { x: 38, y: 29 },
-        { x: 20, y: 29 }, { x: 20, y:  7 }
+        { x: 38, y: 7 }, { x: 38, y: 29 },
+        { x: 20, y: 29 }, { x: 20, y: 7 }
       ],
       center: { x: 25, y: 25 }
     },
@@ -97,7 +97,7 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
       const rect = mapRef.current.getBoundingClientRect();
       setMousePosition({
         x: (((e.clientX - rect.left) / rect.width) * 100).toFixed(2),
-        y: (((e.clientY - rect.top)  / rect.height) * 100).toFixed(2),
+        y: (((e.clientY - rect.top) / rect.height) * 100).toFixed(2),
       });
     }
     if (isPanning) {
@@ -151,8 +151,8 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
   const handleMapClick = (e) => {
     if (!mapRef.current) return;
     const rect = mapRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width)  * 100;
-    const y = ((e.clientY - rect.top)  / rect.height) * 100;
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
     for (let i = clickableAreas.length - 1; i >= 0; i--) {
       if (isPointInPolygon({ x, y }, clickableAreas[i].polygon)) {
         onQuestClick(clickableAreas[i].id);
@@ -164,8 +164,8 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
   const handleMapHover = (e) => {
     if (!mapRef.current) return;
     const rect = mapRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width)  * 100;
-    const y = ((e.clientY - rect.top)  / rect.height) * 100;
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
     let found = null;
     for (let i = clickableAreas.length - 1; i >= 0; i--) {
       if (isPointInPolygon({ x, y }, clickableAreas[i].polygon)) { found = clickableAreas[i]; break; }
@@ -178,12 +178,12 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
     <div className="interactive-map-container">
 
       {/* Debug Toggle */}
-      <button
+      {/* <button
         className={`debug-toggle ${debugMode ? 'active' : ''}`}
         onClick={() => setDebugMode(!debugMode)}
       >
         {debugMode ? '✓ Debug ON' : 'Debug OFF'}
-      </button>
+      </button> */}
 
       {debugMode && (
         <div className="debug-info">
@@ -223,7 +223,7 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
           {/* Clickable area polygons */}
           <svg className="map-overlay" viewBox="0 0 100 100" preserveAspectRatio="none">
             {clickableAreas.map((area) => {
-              const locked   = isAreaLocked(area.id);
+              const locked = isAreaLocked(area.id);
               const isHovered = hoveredQuest?.id === area.id;
               return (
                 <polygon
@@ -231,11 +231,11 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
                   points={area.polygon.map(p => `${p.x},${p.y}`).join(' ')}
                   className={`map-area ${isHovered ? 'hovered' : ''} ${locked ? 'locked' : 'unlocked'}`}
                   style={{
-                    fill:        isHovered ? (locked ? 'rgba(255,80,80,0.15)' : 'rgba(255,215,0,0.15)') : 'transparent',
-                    stroke:      isHovered ? (locked ? '#ff5050'              : '#FFD700')              : 'transparent',
+                    fill: isHovered ? (locked ? 'rgba(255,80,80,0.15)' : 'rgba(255,215,0,0.15)') : 'transparent',
+                    stroke: isHovered ? (locked ? '#ff5050' : '#FFD700') : 'transparent',
                     strokeWidth: isHovered ? '0.3' : '0',
-                    cursor:      locked ? 'not-allowed' : 'pointer',
-                    transition:  'all 0.3s ease',
+                    cursor: locked ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.3s ease',
                   }}
                 />
               );
@@ -261,7 +261,7 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
                   fontSize="5"
                   style={{ pointerEvents: 'none', userSelect: 'none', filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.6))' }}
                 >
-                
+
                 </text>
               );
             })}
@@ -291,7 +291,7 @@ const InteractiveMap = ({ quests, onQuestClick, moduleProgress, devMode = false 
           style={{
             position: 'fixed',
             left: `${tooltipPosition.x + 20}px`,
-            top:  `${tooltipPosition.y - 20}px`,
+            top: `${tooltipPosition.y - 20}px`,
             pointerEvents: 'none',
             zIndex: 1000,
           }}
