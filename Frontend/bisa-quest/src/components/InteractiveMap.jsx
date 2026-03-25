@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import './InteractiveMap.css';
 import './MapDebug.css';
 import AssetManifest from "../services/AssetManifest";
-import { isEnvironmentUnlocked } from '../../src/utils/playerStorage';
+import { isEnvironmentUnlocked } from '../utils/playerStorage';
 
 // Quest ID → environment key
 const QUEST_ENV = {

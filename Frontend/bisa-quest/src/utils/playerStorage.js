@@ -44,7 +44,7 @@ export const savePreferences = (preferences) => {
  * @param {number}   npcCount     total NPCs in this environment (default 3)
  * @param {string[]} words        vocabulary words learned in this quest
  */
-export const saveNPCProgress = (environment, npcId, score, passed, npcCount = 3, words = []) => {
+export const saveNPCProgress = async (environment, npcId, score, passed, npcCount = 3, words = []) => {
     const progress = getProgress();
     const npcKey = `${environment}_npcs`;
     const prev = progress[npcKey]?.[npcId] || {
@@ -76,6 +76,25 @@ export const saveNPCProgress = (environment, npcId, score, passed, npcCount = 3,
         const NEXT = { village: 'forest', forest: 'castle' };
         const next = NEXT[environment];
         if (next) saveEnvironmentUnlock(next);
+    }
+
+    // Sync to Supabase via backend
+    const playerId = getPlayerId();
+    if (playerId) {
+        const API = import.meta.env.VITE_API_URL || '';
+        const envMap = { village: 'village', forest: 'forest', castle: 'castle' };
+        const endpoint = envMap[environment];
+        if (endpoint) {
+            try {
+                await fetch(`${API}/api/${endpoint}/${playerId}/progress`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ completion_percentage: pct }),
+                });
+            } catch (err) {
+                console.error(`[playerStorage] Failed to sync ${environment} progress:`, err);
+            }
+        }
     }
 };
 

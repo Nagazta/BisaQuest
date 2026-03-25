@@ -56,6 +56,17 @@ export const getProgress = async (playerId) => {
     return result.data;
 };
 
+export const submitChallenge = async (playerId, questId, npcId, score, maxScore, passed) => {
+    const response = await fetch(`${BASE_URL}/api/challenge/quest/submit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ playerId, questId, npcId, score, maxScore, passed })
+    });
+    const result = await response.json();
+    if (!result.success) throw new Error(result.error || 'Failed to submit challenge');
+    return result.data;
+};
+
 export const resetProgress = async (playerId) => {
     const response = await fetch(`${BASE_URL}/api/player/${playerId}/reset`, {
         method: 'DELETE'

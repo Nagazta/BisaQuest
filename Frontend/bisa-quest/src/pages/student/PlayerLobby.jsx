@@ -62,12 +62,38 @@ const PlayerLobby = () => {
         if (player?.player_id) fetchModuleProgress();
     }, [player]);
 
-    const fetchModuleProgress = () => {
+    const fetchModuleProgress = async () => {
+        const playerId = getPlayerId();
+        if (!playerId) return;
+
+        const API = import.meta.env.VITE_API_URL || '';
+
+        try {
+            const [villageRes, forestRes, castleRes] = await Promise.all([
+                fetch(`${API}/api/village/${playerId}`),
+                fetch(`${API}/api/forest/${playerId}`).catch(() => null),
+                fetch(`${API}/api/castle/${playerId}`).catch(() => null),
+            ]);
+
+            const village = villageRes.ok ? await villageRes.json() : null;
+            const forest  = forestRes?.ok  ? await forestRes.json()  : null;
+            const castle  = castleRes?.ok  ? await castleRes.json()  : null;
+
+            setModuleProgress({
+                1: village?.data?.village_progress || 0,
+                2: forest?.data?.forest_progress   || 0,
+                3: castle?.data?.castle_progress   || 0,
+            });
+            return;
+        } catch (err) {
+            console.error("[PlayerLobby] Failed to load progress from API, falling back to localStorage:", err);
+        }
+
+        // Fallback to localStorage
         const progress = getProgress();
         const forestNpcPct = progress.forest_progress || 0;
         const forestPages = getLibroPageCountForEnv("forest");
         const forestPct = Math.max(forestNpcPct, Math.min(Math.round((forestPages / 3) * 100), 100));
-
         const castleNpcPct = progress.castle_progress || 0;
         const castlePages = getLibroPageCountForEnv("castle");
         const castlePct = Math.max(castleNpcPct, Math.min(Math.round((castlePages / 3) * 100), 100));
@@ -107,7 +133,10 @@ const PlayerLobby = () => {
     // ── Quest lock logic ──────────────────────────────────────────────────────
     const isQuestUnlocked = (questId) => {
         if (devMode) return true;
-        return isEnvironmentUnlocked(QUEST_ENV[questId]);
+        if (questId === 1) return true;
+        if (questId === 2) return (moduleProgress[1] || 0) >= 100;
+        if (questId === 3) return (moduleProgress[2] || 0) >= 100;
+        return false;
     };
 
     const getLockMessage = (questId) => {

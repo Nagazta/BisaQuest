@@ -1,6 +1,3 @@
-// services/forestService.js
-// UC-2.3: Forest state + village quest unlock verification
-
 import { supabase } from '../config/supabaseClient.js';
 
 export const forestService = {
@@ -9,26 +6,26 @@ export const forestService = {
      * Check if village quest is complete and get forest progress
      */
     async getForestProgress(playerId) {
-        const { data, error } = await supabase
-            .from('players')
-            .select('player_id, progress_data')
+        const { data: rows, error } = await supabase
+            .from('player_environment_progress')
+            .select('*')
             .eq('player_id', playerId)
-            .single();
+            .in('environment_name', ['village', 'forest']);
 
         if (error) throw error;
 
-        const progress = data?.progress_data || {};
-        const villageComplete = (progress.village_progress || 0) >= 100;
+        const village = rows?.find(r => r.environment_name === 'village');
+        const forest = rows?.find(r => r.environment_name === 'forest');
+        const villageComplete = village?.is_completed || false;
 
         return {
-            player_id:       data.player_id,
-            unlocked:        villageComplete,
-            forest_progress: progress.forest_progress || 0,
-            completed:       (progress.forest_progress || 0) >= 100,
-            npc_completions: progress.forest_npcs || {},
-            // Prerequisite status
+            player_id: playerId,
+            unlocked: forest?.is_unlocked || false,
+            forest_progress: forest?.completion_percentage || 0,
+            completed: forest?.is_completed || false,
+            last_updated: forest?.last_updated || null,
             prerequisites: {
-                village: { progress: progress.village_progress || 0, completed: villageComplete },
+                village: { progress: village?.completion_percentage || 0, completed: villageComplete },
             },
         };
     },
@@ -36,27 +33,44 @@ export const forestService = {
     /**
      * Update forest progress
      */
-    async updateForestProgress(playerId, forestProgress, npcCompletions = {}) {
-        const { data: existing } = await supabase
-            .from('players')
-            .select('progress_data')
-            .eq('player_id', playerId)
-            .single();
-
-        const merged = {
-            ...(existing?.progress_data || {}),
-            forest_progress: forestProgress,
-            forest_npcs: { ...(existing?.progress_data?.forest_npcs || {}), ...npcCompletions },
-        };
+    async updateForestProgress(playerId, completionPercentage) {
+        const isCompleted = completionPercentage >= 100;
+        const now = new Date().toISOString();
 
         const { data, error } = await supabase
-            .from('players')
-            .update({ progress_data: merged })
-            .eq('player_id', playerId)
+            .from('player_environment_progress')
+            .upsert(
+                {
+                    player_id: playerId,
+                    environment_name: 'forest',
+                    completion_percentage: completionPercentage,
+                    is_completed: isCompleted,
+                    is_unlocked: true,
+                    last_updated: now,
+                },
+                { onConflict: 'player_id,environment_name' }
+            )
             .select()
             .single();
 
         if (error) throw error;
+
+        if (isCompleted) {
+            await supabase
+                .from('player_environment_progress')
+                .upsert(
+                    {
+                        player_id: playerId,
+                        environment_name: 'castle',
+                        completion_percentage: 0,
+                        is_completed: false,
+                        is_unlocked: true,
+                        last_updated: now,
+                    },
+                    { onConflict: 'player_id,environment_name' }
+                );
+        }
+
         return data;
     },
 };

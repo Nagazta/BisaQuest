@@ -1,6 +1,3 @@
-// services/castleService.js
-// UC-2.4: Castle state + village AND forest quest unlock verification
-
 import { supabase } from '../config/supabaseClient.js';
 
 export const castleService = {
@@ -9,27 +6,29 @@ export const castleService = {
      * Check if both village and forest quests are complete, get castle progress
      */
     async getCastleProgress(playerId) {
-        const { data, error } = await supabase
-            .from('players')
-            .select('player_id, progress_data')
+        const { data: rows, error } = await supabase
+            .from('player_environment_progress')
+            .select('*')
             .eq('player_id', playerId)
-            .single();
+            .in('environment_name', ['village', 'forest', 'castle']);
 
         if (error) throw error;
 
-        const progress       = data?.progress_data || {};
-        const villageComplete = (progress.village_progress || 0) >= 100;
-        const forestComplete  = (progress.forest_progress  || 0) >= 100;
+        const village = rows?.find(r => r.environment_name === 'village');
+        const forest = rows?.find(r => r.environment_name === 'forest');
+        const castle = rows?.find(r => r.environment_name === 'castle');
+        const villageComplete = village?.is_completed || false;
+        const forestComplete = forest?.is_completed || false;
 
         return {
-            player_id:       data.player_id,
-            unlocked:        villageComplete && forestComplete,
-            castle_progress: progress.castle_progress || 0,
-            completed:       (progress.castle_progress || 0) >= 100,
-            npc_completions: progress.castle_npcs || {},
+            player_id: playerId,
+            unlocked: castle?.is_unlocked || false,
+            castle_progress: castle?.completion_percentage || 0,
+            completed: castle?.is_completed || false,
+            last_updated: castle?.last_updated || null,
             prerequisites: {
-                village: { progress: progress.village_progress || 0, completed: villageComplete },
-                forest:  { progress: progress.forest_progress  || 0, completed: forestComplete  },
+                village: { progress: village?.completion_percentage || 0, completed: villageComplete },
+                forest: { progress: forest?.completion_percentage || 0, completed: forestComplete },
             },
         };
     },
@@ -37,23 +36,23 @@ export const castleService = {
     /**
      * Update castle progress
      */
-    async updateCastleProgress(playerId, castleProgress, npcCompletions = {}) {
-        const { data: existing } = await supabase
-            .from('players')
-            .select('progress_data')
-            .eq('player_id', playerId)
-            .single();
-
-        const merged = {
-            ...(existing?.progress_data || {}),
-            castle_progress: castleProgress,
-            castle_npcs: { ...(existing?.progress_data?.castle_npcs || {}), ...npcCompletions },
-        };
+    async updateCastleProgress(playerId, completionPercentage) {
+        const isCompleted = completionPercentage >= 100;
+        const now = new Date().toISOString();
 
         const { data, error } = await supabase
-            .from('players')
-            .update({ progress_data: merged })
-            .eq('player_id', playerId)
+            .from('player_environment_progress')
+            .upsert(
+                {
+                    player_id: playerId,
+                    environment_name: 'castle',
+                    completion_percentage: completionPercentage,
+                    is_completed: isCompleted,
+                    is_unlocked: true,
+                    last_updated: now,
+                },
+                { onConflict: 'player_id,environment_name' }
+            )
             .select()
             .single();
 

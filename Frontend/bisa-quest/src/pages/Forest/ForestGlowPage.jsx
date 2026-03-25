@@ -18,6 +18,7 @@ import {
   getLibroPageCountForEnv,
   getNPCWords,
 } from "../../utils/playerStorage";
+import { submitChallenge } from "../../services/playerServices";
 import BookCollectModal from "../../game/components/BookCollectModal";
 import ForestTransitionModal from "../../game/components/ForestTransitionModal";
 import "./ForestGlowPage.css";
@@ -112,33 +113,36 @@ const ForestGlowPage = () => {
 
   const COMPLETE_THRESHOLD = 3;
 
-  const handleQuestComplete = (region) => {
+  const handleQuestComplete = async (region) => {
     setQuestItem(null);
-    setCompletedItems((prev) => {
-      const next = new Set([...prev, region.id]);
+    const next = new Set([...completedItems, region.id]);
+    setCompletedItems(next);
 
-      // Save this word
-      const word = `${region.labelBisaya} (${region.labelEnglish})`;
-      saveNPCProgress("forest", npcId, next.size, next.size >= 3, 3, [word]);
+    const word = `${region.labelBisaya} (${region.labelEnglish})`;
+    const passed = next.size >= 3;
+    await saveNPCProgress("forest", npcId, next.size, passed, 3, [word]);
 
-      // Save progress & award fragment after 3 unique items (matching Village pattern)
-      if (next.size >= 3 && !progressSaved) {
-        setProgressSaved(true);
-
-        const isNewPage = awardLibroPage("forest", npcId);
-        if (isNewPage) {
-          const pageNumber = getLibroPageCountForEnv("forest");
-          const totalCollected = getLibroPageCount();
-          setCollectedPage({ pageNumber, totalCollected });
-          setShowPageModal(true);
-        } else {
-          // Already awarded previously — just show the transition modal
-          setShowTransition(true);
-        }
+    if (playerId && location.state?.questId) {
+      try {
+        await submitChallenge(playerId, location.state.questId, npcId, next.size, 3, passed);
+      } catch (err) {
+        console.error("[ForestGlowPage] submitChallenge failed:", err);
       }
+    }
 
-      return next;
-    });
+    if (next.size >= 3 && !progressSaved) {
+      setProgressSaved(true);
+
+      const isNewPage = awardLibroPage("forest", npcId);
+      if (isNewPage) {
+        const pageNumber = getLibroPageCountForEnv("forest");
+        const totalCollected = getLibroPageCount();
+        setCollectedPage({ pageNumber, totalCollected });
+        setShowPageModal(true);
+      } else {
+        setShowTransition(true);
+      }
+    }
   };
 
   const handleQuestClose = () => setQuestItem(null);

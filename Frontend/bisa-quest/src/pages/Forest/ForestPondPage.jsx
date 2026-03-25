@@ -19,6 +19,7 @@ import {
   getLibroPageCountForEnv,
   getNPCWords,
 } from "../../utils/playerStorage";
+import { submitChallenge } from "../../services/playerServices";
 import BookCollectModal from "../../game/components/BookCollectModal";
 import ForestTransitionModal from "../../game/components/ForestTransitionModal";
 import "./ForestPondPage.css";
@@ -111,37 +112,40 @@ const ForestPondPage = () => {
   // Award both books at once only after completing all 6 quests
   const MILESTONES = [6];
 
-  const handleQuestComplete = (region) => {
+  const handleQuestComplete = async (region) => {
     setQuestItem(null);
-    setCompletedItems((prev) => {
-      const next = new Set([...prev, region.id]);
-      const milestone = MILESTONES[milestonesAwarded]; // next target
+    const next = new Set([...completedItems, region.id]);
+    setCompletedItems(next);
 
-      // Save this word
-      const word = `${region.labelBisaya} (${region.labelEnglish})`;
-      saveNPCProgress("forest", npcId, next.size, next.size >= 6, 6, [word]);
+    const word = `${region.labelBisaya} (${region.labelEnglish})`;
+    const passed = next.size >= 6;
+    await saveNPCProgress("forest", npcId, next.size, passed, 6, [word]);
 
-      if (milestone && next.size >= milestone) {
-        // Award both fragments at once
-        const page1Key = `${npcId}_page1`;
-        const page2Key = `${npcId}_page2`;
-        
-        const awarded1 = awardLibroPage("forest", page1Key);
-        const awarded2 = awardLibroPage("forest", page2Key);
-
-        if (awarded1 || awarded2) {
-          const pageNumber = getLibroPageCountForEnv("forest");
-          const totalCollected = getLibroPageCount();
-          setCollectedPage({ pageNumber, totalCollected });
-          setShowPageModal(true);
-        } else {
-          // Already awarded previously — just show the transition modal
-          setShowTransition(true);
-        }
+    if (playerId && location.state?.questId) {
+      try {
+        await submitChallenge(playerId, location.state.questId, npcId, next.size, 6, passed);
+      } catch (err) {
+        console.error("[ForestPondPage] submitChallenge failed:", err);
       }
+    }
 
-      return next;
-    });
+    const milestone = MILESTONES[milestonesAwarded];
+    if (milestone && next.size >= milestone) {
+      const page1Key = `${npcId}_page1`;
+      const page2Key = `${npcId}_page2`;
+
+      const awarded1 = awardLibroPage("forest", page1Key);
+      const awarded2 = awardLibroPage("forest", page2Key);
+
+      if (awarded1 || awarded2) {
+        const pageNumber = getLibroPageCountForEnv("forest");
+        const totalCollected = getLibroPageCount();
+        setCollectedPage({ pageNumber, totalCollected });
+        setShowPageModal(true);
+      } else {
+        setShowTransition(true);
+      }
+    }
   };
 
   const handleQuestClose = () => {

@@ -77,16 +77,30 @@ document.removeEventListener("keydown", onInteract);
     const toggleMute = () => { if (audioRef.current) { audioRef.current.muted = !isMuted; setIsMuted(p => !p); } };
 
     // ── Load forest progress (localStorage, mirrors VillagePage) ──────────────
-    const loadForestProgress = () => {
+    const loadForestProgress = async () => {
+        try {
+            const res = await fetch(`${API}/api/forest/${playerId}`);
+            const result = await res.json();
+            if (result.success) {
+                const pct = result.data.forest_progress || 0;
+                setForestProgress(pct);
+                if (pct >= 100 && !isCompleteDismissed("forest")) {
+                    const words = getLearnedWords("forest");
+                    setLearnedWords(words);
+                    setShowCompleteModal(true);
+                }
+                return;
+            }
+        } catch (err) {
+            console.error("[ForestPage] Failed to load progress from API, falling back to localStorage:", err);
+        }
+
+        // Fallback to localStorage
         const progress = getProgress();
         const pct = progress.forest_progress || 0;
         const forestPages = getLibroPageCountForEnv("forest");
-
-        // Show real page-based progress: each page = 33%
         const effectivePct = Math.max(pct, Math.min(Math.round((forestPages / 3) * 100), 100));
         setForestProgress(effectivePct);
-
-        // Trigger completion when 3+ forest libro pages collected
         if (effectivePct >= 100 && !isCompleteDismissed("forest")) {
             const words = getLearnedWords("forest");
             setLearnedWords(words);

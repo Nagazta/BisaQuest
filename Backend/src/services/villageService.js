@@ -1,56 +1,65 @@
-// services/villageService.js
-// UC-2.2: Village state and player progress retrieval
-
 import { supabase } from '../config/supabaseClient.js';
 
 export const villageService = {
 
-    /**
-     * Get village progress for a player
-     */
     async getVillageProgress(playerId) {
         const { data, error } = await supabase
-            .from('players')
-            .select('player_id, progress_data')
+            .from('player_environment_progress')
+            .select('*')
             .eq('player_id', playerId)
+            .eq('environment_name', 'village')
             .single();
 
-        if (error) throw error;
+        if (error && error.code !== 'PGRST116') throw error;
 
-        const progress = data?.progress_data || {};
         return {
-            player_id:        data.player_id,
-            village_progress: progress.village_progress || 0,
-            completed:        (progress.village_progress || 0) >= 100,
-            npc_completions:  progress.village_npcs     || {},
+            player_id: playerId,
+            village_progress: data?.completion_percentage || 0,
+            completed: data?.is_completed || false,
+            is_unlocked: true, // village is always unlocked
+            last_updated: data?.last_updated || null,
         };
     },
 
-    /**
-     * Update village progress for a player
-     */
-    async updateVillageProgress(playerId, villageProgress, npcCompletions = {}) {
-        // Fetch existing progress first to merge
-        const { data: existing } = await supabase
-            .from('players')
-            .select('progress_data')
-            .eq('player_id', playerId)
-            .single();
-
-        const merged = {
-            ...(existing?.progress_data || {}),
-            village_progress: villageProgress,
-            village_npcs:     { ...(existing?.progress_data?.village_npcs || {}), ...npcCompletions },
-        };
+    async updateVillageProgress(playerId, completionPercentage) {
+        const isCompleted = completionPercentage >= 100;
+        const now = new Date().toISOString();
 
         const { data, error } = await supabase
-            .from('players')
-            .update({ progress_data: merged })
-            .eq('player_id', playerId)
+            .from('player_environment_progress')
+            .upsert(
+                {
+                    player_id: playerId,
+                    environment_name: 'village',
+                    completion_percentage: completionPercentage,
+                    is_completed: isCompleted,
+                    is_unlocked: true,
+                    last_updated: now,
+                },
+                { onConflict: 'player_id,environment_name' }
+            )
             .select()
             .single();
 
         if (error) throw error;
+
+        // Auto-unlock forest when village hits 100%
+        if (isCompleted) {
+            await supabase
+                .from('player_environment_progress')
+                .upsert(
+                    {
+                        player_id: playerId,
+                        environment_name: 'forest',
+                        completion_percentage: 0,
+                        is_completed: false,
+                        is_unlocked: true,
+                        last_updated: now,
+                    },
+                    { onConflict: 'player_id,environment_name' }
+                );
+        }
+
         return data;
     },
 };
