@@ -368,7 +368,7 @@ const WashDishesGame = ({ quest, npcName, npcImage, onComplete, onClose, item })
                         <div className="iqm-scene-success-overlay">
                             <div className="iqm-scene-success-card">
                                 <div className="iqm-scene-success-stars">✨🏆✨</div>
-                                <div className="iqm-scene-success-text">Nasidlak Na ang mga plato!</div>
+                                <div className="iqm-scene-success-text">Nasidlak na ang mga plato!</div>
                             </div>
                         </div>
                     )}
