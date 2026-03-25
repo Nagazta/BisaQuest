@@ -75,7 +75,7 @@ const CastleApplyModal = ({ item, npcName, npcImage, onClose, onComplete }) => {
         </div>
 
         {/* ── Scene canvas ─────────────────────────────────────────────────── */}
-        <div className="iqm-scene-canvas" ref={containerRef}>
+        <div className={`iqm-scene-canvas${item.id === "candlestick" ? " cam-hide-watermark" : ""}`} ref={containerRef}>
 
           {/* Background — crossfades to sceneAfter on solve */}
           <img

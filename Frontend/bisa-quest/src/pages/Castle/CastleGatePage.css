@@ -106,6 +106,8 @@
   z-index: 5;
   cursor: default;
   pointer-events: auto;
+  margin: -18px;
+  padding: 18px;
 }
 
 @keyframes croom-pulse-dot {

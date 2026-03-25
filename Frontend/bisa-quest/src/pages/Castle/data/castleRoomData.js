@@ -57,8 +57,8 @@ export const CASTLE_QUESTS = {
           id: "doorway",
           labelBisaya: "Purtahan",
           labelEnglish: "Doorway",
-          descriptionBisaya: "Usa ka bukas nga bahin sa dingding nga adunay purtahan. Dinhi ka mosulod sa kastilyo.",
-          descriptionEnglish: "An opening in a wall with a door. This is where you enter the castle.",
+          descriptionBisaya: "Ang doorway kay abli nga parte sa bungbong diin mosulod o mogawas ang tawo, ug diin ibutang ang pultahan.",
+          descriptionEnglish: "A doorway is the space in a wall where you go in or out, and where a door can be placed.",
           x: 38, y: 18, w: 25, h: 55,
           compoundWord: { word1: "DOOR", word2: "WAY", result: "DOORWAY", bisayaResult: "Purtahan", distractors: ["ARCH", "PATH"] },
           applyGame: {
@@ -72,10 +72,10 @@ export const CASTLE_QUESTS = {
         },
         {
           id: "keyhole",
-          labelBisaya: "Yawi",
+          labelBisaya: "Yawihanan",
           labelEnglish: "Keyhole",
-          descriptionBisaya: "Usa ka gamay nga buho sa kandado diin isulod ang tamang yawi para ablihi kini.",
-          descriptionEnglish: "A small hole in a lock. Put the right key in to open it.",
+          descriptionBisaya: "Ang yawihanan kay gamay nga lungag diin ibutang ang yawe aron maablihan o masirad-an ang pultahan.",
+          descriptionEnglish: "A keyhole is a small hole where you put a key to open or lock a door.",
           x: 48, y: 29, w: 6, h: 10,
           compoundWord: { word1: "KEY", word2: "HOLE", result: "KEYHOLE", bisayaResult: "Buho sa Yawi", distractors: ["LOCK", "SLOT"] },
           applyGame: {
@@ -195,10 +195,10 @@ export const CASTLE_QUESTS = {
         },
         {
           id: "courtyard",
-          labelBisaya: "Korte",
+          labelBisaya: "Hawanan",
           labelEnglish: "Courtyard",
-          descriptionBisaya: "Usa ka abli nga lugar nga gilibutan og mga dingding. Makita kini sa kastilyo.",
-          descriptionEnglish: "An open area surrounded by walls or buildings inside the castle.",
+          descriptionBisaya: "Ang hawanan kay abli nga lugar sa gawas nga napalibotan og mga bungbong o building.",
+          descriptionEnglish: "A courtyard is an open space outside, surrounded by walls or buildings.",
           x: 30, y: 69, w: 62, h: 20,
           compoundWord: { word1: "COURT", word2: "YARD", result: "COURTYARD", bisayaResult: "Korte / Patyo", distractors: ["GARDEN", "FIELD"] },
           applyGame: {
@@ -288,8 +288,8 @@ export const CASTLE_QUESTS = {
           id: "bookshelf",
           labelBisaya: "Estante sa Libro",
           labelEnglish: "Bookshelf",
-          descriptionBisaya: "Usa ka taas nga estante nga gigamit para itago ang mga libro.",
-          descriptionEnglish: "A tall piece of furniture used to store and hold books.",
+          descriptionBisaya: "Ang bookshelf kay butanganan sa mga libro aron mahipos ug matago kini.",
+          descriptionEnglish: "A bookshelf is a place where you put and keep your books.",
           x: 23, y: 9, w: 18, h: 78,
           compoundWord: { word1: "BOOK", word2: "SHELF", result: "BOOKSHELF", bisayaResult: "Estante sa Libro", distractors: ["DOOR", "CASE"] },
           applyGame: {
@@ -303,10 +303,10 @@ export const CASTLE_QUESTS = {
         },
         {
           id: "candlelight",
-          labelBisaya: "Kandila",
+          labelBisaya: "Kandilaw",
           labelEnglish: "Candlelight",
-          descriptionBisaya: "Ang humok nga kahayag gikan sa mga kandila. Nindot kini tan-awon sa gabii!",
-          descriptionEnglish: "The soft warm light from candles. It makes the room feel nice at night!",
+          descriptionBisaya: "Ang kandilaw mao ang hinay nga kahayag nga gikan sa nagsiga nga kandila.",
+          descriptionEnglish: "Candlelight is the soft light that comes from a burning candle.",
           x: 33, y: 2, w: 32, h: 22,
           compoundWord: { word1: "CANDLE", word2: "LIGHT", result: "CANDLELIGHT", bisayaResult: "Chandelier / Kandila", distractors: ["WAX", "FLAME"] },
           applyGame: {
@@ -320,10 +320,10 @@ export const CASTLE_QUESTS = {
         },
         {
           id: "fireplace",
-          labelBisaya: "Sunoganan",
+          labelBisaya: "Abohan",
           labelEnglish: "Fireplace",
-          descriptionBisaya: "Usa ka lugar sa dingding nga gihimoan og kalayo. Nagpainit kini sa lawak kung bugnaw.",
-          descriptionEnglish: "A place in the wall that holds a fire. It keeps the room warm when it is cold.",
+          descriptionBisaya: "Ang abohan kay lugar sa bungbong diin magpasiga og kalayo para initan ang balay.",
+          descriptionEnglish: "A fireplace is a space in the wall where you can safely make a fire to keep warm.",
           x: 16, y: 60, w: 13, h: 33,
           compoundWord: { word1: "FIRE", word2: "PLACE", result: "FIREPLACE", bisayaResult: "Sunoganan", distractors: ["WOOD", "WARM"] },
           applyGame: {
@@ -339,8 +339,8 @@ export const CASTLE_QUESTS = {
           id: "candlestick",
           labelBisaya: "Kandelero",
           labelEnglish: "Candlestick",
-          descriptionBisaya: "Usa ka suportahan para sa kandila. Makita kini sa mga lamesa sa library.",
-          descriptionEnglish: "A holder that keeps a candle standing up while it burns.",
+          descriptionBisaya: "Ang kandelero kay butangan sa kandila aron makatindog kini tarong.",
+          descriptionEnglish: "A candlestick is something that holds candles so they can stand upright.",
           x: 67, y: 63, w: 20, h: 11,
           compoundWord: { word1: "CANDLE", word2: "STICK", result: "CANDLESTICK", bisayaResult: "Tangkayan sa Kandila", distractors: ["WAX", "HOLDER"] },
           applyGame: {
@@ -356,8 +356,8 @@ export const CASTLE_QUESTS = {
           id: "storybook",
           labelBisaya: "Libro sa Istorya",
           labelEnglish: "Storybook",
-          descriptionBisaya: "Usa ka libro nga puno og mga istorya ug mga hulagway para sa mga bata.",
-          descriptionEnglish: "A book full of stories and pictures for children to read.",
+          descriptionBisaya: "Ang storybook kay libro nga adunay mga istorya, kasagaran para sa mga bata nga basahon ug malingaw.",
+          descriptionEnglish: "A storybook is a book with stories, usually made for children to read and enjoy.",
           x: 40, y: 76, w: 17, h: 11,
           compoundWord: { word1: "STORY", word2: "BOOK", result: "STORYBOOK", bisayaResult: "Libro sa Istorya", distractors: ["READ", "TALE"] },
           applyGame: {
