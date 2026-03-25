@@ -12,7 +12,8 @@ import {
   getTotalQuests,
   buildCastleDialogue,
 } from "./data/castleRoomData";
-import { saveNPCProgress, getNPCWords } from "../../utils/playerStorage";
+import { saveNPCProgress, getNPCWords, getPlayerId } from "../../utils/playerStorage";
+import { submitChallenge } from "../../services/playerServices";
 import "./CastleRoomPage.css";
 
 const CastleRoomPage = () => {
@@ -23,6 +24,7 @@ const CastleRoomPage = () => {
   const npcName = location.state?.npcName || "Princess Hara";
   const returnTo = location.state?.returnTo || "/student/castle";
   const startIdx = location.state?.questIndex ?? 0;
+  const playerId = getPlayerId();
 
   const NpcImage =
     CASTLE_NPC_IMAGES[npcId] || Object.values(CASTLE_NPC_IMAGES)[0];
@@ -148,20 +150,26 @@ const CastleRoomPage = () => {
     }
   };
 
-  const handleQuestComplete = (region) => {
+  const handleQuestComplete = async (region) => {
     setQuestItem(null);
-    setCompletedItems((prev) => {
-      const next = new Set([...prev, region.id]);
-      
-      const word = `${region.labelBisaya} (${region.labelEnglish})`;
-      const roomSuffixMap = { 0: "gate", 1: "courtyard", 2: "library" };
-      const roomSuffix = roomSuffixMap[questIndex] || `room${questIndex}`;
-      const saveNpcId = `${npcId}_${roomSuffix}`;
+    const next = new Set([...completedItems, region.id]);
+    setCompletedItems(next);
 
-      saveNPCProgress("castle", saveNpcId, next.size, next.size >= quest.items.length, quest.items.length, [word]);
-      
-      return next;
-    });
+    const word = `${region.labelBisaya} (${region.labelEnglish})`;
+    const roomSuffixMap = { 0: "gate", 1: "courtyard", 2: "library" };
+    const roomSuffix = roomSuffixMap[questIndex] || `room${questIndex}`;
+    const saveNpcId = `${npcId}_${roomSuffix}`;
+    const passed = next.size >= quest.items.length;
+
+    await saveNPCProgress("castle", saveNpcId, next.size, passed, quest.items.length, [word]);
+
+    if (playerId && location.state?.questId) {
+      try {
+        await submitChallenge(playerId, location.state.questId, npcId, next.size, quest.items.length, passed);
+      } catch (err) {
+        console.error("[CastleRoomPage] submitChallenge failed:", err);
+      }
+    }
   };
 
   const handleQuestClose = () => setQuestItem(null);

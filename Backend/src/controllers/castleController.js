@@ -14,8 +14,8 @@ export const getCastleProgress = async (req, res) => {
         if (!data.unlocked) {
             return res.status(403).json({
                 success: false,
-                locked:  true,
-                error:   'Castle Quest is locked. Complete both Village and Forest Quests first.',
+                locked: true,
+                error: 'Castle Quest is locked. Complete both Village and Forest Quests first.',
                 data
             });
         }
@@ -33,9 +33,9 @@ export const getCastleProgress = async (req, res) => {
 export const updateCastleProgress = async (req, res) => {
     try {
         const { playerId } = req.params;
-        const { castle_progress, npc_completions } = req.body;
+        const { completion_percentage } = req.body;
 
-        const data = await castleService.updateCastleProgress(playerId, castle_progress, npc_completions);
+        const data = await castleService.updateCastleProgress(playerId, completion_percentage);
         res.json({ success: true, data });
     } catch (error) {
         console.error('updateCastleProgress error:', error);

@@ -5,7 +5,6 @@ import EnvironmentPage from "../../components/EnvironmentPage";
 import Button from "../../components/Button";
 import ProgressBar from "../../components/ProgressBar";
 import ParticleEffects from "../../components/ParticleEffects";
-import { environmentApi } from "../../services/environmentServices.js";
 import { getPlayerId, getProgress, getLearnedWords, markCompleteDismissed, isCompleteDismissed, hasCutsceneSeen, getLibroPageCountForEnv, hasLibroPage } from "../../utils/playerStorage";
 import EnvironmentCompleteModal from "../../components/EnvironmentCompleteModal";
 import FogTransition from "../../components/FogTransition";
@@ -118,15 +117,30 @@ document.removeEventListener("keydown", onInteract);
     // ── Init ──────────────────────────────────────────────────────────────────
     useEffect(() => { initializeCastle(); }, [refreshKey]);
 
-    const loadCastleProgress = () => {
+    const loadCastleProgress = async () => {
+        try {
+            const res = await fetch(`${API}/api/castle/${playerId}`);
+            const result = await res.json();
+            if (result.success) {
+                const pct = result.data.castle_progress || 0;
+                setCastleProgress(pct);
+                if (pct >= 100 && !isCompleteDismissed("castle")) {
+                    const words = getLearnedWords("castle");
+                    setLearnedWords(words);
+                    setShowCompleteModal(true);
+                }
+                return;
+            }
+        } catch (err) {
+            console.error("[CastlePage] Failed to load progress from API, falling back to localStorage:", err);
+        }
+
+        // Fallback to localStorage
         const progress = getProgress();
         const pct = progress.castle_progress || 0;
         const castlePages = getLibroPageCountForEnv("castle");
-
-        // Page-based progress: each page = 33%
         const effectivePct = Math.max(pct, Math.min(Math.round((castlePages / 3) * 100), 100));
         setCastleProgress(effectivePct);
-
         if (effectivePct >= 100 && !isCompleteDismissed("castle")) {
             const words = getLearnedWords("castle");
             setLearnedWords(words);
@@ -137,31 +151,7 @@ document.removeEventListener("keydown", onInteract);
     const initializeCastle = async () => {
         if (!playerId) return;
         setCastleNPCs(CASTLE_NPCS);
-        loadCastleProgress();
-        try {
-            await environmentApi.initializeEnvironment("castle", playerId);
-            await checkEnvironmentProgress();
-        } catch (err) { console.error("Error initializing castle:", err); }
-    };
-
-    const checkEnvironmentProgress = async () => {
-        if (!playerId) return;
-        try {
-            const res = await fetch(`${API}/api/npc/environment-progress?environmentType=castle&playerId=${playerId}`);
-            const result = await res.json();
-            if (result.success && (result.data.progress ?? 0) >= 75) setShowSummaryButton(true);
-        } catch (e) { console.error(e); }
-    };
-
-    const checkAndShowSummary = async () => {
-        if (!playerId) return;
-        try {
-            const res = await fetch(`${API}/api/npc/environment-progress?environmentType=castle&playerId=${playerId}`);
-            const result = await res.json();
-            if (result.success && (result.data.progress ?? 0) >= 100) {
-                navigate("/student/viewCompletion", { state: { showSummary: true, environmentProgress: result.data.progress, summaryData: result.data, returnTo: "/student/castle", questId } });
-            }
-        } catch (e) { console.error(e); }
+        await loadCastleProgress();
     };
 
     useEffect(() => {
@@ -213,11 +203,25 @@ document.removeEventListener("keydown", onInteract);
         setShowScenePicker(true);
     };
 
-    const handleGoToScene = (route) => {
-        setShowScenePicker(false);
-        setSelectedNPC(null);
-        navigate(route, { state: { returnTo: "/student/castle" } });
-    };
+    const handleGoToScene = async (route) => {
+    setShowScenePicker(false);
+    const API = import.meta.env.VITE_API_URL !== undefined ? import.meta.env.VITE_API_URL : (import.meta.env.PROD ? '' : 'http://localhost:5000');
+    let questId = null;
+    try {
+        const npcId = selectedNPC?.npcId || 'castle_npc_1';
+        const res = await fetch(`${API}/api/challenge/npc/${npcId}/quest`);
+        if (res.ok) {
+            const { data } = await res.json();
+            if (Array.isArray(data) && data.length > 0) {
+                questId = data[0].quest_id;
+            }
+        }
+    } catch (err) {
+        console.error("[CastlePage] Failed to resolve questId:", err);
+    }
+    setSelectedNPC(null);
+    navigate(route, { state: { returnTo: "/student/castle", questId } });
+};
 
     if (!hasCutsceneSeen("castle_entry")) return <Navigate to="/cutscene/castle_entry" replace />;
     if (charLoading) return <div className="castle-page-wrapper"><div className="loading-message">Loading...</div></div>;

@@ -15,8 +15,8 @@ export const getForestProgress = async (req, res) => {
         if (!data.unlocked) {
             return res.status(403).json({
                 success: false,
-                locked:  true,
-                error:   'Forest Quest is locked. Complete the Village Quest first.',
+                locked: true,
+                error: 'Forest Quest is locked. Complete the Village Quest first.',
                 data
             });
         }
@@ -34,9 +34,9 @@ export const getForestProgress = async (req, res) => {
 export const updateForestProgress = async (req, res) => {
     try {
         const { playerId } = req.params;
-        const { forest_progress, npc_completions } = req.body;
+        const { completion_percentage } = req.body;
 
-        const data = await forestService.updateForestProgress(playerId, forest_progress, npc_completions);
+        const data = await forestService.updateForestProgress(playerId, completion_percentage);
         res.json({ success: true, data });
     } catch (error) {
         console.error('updateForestProgress error:', error);

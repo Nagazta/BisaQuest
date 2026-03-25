@@ -89,12 +89,28 @@ const VillagePage = () => {
     };
 
     // ── Load village progress ─────────────────────────────────────────────────
-    const loadVillageProgress = () => {
+    const loadVillageProgress = async () => {
+        try {
+            const res = await fetch(`${API}/api/village/${playerId}`);
+            const result = await res.json();
+            if (result.success) {
+                const pct = result.data.village_progress || 0;
+                setVillageProgress(pct);
+                if (pct >= 100 && !isCompleteDismissed("village")) {
+                    const words = getLearnedWords("village");
+                    setLearnedWords(words);
+                    setShowCompleteModal(true);
+                }
+                return;
+            }
+        } catch (err) {
+            console.error("[VillagePage] Failed to load progress from API, falling back to localStorage:", err);
+        }
+
+        // Fallback to localStorage
         const books = getLibroPageCountForEnv('village');
         const pct = Math.round((books / 3) * 100);
         setVillageProgress(pct);
-
-        // Only show the modal if at 100% AND the player hasn't dismissed it yet
         if (pct >= 100 && !isCompleteDismissed("village")) {
             const words = getLearnedWords("village");
             setLearnedWords(words);

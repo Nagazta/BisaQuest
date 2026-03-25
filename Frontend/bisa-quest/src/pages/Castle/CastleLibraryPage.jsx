@@ -16,7 +16,9 @@ import {
   getLibroPageCount,
   getLibroPageCountForEnv,
   getNPCWords,
+  getPlayerId,
 } from "../../utils/playerStorage";
+import { submitChallenge } from "../../services/playerServices";
 import "./CastleLibraryPage.css";
 
 const QUEST_INDEX = 2;
@@ -30,6 +32,7 @@ const CastleLibraryPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const returnTo = location.state?.returnTo || "/student/castle";
+  const playerId = getPlayerId();
 
   const NpcImage = CASTLE_NPC_IMAGES[NPC_ID];
   const quest = getQuestData(NPC_ID, QUEST_INDEX);
@@ -113,31 +116,36 @@ const CastleLibraryPage = () => {
     }
   };
 
-  const handleQuestComplete = (region) => {
+  const handleQuestComplete = async (region) => {
     setQuestItem(null);
-    setCompletedItems((prev) => {
-      const next = new Set([...prev, region.id]);
+    const next = new Set([...completedItems, region.id]);
+    setCompletedItems(next);
 
-      // Save this word
-      const word = `${region.labelBisaya} (${region.labelEnglish})`;
-      saveNPCProgress("castle", SAVE_NPC_ID, next.size, next.size >= REQUIRED_QUESTS, 3, [word]);
+    const word = `${region.labelBisaya} (${region.labelEnglish})`;
+    const passed = next.size >= REQUIRED_QUESTS;
+    await saveNPCProgress("castle", SAVE_NPC_ID, next.size, passed, 3, [word]);
 
-      if (next.size >= REQUIRED_QUESTS && !progressSaved) {
-        setProgressSaved(true);
-
-        const isNewPage = awardLibroPage("castle", "castle_library");
-        if (isNewPage) {
-          const pageNumber = getLibroPageCountForEnv("castle");
-          const totalCollected = getLibroPageCount();
-          setCollectedPage({ pageNumber, totalCollected });
-          setShowPageModal(true);
-        } else {
-          setShowTransition(true);
-        }
+    if (playerId && location.state?.questId) {
+      try {
+        await submitChallenge(playerId, location.state.questId, NPC_ID, next.size, REQUIRED_QUESTS, passed);
+      } catch (err) {
+        console.error("[CastleLibraryPage] submitChallenge failed:", err);
       }
+    }
 
-      return next;
-    });
+    if (next.size >= REQUIRED_QUESTS && !progressSaved) {
+      setProgressSaved(true);
+
+      const isNewPage = awardLibroPage("castle", "castle_library");
+      if (isNewPage) {
+        const pageNumber = getLibroPageCountForEnv("castle");
+        const totalCollected = getLibroPageCount();
+        setCollectedPage({ pageNumber, totalCollected });
+        setShowPageModal(true);
+      } else {
+        setShowTransition(true);
+      }
+    }
   };
 
   const handleQuestClose = () => setQuestItem(null);
