@@ -157,7 +157,6 @@ document.removeEventListener("keydown", onInteract);
     useEffect(() => {
         if (location.state?.completed) {
             setRefreshKey(p => p + 1);
-            checkAndShowSummary();
             navigate(location.pathname, { replace: true, state: {} });
         }
     }, [location.state]);
