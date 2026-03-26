@@ -131,7 +131,7 @@ const Login = () => {
                     <form onSubmit={handlePlayNow} className="login-form-container">
                         <div className="form-group">
                             <label htmlFor="nickname" className="form-label">
-                                Enter Your Name
+                                Enter Your First Name
                             </label>
                             <input
                                 type="text"
