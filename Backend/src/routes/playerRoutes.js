@@ -5,10 +5,7 @@ import {
     createPlayer,
     getPlayer,
     updateNickname,
-    updateCharacter,
-    getProgress,
-    updateProgress,
-    resetProgress
+    updateCharacter
 } from '../controllers/playerController.js';
 
 const router = express.Router();
@@ -24,14 +21,5 @@ router.put('/:playerId/nickname', updateNickname);
 
 // Update character selection
 router.put('/:playerId/character', updateCharacter);
-
-// Get progress
-router.get('/:playerId/progress', getProgress);
-
-// Update progress
-router.put('/:playerId/progress', updateProgress);
-
-// Reset progress
-router.delete('/:playerId/reset', resetProgress);
 
 export default router;

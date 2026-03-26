@@ -1,7 +1,5 @@
-// context/AuthContext.jsx
-
 import { createContext, useContext, useState, useEffect } from 'react';
-import { createPlayer, fetchPlayer, updateProgress, resetProgress as resetPlayerProgress } from '../services/playerServices'
+import { createPlayer, fetchPlayer } from '../services/playerServices'
 import { savePlayer, getSavedPlayer, hasExistingPlayer, clearPlayerData, getPlayerId } from '../utils/playerStorage';
 import LoadingScreen from '../components/LoadingScreen';
 
@@ -33,11 +31,11 @@ export const AuthProvider = ({ children }) => {
                 const result = await fetchPlayer(saved.player_id);
 
                 const playerData = {
-                    player_id:  result.player_id,
-                    nickname:   result.nickname,
-                    character:  result.character,
-                    progress:   result.progress_data || {}
-                };
+                player_id:  result.player_id,
+                nickname:   result.nickname,
+                character:  result.character,
+                progress:   {}
+            };
 
                 setPlayer(playerData);
                 console.log('✅ Player loaded:', playerData.nickname);
@@ -67,7 +65,7 @@ export const AuthProvider = ({ children }) => {
                 player_id: data.player_id,
                 nickname:  data.nickname,
                 character: data.character,
-                progress:  data.progress_data || {}
+                progress:  {}
             };
 
             setPlayer(playerData);
@@ -83,36 +81,6 @@ export const AuthProvider = ({ children }) => {
     // ── UC-1.3: Set character on player state after selection ─────────────────
     const setCharacter = (character) => {
         setPlayer(prev => ({ ...prev, character }));
-    };
-
-    // ── Progress ──────────────────────────────────────────────────────────────
-    const saveProgress = async (progress_data) => {
-        if (!player?.player_id) return { success: false, error: 'No player loaded' };
-
-        try {
-            const data = await updateProgress(player.player_id, progress_data);
-            setPlayer(prev => ({ ...prev, progress: data.progress_data }));
-            return { success: true, data };
-        } catch (error) {
-            return { success: false, error: error.message };
-        }
-    };
-
-    const resetProgress = async () => {
-        if (!player?.player_id) return { success: false, error: 'No player loaded' };
-
-        const confirmed = window.confirm(
-            'Are you sure you want to reset all progress? This cannot be undone!'
-        );
-        if (!confirmed) return { success: false, message: 'Reset cancelled' };
-
-        try {
-            const data = await resetPlayerProgress(player.player_id);
-            setPlayer(prev => ({ ...prev, progress: {} }));
-            return { success: true, data };
-        } catch (error) {
-            return { success: false, error: error.message };
-        }
     };
 
     // ── UC-1.2: New Game — hard clear ─────────────────────────────────────────
@@ -133,8 +101,6 @@ export const AuthProvider = ({ children }) => {
         loading,
         createNewPlayer,
         setCharacter,
-        saveProgress,
-        resetProgress,
         startNewGame,
         logout
     };
