@@ -6,7 +6,14 @@ import AssetManifest from "../../services/AssetManifest";
 import HouseDebugTools from "./components/HouseDebugTools";
 import BilingualText from "./components/BilingualText";
 import ItemQuestModal from "../../game/components/ItemQuestModal";
-import { NPC_IMAGES, KITCHEN_LABELS, INTRO_DIALOGUE, buildDialogue } from "./data/kitchenData";
+import { NPC_IMAGES } from "./data/kitchenData";
+import {
+  SCENE_QUEST_IDS,
+  fetchSceneItems,
+  fetchSceneDialogues,
+  toSceneLabels,
+  toIntroDialogue,
+} from "../../services/sceneDataService";
 import BookCollectModal from "../../game/components/BookCollectModal";
 import VillageTransitionModal from "../../game/components/VillageTransitionModal";
 import VillageSummaryModal from "../../game/components/VillageSummaryModal";
@@ -25,6 +32,11 @@ const KitchenPage = () => {
   const playerId = getPlayerId();
 
   const NpcImage = NPC_IMAGES[npcId] || AssetManifest.village.npcs.ligaya;
+
+  // ── Scene data from API ────────────────────────────────────────────────────
+  const [sceneLabels, setSceneLabels] = useState([]);
+  const [introDialogue, setIntroDialogue] = useState([]);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   const [debugMode, setDebugMode] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState(null);
@@ -48,23 +60,40 @@ const KitchenPage = () => {
     }
   }, [activeItem]);
 
-  // ── Load progress on mount ────────────────────────────────────────────────
+  // ── Fetch scene data from API on mount ─────────────────────────────────────
   useEffect(() => {
-    const savedWords = getNPCWords("village", "village_kitchen");
-    if (savedWords.length > 0) {
-      const restored = new Set();
-      KITCHEN_LABELS.forEach(region => {
-        const word = `${region.labelBisaya} (${region.labelEnglish})`;
-        if (savedWords.includes(word)) {
-          restored.add(region.id);
-        }
-      });
-      if (restored.size > 0) setCompletedItems(restored);
-    }
+    const loadSceneData = async () => {
+      const questId = SCENE_QUEST_IDS.kitchen;
+      const [items, dialogues] = await Promise.all([
+        fetchSceneItems(questId),
+        fetchSceneDialogues(questId),
+      ]);
+      const labels = toSceneLabels(items);
+      setSceneLabels(labels);
+      setIntroDialogue(toIntroDialogue(dialogues));
+      setDataLoaded(true);
+
+      const savedWords = getNPCWords("village", "village_kitchen");
+      if (savedWords.length > 0) {
+        const restored = new Set();
+        labels.forEach(region => {
+          const word = `${region.labelBisaya} (${region.labelEnglish})`;
+          if (savedWords.includes(word)) restored.add(region.id);
+        });
+        if (restored.size > 0) setCompletedItems(restored);
+      }
+    };
+    loadSceneData();
   }, []);
 
   const introDone = introStep === null;
-  const introLine = !introDone ? INTRO_DIALOGUE[introStep] : null;
+  const introLine = !introDone ? introDialogue[introStep] : null;
+
+  const buildDialogue = (region) => [
+    { speaker: "Ligaya", bisayaText: `Kini ang ${region.labelBisaya}!`, englishText: `This object is called ${region.labelEnglish}!` },
+    { speaker: "Ligaya", bisayaText: region.descriptionBisaya, englishText: region.descriptionEnglish },
+  ];
+
   const currentLine = introDone && activeItem
     ? buildDialogue(activeItem)[dialogueStep]
     : null;
@@ -75,7 +104,7 @@ const KitchenPage = () => {
   const handleBack = () => navigate(returnTo);
 
   const handleIntroNext = () => {
-    if (introStep < INTRO_DIALOGUE.length - 1) {
+    if (introStep < introDialogue.length - 1) {
       setIntroStep(s => s + 1);
     } else {
       setIntroStep(null);
@@ -176,7 +205,7 @@ const KitchenPage = () => {
         setSelectedRegion={setSelectedRegion}
       />
 
-      {introDone && KITCHEN_LABELS.map(region => {
+      {introDone && sceneLabels.map(region => {
         const isDone = completedItems.has(region.id);
         return (
           <div

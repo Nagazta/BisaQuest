@@ -193,17 +193,6 @@ const VillagePage = () => {
                 const { data } = await res.json();
                 if (Array.isArray(data) && data.length) {
 
-                    // ── DEBUG: Log all quests for this NPC ──
-                    console.group(`[Village] 📋 ${selectedNPC.name} (${dbNpcId}) — ${data.length} quest(s)`);
-                    data.forEach((q, i) => {
-                        console.log(
-                            `  Quest #${i + 1}: id=${q.quest_id}, title="${q.title}", ` +
-                            `scene_type="${q.scene_type}", mechanic="${q.game_mechanic}", ` +
-                            `content_type="${q.content_type}"`
-                        );
-                    });
-                    console.groupEnd();
-
                     {
                         const livingPool = data.filter(q =>
                             q.game_mechanic === "drag_drop" &&
@@ -225,8 +214,6 @@ const VillagePage = () => {
                         resolvedIaKitchenQuestId = randomPick(iaKitchenPool)?.quest_id ?? null;
                         resolvedIaBedroomQuestId = randomPick(iaBedroomPool)?.quest_id ?? null;
 
-                        console.log(`[Village] 🎯 ${selectedNPC.name} (house) — DD: living=${resolvedQuestId}, kitchen=${resolvedKitchenQuestId}, bedroom=${resolvedBedroomQuestId}`);
-                        console.log(`[Village] 🎯 ${selectedNPC.name} (house) — IA: living=${resolvedIaLivingQuestId}, kitchen=${resolvedIaKitchenQuestId}, bedroom=${resolvedIaBedroomQuestId}`);
                     }
                 }
             }
@@ -254,7 +241,6 @@ const VillagePage = () => {
             sequenceIndex: 0,
         };
 
-        console.log(`[Village] 🚀 Navigating for ${selectedNPC.name} →`, state);
 
         if (selectedNPC.quest === "word_association") navigate("/student/house", { state });
     };
