@@ -17,7 +17,6 @@ export const createPlayer = async (req, res) => {
             .insert([
                 {
                     nickname: nickname.trim() || 'Guest Player',
-                    progress_data: {},
                     character: null
                 }
             ])
@@ -36,7 +35,6 @@ export const createPlayer = async (req, res) => {
                 player_id: data.player_id,
                 nickname: data.nickname,
                 character: data.character,
-                progress_data: data.progress_data,
                 created_at: data.created_at
             }
         });
@@ -72,13 +70,14 @@ export const getPlayer = async (req, res) => {
             .eq('player_id', playerId)
             .single();
 
-        if (error) throw error;
-
-        if (!data) {
-            return res.status(404).json({
-                success: false,
-                error: 'Player not found'
-            });
+        if (error) {
+            if (error.code === 'PGRST116') {
+                return res.status(404).json({
+                    success: false,
+                    error: 'Player not found'
+                });
+            }
+            throw error;
         }
 
         res.json({
@@ -126,7 +125,15 @@ export const updateNickname = async (req, res) => {
             .select()
             .single();
 
-        if (error) throw error;
+        if (error) {
+            if (error.code === 'PGRST116') {
+                return res.status(404).json({
+                    success: false,
+                    error: 'Player not found'
+                });
+            }
+            throw error;
+        }
 
         res.json({
             success: true,
@@ -167,7 +174,15 @@ export const updateCharacter = async (req, res) => {
             .select()
             .single();
 
-        if (error) throw error;
+        if (error) {
+            if (error.code === 'PGRST116') {
+                return res.status(404).json({
+                    success: false,
+                    error: 'Player not found'
+                });
+            }
+            throw error;
+        }
 
         res.json({
             success: true,
@@ -185,35 +200,23 @@ export const updateCharacter = async (req, res) => {
 };
 
 /**
- * Get player progress
+ * Get player progress summary
  * GET /api/player/:playerId/progress
  */
 export const getProgress = async (req, res) => {
     try {
         const { playerId } = req.params;
 
-        const { data, error } = await supabase
-            .from('players')
-            .select('player_id, nickname, progress_data')
-            .eq('player_id', playerId)
-            .single();
+        const { data: progressRows, error } = await supabase
+            .from('player_environment_progress')
+            .select('*')
+            .eq('player_id', playerId);
 
         if (error) throw error;
 
-        if (!data) {
-            return res.status(404).json({
-                success: false,
-                error: 'Player not found'
-            });
-        }
-
         res.json({
             success: true,
-            data: {
-                player_id: data.player_id,
-                nickname: data.nickname,
-                progress_data: data.progress_data || {}
-            }
+            data: progressRows || []
         });
 
     } catch (error) {
@@ -225,60 +228,6 @@ export const getProgress = async (req, res) => {
     }
 };
 
-/**
- * Update player progress
- * PUT /api/player/:playerId/progress
- * Body: { progress_data: object }
- */
-export const updateProgress = async (req, res) => {
-    try {
-        const { playerId } = req.params;
-        const { progress_data } = req.body;
-
-        if (!progress_data || typeof progress_data !== 'object') {
-            return res.status(400).json({
-                success: false,
-                error: 'progress_data must be a valid object'
-            });
-        }
-
-        // Fetch existing progress first, then merge to avoid overwriting
-        const { data: existing, error: fetchError } = await supabase
-            .from('players')
-            .select('progress_data')
-            .eq('player_id', playerId)
-            .single();
-
-        if (fetchError) throw fetchError;
-
-        const merged = {
-            ...(existing?.progress_data || {}),
-            ...progress_data
-        };
-
-        const { data, error } = await supabase
-            .from('players')
-            .update({ progress_data: merged })
-            .eq('player_id', playerId)
-            .select()
-            .single();
-
-        if (error) throw error;
-
-        res.json({
-            success: true,
-            message: 'Progress updated successfully',
-            data
-        });
-
-    } catch (error) {
-        console.error('Update progress error:', error);
-        res.status(500).json({
-            success: false,
-            error: error.message || 'Failed to update progress'
-        });
-    }
-};
 
 /**
  * Get player stats
@@ -303,12 +252,15 @@ export const getStats = async (req, res) => {
             });
         }
 
-        const progressData = data.progress_data || {};
-        const completedModules = Object.values(progressData).filter(
-            v => typeof v === 'number' && v >= 100
-        ).length;
-        const badgeCount = progressData.badges ? progressData.badges.length : 0;
-        const overallProgress = progressData.overall_progress || 0;
+        const { data: progressRows, error: progressError } = await supabase
+            .from('player_environment_progress')
+            .select('*')
+            .eq('player_id', playerId);
+
+        if (progressError) throw progressError;
+
+        const completedModules = (progressRows || []).filter(r => r.is_completed).length;
+        const overallProgress = (progressRows || []).reduce((acc, r) => acc + (r.completion_percentage || 0), 0) / 3; // Assuming 3 modules
 
         res.json({
             success: true,
@@ -316,8 +268,7 @@ export const getStats = async (req, res) => {
                 player_id: data.player_id,
                 nickname: data.nickname,
                 character: data.character,
-                overall_progress: overallProgress,
-                badges_count: badgeCount,
+                overall_progress: Math.round(overallProgress),
                 completed_modules: completedModules,
                 created_at: data.created_at
             }
@@ -340,19 +291,16 @@ export const resetProgress = async (req, res) => {
     try {
         const { playerId } = req.params;
 
-        const { data, error } = await supabase
-            .from('players')
-            .update({ progress_data: {} })
-            .eq('player_id', playerId)
-            .select()
-            .single();
+        const { error: resetError } = await supabase
+            .from('player_environment_progress')
+            .delete()
+            .eq('player_id', playerId);
 
-        if (error) throw error;
+        if (resetError) throw resetError;
 
         res.json({
             success: true,
-            message: 'Progress reset successfully',
-            data
+            message: 'Progress reset successfully'
         });
 
     } catch (error) {

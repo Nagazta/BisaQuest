@@ -7,7 +7,6 @@ import {
     updateNickname,
     updateCharacter,
     getProgress,
-    updateProgress,
     resetProgress
 } from '../controllers/playerController.js';
 
@@ -28,8 +27,6 @@ router.put('/:playerId/character', updateCharacter);
 // Get progress
 router.get('/:playerId/progress', getProgress);
 
-// Update progress
-router.put('/:playerId/progress', updateProgress);
 
 // Reset progress
 router.delete('/:playerId/reset', resetProgress);

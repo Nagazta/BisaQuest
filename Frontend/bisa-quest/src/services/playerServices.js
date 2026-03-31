@@ -38,22 +38,12 @@ export const updateCharacter = async (playerId, character) => {
 
 // ── Progress ──────────────────────────────────────────────────────────────────
 
-export const updateProgress = async (playerId, progress_data) => {
-    const response = await fetch(`${BASE_URL}/api/player/${playerId}/progress`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ progress_data })
-    });
-    const result = await response.json();
-    if (!result.success) throw new Error(result.error || 'Failed to update progress');
-    return result.data;
-};
 
 export const getProgress = async (playerId) => {
     const response = await fetch(`${BASE_URL}/api/player/${playerId}/progress`);
     const result = await response.json();
     if (!result.success) throw new Error(result.error || 'Failed to get progress');
-    return result.data;
+    return result.data; // Now returns an array of environment progress
 };
 
 export const submitChallenge = async (playerId, questId, npcId, score, maxScore, passed) => {

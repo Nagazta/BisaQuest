@@ -1,7 +1,7 @@
 // context/AuthContext.jsx
 
 import { createContext, useContext, useState, useEffect } from 'react';
-import { createPlayer, fetchPlayer, updateProgress, resetProgress as resetPlayerProgress } from '../services/playerServices'
+import { createPlayer, fetchPlayer, resetProgress as resetPlayerProgress } from '../services/playerServices'
 import { savePlayer, getSavedPlayer, hasExistingPlayer, clearPlayerData, getPlayerId } from '../utils/playerStorage';
 import LoadingScreen from '../components/LoadingScreen';
 
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
                     player_id:  result.player_id,
                     nickname:   result.nickname,
                     character:  result.character,
-                    progress:   result.progress_data || {}
+                    progress:   [] // Progress is now handled per-environment
                 };
 
                 setPlayer(playerData);
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
                 player_id: data.player_id,
                 nickname:  data.nickname,
                 character: data.character,
-                progress:  data.progress_data || {}
+                progress:  [] 
             };
 
             setPlayer(playerData);
@@ -85,18 +85,6 @@ export const AuthProvider = ({ children }) => {
         setPlayer(prev => ({ ...prev, character }));
     };
 
-    // ── Progress ──────────────────────────────────────────────────────────────
-    const saveProgress = async (progress_data) => {
-        if (!player?.player_id) return { success: false, error: 'No player loaded' };
-
-        try {
-            const data = await updateProgress(player.player_id, progress_data);
-            setPlayer(prev => ({ ...prev, progress: data.progress_data }));
-            return { success: true, data };
-        } catch (error) {
-            return { success: false, error: error.message };
-        }
-    };
 
     const resetProgress = async () => {
         if (!player?.player_id) return { success: false, error: 'No player loaded' };
@@ -108,7 +96,7 @@ export const AuthProvider = ({ children }) => {
 
         try {
             const data = await resetPlayerProgress(player.player_id);
-            setPlayer(prev => ({ ...prev, progress: {} }));
+            setPlayer(prev => ({ ...prev, progress: [] }));
             return { success: true, data };
         } catch (error) {
             return { success: false, error: error.message };
@@ -133,7 +121,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         createNewPlayer,
         setCharacter,
-        saveProgress,
+        // saveProgress, // Removed
         resetProgress,
         startNewGame,
         logout
