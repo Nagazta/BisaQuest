@@ -18,7 +18,8 @@ import BookCollectModal from "../../game/components/BookCollectModal";
 import VillageTransitionModal from "../../game/components/VillageTransitionModal";
 import VillageSummaryModal from "../../game/components/VillageSummaryModal";
 import FogTransition from "../../components/FogTransition";
-import { awardLibroPage, getLibroPageCount, hasCutsceneSeen, markCompleteDismissed, saveNPCProgress, getNPCWords, getPlayerId } from "../../utils/playerStorage";
+import VillageRoomProgress from "./components/VillageRoomProgress";
+import { awardLibroPage, getLibroPageCount, hasLibroPage, hasCutsceneSeen, markCompleteDismissed, saveNPCProgress, getNPCWords, getPlayerId } from "../../utils/playerStorage";
 import { submitChallenge } from "../../services/playerServices";
 import "./HousePage.css";
 
@@ -308,7 +309,7 @@ const HousePage = () => {
       )}
 
       {/* ── Idle hint ─────────────────────────────────────────────────────── */}
-      {introDone && !activeItem && !questItem && !debugMode && (
+      {introDone && !activeItem && !questItem && !debugMode && !hasLibroPage("village", "village_house") && (
         <div className="house-idle-hint">
           <span className="house-idle-hint-bisaya">
             💬 I-click ang bisan unsang butang para makat-on!
@@ -361,6 +362,14 @@ const HousePage = () => {
           markCompleteDismissed("village");
           setFogActive(true);
         }}
+      />
+
+      {/* ── Room progress navigation ──────────────────────────────────── */}
+      <VillageRoomProgress
+        currentRoomKey="village_house"
+        npcId={npcId}
+        npcName={npcName}
+        introDone={introDone}
       />
 
     </div>

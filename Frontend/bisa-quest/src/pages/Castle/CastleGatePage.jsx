@@ -10,6 +10,13 @@ import BookCollectModal from "../../game/components/BookCollectModal";
 import CastleTransitionModal from "../../game/components/CastleTransitionModal";
 import { CASTLE_NPC_IMAGES, getQuestData, buildCastleDialogue } from "./data/castleRoomData";
 import {
+  SCENE_QUEST_IDS,
+  fetchSceneItems,
+  fetchSceneDialogues,
+  toSceneLabels,
+  toIntroDialogue,
+} from "../../services/sceneDataService";
+import {
   saveNPCProgress,
   awardLibroPage,
   getLibroPageCount,
@@ -46,6 +53,10 @@ const CastleGatePage = () => {
   const [questItem, setQuestItem] = useState(null);
   const [completedItems, setCompletedItems] = useState(new Set());
 
+  // ── Scene data from API ────────────────────────────────────────────────────
+  const [sceneLabels, setSceneLabels] = useState([]);
+  const [introDialogue, setIntroDialogue] = useState([]);
+
   // Book & transition modals
   const [showPageModal, setShowPageModal] = useState(false);
   const [collectedPage, setCollectedPage] = useState(null);
@@ -62,24 +73,43 @@ const CastleGatePage = () => {
     }
   }, [activeItem]);
 
-  // ── Load progress on mount ────────────────────────────────────────────────
+  // ── Fetch scene data from API on mount ────────────────────────────────────
   useEffect(() => {
-    const savedWords = getNPCWords("castle", SAVE_NPC_ID);
-    if (savedWords.length > 0) {
-      const restored = new Set();
-      quest.items.forEach(region => {
-        const word = `${region.labelBisaya} (${region.labelEnglish})`;
-        if (savedWords.includes(word)) {
-          restored.add(region.id);
-        }
+    const loadSceneData = async () => {
+      const qId = SCENE_QUEST_IDS.gate;
+      const [items, dialogues] = await Promise.all([
+        fetchSceneItems(qId),
+        fetchSceneDialogues(qId),
+      ]);
+      const labels = toSceneLabels(items).map(apiItem => {
+        const localItem = quest.items.find(li => li.id === apiItem.id);
+        return {
+          ...apiItem,
+          applyGame: localItem ? localItem.applyGame : null,
+          // DB has correct_zone = DRAWBRIDGE instead of DRAW BRIDGE for some
+          // We let applyGame control the interactive parts but metadata comes from DB
+        };
       });
-      if (restored.size > 0) setCompletedItems(restored);
+      setSceneLabels(labels);
+      setIntroDialogue(toIntroDialogue(dialogues));
+
+      const savedWords = getNPCWords("castle", SAVE_NPC_ID);
+      if (savedWords.length > 0) {
+        const restored = new Set();
+        labels.forEach(region => {
+          const word = `${region.labelBisaya} (${region.labelEnglish})`;
+          if (savedWords.includes(word)) restored.add(region.id);
+        });
+        if (restored.size > 0) setCompletedItems(restored);
+      }
+    };
+    if (quest?.items) {
+      loadSceneData();
     }
   }, [quest]);
 
   // ── Derived ─────────────────────────────────────────────────────────────────
   const introDone = introStep === null;
-  const introDialogue = quest?.introDialogue ?? [];
   const introLine = !introDone ? introDialogue[introStep] : null;
 
   const currentLine = introDone && activeItem
@@ -212,7 +242,7 @@ const CastleGatePage = () => {
       />
 
       {/* Clickable regions */}
-      {introDone && quest.items.map((region) => {
+      {introDone && sceneLabels.map((region) => {
         const isDone = completedItems.has(region.id);
         return (
           <div
