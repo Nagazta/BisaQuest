@@ -6,10 +6,15 @@ import AssetManifest from "../../services/AssetManifest";
 import DiwataQuestModal from "../../game/components/DiwataQuestModal";
 import {
   DIWATA_NPC_IMAGES,
-  GLOW_ITEMS,
-  DIWATA_INTRO_DIALOGUE,
   buildGlowDialogue,
 } from "./data/diwataData";
+import {
+  SCENE_QUEST_IDS,
+  fetchSceneItems,
+  fetchSceneDialogues,
+  toSceneLabels,
+  toIntroDialogue,
+} from "../../services/sceneDataService";
 import {
   getPlayerId,
   saveNPCProgress,
@@ -41,6 +46,10 @@ const ForestGlowPage = () => {
   const [questItem, setQuestItem] = useState(null);
   const [completedItems, setCompletedItems] = useState(new Set());
 
+  // ── Scene data from API ────────────────────────────────────────────────────
+  const [sceneLabels, setSceneLabels] = useState([]);
+  const [introDialogue, setIntroDialogue] = useState([]);
+
   // ── Book-collect modal ───────────────────────────────────────────────────────
   const [showPageModal, setShowPageModal] = useState(false);
   const [collectedPage, setCollectedPage] = useState(null);
@@ -58,24 +67,34 @@ const ForestGlowPage = () => {
     }
   };
 
-  // ── Load progress on mount ────────────────────────────────────────────────
+  // ── Fetch scene data from API on mount ────────────────────────────────────
   useEffect(() => {
-    const savedWords = getNPCWords("forest", npcId);
-    if (savedWords.length > 0) {
-      const restored = new Set();
-      GLOW_ITEMS.forEach(region => {
-        const word = `${region.labelBisaya} (${region.labelEnglish})`;
-        if (savedWords.includes(word)) {
-          restored.add(region.id);
-        }
-      });
-      if (restored.size > 0) setCompletedItems(restored);
-    }
+    const loadSceneData = async () => {
+      const questId = SCENE_QUEST_IDS.glow;
+      const [items, dialogues] = await Promise.all([
+        fetchSceneItems(questId),
+        fetchSceneDialogues(questId),
+      ]);
+      const labels = toSceneLabels(items);
+      setSceneLabels(labels);
+      setIntroDialogue(toIntroDialogue(dialogues));
+
+      const savedWords = getNPCWords("forest", npcId);
+      if (savedWords.length > 0) {
+        const restored = new Set();
+        labels.forEach(region => {
+          const word = `${region.labelBisaya} (${region.labelEnglish})`;
+          if (savedWords.includes(word)) restored.add(region.id);
+        });
+        if (restored.size > 0) setCompletedItems(restored);
+      }
+    };
+    loadSceneData();
   }, [npcId]);
 
   // ── Derived ─────────────────────────────────────────────────────────────────
   const introDone = introStep === null;
-  const introLine = !introDone ? DIWATA_INTRO_DIALOGUE[introStep] : null;
+  const introLine = !introDone ? introDialogue[introStep] : null;
   const currentLine = introDone && activeItem
     ? buildGlowDialogue(activeItem)[dialogueStep]
     : null;
@@ -84,7 +103,7 @@ const ForestGlowPage = () => {
   const handleBack = () => navigate(returnTo);
 
   const handleIntroNext = () => {
-    if (introStep < DIWATA_INTRO_DIALOGUE.length - 1) {
+    if (introStep < introDialogue.length - 1) {
       setIntroStep((s) => s + 1);
     } else {
       setIntroStep(null);
@@ -187,7 +206,7 @@ const ForestGlowPage = () => {
 
       {/* ── Clickable dot regions ─────────────────────────────────────────── */}
       {introDone &&
-        GLOW_ITEMS.map((region) => {
+        sceneLabels.map((region) => {
           const isDone = completedItems.has(region.id);
           return (
             <div
