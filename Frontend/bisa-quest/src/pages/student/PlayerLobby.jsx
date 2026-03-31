@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import InteractiveMap from "../../components/InteractiveMap";
 import AssetManifest from "../../services/AssetManifest";
-import QuestStartModal from "../../components/QuestStartModal";
+
 import SaveProgressModal from "../../components/progress/SaveProgressModal";
 import Notification from "../../components/Notification";
 import ParticleEffects from "../../components/ParticleEffects";
@@ -41,9 +41,6 @@ const PlayerLobby = () => {
     const { player, startNewGame } = useAuth();
     const navigate = useNavigate();
 
-    const [showQuestModal, setShowQuestModal] = React.useState(false);
-    const [showSaveModal, setShowSaveModal] = React.useState(false);
-    const [savedProgress, setSavedProgress] = React.useState(null);
     const [selectedQuest, setSelectedQuest] = React.useState(null);
     const [notification, setNotification] = React.useState(null);
     const [moduleProgress, setModuleProgress] = React.useState({});
@@ -167,45 +164,9 @@ const PlayerLobby = () => {
 
         const quest = quests.find(q => q.id === questId);
         setSelectedQuest(quest);
-        checkForSavedProgress(questId);
-    };
 
-    // ── Check saved progress — localStorage only, no API ─────────────────────
-    const checkForSavedProgress = (questId) => {
-        const progress = getProgress();
-        const envKey = QUEST_ENV[questId];
-        const pct = progress[`${envKey}_progress`] || 0;
-
-        if (pct > 0) {
-            setSavedProgress({ progress: pct, environment: envKey });
-            setShowSaveModal(true);
-        } else {
-            setShowQuestModal(true);
-        }
-    };
-
-    // ── Continue existing save ────────────────────────────────────────────────
-    const handleContinue = () => {
-        setShowSaveModal(false);
-        navigate(QUEST_ROUTES[selectedQuest?.id] || "/student/village");
-    };
-
-    // ── New game — wipe localStorage, no API needed ───────────────────────────
-    const handleNewGame = () => {
-        clearPlayerData();
-        setSavedProgress(null);
-        setShowSaveModal(false);
-        setShowQuestModal(true);
-        fetchModuleProgress();
-    };
-
-    // ── Confirm quest start ───────────────────────────────────────────────────
-    const handleConfirmQuest = () => {
-        setShowQuestModal(false);
-
-        const id = selectedQuest?.id;
-        const cutsceneKey = CUTSCENE_KEYS[id];
-        const destination = QUEST_ROUTES[id] || "/student/village";
+        const cutsceneKey = CUTSCENE_KEYS[questId];
+        const destination = QUEST_ROUTES[questId] || "/student/village";
 
         // Only play a cutscene if:
         //   1. A cutscene key is defined for this quest
@@ -283,20 +244,7 @@ const PlayerLobby = () => {
                 Press <strong>ESC</strong> to exit
             </div>
 
-            <QuestStartModal
-                isOpen={showQuestModal}
-                questTitle={selectedQuest?.title}
-                onConfirm={handleConfirmQuest}
-                onClose={() => setShowQuestModal(false)}
-            />
 
-            <SaveProgressModal
-                isOpen={showSaveModal}
-                onContinue={handleContinue}
-                onNewGame={handleNewGame}
-                onClose={() => setShowSaveModal(false)}
-                savedProgress={savedProgress}
-            />
 
             {notification && (
                 <Notification
